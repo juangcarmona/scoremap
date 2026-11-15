@@ -1,6 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 export default defineConfig({
   testDir: "./tests/e2e",
+  outputDir: "test-results/browser",
   fullyParallel: false,
   workers: 1,
   reporter: [
@@ -16,11 +17,17 @@ export default defineConfig({
   projects: [
     {
       name: "tablet-chromium",
+      testIgnore: "**/android.spec.ts",
       use: {
         ...devices["Desktop Chrome"],
         viewport: { width: 1280, height: 800 },
         hasTouch: true,
       },
+    },
+    {
+      name: "android-phone",
+      testMatch: "**/android.spec.ts",
+      use: { ...devices["Pixel 7"], browserName: "chromium" },
     },
   ],
   webServer: {

@@ -32,12 +32,14 @@
     "fake-indexeddb": "6.2.8",
     "jsdom": "31.0.1",
     "markdownlint-cli2": "0.24.1",
+    "playwright-core": "1.65.1",
     "prettier": "3.10.1",
     "typescript": "6.0.3",
     "typescript-eslint": "8.72.2",
     "vite": "8.3.8",
     "vite-plugin-pwa": "2.0.0",
-    "vitest": "5.1.0"
+    "vitest": "5.1.0",
+    "yaml": "2.9.1"
   },
   "dependencies": {
     "idb": "8.0.4",
@@ -61,6 +63,7 @@
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\" \"tests/**/*.{ts,tsx}\" \"*.config.{ts,js}\"",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "verify:app": "npm run typecheck && npm run lint && npm run format:check && npm test && npm run build"
+    "verify:app": "npm run typecheck && npm run lint && npm run format:check && npm test && npm run build",
+    "evidence:record": "node scripts/record-verification.mjs && prodshape evidence verify docs/evidence/mvp/verification-evidence.json --format json"
   }
 }
