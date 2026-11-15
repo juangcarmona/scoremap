@@ -1,0 +1,42 @@
+{
+  "sourceRevision": "517c4b14ae3b97522c08c0a0b9246fe00117adda",
+  "startedAt": "2026-11-15T11:58:28.642Z",
+  "executionOrigin": "github-actions",
+  "commands": [
+    {
+      "command": [
+        "npm",
+        "run",
+        "verify"
+      ],
+      "startedAt": "2026-11-15T11:58:28.643Z",
+      "endedAt": "2026-11-15T11:58:45.420Z",
+      "exitCode": 0,
+      "signal": null
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "test:e2e"
+      ],
+      "startedAt": "2026-11-15T11:58:45.431Z",
+      "endedAt": "2026-11-15T11:59:13.762Z",
+      "exitCode": 0,
+      "signal": null
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "evidence:record"
+      ],
+      "startedAt": "2026-11-15T11:59:13.773Z",
+      "endedAt": "2026-11-15T11:59:22.817Z",
+      "exitCode": 0,
+      "signal": null
+    }
+  ],
+  "status": "passed",
+  "endedAt": "2026-11-15T11:59:22.829Z"
+}
