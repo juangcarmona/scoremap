@@ -6,10 +6,12 @@
   "reviewedRevision": "843b091de7055d1e4444b1831f44fce5c45c07d8",
   "reviewedTree": "b5be111797eacd64c18e42f652925883f7c775b3",
   "localTestedRevision": "530b9a98da3fd13cf7be9bdc8f840020dc93c112",
-  "nativeRun": "https://github.com/juangcarmona/scoremap/actions/runs/43710428595",
-  "checkedAt": "2026-11-15T11:57:46.504Z",
+  "checkedAt": "2026-11-15T12:04:10.257Z",
   "acceptedReviewBinding": "7505b30d4730e28f550972fd8dd35d49f5cf73fc81c0773d743f41074861a330",
   "pr16MergeRevision": "36342780b5803a4b7e65112459c26580b70a4a3c",
   "mainRevision": "517c4b14ae3b97522c08c0a0b9246fe00117adda",
-  "mainTree": "b5be111797eacd64c18e42f652925883f7c775b3"
+  "mainTree": "b5be111797eacd64c18e42f652925883f7c775b3",
+  "candidateNativeRun": "https://github.com/juangcarmona/scoremap/actions/runs/43710428595",
+  "mainNativeRun": "https://github.com/juangcarmona/scoremap/actions/runs/43711383356",
+  "mainNativeTestedRevision": "517c4b14ae3b97522c08c0a0b9246fe00117adda"
 }
