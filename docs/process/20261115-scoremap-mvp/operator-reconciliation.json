@@ -1,0 +1,48 @@
+{
+  "observedAt": "2026-11-15T11:48:36.047Z",
+  "actor": "authenticated local ScoreMap operator session",
+  "reason": "Host inode exhaustion interrupted receipt writes; daemon destruction events establish actual removal. No cleanup status is asserted here; installed recovery must compute it.",
+  "resolved": [
+    {
+      "resource": "lighthouse-8bd368f3ab90a14dc245e7c7-helper-2",
+      "id": "3ae1d707f5c205b752445abb51ef35705fa01116eff2461f943e40a338965960",
+      "proof": "Docker daemon destroy event with matching execution label and current immutable-ID absence",
+      "event": {
+        "Type": "container",
+        "Action": "destroy",
+        "Actor": {
+          "ID": "3ae1d707f5c205b752445abb51ef35705fa01116eff2461f943e40a338965960",
+          "Attributes": {
+            "image": "sha256:aff7d94b27c5c87f22720a8a99b5dd1f0719d9444d5f777d68276942497b5909",
+            "io.lighthouse.execution": "8bd368f3ab90a14dc245e7c7f8acc7d3d67978555ee09efe6b138b5e75ab0bb5",
+            "name": "lighthouse-8bd368f3ab90a14dc245e7c7-helper-2"
+          }
+        },
+        "scope": "local",
+        "time": 1794743109,
+        "timeNano": 1794743109810698800
+      }
+    },
+    {
+      "resource": "lighthouse-8bd368f3ab90a14dc245e7c7-helper-3",
+      "id": "7e486a82199b07814cdc182af940066857836b145524c80f5865a8d25f140f2c",
+      "proof": "Docker daemon destroy event with matching execution label and current immutable-ID absence",
+      "event": {
+        "Type": "container",
+        "Action": "destroy",
+        "Actor": {
+          "ID": "7e486a82199b07814cdc182af940066857836b145524c80f5865a8d25f140f2c",
+          "Attributes": {
+            "image": "sha256:aff7d94b27c5c87f22720a8a99b5dd1f0719d9444d5f777d68276942497b5909",
+            "io.lighthouse.execution": "8bd368f3ab90a14dc245e7c7f8acc7d3d67978555ee09efe6b138b5e75ab0bb5",
+            "name": "lighthouse-8bd368f3ab90a14dc245e7c7-helper-3"
+          }
+        },
+        "scope": "local",
+        "time": 1794743109,
+        "timeNano": 1794743109871424800
+      }
+    }
+  ],
+  "previousReceiptSha256": "e546956090413fa9b61ba6f37ac802936209f93af59882389cf7b667efd8fc75"
+}
