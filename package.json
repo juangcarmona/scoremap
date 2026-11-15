@@ -51,6 +51,16 @@
     "verify:architecture": "arcshape validate --docs docs/architecture --links --citations",
     "verify:baseline": "lighthouse verify && node scripts/lighthouse-guard.mjs verify",
     "verify:specs": "openspec validate --all --strict --no-interactive",
-    "verify": "npm run verify:product && npm run verify:citations && npm run verify:architecture && npm run verify:baseline && npm run verify:specs"
+    "verify": "npm run verify:product && npm run verify:citations && npm run verify:architecture && npm run verify:baseline && npm run verify:specs && npm run verify:app",
+    "dev": "vite --host 0.0.0.0",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src tests",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\" \"tests/**/*.{ts,tsx}\" \"*.config.{ts,js}\"",
+    "format": "prettier --write \"src/**/*.{ts,tsx,css}\" \"tests/**/*.{ts,tsx}\" \"*.config.{ts,js}\"",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "verify:app": "npm run typecheck && npm run lint && npm run format:check && npm test && npm run build"
   }
 }

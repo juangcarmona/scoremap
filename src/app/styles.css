@@ -1,0 +1,9 @@
+body {
+  margin: 0;
+  color: var(--lh-text);
+  background: var(--lh-canvas);
+  font-family: var(--lh-font-sans);
+}
+main {
+  padding: 2rem;
+}
