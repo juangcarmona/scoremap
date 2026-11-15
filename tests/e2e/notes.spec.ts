@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { prepared, readLibrary } from "./helpers";
+import { prepared, readLibrary, createSong, saved } from "./helpers";
 
 test("SB-ANNOTATIONS: incremental note typing survives delayed IndexedDB acknowledgements", async ({
   page,
@@ -57,5 +57,115 @@ test("SB-ANNOTATIONS: incremental note typing survives delayed IndexedDB acknowl
   );
   await expect(page.getByLabel("Notes for Verse", { exact: true })).toHaveValue(
     sectionText,
+  );
+});
+
+test("SB-ANNOTATIONS: identity-keyed drafts survive song switching during queued saves", async ({
+  page,
+}) => {
+  await prepared(page);
+  await createSong(page, "Other synthetic song");
+  await page
+    .getByRole("button", { name: "Synthetic rehearsal sketch", exact: true })
+    .click();
+  await page
+    .getByText("Song details & personal notes", { exact: true })
+    .click();
+  await page.getByText("Edit Verse", { exact: true }).click();
+  await page.evaluate(() => {
+    const original = IDBTransaction.prototype.addEventListener;
+    let holding = true;
+    const acknowledgements: (() => void)[] = [];
+    Object.defineProperty(window, "releaseNoteSaves", {
+      value: () => {
+        holding = false;
+        acknowledgements.splice(0).forEach((ack) => ack());
+      },
+    });
+    IDBTransaction.prototype.addEventListener = function (
+      this: IDBTransaction,
+      type: string,
+      listener: EventListenerOrEventListenerObject,
+      options?: boolean | AddEventListenerOptions,
+    ) {
+      if (type === "complete") {
+        return original.call(
+          this,
+          type,
+          (event: Event) => {
+            const acknowledge = () => {
+              if (typeof listener === "function") listener.call(this, event);
+              else listener.handleEvent(event);
+            };
+            if (holding) acknowledgements.push(acknowledge);
+            else acknowledge();
+          },
+          options,
+        );
+      }
+      return original.call(this, type, listener, options);
+    };
+  });
+  await page
+    .getByLabel("Song notes", { exact: true })
+    .pressSequentially("ab", { delay: 10 });
+  await page.getByLabel("Notes for Verse", { exact: true }).fill("");
+  await page
+    .getByLabel("Notes for Verse", { exact: true })
+    .pressSequentially("xy", { delay: 10 });
+  await expect(page.locator(".save-state")).toHaveText(
+    "Saving on this device…",
+  );
+  await page
+    .getByRole("button", { name: "Other synthetic song", exact: true })
+    .click();
+  await page
+    .getByText("Song details & personal notes", { exact: true })
+    .click();
+  await expect(page.getByLabel("Song notes", { exact: true })).toHaveValue("");
+  await page
+    .getByRole("button", { name: "Synthetic rehearsal sketch", exact: true })
+    .click();
+  await page
+    .getByText("Song details & personal notes", { exact: true })
+    .click();
+  await page.getByText("Edit Verse", { exact: true }).click();
+  await expect(page.getByLabel("Song notes", { exact: true })).toHaveValue(
+    "ab",
+  );
+  await expect(page.getByLabel("Notes for Verse", { exact: true })).toHaveValue(
+    "xy",
+  );
+  await page.evaluate(() =>
+    (window as unknown as { releaseNoteSaves: () => void }).releaseNoteSaves(),
+  );
+  await saved(page);
+  await expect(page.getByLabel("Song notes", { exact: true })).toHaveValue(
+    "ab",
+  );
+  await expect(page.getByLabel("Notes for Verse", { exact: true })).toHaveValue(
+    "xy",
+  );
+  await page.getByLabel("Song notes", { exact: true }).press("End");
+  await page.getByLabel("Song notes", { exact: true }).pressSequentially("c");
+  await page.getByLabel("Notes for Verse", { exact: true }).press("End");
+  await page
+    .getByLabel("Notes for Verse", { exact: true })
+    .pressSequentially("z");
+  await saved(page);
+  const library = await readLibrary(page);
+  expect(library.songs[0]!.notes).toBe("abc");
+  expect(library.songs[0]!.sections[1]!.notes).toBe("xyz");
+  expect(library.songs[1]!.notes).toBe("");
+  await page.reload();
+  await page
+    .getByText("Song details & personal notes", { exact: true })
+    .click();
+  await page.getByText("Edit Verse", { exact: true }).click();
+  await expect(page.getByLabel("Song notes", { exact: true })).toHaveValue(
+    "abc",
+  );
+  await expect(page.getByLabel("Notes for Verse", { exact: true })).toHaveValue(
+    "xyz",
   );
 });

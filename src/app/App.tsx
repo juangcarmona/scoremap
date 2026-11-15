@@ -23,6 +23,10 @@ export function App() {
   >(null);
   const [error, setError] = useState("");
   const [importEpoch, setImportEpoch] = useState(0);
+  // Interaction drafts survive sketch remounts while persistence remains queued.
+  const [noteDrafts, setNoteDrafts] = useState<ReadonlyMap<string, string>>(
+    () => new Map(),
+  );
   const [libraryOpen, setLibraryOpen] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
   const library = session?.data;
@@ -358,6 +362,7 @@ export function App() {
                         return;
                       await session.replace(imported, true);
                       setImportEpoch((n) => n + 1);
+                      setNoteDrafts(new Map());
                       setSelected(null);
                       setGroup("all");
                       setSearch("");
@@ -483,6 +488,10 @@ export function App() {
               <Sketch
                 key={`${song.id}-${importEpoch}`}
                 song={song}
+                noteDrafts={noteDrafts}
+                setNoteDraft={(id, text) =>
+                  setNoteDrafts((drafts) => new Map(drafts).set(id, text))
+                }
                 mode={session.mode}
                 execute={execute}
                 report={report}

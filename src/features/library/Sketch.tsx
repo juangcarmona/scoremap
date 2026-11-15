@@ -27,6 +27,8 @@ const roots = [
 ];
 type Props = {
   song: Song;
+  noteDrafts: ReadonlyMap<string, string>;
+  setNoteDraft: (id: string, text: string) => void;
   mode: Mode;
   execute: (command: Command) => Promise<void>;
   report: (error: unknown) => void;
@@ -133,7 +135,14 @@ function ChordEditor({
     </form>
   );
 }
-export function Sketch({ song, mode, execute, report }: Props) {
+export function Sketch({
+  song,
+  noteDrafts,
+  setNoteDraft,
+  mode,
+  execute,
+  report,
+}: Props) {
   const [selection, setSelection] = useState<{
     sectionId: string;
     index: number;
@@ -195,13 +204,13 @@ export function Sketch({ song, mode, execute, report }: Props) {
             </form>
             <label>
               Song notes
-              {/* Keep the live draft in the input; delayed save acknowledgements
-                  must never replace text the musician is still typing. */}
+              {/* Identity-keyed drafts outlive this sketch and queued acknowledgements. */}
               <textarea
                 aria-label="Song notes"
-                defaultValue={song.notes}
+                value={noteDrafts.get(song.id) ?? song.notes}
                 placeholder="Personal reminders, cues, sounds…"
                 onChange={(e) => {
+                  setNoteDraft(song.id, e.target.value);
                   void execute({
                     type: "updateSong",
                     songId: song.id,
@@ -360,9 +369,10 @@ export function Sketch({ song, mode, execute, report }: Props) {
                     Section notes
                     <textarea
                       aria-label={`Notes for ${section.name}`}
-                      defaultValue={section.notes}
+                      value={noteDrafts.get(section.id) ?? section.notes}
                       placeholder="Your cue for this section…"
                       onChange={(e) => {
+                        setNoteDraft(section.id, e.target.value);
                         void execute({
                           type: "updateSection",
                           songId: song.id,

@@ -1,0 +1,272 @@
+{
+  "envelope": {
+    "schemaVersion": 1,
+    "result": {
+      "schemaVersion": 1,
+      "runId": "1363acb33c41c80b32a53c016bcabe20f52f3b2453fc2e83b5220190013dd1ba",
+      "stage": "integrate",
+      "gate": "done",
+      "status": "blocked",
+      "evidence": [],
+      "missingEvidence": [
+        "Pending note drafts do not survive rapid song switching safely. Both textareas now use defaultValue (src/features/library/Sketch.tsx:200-210,361-372), while App remounts Sketch when the selected song changes (src/app/App.tsx:56-61,483-485). LibrarySession updates its candidate only as each queued command starts (src/features/library/application.ts:44-50). Hold the save of 'a' pending, type 'b' so 'ab' is queued, switch to another existing song and back before that save finishes: the remounted textarea initializes from candidate 'a', not draft 'ab'. Subsequent acknowledgements update defaultValue, not the already initialized live value. After the queue saves 'ab', the field can still display 'a'; appending 'c' then saves 'ac', silently discarding the previously acknowledged 'b'. This affects song and section notes and violates FR-ANNOTATIONS/SB-ANNOTATIONS (current citation: pdac:cite id=\"SB-ANNOTATIONS\" digest=\"sha256:e9f7eeba4ec89ac374cbbe880b1a4d2899ca92f1c6fd71231d9a664a94b8660f\"). The retained RED/GREEN evidence establishes the mounted incremental-typing correction, but tests/e2e/notes.spec.ts waits for all saves before reloading and never switches songs during pending writes. Preserve identity-keyed drafts across remounts or reconcile incoming values without overwriting newer input. Add a delayed-persistence browser regression for both fields that switches away/back while writes are queued, verifies complete displayed and durable text after completion, then continues typing and reloads. This finding is derived from the reviewed source trace, not a newly executed reproduction."
+      ],
+      "unavailableChecks": [],
+      "pendingReview": [],
+      "output": {
+        "review": {
+          "binding": "97bec2a0a6c732827c6a343058281d0e38a4cf487e103757538bd47dba6537b2",
+          "verdict": "request-changes",
+          "findings": [
+            "Pending note drafts do not survive rapid song switching safely. Both textareas now use defaultValue (src/features/library/Sketch.tsx:200-210,361-372), while App remounts Sketch when the selected song changes (src/app/App.tsx:56-61,483-485). LibrarySession updates its candidate only as each queued command starts (src/features/library/application.ts:44-50). Hold the save of 'a' pending, type 'b' so 'ab' is queued, switch to another existing song and back before that save finishes: the remounted textarea initializes from candidate 'a', not draft 'ab'. Subsequent acknowledgements update defaultValue, not the already initialized live value. After the queue saves 'ab', the field can still display 'a'; appending 'c' then saves 'ac', silently discarding the previously acknowledged 'b'. This affects song and section notes and violates FR-ANNOTATIONS/SB-ANNOTATIONS (current citation: pdac:cite id=\"SB-ANNOTATIONS\" digest=\"sha256:e9f7eeba4ec89ac374cbbe880b1a4d2899ca92f1c6fd71231d9a664a94b8660f\"). The retained RED/GREEN evidence establishes the mounted incremental-typing correction, but tests/e2e/notes.spec.ts waits for all saves before reloading and never switches songs during pending writes. Preserve identity-keyed drafts across remounts or reconcile incoming values without overwriting newer input. Add a delayed-persistence browser regression for both fields that switches away/back while writes are queued, verifies complete displayed and durable text after completion, then continues typing and reloads. This finding is derived from the reviewed source trace, not a newly executed reproduction."
+          ]
+        }
+      },
+      "nextAction": "Resolve the independent review findings before continuation."
+    },
+    "effect": {
+      "type": "issue-comment",
+      "body": "Independent review: request-changes.\n\nPending note drafts do not survive rapid song switching safely. Both textareas now use defaultValue (src/features/library/Sketch.tsx:200-210,361-372), while App remounts Sketch when the selected song changes (src/app/App.tsx:56-61,483-485). LibrarySession updates its candidate only as each queued command starts (src/features/library/application.ts:44-50). Hold the save of 'a' pending, type 'b' so 'ab' is queued, switch to another existing song and back before that save finishes: the remounted textarea initializes from candidate 'a', not draft 'ab'. Subsequent acknowledgements update defaultValue, not the already initialized live value. After the queue saves 'ab', the field can still display 'a'; appending 'c' then saves 'ac', silently discarding the previously acknowledged 'b'. This affects song and section notes and violates FR-ANNOTATIONS/SB-ANNOTATIONS (current citation: pdac:cite id=\"SB-ANNOTATIONS\" digest=\"sha256:e9f7eeba4ec89ac374cbbe880b1a4d2899ca92f1c6fd71231d9a664a94b8660f\"). The retained RED/GREEN evidence establishes the mounted incremental-typing correction, but tests/e2e/notes.spec.ts waits for all saves before reloading and never switches songs during pending writes. Preserve identity-keyed drafts across remounts or reconcile incoming values without overwriting newer input. Add a delayed-persistence browser regression for both fields that switches away/back while writes are queued, verifies complete displayed and durable text after completion, then continues typing and reloads. This finding is derived from the reviewed source trace, not a newly executed reproduction."
+    }
+  },
+  "runtime": {
+    "package": {
+      "name": "@juangcarmona/lighthouse-sdlc",
+      "version": "0.24.0"
+    },
+    "harnessRevision": null,
+    "distribution": {
+      "type": "package",
+      "integrity": "sha512-Z/kenqQit6ZtPf6AmKOinZKeD2FY3+6lm0UHAp41jYjHetMbdjgM7RCLhpmnxcrGS2Sm4l5pTSEWsEAdGOyplg=="
+    },
+    "image": "sha256:aff7d94b27c5c87f22720a8a99b5dd1f0719d9444d5f777d68276942497b5909",
+    "limits": {
+      "cpus": 2,
+      "memory": "2g",
+      "pids": 128
+    },
+    "environment": null,
+    "model": "openai/gpt-6.1-sol",
+    "modelExecution": {
+      "requested": {
+        "profile": "plan",
+        "model": "openai/gpt-6.1-sol",
+        "reasoningEffort": "high"
+      },
+      "resolved": {
+        "mode": "profile",
+        "profile": "plan",
+        "model": "openai/gpt-6.1-sol",
+        "reasoningEffort": "high",
+        "engineModel": "openai/gpt-6.1-sol#high",
+        "source": "task.profile",
+        "fields": {
+          "model": "operator",
+          "reasoningEffort": "operator"
+        },
+        "capabilityEvidence": "operator-configuration-only"
+      },
+      "providerReported": {
+        "model": null,
+        "reasoningEffort": null,
+        "status": "unverified",
+        "reason": "The current adapter has no authenticated provider-settings receipt"
+      },
+      "billing": {
+        "route": "unchanged",
+        "actualCost": null,
+        "estimatedApiEquivalentCost": null,
+        "subscriptionUsage": null
+      }
+    },
+    "engine": "OpenCode 2.1.0",
+    "isolation": "Docker; no AWF egress filtering",
+    "skills": [
+      "audience-guidance",
+      "browser-e2e",
+      "concise-results",
+      "implement",
+      "independent-review",
+      "integrate",
+      "product-change",
+      "propose",
+      "refine",
+      "review",
+      "triage"
+    ],
+    "sourceRevision": "fc746cfdfbd510edd33586e29dae376984def75b",
+    "seed": null,
+    "seedDigest": null,
+    "phases": {
+      "preflight": "passed",
+      "execution": "passed",
+      "evidence": "passed",
+      "completion": "passed"
+    },
+    "recoveredCleanup": [],
+    "productEvidence": {
+      "provider": "@prodshape/core",
+      "version": "0.25.0",
+      "serializationVersion": "v1alpha2",
+      "baselineDigest": "73be71b44e521ee388a9ab3549db868a70298b010dd960ea7cfac6c2b131eac5",
+      "artifacts": 99,
+      "acceptedModelPath": "/workspace/docs/product/model",
+      "evidenceRoot": "/workspace/.lighthouse-product-evidence"
+    },
+    "codegraph": {
+      "status": "available",
+      "tools": [
+        "codegraph_symbol_search",
+        "codegraph_get_ai_context"
+      ]
+    },
+    "budget": {
+      "configuredMs": 600000,
+      "timeoutMs": 589701,
+      "startedAt": 1794742471890,
+      "deadline": 1794743061591
+    },
+    "execution": {
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "resources": {
+        "pidsLimit": 128,
+        "pidsPeak": 36,
+        "pidsDenied": 0,
+        "memoryPeakBytes": 395522048,
+        "oomKills": 0
+      },
+      "scratch": {
+        "npmCache": "released",
+        "beforeCommand": {
+          "capacityBytes": 2147483648,
+          "availableBytes": 2147483648
+        },
+        "beforeCleanup": {
+          "capacityBytes": 2147483648,
+          "availableBytes": 2128822272
+        },
+        "afterCleanup": {
+          "capacityBytes": 2147483648,
+          "availableBytes": 2128822272
+        }
+      }
+    },
+    "independentReview": {
+      "protocol": "verdict-v1",
+      "binding": "97bec2a0a6c732827c6a343058281d0e38a4cf487e103757538bd47dba6537b2",
+      "purpose": "candidate",
+      "sha256": "ea50f609bfcc8d6ff19c9777fa537bbdbb6bbe60c84fd4f7b7de044e447f10df"
+    },
+    "lastCommand": null,
+    "cleanup": {
+      "schemaVersion": 1,
+      "identity": {
+        "repository": "juangcarmona/scoremap",
+        "runId": "1363acb33c41c80b32a53c016bcabe20f52f3b2453fc2e83b5220190013dd1ba",
+        "workflowRunId": "0",
+        "attempt": 1
+      },
+      "owner": "1190e82132262f9b324d0b2ad3321dd488d32b4d38e307fbfa7f7a233bc39fde",
+      "observedAt": "2026-11-15T11:40:02.000Z",
+      "status": "clean",
+      "resources": [
+        {
+          "type": "container",
+          "name": "lighthouse-1190e82132262f9b324d0b2a-helper-0",
+          "pending": false
+        },
+        {
+          "type": "container",
+          "name": "lighthouse-1190e82132262f9b324d0b2a-helper-1",
+          "pending": false
+        },
+        {
+          "type": "container",
+          "name": "lighthouse-1190e82132262f9b324d0b2a-helper-2",
+          "pending": false
+        },
+        {
+          "type": "container",
+          "name": "lighthouse-1190e82132262f9b324d0b2a-engine-codegraph",
+          "pending": false
+        },
+        {
+          "type": "container",
+          "name": "lighthouse-1190e82132262f9b324d0b2a-helper-4",
+          "pending": false
+        },
+        {
+          "type": "container",
+          "name": "lighthouse-1190e82132262f9b324d0b2a-engine",
+          "pending": false
+        },
+        {
+          "type": "container",
+          "name": "lighthouse-1190e82132262f9b324d0b2a-helper-6",
+          "pending": false
+        },
+        {
+          "type": "container",
+          "name": "lighthouse-1190e82132262f9b324d0b2a-helper-7",
+          "pending": false
+        },
+        {
+          "type": "container",
+          "name": "lighthouse-1190e82132262f9b324d0b2a-helper-8",
+          "pending": false
+        }
+      ],
+      "remaining": [],
+      "removalErrors": 0
+    },
+    "workspaceCleanup": {
+      "status": "clean",
+      "retained": "/home/juan/.local/share/lighthouse-runtime/engine.lock.resources/retained/1190e82132262f9b324d0b2ad3321dd488d32b4d38e307fbfa7f7a233bc39fde"
+    },
+    "telemetry": {
+      "schemaVersion": 1,
+      "stream": "3eab773f-0285-490c-8da0-fadbf0726129",
+      "component": "engine-adapter",
+      "packageVersion": "0.24.0",
+      "status": "degraded",
+      "active": false,
+      "written": 0,
+      "dropped": 692,
+      "bytes": 0,
+      "lastSequence": 0,
+      "lastObservedAt": null,
+      "retiredStreams": 0,
+      "errorCode": "RETENTION_CAPACITY",
+      "capabilities": {
+        "lifecycle": "host-observed",
+        "opencode": "native-2.1-plugin-with-cli-fallback",
+        "usage": "observed-with-coverage",
+        "resources": "linux-cgroup-v2-and-proc",
+        "billing": "unavailable",
+        "payloads": "disabled",
+        "transport": "ndjson-and-otlp-http-json-logs"
+      }
+    }
+  },
+  "request": {
+    "repository": "juangcarmona/scoremap",
+    "runId": "1363acb33c41c80b32a53c016bcabe20f52f3b2453fc2e83b5220190013dd1ba",
+    "issue": 1,
+    "stage": "integrate",
+    "worker": "independent-review",
+    "sourceRevision": "fc746cfdfbd510edd33586e29dae376984def75b",
+    "workflowRunId": "0",
+    "attempt": 1,
+    "taskDigest": "97bec2a0a6c732827c6a343058281d0e38a4cf487e103757538bd47dba6537b2",
+    "reviewOutput": {
+      "protocol": "verdict-v1",
+      "binding": "97bec2a0a6c732827c6a343058281d0e38a4cf487e103757538bd47dba6537b2",
+      "purpose": "candidate"
+    }
+  },
+  "changes": [],
+  "receipt": null,
+  "source": {}
+}
