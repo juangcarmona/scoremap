@@ -6,10 +6,10 @@ Installed: Lighthouse 0.13.11 / SDLC 0.24.0, ProductShape 0.26.1 with explicit P
 
 A repository-scoped lighthouse-workflow runner is online. Its mounted engine-scoremap.json selects the existing provider credentials volume and model profiles: fast openai/gpt-6-luna medium; build openai/gpt-6.1-terra medium; plan openai/gpt-6.1-sol high. The operator configuration maps implementation to fast and review to plan. No repository override changes those selectors. Provider-confirmed identity and cost remain unavailable until actual execution receipts establish them.
 
-## Blocked prerequisites
+## Current readiness and remaining boundaries
 
-- GitHub GET rules/branches/main returns HTTP 403: upgrade to GitHub Pro or make this repository public. The repository must remain private. Refresh and adopt rules after the owner-authorized public visibility change. No completion/epic/unattended merge may bypass enforced checks.
-- The authenticated OAuth token cannot list GitHub App installations (HTTP 403). Required: repository-scoped private App installation with Contents read/write, LIGHTHOUSE_CI_APP_CLIENT_ID variable and LIGHTHOUSE_CI_APP_PRIVATE_KEY secret. Repository secrets/variables were initially empty; the App client ID and private-key secret subsequently became available and require native access verification. Source-repository setup does not apply automatically.
+- The owner authorized public visibility. The installed Lighthouse GitHub profile was subsequently applied: main requires pull requests and the strict Verify ScoreMap check; no deletion or force-push is permitted. The lighthouse-evidence branch also rejects deletion and force-push. The adoption receipt is github-profile-adoption.json. No completion/epic/unattended merge may bypass enforced checks.
+- The authenticated OAuth token cannot list GitHub App installations (HTTP 403). Required: repository-scoped App installation with Contents read/write, LIGHTHOUSE_CI_APP_CLIENT_ID variable and LIGHTHOUSE_CI_APP_PRIVATE_KEY secret. Repository secrets/variables were initially empty; the App client ID and private-key secret subsequently became available and require native access verification. The readiness workflow uses create-github-app-token v3, whose published inputs support client-id; v2 does not support that input. Source-repository setup does not apply automatically.
 - The owner configures and publishes Cloudflare Pages at https://scoremap.jgcarmona.com. Agent deployment is outside the revised scope; Wrangler is removed.
 - Physical Android tablet installation has no device target available here. Chromium mobile emulation is separate evidence.
 

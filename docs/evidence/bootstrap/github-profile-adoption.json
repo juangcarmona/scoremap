@@ -1,0 +1,491 @@
+{
+  "schemaVersion": 1,
+  "kind": "github-profile-receipt",
+  "profileVersion": 1,
+  "repository": {
+    "id": 1458674261,
+    "nodeId": "R_kgDOVvGaVQ",
+    "repo": "juangcarmona/scoremap",
+    "defaultBranch": "main",
+    "visibility": "public",
+    "admin": true
+  },
+  "planHash": "0ea45c10d7289acfc5d53403047d5aa1911d786a69adc4d1ed42416848c272bd",
+  "configurationHash": "3935131eb28fd9e5b25a664023bd263d1133195a90cf83b9c9d8dc2ad0570a94",
+  "checkedAt": "2026-11-15T10:48:00.373Z",
+  "completed": [
+    "rules.main",
+    "rules.evidence",
+    "repository.allow_merge_commit",
+    "repository.allow_rebase_merge",
+    "repository.squash_merge_commit_title",
+    "repository.squash_merge_commit_message",
+    "repository.allow_auto_merge",
+    "repository.allow_update_branch",
+    "repository.delete_branch_on_merge",
+    "actions.forkApproval",
+    "security.alerts",
+    "security.updates",
+    "security.secret_scanning",
+    "security.secret_scanning_push_protection"
+  ],
+  "status": "passed",
+  "controls": [
+    {
+      "id": "repository.has_issues",
+      "recommended": true,
+      "expected": true,
+      "observed": {
+        "available": true,
+        "value": true
+      },
+      "status": "passed",
+      "reason": null,
+      "exception": false
+    },
+    {
+      "id": "repository.has_discussions",
+      "recommended": false,
+      "expected": false,
+      "observed": {
+        "available": true,
+        "value": false
+      },
+      "status": "passed",
+      "reason": null,
+      "exception": false
+    },
+    {
+      "id": "repository.is_template",
+      "recommended": false,
+      "expected": false,
+      "observed": {
+        "available": true,
+        "value": false
+      },
+      "status": "passed",
+      "reason": null,
+      "exception": false
+    },
+    {
+      "id": "repository.allow_squash_merge",
+      "recommended": true,
+      "expected": true,
+      "observed": {
+        "available": true,
+        "value": true
+      },
+      "status": "passed",
+      "reason": null,
+      "exception": false
+    },
+    {
+      "id": "repository.allow_merge_commit",
+      "recommended": false,
+      "expected": false,
+      "observed": {
+        "available": true,
+        "value": false
+      },
+      "status": "passed",
+      "reason": null,
+      "exception": false
+    },
+    {
+      "id": "repository.allow_rebase_merge",
+      "recommended": false,
+      "expected": false,
+      "observed": {
+        "available": true,
+        "value": false
+      },
+      "status": "passed",
+      "reason": null,
+      "exception": false
+    },
+    {
+      "id": "repository.squash_merge_commit_title",
+      "recommended": "PR_TITLE",
+      "expected": "PR_TITLE",
+      "observed": {
+        "available": true,
+        "value": "PR_TITLE"
+      },
+      "status": "passed",
+      "reason": null,
+      "exception": false
+    },
+    {
+      "id": "repository.squash_merge_commit_message",
+      "recommended": "PR_BODY",
+      "expected": "PR_BODY",
+      "observed": {
+        "available": true,
+        "value": "PR_BODY"
+      },
+      "status": "passed",
+      "reason": null,
+      "exception": false
+    },
+    {
+      "id": "repository.allow_auto_merge",
+      "recommended": true,
+      "expected": true,
+      "observed": {
+        "available": true,
+        "value": true
+      },
+      "status": "passed",
+      "reason": null,
+      "exception": false
+    },
+    {
+      "id": "repository.allow_update_branch",
+      "recommended": true,
+      "expected": true,
+      "observed": {
+        "available": true,
+        "value": true
+      },
+      "status": "passed",
+      "reason": null,
+      "exception": false
+    },
+    {
+      "id": "repository.delete_branch_on_merge",
+      "recommended": true,
+      "expected": true,
+      "observed": {
+        "available": true,
+        "value": true
+      },
+      "status": "passed",
+      "reason": null,
+      "exception": false
+    },
+    {
+      "id": "repository.web_commit_signoff_required",
+      "recommended": false,
+      "expected": false,
+      "observed": {
+        "available": true,
+        "value": false
+      },
+      "status": "passed",
+      "reason": null,
+      "exception": false
+    },
+    {
+      "id": "actions.workflow",
+      "recommended": {
+        "default_workflow_permissions": "read",
+        "can_approve_pull_request_reviews": false
+      },
+      "expected": {
+        "default_workflow_permissions": "read",
+        "can_approve_pull_request_reviews": false
+      },
+      "observed": {
+        "available": true,
+        "value": {
+          "default_workflow_permissions": "read",
+          "can_approve_pull_request_reviews": false
+        }
+      },
+      "status": "passed",
+      "reason": null,
+      "exception": false
+    },
+    {
+      "id": "actions.forkApproval",
+      "recommended": "all_external_contributors",
+      "expected": "all_external_contributors",
+      "observed": {
+        "available": true,
+        "value": "all_external_contributors"
+      },
+      "status": "passed",
+      "reason": null,
+      "exception": false
+    },
+    {
+      "id": "security.alerts",
+      "recommended": true,
+      "expected": true,
+      "observed": {
+        "available": true,
+        "value": true
+      },
+      "status": "passed",
+      "reason": null,
+      "exception": false
+    },
+    {
+      "id": "security.updates",
+      "recommended": true,
+      "expected": true,
+      "observed": {
+        "available": true,
+        "value": true
+      },
+      "status": "passed",
+      "reason": null,
+      "exception": false
+    },
+    {
+      "id": "security.secret_scanning",
+      "recommended": "enabled",
+      "expected": "enabled",
+      "observed": {
+        "available": true,
+        "value": "enabled"
+      },
+      "status": "passed",
+      "reason": null,
+      "exception": false
+    },
+    {
+      "id": "security.secret_scanning_push_protection",
+      "recommended": "enabled",
+      "expected": "enabled",
+      "observed": {
+        "available": true,
+        "value": "enabled"
+      },
+      "status": "passed",
+      "reason": null,
+      "exception": false
+    },
+    {
+      "id": "releases.immutable",
+      "recommended": true,
+      "expected": null,
+      "observed": {
+        "available": true,
+        "value": false
+      },
+      "status": "excepted",
+      "reason": "No release publisher is selected for the MVP.",
+      "exception": true
+    },
+    {
+      "id": "intake",
+      "recommended": null,
+      "expected": null,
+      "observed": {
+        "available": true,
+        "value": {
+          "issueCreationPolicy": "ALL",
+          "pullRequestCreationPolicy": "ALL"
+        }
+      },
+      "status": "excepted",
+      "reason": "The adopter chose to preserve contribution policy.",
+      "exception": false
+    },
+    {
+      "id": "rules.main",
+      "recommended": [
+        {
+          "type": "deletion"
+        },
+        {
+          "type": "non_fast_forward"
+        },
+        {
+          "type": "pull_request",
+          "parameters": {
+            "required_approving_review_count": 0,
+            "dismiss_stale_reviews_on_push": true,
+            "require_code_owner_review": false,
+            "require_last_push_approval": false,
+            "required_review_thread_resolution": true
+          }
+        },
+        {
+          "type": "required_status_checks",
+          "parameters": {
+            "strict_required_status_checks_policy": true,
+            "required_status_checks": [
+              {
+                "context": "Verify ScoreMap",
+                "integration_id": 15368
+              }
+            ]
+          }
+        }
+      ],
+      "expected": [
+        {
+          "type": "deletion"
+        },
+        {
+          "type": "non_fast_forward"
+        },
+        {
+          "type": "pull_request",
+          "parameters": {
+            "required_approving_review_count": 0,
+            "dismiss_stale_reviews_on_push": true,
+            "require_code_owner_review": false,
+            "require_last_push_approval": false,
+            "required_review_thread_resolution": true
+          }
+        },
+        {
+          "type": "required_status_checks",
+          "parameters": {
+            "strict_required_status_checks_policy": true,
+            "required_status_checks": [
+              {
+                "context": "Verify ScoreMap",
+                "integration_id": 15368
+              }
+            ]
+          }
+        }
+      ],
+      "observed": {
+        "available": true,
+        "value": [
+          {
+            "type": "pull_request",
+            "parameters": {
+              "required_approving_review_count": 0,
+              "dismiss_stale_reviews_on_push": true,
+              "required_reviewers": [],
+              "require_code_owner_review": false,
+              "require_last_push_approval": false,
+              "required_review_thread_resolution": true,
+              "require_extra_approval_for_unattributed_changes": true,
+              "allowed_merge_methods": [
+                "merge",
+                "squash",
+                "rebase"
+              ]
+            },
+            "id": 27309863,
+            "source": "juangcarmona/scoremap",
+            "enforcement": "active",
+            "bypass": []
+          },
+          {
+            "type": "required_status_checks",
+            "parameters": {
+              "strict_required_status_checks_policy": true,
+              "do_not_enforce_on_create": false,
+              "required_status_checks": [
+                {
+                  "context": "Verify ScoreMap",
+                  "integration_id": 15368
+                }
+              ]
+            },
+            "id": 27309863,
+            "source": "juangcarmona/scoremap",
+            "enforcement": "active",
+            "bypass": []
+          },
+          {
+            "type": "deletion",
+            "parameters": {},
+            "id": 27309863,
+            "source": "juangcarmona/scoremap",
+            "enforcement": "active",
+            "bypass": []
+          },
+          {
+            "type": "non_fast_forward",
+            "parameters": {},
+            "id": 27309863,
+            "source": "juangcarmona/scoremap",
+            "enforcement": "active",
+            "bypass": []
+          }
+        ]
+      },
+      "status": "passed",
+      "reason": null,
+      "exception": false
+    },
+    {
+      "id": "rules.evidence",
+      "recommended": [
+        {
+          "type": "deletion"
+        },
+        {
+          "type": "non_fast_forward"
+        }
+      ],
+      "expected": [
+        {
+          "type": "deletion"
+        },
+        {
+          "type": "non_fast_forward"
+        }
+      ],
+      "observed": {
+        "available": true,
+        "value": [
+          {
+            "type": "deletion",
+            "parameters": {},
+            "id": 27309864,
+            "source": "juangcarmona/scoremap",
+            "enforcement": "active",
+            "bypass": []
+          },
+          {
+            "type": "non_fast_forward",
+            "parameters": {},
+            "id": 27309864,
+            "source": "juangcarmona/scoremap",
+            "enforcement": "active",
+            "bypass": []
+          }
+        ]
+      },
+      "status": "passed",
+      "reason": null,
+      "exception": false
+    }
+  ],
+  "exceptions": [
+    {
+      "id": "releases.immutable",
+      "recommended": true,
+      "expected": null,
+      "observed": {
+        "available": true,
+        "value": false
+      },
+      "status": "excepted",
+      "reason": "No release publisher is selected for the MVP.",
+      "exception": true
+    },
+    {
+      "id": "intake",
+      "recommended": null,
+      "expected": null,
+      "observed": {
+        "available": true,
+        "value": {
+          "issueCreationPolicy": "ALL",
+          "pullRequestCreationPolicy": "ALL"
+        }
+      },
+      "status": "excepted",
+      "reason": "The adopter chose to preserve contribution policy.",
+      "exception": false
+    }
+  ],
+  "applied": true,
+  "manualRecommendations": [
+    "Keep Wiki deferred or explicitly selected, with editing restricted to collaborators.",
+    "Review issue forms, sponsorship, Projects, social preview and archive participation for the product.",
+    "Review commit comments, linked-issue auto-close, LFS archives and multi-ref push limits in GitHub settings; this adapter does not manage them.",
+    "Review Actions retention, workflow-specific token permissions, self-hosted admission and integration authority separately; repository defaults do not enforce those controls."
+  ]
+}

@@ -1,0 +1,53 @@
+[WebServer] (node:2877764) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:2877777) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 1 test using 1 worker
+
+(node:2877826) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [tablet-chromium] › tests/e2e/notes.spec.ts:63:1 › SB-ANNOTATIONS: identity-keyed drafts survive song switching during queued saves (7.7s)
+
+
+  1) [tablet-chromium] › tests/e2e/notes.spec.ts:63:1 › SB-ANNOTATIONS: identity-keyed drafts survive song switching during queued saves 
+
+    Error: expect(locator).toHaveValue(expected) failed
+
+    Locator:  getByLabel('Song notes', { exact: true })
+    Expected: "ab"
+    Received: "a"
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toHaveValue" getByLabel('Song notes', { exact: true }) with timeout 5000ms
+      - waiting for getByLabel('Song notes', { exact: true })
+        14 × locator resolved to <textarea aria-label="Song notes" placeholder="Personal reminders, cues, sounds…">a</textarea>
+           - unexpected value "a"
+
+
+      131 |     .click();
+      132 |   await page.getByText("Edit Verse", { exact: true }).click();
+    > 133 |   await expect(page.getByLabel("Song notes", { exact: true })).toHaveValue(
+          |                                                                ^
+      134 |     "ab",
+      135 |   );
+      136 |   await expect(page.getByLabel("Notes for Verse", { exact: true })).toHaveValue(
+        at /srv/repos/juangcarmona/scoremap/tests/e2e/notes.spec.ts:133:64
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/browser/notes-SB-ANNOTATIONS-ident-51946-itching-during-queued-saves-tablet-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/browser/notes-SB-ANNOTATIONS-ident-51946-itching-during-queued-saves-tablet-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/browser/notes-SB-ANNOTATIONS-ident-51946-itching-during-queued-saves-tablet-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/browser/notes-SB-ANNOTATIONS-ident-51946-itching-during-queued-saves-tablet-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [tablet-chromium] › tests/e2e/notes.spec.ts:63:1 › SB-ANNOTATIONS: identity-keyed drafts survive song switching during queued saves 

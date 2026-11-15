@@ -1,0 +1,65 @@
+[WebServer] (node:2871728) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:2871741) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 1 test using 1 worker
+
+(node:2871789) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [tablet-chromium] › tests/e2e/notes.spec.ts:4:1 › SB-ANNOTATIONS: incremental note typing survives delayed IndexedDB acknowledgements (7.0s)
+
+
+  1) [tablet-chromium] › tests/e2e/notes.spec.ts:4:1 › SB-ANNOTATIONS: incremental note typing survives delayed IndexedDB acknowledgements 
+
+    Error: expect(locator).toHaveValue(expected) failed
+
+    Locator:  getByLabel('Song notes', { exact: true })
+    Expected: "Play softly."
+    Received: "P."
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toHaveValue" getByLabel('Song notes', { exact: true }) with timeout 5000ms
+      - waiting for getByLabel('Song notes', { exact: true })
+        3 × locator resolved to <textarea aria-label="Song notes" placeholder="Personal reminders, cues, sounds…">P</textarea>
+          - unexpected value "P"
+        2 × locator resolved to <textarea aria-label="Song notes" placeholder="Personal reminders, cues, sounds…">Pl</textarea>
+          - unexpected value "Pl"
+        - locator resolved to <textarea aria-label="Song notes" placeholder="Personal reminders, cues, sounds…">Py</textarea>
+        - unexpected value "Py"
+        - locator resolved to <textarea aria-label="Song notes" placeholder="Personal reminders, cues, sounds…">Ps</textarea>
+        - unexpected value "Ps"
+        - locator resolved to <textarea aria-label="Song notes" placeholder="Personal reminders, cues, sounds…">Pf</textarea>
+        - unexpected value "Pf"
+        - locator resolved to <textarea aria-label="Song notes" placeholder="Personal reminders, cues, sounds…">Pl</textarea>
+        - unexpected value "Pl"
+        5 × locator resolved to <textarea aria-label="Song notes" placeholder="Personal reminders, cues, sounds…">P.</textarea>
+          - unexpected value "P."
+
+
+      36 |   const sectionNotes = page.getByLabel("Notes for Verse", { exact: true });
+      37 |   await songNotes.pressSequentially(songText, { delay: 5 });
+    > 38 |   await expect(songNotes).toHaveValue(songText);
+         |                           ^
+      39 |   await sectionNotes.fill("");
+      40 |   await sectionNotes.pressSequentially(sectionText, { delay: 5 });
+      41 |   await expect(sectionNotes).toHaveValue(sectionText);
+        at /srv/repos/juangcarmona/scoremap/tests/e2e/notes.spec.ts:38:27
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/browser/notes-SB-ANNOTATIONS-incre-ac725--IndexedDB-acknowledgements-tablet-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/browser/notes-SB-ANNOTATIONS-incre-ac725--IndexedDB-acknowledgements-tablet-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/browser/notes-SB-ANNOTATIONS-incre-ac725--IndexedDB-acknowledgements-tablet-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/browser/notes-SB-ANNOTATIONS-incre-ac725--IndexedDB-acknowledgements-tablet-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [tablet-chromium] › tests/e2e/notes.spec.ts:4:1 › SB-ANNOTATIONS: incremental note typing survives delayed IndexedDB acknowledgements 

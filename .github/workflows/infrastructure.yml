@@ -10,7 +10,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/create-github-app-token@v2
+      - uses: actions/create-github-app-token@v3
         id: app
         with:
           client-id: ${{ vars.LIGHTHOUSE_CI_APP_CLIENT_ID }}
