@@ -1,0 +1,1140 @@
+{
+  "format": "pdac-verification-evidence/v1alpha1",
+  "provider": "ScoreMap Vitest and Playwright completed reports",
+  "run-id": "local-669c02ee8008db4be254e5d94d6e5132ab6cc035",
+  "revision": "669c02ee8008db4be254e5d94d6e5132ab6cc035",
+  "results": [
+    {
+      "test-id": "vitest:tests/library/application.test.ts:0:Serialized application commands SB-PERSIST-RECOVER: rapid commands serialize against the latest candidate",
+      "level": "integration",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-PERSIST-RECOVER",
+          "digest": "sha256:bdcc4abc19436e6b008b9d88047efe937f948e71d6c817e0c06209b3b498cd26"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/library/application.test.ts:1:Serialized application commands SB-PERSIST-FAILURE: unsaved work remains exportable and an explicit retry recovers it",
+      "level": "integration",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-PERSIST-FAILURE",
+          "digest": "sha256:31db2bb51e3c0495ac05dc1b53938c2de756eef9176e3ba747f6b877ee014357"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/library/application.test.ts:2:Serialized application commands SB-PERFORMANCE-REJECT SB-PERFORMANCE SB-EDIT-RESUME: mode switching preserves content and guards direct mutation and import",
+      "level": "integration",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-PERFORMANCE-REJECT",
+          "digest": "sha256:392da1d92a3d7973d37b59e113edf537539262abe257dddd74b9a8eaf925b6d9"
+        },
+        {
+          "id": "SB-PERFORMANCE",
+          "digest": "sha256:c004c86080428dd85d0c3b42ce24be640955fc52f3d9245f05db6e90e6344355"
+        },
+        {
+          "id": "SB-EDIT-RESUME",
+          "digest": "sha256:04360461982853baddc7e4ddce8a0f0359b824ba917bb581edb2bb5dd00d585a"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/library/application.test.ts:3:Serialized application commands SB-BACKUP-CANCEL: cancel replacement performs no write",
+      "level": "integration",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-BACKUP-CANCEL",
+          "digest": "sha256:a1b39939e1798f96a3d4d4a6d0eea6f09ba4156293d49b05ae692953a1975806"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/library/application.test.ts:4:Serialized application commands SB-PERSIST-FAILURE: failed confirmed replacement preserves current data",
+      "level": "integration",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-PERSIST-FAILURE",
+          "digest": "sha256:31db2bb51e3c0495ac05dc1b53938c2de756eef9176e3ba747f6b877ee014357"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/library/application.test.ts:5:Serialized application commands SB-BACKUP-IMPORT SB-BACKUP-IMPORT-EMPTY: successful replacement uses a fresh local revision",
+      "level": "integration",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-BACKUP-IMPORT",
+          "digest": "sha256:a91c468115f1a66e2222f71eb936d54052e1959dfe93867da92c93476ac28d3e"
+        },
+        {
+          "id": "SB-BACKUP-IMPORT-EMPTY",
+          "digest": "sha256:94feeffb023102ad9861da55203c10d9df2f94ffe120ab962c346aa331908c6d"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/library/backup.test.ts:0:Complete validated backups SB-BACKUP-EXPORT SB-BACKUP-IMPORT: round trip preserves all identities and associations",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-BACKUP-EXPORT",
+          "digest": "sha256:4dc53a109e0e344b95c117d7a429c92b3b54d4ce8856cf00104b501d13f86237"
+        },
+        {
+          "id": "SB-BACKUP-IMPORT",
+          "digest": "sha256:a91c468115f1a66e2222f71eb936d54052e1959dfe93867da92c93476ac28d3e"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/library/backup.test.ts:1:Complete validated backups SB-BACKUP-IMPORT-EMPTY: valid empty data is intentional",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-BACKUP-IMPORT-EMPTY",
+          "digest": "sha256:94feeffb023102ad9861da55203c10d9df2f94ffe120ab962c346aa331908c6d"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/library/backup.test.ts:2:Complete validated backups SB-BACKUP-REJECT: rejects malformed/unsupported envelope {",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-BACKUP-REJECT",
+          "digest": "sha256:f6b3ca347fe8d7d709509474f84ae9b7d4ecfc01ac4a66c3af5de77c20784e5d"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/library/backup.test.ts:3:Complete validated backups SB-BACKUP-REJECT: rejects malformed/unsupported envelope null",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-BACKUP-REJECT",
+          "digest": "sha256:f6b3ca347fe8d7d709509474f84ae9b7d4ecfc01ac4a66c3af5de77c20784e5d"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/library/backup.test.ts:4:Complete validated backups SB-BACKUP-REJECT: rejects malformed/unsupported envelope []",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-BACKUP-REJECT",
+          "digest": "sha256:f6b3ca347fe8d7d709509474f84ae9b7d4ecfc01ac4a66c3af5de77c20784e5d"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/library/backup.test.ts:5:Complete validated backups SB-BACKUP-REJECT: rejects malformed/unsupported envelope {}",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-BACKUP-REJECT",
+          "digest": "sha256:f6b3ca347fe8d7d709509474f84ae9b7d4ecfc01ac4a66c3af5de77c20784e5d"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/library/backup.test.ts:6:Complete validated backups SB-BACKUP-REJECT: rejects malformed/unsupported envelope {\"format\":\"scoremap-backup\",\"version\":999,\"library\":{\"schemaVersion\":1,\"revision\":0,\"songs\":[],\"repertoires\":[]}}",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-BACKUP-REJECT",
+          "digest": "sha256:f6b3ca347fe8d7d709509474f84ae9b7d4ecfc01ac4a66c3af5de77c20784e5d"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/library/backup.test.ts:7:Complete validated backups SB-BACKUP-REJECT: duplicate identities and dangling membership are refused",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-BACKUP-REJECT",
+          "digest": "sha256:f6b3ca347fe8d7d709509474f84ae9b7d4ecfc01ac4a66c3af5de77c20784e5d"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/library/backup.test.ts:8:Complete validated backups SB-REFERENCE-INVALID SB-REFERENCE: only absolute web references enter a library",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-REFERENCE-INVALID",
+          "digest": "sha256:e8869ae8629e53bb37c03929c6c359d644e301527c89f4840530c78264779a9a"
+        },
+        {
+          "id": "SB-REFERENCE",
+          "digest": "sha256:e203d2c8d8a82bebe478f129a51a6c3fa3ff35dedd53060a161c58d144e329c1"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/library/domain.test.ts:0:Personal library commands SB-SONG-CREATE SB-SONG-ADD SB-REPERTOIRE-CREATE SB-MEMBERSHIP-ADD: creates independent identities without invented content",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-SONG-CREATE",
+          "digest": "sha256:d95b74331bb7efbb0806b44d35f116106618a1460ddc58b6a0fe7ec9183decba"
+        },
+        {
+          "id": "SB-SONG-ADD",
+          "digest": "sha256:3c802dc04e6f6ee9f01574e60c2a55f3c74c1614762f929575dffdf87b78efe9"
+        },
+        {
+          "id": "SB-REPERTOIRE-CREATE",
+          "digest": "sha256:37922d0d79d173763965250a8b5fa744c0f62775ba78c6c3ae7e4e0db182d86a"
+        },
+        {
+          "id": "SB-MEMBERSHIP-ADD",
+          "digest": "sha256:f0cc7537b2efb9033a66e7f95e4d2ba68c92037edd808c571fa4b9f3c3eddbbe"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/library/domain.test.ts:1:Personal library commands SB-SONG-EDIT SB-REPERTOIRE-RENAME: metadata edits retain identity and membership",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-SONG-EDIT",
+          "digest": "sha256:1e27a22da49c7b805dcc4023c563afa4b2ec78936ca42473957617aecb9fa33a"
+        },
+        {
+          "id": "SB-REPERTOIRE-RENAME",
+          "digest": "sha256:96865538af194f8c287f62e4dc44e4341fab5700fb7f306801b1411f2e9a27ba"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/library/domain.test.ts:2:Personal library commands SB-REPERTOIRE-DELETE: repertoire deletion preserves complete songs",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-REPERTOIRE-DELETE",
+          "digest": "sha256:3203bf7d104b07abed94f2f2beb00b92f33eead1e90981e88f123fe3aeda62c6"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/library/domain.test.ts:3:Personal library commands SB-MEMBERSHIP-REMOVE SB-MEMBERSHIP-DUPLICATE: membership is independent and unique",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-MEMBERSHIP-REMOVE",
+          "digest": "sha256:76ff8dfb68346d6bcaa2716da66062cd284902f6bdf5003a77538132041bd71c"
+        },
+        {
+          "id": "SB-MEMBERSHIP-DUPLICATE",
+          "digest": "sha256:cf13783a3af08774e6216bb726af792566480d5ba2d3a236983ae749f241366b"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/library/domain.test.ts:4:Personal library commands SB-SONG-DELETE SB-SONG-DELETE-LAST: deleting songs removes memberships, retaining repertoire",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-SONG-DELETE",
+          "digest": "sha256:f876d4fa7184eeae5904d228229273eef9984a965c2477204204744d8262a280"
+        },
+        {
+          "id": "SB-SONG-DELETE-LAST",
+          "digest": "sha256:1724d18f797def4fe5ef173c474d969c94270aefbc67eb6574e415cbb95b5ac7"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/library/domain.test.ts:5:Personal library commands SB-BLANK-NAME SB-MISSING-IDENTITY: refuses invalid targets and titles without changing input",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-BLANK-NAME",
+          "digest": "sha256:df469f85a539ac9aabbc71658c59485c3a0232a88349ce62b0ac126d6897f04c"
+        },
+        {
+          "id": "SB-MISSING-IDENTITY",
+          "digest": "sha256:fff8b2ea2df48cf8b63bb2b5ed2ea1f834b2b24389ed9e300fba67bb6d78c66d"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/library/domain.test.ts:6:Stable song structure SB-SECTION-FIRST SB-SECTION-INSERT SB-SECTION-MODIFY SB-SECTION-REORDER: reorder preserves all associated data",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-SECTION-FIRST",
+          "digest": "sha256:142013b9449dc02eff8f99b7752661694163795e29a55ef00daafc6f63e7ac4c"
+        },
+        {
+          "id": "SB-SECTION-INSERT",
+          "digest": "sha256:419cab857698e48ddda21d1b82e507163f407c0d6459f16785fb096c9324427a"
+        },
+        {
+          "id": "SB-SECTION-MODIFY",
+          "digest": "sha256:d39296e86c35c16c859c4f1c4294a2df9b5edcd9304a505d7b4d5b985274a95b"
+        },
+        {
+          "id": "SB-SECTION-REORDER",
+          "digest": "sha256:610413c7eae977e5760aa413f58ec499375fdafe0952dca8cbc7591cbda639e5"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/library/domain.test.ts:7:Stable song structure SB-SECTION-REMOVE SB-SECTION-REMOVE-LAST: removes only the selected owner and allows an empty song",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-SECTION-REMOVE",
+          "digest": "sha256:a9ebfc7be7dad88eaca3e230d20e904c697d133790d193f4cb46dcf495708e77"
+        },
+        {
+          "id": "SB-SECTION-REMOVE-LAST",
+          "digest": "sha256:4857e323f1014f93ab8b8e8e72e692809d2597c653a7cea01de470132b094e66"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/library/domain.test.ts:8:Stable song structure SB-SECTION-INVALID-ORDER: rejects invalid permutation \"intro\"",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-SECTION-INVALID-ORDER",
+          "digest": "sha256:b504ff2ff04dee9f4f02842b169ef787cff8f53943404f0323b0f946bda08944"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/library/domain.test.ts:9:Stable song structure SB-SECTION-INVALID-ORDER: rejects invalid permutation \"intro\"",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-SECTION-INVALID-ORDER",
+          "digest": "sha256:b504ff2ff04dee9f4f02842b169ef787cff8f53943404f0323b0f946bda08944"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/library/domain.test.ts:10:Stable song structure SB-SECTION-INVALID-ORDER: rejects invalid permutation \"intro\"",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-SECTION-INVALID-ORDER",
+          "digest": "sha256:b504ff2ff04dee9f4f02842b169ef787cff8f53943404f0323b0f946bda08944"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/library/domain.test.ts:11:Stable song structure SB-SECTION-REPEAT-BOUNDARY: rejects count 0",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-SECTION-REPEAT-BOUNDARY",
+          "digest": "sha256:8290678c017a749dd78b1b1d6ef192b85a7ec141d1cc1f0a1926c91c957217c7"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/library/domain.test.ts:12:Stable song structure SB-SECTION-REPEAT-BOUNDARY: rejects count -1",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-SECTION-REPEAT-BOUNDARY",
+          "digest": "sha256:8290678c017a749dd78b1b1d6ef192b85a7ec141d1cc1f0a1926c91c957217c7"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/library/domain.test.ts:13:Stable song structure SB-SECTION-REPEAT-BOUNDARY: rejects count 100",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-SECTION-REPEAT-BOUNDARY",
+          "digest": "sha256:8290678c017a749dd78b1b1d6ef192b85a7ec141d1cc1f0a1926c91c957217c7"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/library/domain.test.ts:14:Stable song structure SB-SECTION-REPEAT-BOUNDARY: rejects count 1.5",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-SECTION-REPEAT-BOUNDARY",
+          "digest": "sha256:8290678c017a749dd78b1b1d6ef192b85a7ec141d1cc1f0a1926c91c957217c7"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/library/domain.test.ts:15:Stable song structure SB-SECTION-REPEAT-BOUNDARY: rejects count NaN",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-SECTION-REPEAT-BOUNDARY",
+          "digest": "sha256:8290678c017a749dd78b1b1d6ef192b85a7ec141d1cc1f0a1926c91c957217c7"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/library/domain.test.ts:16:Stable song structure SB-SECTION-MODIFY: accepts count boundary 1",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-SECTION-MODIFY",
+          "digest": "sha256:d39296e86c35c16c859c4f1c4294a2df9b5edcd9304a505d7b4d5b985274a95b"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/library/domain.test.ts:17:Stable song structure SB-SECTION-MODIFY: accepts count boundary 99",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-SECTION-MODIFY",
+          "digest": "sha256:d39296e86c35c16c859c4f1c4294a2df9b5edcd9304a505d7b4d5b985274a95b"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/library/domain.test.ts:18:Stable song structure SB-ANNOTATIONS: notes stay with owners through edits and reorder",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-ANNOTATIONS",
+          "digest": "sha256:e9f7eeba4ec89ac374cbbe880b1a4d2899ca92f1c6fd71231d9a664a94b8660f"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/library/domain.test.ts:19:Stable song structure SB-PERFORMANCE-REJECT: every content command refuses a direct performance call",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-PERFORMANCE-REJECT",
+          "digest": "sha256:392da1d92a3d7973d37b59e113edf537539262abe257dddd74b9a8eaf925b6d9"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/library/domain.test.ts:20:Stable song structure SB-CHORD-INVALID: rejects invalid root, quality and unexpected fields",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-CHORD-INVALID",
+          "digest": "sha256:cece725b540bd03418e078c052573403e8d91a0dec719a841cb8812b0128c51f"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/library/domain.test.ts:22:SB-CHORD-ASSIGN SB-CHORD-MODIFY: an ordered section sequence keeps its owner and unrelated chord entries",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-CHORD-ASSIGN",
+          "digest": "sha256:adbbe7a3f7aef1a2a289f8ee00870b0ce7ad8893343d70b3ca0f1d16c524423b"
+        },
+        {
+          "id": "SB-CHORD-MODIFY",
+          "digest": "sha256:22362c97fc63f3f2c09e70daf1b916611f624e2a27d7304ad1df7e35ee729d91"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/library/storage.test.ts:0:Atomic local persistence SB-PERSIST-RECOVER: a new connection recovers acknowledged identities and content",
+      "level": "integration",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-PERSIST-RECOVER",
+          "digest": "sha256:bdcc4abc19436e6b008b9d88047efe937f948e71d6c817e0c06209b3b498cd26"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/library/storage.test.ts:1:Atomic local persistence SB-PERSIST-CONFLICT: stale concurrent writes never replace the newer durable revision",
+      "level": "integration",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-PERSIST-CONFLICT",
+          "digest": "sha256:3a7fdc4b47da270a63bc50bf681af96793fb46a8283af9093b01d9959f026b37"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/library/storage.test.ts:2:Atomic local persistence SB-PERSIST-FAILURE: quota failure preserves the previous acknowledged library",
+      "level": "integration",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-PERSIST-FAILURE",
+          "digest": "sha256:31db2bb51e3c0495ac05dc1b53938c2de756eef9176e3ba747f6b877ee014357"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/library/storage.test.ts:3:Atomic local persistence SB-RECOVERY-INVALID: unsupported stored versions are preserved rather than reset",
+      "level": "integration",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-RECOVERY-INVALID",
+          "digest": "sha256:0ad0f1f37ef7919e9cbdc0708cc377af07901380f00504ed86d24617bc767ec5"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/library/storage.test.ts:4:Atomic local persistence SB-BACKUP-REJECT: invalid candidates cannot enter storage",
+      "level": "integration",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-BACKUP-REJECT",
+          "digest": "sha256:f6b3ca347fe8d7d709509474f84ae9b7d4ecfc01ac4a66c3af5de77c20784e5d"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/sketch/Piano.test.tsx:0:SB-KEYBOARD SB-CHORD-MODIFY: selected chord immediately changes actual highlighted keys",
+      "level": "component",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-KEYBOARD",
+          "digest": "sha256:da02de8f23d9eb7f43c0fb46ab22fd8ab4fab67d61dc38a453a6ba6894e0c8b8"
+        },
+        {
+          "id": "SB-CHORD-MODIFY",
+          "digest": "sha256:22362c97fc63f3f2c09e70daf1b916611f624e2a27d7304ad1df7e35ee729d91"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/sketch/chords.test.ts:0:Deterministic musical relationships SB-CHORD-ASSIGN SB-CHORD-MODIFY: C major/minor retain correct intervals and spelling",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-CHORD-ASSIGN",
+          "digest": "sha256:adbbe7a3f7aef1a2a289f8ee00870b0ce7ad8893343d70b3ca0f1d16c524423b"
+        },
+        {
+          "id": "SB-CHORD-MODIFY",
+          "digest": "sha256:22362c97fc63f3f2c09e70daf1b916611f624e2a27d7304ad1df7e35ee729d91"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/sketch/chords.test.ts:1:Deterministic musical relationships SB-CHORD-ASSIGN SB-CHORD-MODIFY: C# major/minor retain correct intervals and spelling",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-CHORD-ASSIGN",
+          "digest": "sha256:adbbe7a3f7aef1a2a289f8ee00870b0ce7ad8893343d70b3ca0f1d16c524423b"
+        },
+        {
+          "id": "SB-CHORD-MODIFY",
+          "digest": "sha256:22362c97fc63f3f2c09e70daf1b916611f624e2a27d7304ad1df7e35ee729d91"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/sketch/chords.test.ts:2:Deterministic musical relationships SB-CHORD-ASSIGN SB-CHORD-MODIFY: Db major/minor retain correct intervals and spelling",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-CHORD-ASSIGN",
+          "digest": "sha256:adbbe7a3f7aef1a2a289f8ee00870b0ce7ad8893343d70b3ca0f1d16c524423b"
+        },
+        {
+          "id": "SB-CHORD-MODIFY",
+          "digest": "sha256:22362c97fc63f3f2c09e70daf1b916611f624e2a27d7304ad1df7e35ee729d91"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/sketch/chords.test.ts:3:Deterministic musical relationships SB-CHORD-ASSIGN SB-CHORD-MODIFY: D major/minor retain correct intervals and spelling",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-CHORD-ASSIGN",
+          "digest": "sha256:adbbe7a3f7aef1a2a289f8ee00870b0ce7ad8893343d70b3ca0f1d16c524423b"
+        },
+        {
+          "id": "SB-CHORD-MODIFY",
+          "digest": "sha256:22362c97fc63f3f2c09e70daf1b916611f624e2a27d7304ad1df7e35ee729d91"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/sketch/chords.test.ts:4:Deterministic musical relationships SB-CHORD-ASSIGN SB-CHORD-MODIFY: D# major/minor retain correct intervals and spelling",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-CHORD-ASSIGN",
+          "digest": "sha256:adbbe7a3f7aef1a2a289f8ee00870b0ce7ad8893343d70b3ca0f1d16c524423b"
+        },
+        {
+          "id": "SB-CHORD-MODIFY",
+          "digest": "sha256:22362c97fc63f3f2c09e70daf1b916611f624e2a27d7304ad1df7e35ee729d91"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/sketch/chords.test.ts:5:Deterministic musical relationships SB-CHORD-ASSIGN SB-CHORD-MODIFY: Eb major/minor retain correct intervals and spelling",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-CHORD-ASSIGN",
+          "digest": "sha256:adbbe7a3f7aef1a2a289f8ee00870b0ce7ad8893343d70b3ca0f1d16c524423b"
+        },
+        {
+          "id": "SB-CHORD-MODIFY",
+          "digest": "sha256:22362c97fc63f3f2c09e70daf1b916611f624e2a27d7304ad1df7e35ee729d91"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/sketch/chords.test.ts:6:Deterministic musical relationships SB-CHORD-ASSIGN SB-CHORD-MODIFY: E major/minor retain correct intervals and spelling",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-CHORD-ASSIGN",
+          "digest": "sha256:adbbe7a3f7aef1a2a289f8ee00870b0ce7ad8893343d70b3ca0f1d16c524423b"
+        },
+        {
+          "id": "SB-CHORD-MODIFY",
+          "digest": "sha256:22362c97fc63f3f2c09e70daf1b916611f624e2a27d7304ad1df7e35ee729d91"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/sketch/chords.test.ts:7:Deterministic musical relationships SB-CHORD-ASSIGN SB-CHORD-MODIFY: Fb major/minor retain correct intervals and spelling",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-CHORD-ASSIGN",
+          "digest": "sha256:adbbe7a3f7aef1a2a289f8ee00870b0ce7ad8893343d70b3ca0f1d16c524423b"
+        },
+        {
+          "id": "SB-CHORD-MODIFY",
+          "digest": "sha256:22362c97fc63f3f2c09e70daf1b916611f624e2a27d7304ad1df7e35ee729d91"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/sketch/chords.test.ts:8:Deterministic musical relationships SB-CHORD-ASSIGN SB-CHORD-MODIFY: E# major/minor retain correct intervals and spelling",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-CHORD-ASSIGN",
+          "digest": "sha256:adbbe7a3f7aef1a2a289f8ee00870b0ce7ad8893343d70b3ca0f1d16c524423b"
+        },
+        {
+          "id": "SB-CHORD-MODIFY",
+          "digest": "sha256:22362c97fc63f3f2c09e70daf1b916611f624e2a27d7304ad1df7e35ee729d91"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/sketch/chords.test.ts:9:Deterministic musical relationships SB-CHORD-ASSIGN SB-CHORD-MODIFY: F major/minor retain correct intervals and spelling",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-CHORD-ASSIGN",
+          "digest": "sha256:adbbe7a3f7aef1a2a289f8ee00870b0ce7ad8893343d70b3ca0f1d16c524423b"
+        },
+        {
+          "id": "SB-CHORD-MODIFY",
+          "digest": "sha256:22362c97fc63f3f2c09e70daf1b916611f624e2a27d7304ad1df7e35ee729d91"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/sketch/chords.test.ts:10:Deterministic musical relationships SB-CHORD-ASSIGN SB-CHORD-MODIFY: F# major/minor retain correct intervals and spelling",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-CHORD-ASSIGN",
+          "digest": "sha256:adbbe7a3f7aef1a2a289f8ee00870b0ce7ad8893343d70b3ca0f1d16c524423b"
+        },
+        {
+          "id": "SB-CHORD-MODIFY",
+          "digest": "sha256:22362c97fc63f3f2c09e70daf1b916611f624e2a27d7304ad1df7e35ee729d91"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/sketch/chords.test.ts:11:Deterministic musical relationships SB-CHORD-ASSIGN SB-CHORD-MODIFY: Gb major/minor retain correct intervals and spelling",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-CHORD-ASSIGN",
+          "digest": "sha256:adbbe7a3f7aef1a2a289f8ee00870b0ce7ad8893343d70b3ca0f1d16c524423b"
+        },
+        {
+          "id": "SB-CHORD-MODIFY",
+          "digest": "sha256:22362c97fc63f3f2c09e70daf1b916611f624e2a27d7304ad1df7e35ee729d91"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/sketch/chords.test.ts:12:Deterministic musical relationships SB-CHORD-ASSIGN SB-CHORD-MODIFY: G major/minor retain correct intervals and spelling",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-CHORD-ASSIGN",
+          "digest": "sha256:adbbe7a3f7aef1a2a289f8ee00870b0ce7ad8893343d70b3ca0f1d16c524423b"
+        },
+        {
+          "id": "SB-CHORD-MODIFY",
+          "digest": "sha256:22362c97fc63f3f2c09e70daf1b916611f624e2a27d7304ad1df7e35ee729d91"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/sketch/chords.test.ts:13:Deterministic musical relationships SB-CHORD-ASSIGN SB-CHORD-MODIFY: G# major/minor retain correct intervals and spelling",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-CHORD-ASSIGN",
+          "digest": "sha256:adbbe7a3f7aef1a2a289f8ee00870b0ce7ad8893343d70b3ca0f1d16c524423b"
+        },
+        {
+          "id": "SB-CHORD-MODIFY",
+          "digest": "sha256:22362c97fc63f3f2c09e70daf1b916611f624e2a27d7304ad1df7e35ee729d91"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/sketch/chords.test.ts:14:Deterministic musical relationships SB-CHORD-ASSIGN SB-CHORD-MODIFY: Ab major/minor retain correct intervals and spelling",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-CHORD-ASSIGN",
+          "digest": "sha256:adbbe7a3f7aef1a2a289f8ee00870b0ce7ad8893343d70b3ca0f1d16c524423b"
+        },
+        {
+          "id": "SB-CHORD-MODIFY",
+          "digest": "sha256:22362c97fc63f3f2c09e70daf1b916611f624e2a27d7304ad1df7e35ee729d91"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/sketch/chords.test.ts:15:Deterministic musical relationships SB-CHORD-ASSIGN SB-CHORD-MODIFY: A major/minor retain correct intervals and spelling",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-CHORD-ASSIGN",
+          "digest": "sha256:adbbe7a3f7aef1a2a289f8ee00870b0ce7ad8893343d70b3ca0f1d16c524423b"
+        },
+        {
+          "id": "SB-CHORD-MODIFY",
+          "digest": "sha256:22362c97fc63f3f2c09e70daf1b916611f624e2a27d7304ad1df7e35ee729d91"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/sketch/chords.test.ts:16:Deterministic musical relationships SB-CHORD-ASSIGN SB-CHORD-MODIFY: A# major/minor retain correct intervals and spelling",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-CHORD-ASSIGN",
+          "digest": "sha256:adbbe7a3f7aef1a2a289f8ee00870b0ce7ad8893343d70b3ca0f1d16c524423b"
+        },
+        {
+          "id": "SB-CHORD-MODIFY",
+          "digest": "sha256:22362c97fc63f3f2c09e70daf1b916611f624e2a27d7304ad1df7e35ee729d91"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/sketch/chords.test.ts:17:Deterministic musical relationships SB-CHORD-ASSIGN SB-CHORD-MODIFY: Bb major/minor retain correct intervals and spelling",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-CHORD-ASSIGN",
+          "digest": "sha256:adbbe7a3f7aef1a2a289f8ee00870b0ce7ad8893343d70b3ca0f1d16c524423b"
+        },
+        {
+          "id": "SB-CHORD-MODIFY",
+          "digest": "sha256:22362c97fc63f3f2c09e70daf1b916611f624e2a27d7304ad1df7e35ee729d91"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/sketch/chords.test.ts:18:Deterministic musical relationships SB-CHORD-ASSIGN SB-CHORD-MODIFY: B major/minor retain correct intervals and spelling",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-CHORD-ASSIGN",
+          "digest": "sha256:adbbe7a3f7aef1a2a289f8ee00870b0ce7ad8893343d70b3ca0f1d16c524423b"
+        },
+        {
+          "id": "SB-CHORD-MODIFY",
+          "digest": "sha256:22362c97fc63f3f2c09e70daf1b916611f624e2a27d7304ad1df7e35ee729d91"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/sketch/chords.test.ts:19:Deterministic musical relationships SB-CHORD-ASSIGN SB-CHORD-MODIFY: Cb major/minor retain correct intervals and spelling",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-CHORD-ASSIGN",
+          "digest": "sha256:adbbe7a3f7aef1a2a289f8ee00870b0ce7ad8893343d70b3ca0f1d16c524423b"
+        },
+        {
+          "id": "SB-CHORD-MODIFY",
+          "digest": "sha256:22362c97fc63f3f2c09e70daf1b916611f624e2a27d7304ad1df7e35ee729d91"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/sketch/chords.test.ts:20:Deterministic musical relationships SB-CHORD-ASSIGN SB-CHORD-MODIFY: B# major/minor retain correct intervals and spelling",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-CHORD-ASSIGN",
+          "digest": "sha256:adbbe7a3f7aef1a2a289f8ee00870b0ce7ad8893343d70b3ca0f1d16c524423b"
+        },
+        {
+          "id": "SB-CHORD-MODIFY",
+          "digest": "sha256:22362c97fc63f3f2c09e70daf1b916611f624e2a27d7304ad1df7e35ee729d91"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/sketch/chords.test.ts:21:Deterministic musical relationships SB-CHORD-INVALID: rejects root \"H\"",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-CHORD-INVALID",
+          "digest": "sha256:cece725b540bd03418e078c052573403e8d91a0dec719a841cb8812b0128c51f"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/sketch/chords.test.ts:22:Deterministic musical relationships SB-CHORD-INVALID: rejects root \"c\"",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-CHORD-INVALID",
+          "digest": "sha256:cece725b540bd03418e078c052573403e8d91a0dec719a841cb8812b0128c51f"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/sketch/chords.test.ts:23:Deterministic musical relationships SB-CHORD-INVALID: rejects root \"C##\"",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-CHORD-INVALID",
+          "digest": "sha256:cece725b540bd03418e078c052573403e8d91a0dec719a841cb8812b0128c51f"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/sketch/chords.test.ts:24:Deterministic musical relationships SB-CHORD-INVALID: rejects root \"Dbb\"",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-CHORD-INVALID",
+          "digest": "sha256:cece725b540bd03418e078c052573403e8d91a0dec719a841cb8812b0128c51f"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/sketch/chords.test.ts:25:Deterministic musical relationships SB-CHORD-INVALID: rejects root \"\"",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-CHORD-INVALID",
+          "digest": "sha256:cece725b540bd03418e078c052573403e8d91a0dec719a841cb8812b0128c51f"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/sketch/chords.test.ts:26:Deterministic musical relationships SB-CHORD-INVALID: rejects root \" C\"",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-CHORD-INVALID",
+          "digest": "sha256:cece725b540bd03418e078c052573403e8d91a0dec719a841cb8812b0128c51f"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/sketch/chords.test.ts:27:Deterministic musical relationships SB-KEYBOARD: real white/black geometry and MIDI octave relationships",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-KEYBOARD",
+          "digest": "sha256:da02de8f23d9eb7f43c0fb46ab22fd8ab4fab67d61dc38a453a6ba6894e0c8b8"
+        }
+      ]
+    },
+    {
+      "test-id": "vitest:tests/sketch/chords.test.ts:28:Deterministic musical relationships SB-KEYBOARD: notes wrap pitch class, never octave labels",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-KEYBOARD",
+          "digest": "sha256:da02de8f23d9eb7f43c0fb46ab22fd8ab4fab67d61dc38a453a6ba6894e0c8b8"
+        }
+      ]
+    },
+    {
+      "test-id": "playwright:tablet-chromium:SB-BACKUP-EXPORT SB-BACKUP-IMPORT SB-BACKUP-CANCEL SB-PERSIST-RECOVER: actual file download, cancellation, confirmed replacement and reload",
+      "level": "end-to-end",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-BACKUP-EXPORT",
+          "digest": "sha256:4dc53a109e0e344b95c117d7a429c92b3b54d4ce8856cf00104b501d13f86237"
+        },
+        {
+          "id": "SB-BACKUP-IMPORT",
+          "digest": "sha256:a91c468115f1a66e2222f71eb936d54052e1959dfe93867da92c93476ac28d3e"
+        },
+        {
+          "id": "SB-BACKUP-CANCEL",
+          "digest": "sha256:a1b39939e1798f96a3d4d4a6d0eea6f09ba4156293d49b05ae692953a1975806"
+        },
+        {
+          "id": "SB-PERSIST-RECOVER",
+          "digest": "sha256:bdcc4abc19436e6b008b9d88047efe937f948e71d6c817e0c06209b3b498cd26"
+        }
+      ]
+    },
+    {
+      "test-id": "playwright:tablet-chromium:SB-BACKUP-REJECT: invalid import preserves acknowledged local data",
+      "level": "end-to-end",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-BACKUP-REJECT",
+          "digest": "sha256:f6b3ca347fe8d7d709509474f84ae9b7d4ecfc01ac4a66c3af5de77c20784e5d"
+        }
+      ]
+    },
+    {
+      "test-id": "playwright:tablet-chromium:SB-REPERTOIRE-CREATE SB-REPERTOIRE-RENAME SB-REPERTOIRE-DELETE SB-MEMBERSHIP-REMOVE: repertoire deletion preserves independent songs",
+      "level": "end-to-end",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-REPERTOIRE-CREATE",
+          "digest": "sha256:37922d0d79d173763965250a8b5fa744c0f62775ba78c6c3ae7e4e0db182d86a"
+        },
+        {
+          "id": "SB-REPERTOIRE-RENAME",
+          "digest": "sha256:96865538af194f8c287f62e4dc44e4341fab5700fb7f306801b1411f2e9a27ba"
+        },
+        {
+          "id": "SB-REPERTOIRE-DELETE",
+          "digest": "sha256:3203bf7d104b07abed94f2f2beb00b92f33eead1e90981e88f123fe3aeda62c6"
+        },
+        {
+          "id": "SB-MEMBERSHIP-REMOVE",
+          "digest": "sha256:76ff8dfb68346d6bcaa2716da66062cd284902f6bdf5003a77538132041bd71c"
+        }
+      ]
+    },
+    {
+      "test-id": "playwright:tablet-chromium:SB-OFFLINE: production application reloads, edits, saves and recovers without a network",
+      "level": "end-to-end",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-OFFLINE",
+          "digest": "sha256:40eef81b2f397f73f52df9d8a0892f678edfdbaeea5a485d6a16003086a24a26"
+        }
+      ]
+    },
+    {
+      "test-id": "playwright:tablet-chromium:SB-SECTION-REORDER SB-ANNOTATIONS SB-PERFORMANCE SB-PERFORMANCE-REJECT SB-KEYBOARD: prepare, reorder, consult and retain exact content",
+      "level": "end-to-end",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-SECTION-REORDER",
+          "digest": "sha256:610413c7eae977e5760aa413f58ec499375fdafe0952dca8cbc7591cbda639e5"
+        },
+        {
+          "id": "SB-ANNOTATIONS",
+          "digest": "sha256:e9f7eeba4ec89ac374cbbe880b1a4d2899ca92f1c6fd71231d9a664a94b8660f"
+        },
+        {
+          "id": "SB-PERFORMANCE",
+          "digest": "sha256:c004c86080428dd85d0c3b42ce24be640955fc52f3d9245f05db6e90e6344355"
+        },
+        {
+          "id": "SB-PERFORMANCE-REJECT",
+          "digest": "sha256:392da1d92a3d7973d37b59e113edf537539262abe257dddd74b9a8eaf925b6d9"
+        },
+        {
+          "id": "SB-KEYBOARD",
+          "digest": "sha256:da02de8f23d9eb7f43c0fb46ab22fd8ab4fab67d61dc38a453a6ba6894e0c8b8"
+        }
+      ]
+    },
+    {
+      "test-id": "playwright:tablet-chromium:SB-CHORD-MODIFY: changing a chord updates real keyboard notes immediately",
+      "level": "end-to-end",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-CHORD-MODIFY",
+          "digest": "sha256:22362c97fc63f3f2c09e70daf1b916611f624e2a27d7304ad1df7e35ee729d91"
+        }
+      ]
+    },
+    {
+      "test-id": "playwright:tablet-chromium:SB-REFERENCE SB-ANNOTATIONS: opening a reference keeps pending local work and escapes personal text",
+      "level": "end-to-end",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-REFERENCE",
+          "digest": "sha256:e203d2c8d8a82bebe478f129a51a6c3fa3ff35dedd53060a161c58d144e329c1"
+        },
+        {
+          "id": "SB-ANNOTATIONS",
+          "digest": "sha256:e9f7eeba4ec89ac374cbbe880b1a4d2899ca92f1c6fd71231d9a664a94b8660f"
+        }
+      ]
+    },
+    {
+      "test-id": "playwright:tablet-chromium:SB-OFFLINE SB-PERSIST-RECOVER: two production revisions wait for deliberate activation and preserve data offline",
+      "level": "end-to-end",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-OFFLINE",
+          "digest": "sha256:40eef81b2f397f73f52df9d8a0892f678edfdbaeea5a485d6a16003086a24a26"
+        },
+        {
+          "id": "SB-PERSIST-RECOVER",
+          "digest": "sha256:bdcc4abc19436e6b008b9d88047efe937f948e71d6c817e0c06209b3b498cd26"
+        }
+      ]
+    },
+    {
+      "test-id": "playwright:android-phone:SB-OFFLINE SB-PERFORMANCE: Android phone touch editing and offline consultation retain music",
+      "level": "end-to-end",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-OFFLINE",
+          "digest": "sha256:40eef81b2f397f73f52df9d8a0892f678edfdbaeea5a485d6a16003086a24a26"
+        },
+        {
+          "id": "SB-PERFORMANCE",
+          "digest": "sha256:c004c86080428dd85d0c3b42ce24be640955fc52f3d9245f05db6e90e6344355"
+        }
+      ]
+    },
+    {
+      "test-id": "deferred:issue-13:SB-PDF-ATTACH",
+      "level": "end-to-end",
+      "outcome": "inconclusive",
+      "citations": [
+        {
+          "id": "SB-PDF-ATTACH",
+          "digest": "sha256:bb0ae4e82407c6d62f96564db7644e8d0d8684bc8f3e8a7166570e3ea4210ce5"
+        }
+      ]
+    },
+    {
+      "test-id": "deferred:issue-13:SB-PDF-NAVIGATE",
+      "level": "end-to-end",
+      "outcome": "inconclusive",
+      "citations": [
+        {
+          "id": "SB-PDF-NAVIGATE",
+          "digest": "sha256:36fae57b85fc19e0eed3766456b219721211ad4dd5c7123da9e7bdc357122234"
+        }
+      ]
+    },
+    {
+      "test-id": "deferred:issue-13:SB-PDF-REJECT",
+      "level": "end-to-end",
+      "outcome": "inconclusive",
+      "citations": [
+        {
+          "id": "SB-PDF-REJECT",
+          "digest": "sha256:ad3173b24391233d5316ae7d2f1dece023d35efcf0e3f7931e521839dd41a73d"
+        }
+      ]
+    }
+  ]
+}
