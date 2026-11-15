@@ -1,0 +1,310 @@
+{
+  "envelope": {
+    "schemaVersion": 1,
+    "result": {
+      "schemaVersion": 1,
+      "runId": "d529e75029bf92b28e12821d8a4b95a4f62a5b253fdd3556449e2b145d334fdb",
+      "stage": "integrate",
+      "gate": "done",
+      "status": "passed",
+      "evidence": [],
+      "missingEvidence": [],
+      "unavailableChecks": [],
+      "pendingReview": [],
+      "output": {
+        "review": {
+          "binding": "7505b30d4730e28f550972fd8dd35d49f5cf73fc81c0773d743f41074861a330",
+          "verdict": "accept",
+          "findings": []
+        }
+      },
+      "nextAction": "Return to the trusted host for the remaining delivery gates."
+    },
+    "effect": {
+      "type": "issue-comment",
+      "body": "Independent review accepted the supplied binding; subsequent host gates remain required."
+    }
+  },
+  "runtime": {
+    "package": {
+      "name": "@juangcarmona/lighthouse-sdlc",
+      "version": "0.24.0"
+    },
+    "harnessRevision": null,
+    "distribution": {
+      "type": "package",
+      "integrity": "sha512-Z/kenqQit6ZtPf6AmKOinZKeD2FY3+6lm0UHAp41jYjHetMbdjgM7RCLhpmnxcrGS2Sm4l5pTSEWsEAdGOyplg=="
+    },
+    "image": "sha256:aff7d94b27c5c87f22720a8a99b5dd1f0719d9444d5f777d68276942497b5909",
+    "limits": {
+      "cpus": 2,
+      "memory": "2g",
+      "pids": 128
+    },
+    "environment": null,
+    "model": "openai/gpt-6.1-sol",
+    "modelExecution": {
+      "requested": {
+        "profile": "plan",
+        "model": "openai/gpt-6.1-sol",
+        "reasoningEffort": "high"
+      },
+      "resolved": {
+        "mode": "profile",
+        "profile": "plan",
+        "model": "openai/gpt-6.1-sol",
+        "reasoningEffort": "high",
+        "engineModel": "openai/gpt-6.1-sol#high",
+        "source": "task.profile",
+        "fields": {
+          "model": "operator",
+          "reasoningEffort": "operator"
+        },
+        "capabilityEvidence": "operator-configuration-only"
+      },
+      "providerReported": {
+        "model": null,
+        "reasoningEffort": null,
+        "status": "unverified",
+        "reason": "The current adapter has no authenticated provider-settings receipt"
+      },
+      "billing": {
+        "route": "unchanged",
+        "actualCost": null,
+        "estimatedApiEquivalentCost": null,
+        "subscriptionUsage": null
+      }
+    },
+    "engine": "OpenCode 2.1.0",
+    "isolation": "Docker; no AWF egress filtering",
+    "skills": [
+      "audience-guidance",
+      "browser-e2e",
+      "concise-results",
+      "implement",
+      "independent-review",
+      "integrate",
+      "product-change",
+      "propose",
+      "refine",
+      "review",
+      "triage"
+    ],
+    "sourceRevision": "843b091de7055d1e4444b1831f44fce5c45c07d8",
+    "seed": null,
+    "seedDigest": null,
+    "phases": {
+      "preflight": "passed",
+      "execution": "passed",
+      "evidence": "passed",
+      "completion": "passed"
+    },
+    "recoveredCleanup": [
+      {
+        "schemaVersion": 1,
+        "identity": {
+          "repository": "juangcarmona/scoremap",
+          "runId": "7c00171d539c13e0b13336d4864829238b8cf74e30feb19f8c1dc6143d7cce86",
+          "workflowRunId": "0",
+          "attempt": 1
+        },
+        "owner": "8bd368f3ab90a14dc245e7c7f8acc7d3d67978555ee09efe6b138b5e75ab0bb5",
+        "observedAt": "2026-11-15T11:48:36.981Z",
+        "status": "clean",
+        "resources": [
+          {
+            "type": "container",
+            "name": "lighthouse-8bd368f3ab90a14dc245e7c7-helper-0",
+            "pending": false
+          },
+          {
+            "type": "container",
+            "name": "lighthouse-8bd368f3ab90a14dc245e7c7-helper-1",
+            "pending": false
+          },
+          {
+            "type": "container",
+            "name": "lighthouse-8bd368f3ab90a14dc245e7c7-helper-2",
+            "pending": false
+          },
+          {
+            "type": "container",
+            "name": "lighthouse-8bd368f3ab90a14dc245e7c7-helper-3",
+            "pending": false
+          }
+        ],
+        "remaining": [],
+        "removalErrors": 0
+      }
+    ],
+    "productEvidence": {
+      "provider": "@prodshape/core",
+      "version": "0.25.0",
+      "serializationVersion": "v1alpha2",
+      "baselineDigest": "73be71b44e521ee388a9ab3549db868a70298b010dd960ea7cfac6c2b131eac5",
+      "artifacts": 99,
+      "acceptedModelPath": "/workspace/docs/product/model",
+      "evidenceRoot": "/workspace/.lighthouse-product-evidence"
+    },
+    "codegraph": {
+      "status": "available",
+      "tools": [
+        "codegraph_symbol_search",
+        "codegraph_get_ai_context"
+      ]
+    },
+    "budget": {
+      "configuredMs": 600000,
+      "timeoutMs": 590967,
+      "startedAt": 1794743325455,
+      "deadline": 1794743916422
+    },
+    "execution": {
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "resources": {
+        "pidsLimit": 128,
+        "pidsPeak": 37,
+        "pidsDenied": 0,
+        "memoryPeakBytes": 375263232,
+        "oomKills": 0
+      },
+      "scratch": {
+        "npmCache": "released",
+        "beforeCommand": {
+          "capacityBytes": 2147483648,
+          "availableBytes": 2147483648
+        },
+        "beforeCleanup": {
+          "capacityBytes": 2147483648,
+          "availableBytes": 2128822272
+        },
+        "afterCleanup": {
+          "capacityBytes": 2147483648,
+          "availableBytes": 2128822272
+        }
+      }
+    },
+    "independentReview": {
+      "protocol": "verdict-v1",
+      "binding": "7505b30d4730e28f550972fd8dd35d49f5cf73fc81c0773d743f41074861a330",
+      "purpose": "candidate",
+      "sha256": "74b134e419e1736d140019da17153cbe83f3b66341d75601a453eb6663188c87"
+    },
+    "lastCommand": null,
+    "cleanup": {
+      "schemaVersion": 1,
+      "identity": {
+        "repository": "juangcarmona/scoremap",
+        "runId": "d529e75029bf92b28e12821d8a4b95a4f62a5b253fdd3556449e2b145d334fdb",
+        "workflowRunId": "0",
+        "attempt": 1
+      },
+      "owner": "e303d6e987341a0781e479e25a27f449b2baa2b7ab1517dfc9169fb9c69426ee",
+      "observedAt": "2026-11-15T11:52:01.040Z",
+      "status": "clean",
+      "resources": [
+        {
+          "type": "container",
+          "name": "lighthouse-e303d6e987341a0781e479e2-helper-0",
+          "pending": false
+        },
+        {
+          "type": "container",
+          "name": "lighthouse-e303d6e987341a0781e479e2-helper-1",
+          "pending": false
+        },
+        {
+          "type": "container",
+          "name": "lighthouse-e303d6e987341a0781e479e2-helper-2",
+          "pending": false
+        },
+        {
+          "type": "container",
+          "name": "lighthouse-e303d6e987341a0781e479e2-helper-3",
+          "pending": false
+        },
+        {
+          "type": "container",
+          "name": "lighthouse-e303d6e987341a0781e479e2-engine-codegraph",
+          "pending": false
+        },
+        {
+          "type": "container",
+          "name": "lighthouse-e303d6e987341a0781e479e2-helper-5",
+          "pending": false
+        },
+        {
+          "type": "container",
+          "name": "lighthouse-e303d6e987341a0781e479e2-engine",
+          "pending": false
+        },
+        {
+          "type": "container",
+          "name": "lighthouse-e303d6e987341a0781e479e2-helper-7",
+          "pending": false
+        },
+        {
+          "type": "container",
+          "name": "lighthouse-e303d6e987341a0781e479e2-helper-8",
+          "pending": false
+        },
+        {
+          "type": "container",
+          "name": "lighthouse-e303d6e987341a0781e479e2-helper-9",
+          "pending": false
+        }
+      ],
+      "remaining": [],
+      "removalErrors": 0
+    },
+    "workspaceCleanup": {
+      "status": "clean",
+      "retained": "/home/juan/.local/share/lighthouse-runtime/engine.lock.resources/retained/e303d6e987341a0781e479e25a27f449b2baa2b7ab1517dfc9169fb9c69426ee"
+    },
+    "telemetry": {
+      "schemaVersion": 1,
+      "stream": "48cb7a63-754d-40b8-a7ed-68284e6eb33d",
+      "component": "engine-adapter",
+      "packageVersion": "0.24.0",
+      "status": "degraded",
+      "active": false,
+      "written": 0,
+      "dropped": 480,
+      "bytes": 0,
+      "lastSequence": 0,
+      "lastObservedAt": null,
+      "retiredStreams": 0,
+      "errorCode": "RETENTION_CAPACITY",
+      "capabilities": {
+        "lifecycle": "host-observed",
+        "opencode": "native-2.1-plugin-with-cli-fallback",
+        "usage": "observed-with-coverage",
+        "resources": "linux-cgroup-v2-and-proc",
+        "billing": "unavailable",
+        "payloads": "disabled",
+        "transport": "ndjson-and-otlp-http-json-logs"
+      }
+    }
+  },
+  "request": {
+    "repository": "juangcarmona/scoremap",
+    "runId": "d529e75029bf92b28e12821d8a4b95a4f62a5b253fdd3556449e2b145d334fdb",
+    "issue": 1,
+    "stage": "integrate",
+    "worker": "independent-review",
+    "sourceRevision": "843b091de7055d1e4444b1831f44fce5c45c07d8",
+    "workflowRunId": "0",
+    "attempt": 1,
+    "taskDigest": "7505b30d4730e28f550972fd8dd35d49f5cf73fc81c0773d743f41074861a330",
+    "reviewOutput": {
+      "protocol": "verdict-v1",
+      "binding": "7505b30d4730e28f550972fd8dd35d49f5cf73fc81c0773d743f41074861a330",
+      "purpose": "candidate"
+    }
+  },
+  "changes": [],
+  "receipt": null,
+  "source": {}
+}
