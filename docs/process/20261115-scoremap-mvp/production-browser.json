@@ -1,0 +1,19 @@
+{
+  "url": "https://scoremap.pages.dev",
+  "expectedRevision": "517c4b14ae3b97522c08c0a0b9246fe00117adda",
+  "startedAt": "2026-11-15T11:58:46.695Z",
+  "execution": "Playwright Chromium; isolated tablet-sized touch context; no physical Android device",
+  "steps": [
+    "HTTPS application returns 200",
+    "Create song, section, Db minor chord and personal note",
+    "Actual backup download and replacement reset displayed song/section drafts without reloading",
+    "Active service worker and Chromium installability without errors",
+    "Network disabled: reload, recover, edit, commit, reload and read-only performance with piano"
+  ],
+  "pageErrors": [],
+  "installability": {
+    "installabilityErrors": []
+  },
+  "status": "passed",
+  "endedAt": "2026-11-15T11:58:48.690Z"
+}
