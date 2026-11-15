@@ -13,7 +13,9 @@ export class LibrarySession {
   durableRevision = 0;
   error = "";
   pending = 0;
-  whenIdle() { return this.queue; }
+  whenIdle() {
+    return this.queue;
+  }
   private queue: Promise<unknown> = Promise.resolve();
   constructor(
     private store: LibraryStore,
@@ -31,7 +33,10 @@ export class LibrarySession {
   private schedule(work: () => Promise<void>) {
     this.pending += 1;
     this.changed();
-    const next = this.queue.then(work).finally(() => { this.pending -= 1; this.changed(); });
+    const next = this.queue.then(work).finally(() => {
+      this.pending -= 1;
+      this.changed();
+    });
     this.queue = next.catch(() => undefined);
     return next;
   }

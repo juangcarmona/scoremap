@@ -321,6 +321,10 @@ export function applyCommand(
     case "reorderSections": {
       const map = new Map(song!.sections.map((s) => [s.id, s]));
       requireValue(
+        map.size >= 2,
+        "At least two sections are needed to reorder a song.",
+      );
+      requireValue(
         command.order.length === map.size &&
           new Set(command.order).size === map.size &&
           command.order.every((id) => map.has(id)),

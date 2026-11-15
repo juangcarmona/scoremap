@@ -34,14 +34,16 @@ export function Piano({ chord }: { chord: Chord }) {
                     rx="2"
                     className={`${black ? "black-key" : "white-key"}${notes.has(key.pitchClass) ? " highlighted" : ""}`}
                   />
-                  <text
-                    x={(key.x + key.width / 2) * 100}
-                    y={black ? 190 : 325}
-                    textAnchor="middle"
-                    className={`${black ? "black-label" : "white-label"}${notes.has(key.pitchClass) ? " highlighted-label" : ""}`}
-                  >
-                    {key.name}
-                  </text>
+                  {key.pitchClass === 0 && (
+                    <text
+                      x={(key.x + key.width / 2) * 100}
+                      y={black ? 190 : 325}
+                      textAnchor="middle"
+                      className={`${black ? "black-label" : "white-label"}${notes.has(key.pitchClass) ? " highlighted-label" : ""}`}
+                    >
+                      {key.name}
+                    </text>
+                  )}
                 </g>
               ))}
           </g>

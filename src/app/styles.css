@@ -1,9 +1,783 @@
+:root {
+  --lh-canvas: #121822;
+  --lh-surface: #1a2330;
+  --lh-surface-raised: #222e3d;
+  --lh-text: #f3f0e8;
+  --lh-text-muted: #b2bdca;
+  --lh-border: #405069;
+  --lh-action: #aac3ff;
+  --lh-focus: #ffdd8b;
+  --lh-key-white: #f3f0e8;
+  --lh-key-black: #151d28;
+  --lh-key-ink: #121822;
+  --lh-key-mark: #244f9c;
+  --lh-key-mark-text: #ffffff;
+  --lh-danger-text: #ffb5b5;
+  --lh-error-surface: #40252b;
+  --lh-control-radius: 3px;
+  color-scheme: dark;
+  font-size: 16px;
+}
+* {
+  box-sizing: border-box;
+}
 body {
   margin: 0;
   color: var(--lh-text);
   background: var(--lh-canvas);
-  font-family: var(--lh-font-sans);
+  font-family: var(--lh-font-sans, system-ui, sans-serif);
+  line-height: 1.5;
 }
-main {
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+button,
+input,
+select {
+  min-height: 48px;
+}
+button {
+  border: 1px solid var(--lh-border);
+  border-radius: var(--lh-control-radius);
+  background: var(--lh-surface);
+  color: var(--lh-text);
+  padding: 0.55rem 0.8rem;
+  cursor: pointer;
+}
+button:hover {
+  background: var(--lh-surface-raised);
+}
+button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible,
+a:focus-visible {
+  outline: 3px solid var(--lh-focus);
+  outline-offset: 3px;
+}
+a {
+  color: var(--lh-action);
+  overflow-wrap: anywhere;
+}
+input,
+select,
+textarea {
+  width: 100%;
+  border: 1px solid var(--lh-border);
+  border-radius: var(--lh-control-radius);
+  color: var(--lh-text);
+  background: var(--lh-canvas);
+  padding: 0.6rem;
+  min-width: 0;
+}
+textarea {
+  min-height: 86px;
+  resize: vertical;
+}
+label {
+  display: grid;
+  gap: 0.3rem;
+  color: var(--lh-text-muted);
+  font-size: 0.875rem;
+  min-width: 0;
+}
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
+.primary {
+  background: var(--lh-action);
+  border-color: var(--lh-action);
+  color: var(--lh-key-ink);
+  font-weight: 700;
+}
+.primary:hover {
+  background: var(--lh-text);
+}
+.muted,
+.artist {
+  color: var(--lh-text-muted);
+}
+.app-header {
+  min-height: 92px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--lh-border);
+}
+.brand h1 {
+  font-size: 1.55rem;
+  letter-spacing: -0.05em;
+  margin: 0;
+}
+.brand-mark {
+  color: var(--lh-action);
+  margin-left: 0.5rem;
+  font-size: 1.3rem;
+}
+.brand p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--lh-text-muted);
+}
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.save-state {
+  font-size: 0.8rem;
+  color: var(--lh-text-muted);
+}
+.mode-button {
+  border-color: var(--lh-action);
+  font-weight: 700;
+}
+.performing .mode-button {
+  background: var(--lh-action);
+  color: var(--lh-key-ink);
+}
+.library-toggle {
+  display: none;
+}
+.workspace {
+  display: grid;
+  grid-template-columns: 270px minmax(0, 1fr);
+  min-height: calc(100vh - 92px);
+}
+.library {
+  padding: 1.2rem 1rem;
+  background: var(--lh-surface);
+  border-right: 1px solid var(--lh-border);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+}
+.library h2 {
+  font-size: 0.875rem;
+  margin: 0;
+  font-weight: 600;
+}
+.library-heading,
+.song-list-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.small-button {
+  padding: 0.4rem 0.55rem;
+  font-size: 0.75rem;
+}
+.library nav {
+  display: grid;
+  gap: 0.25rem;
+}
+.library nav button {
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  border-color: transparent;
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+}
+.library nav button.active {
+  border-left: 3px solid var(--lh-action);
+  background: var(--lh-canvas);
+}
+.library nav button span {
+  color: var(--lh-text-muted);
+  font-size: 0.8rem;
+}
+.repertoire-row {
+  display: flex;
+  min-width: 0;
+}
+.library nav .rename-repertoire {
+  width: 48px;
+  flex: 0 0 48px;
+  justify-content: center;
+}
+.song-list-heading {
+  padding-top: 1rem;
+  border-top: 1px solid var(--lh-border);
+}
+.song-list-heading h2 {
+  overflow-wrap: anywhere;
+}
+.song-list-heading button {
+  font-size: 0.8rem;
+}
+.song-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+.song-list button {
+  display: grid;
+  width: 100%;
+  text-align: left;
+  padding: 0.75rem;
+  min-height: 64px;
+  overflow-wrap: anywhere;
+}
+.song-list button[aria-current] {
+  border-color: var(--lh-action);
+  background: var(--lh-canvas);
+}
+.song-list button span {
+  color: var(--lh-text-muted);
+  font-size: 0.8rem;
+}
+.library-empty {
+  font-size: 0.875rem;
+}
+.library-footer {
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid var(--lh-border);
+  display: grid;
+  gap: 0.5rem;
+}
+.library-footer p {
+  color: var(--lh-text-muted);
+  font-size: 0.75rem;
+  margin: 0.3rem 0 0;
+}
+.danger-link {
+  color: var(--lh-danger-text);
+  background: transparent;
+}
+.song-workspace {
+  min-width: 0;
+  padding: 1.75rem 2rem 3rem;
+}
+.song-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--lh-border);
+}
+.song-header h2 {
+  font-size: clamp(1.8rem, 3vw, 3rem);
+  letter-spacing: -0.04em;
+  line-height: 1.15;
+  margin: 0 0 0.5rem;
+  overflow-wrap: anywhere;
+}
+.eyebrow {
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  color: var(--lh-action);
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+.artist {
+  margin-bottom: 0;
+}
+.song-menu {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.song-menu form {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+.song-menu button {
+  font-size: 0.8rem;
+}
+.sketch-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 1.5rem;
+  padding-top: 1.25rem;
+}
+.structure,
+.chord-reference {
+  min-width: 0;
+}
+.sketch-caption {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--lh-text-muted);
+  padding-bottom: 1rem;
+}
+.sketch-caption h2,
+.chord-reference h2 {
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  font-weight: 600;
+  margin: 0;
+}
+.sketch-caption span {
+  font-size: 0.75rem;
+}
+.section-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+}
+.section {
+  background: var(--lh-surface);
+  border: 1px solid var(--lh-border);
+  border-left: 3px solid var(--lh-action);
+  padding: 1rem;
+}
+.section header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.section-heading {
+  display: flex;
+  gap: 0.65rem;
+  align-items: center;
+  min-width: 0;
+}
+.section-number {
+  font-size: 0.75rem;
+  color: var(--lh-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.section h3 {
+  font-size: 1.25rem;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.repeat {
+  color: var(--lh-action);
+  border-left: 1px solid var(--lh-border);
+  padding-left: 0.65rem;
+  font-weight: 600;
+}
+.section-actions {
+  display: flex;
+  gap: 0.3rem;
+}
+.section-actions button {
+  font-size: 0.75rem;
+  padding: 0.35rem 0.55rem;
+}
+.section-actions button:first-child,
+.section-actions button:nth-child(2) {
+  min-width: 48px;
+}
+.chord-sequence {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  padding-top: 1.2rem;
+  align-items: center;
+}
+.chord-sequence button {
+  font-size: 1.5rem;
+  font-weight: 650;
+  min-width: 72px;
+  min-height: 64px;
+  border-color: var(--lh-border);
+  background: var(--lh-canvas);
+}
+.chord-sequence button[aria-pressed="true"] {
+  color: var(--lh-key-ink);
+  background: var(--lh-action);
+  border-color: var(--lh-action);
+}
+.chord-sequence .muted {
+  font-size: 0.8rem;
+}
+.section-note {
+  font-size: 1rem;
+  white-space: pre-wrap;
+  margin: 1rem 0 0;
+  color: var(--lh-text);
+  overflow-wrap: anywhere;
+}
+.section-edit,
+.song-details {
+  margin-top: 1rem;
+  border-top: 1px solid var(--lh-border);
+  padding-top: 0.35rem;
+}
+summary {
+  cursor: pointer;
+  color: var(--lh-action);
+  min-height: 48px;
+  display: list-item;
+  padding: 0.7rem 0.2rem;
+  font-size: 0.875rem;
+}
+.section-metadata,
+.song-details form,
+.references form {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+.section-metadata label,
+.song-details label,
+.references label {
+  flex: 1 1 140px;
+}
+.section-metadata label:nth-child(2) {
+  flex: 0 1 100px;
+}
+.chord-editor {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin: 1rem 0;
+}
+.chord-editor label {
+  flex: 1 1 110px;
+}
+.chord-editor button {
+  font-size: 0.8rem;
+}
+.add-section {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.2rem;
+}
+.add-section label {
+  flex: 1;
+}
+.song-note,
+.full-notes {
+  white-space: pre-wrap;
+  padding: 1rem;
+  border-left: 3px solid var(--lh-border);
+  background: var(--lh-surface);
+  overflow-wrap: anywhere;
+}
+.chord-reference {
+  border-left: 1px solid var(--lh-border);
+  padding-left: 1.5rem;
+  align-self: start;
+  position: sticky;
+  top: 1.25rem;
+}
+.piano {
+  margin: 1.5rem 0 0;
+}
+.piano figcaption {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding-bottom: 1rem;
+}
+.piano figcaption strong {
+  font-size: 2.7rem;
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+.piano figcaption span {
+  font-size: 0.8rem;
+  color: var(--lh-text-muted);
+}
+.piano svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+.white-key {
+  fill: var(--lh-key-white);
+  stroke: var(--lh-key-ink);
+  stroke-width: 2px;
+}
+.black-key {
+  fill: var(--lh-key-black);
+  stroke: var(--lh-key-white);
+  stroke-width: 1px;
+}
+.highlighted {
+  fill: var(--lh-key-mark);
+}
+.white-label {
+  fill: var(--lh-key-ink);
+  font-size: 24px;
+  font-weight: 600;
+}
+.black-label {
+  fill: var(--lh-key-white);
+  font-size: 22px;
+  font-weight: 600;
+}
+.highlighted-label {
+  fill: var(--lh-key-mark-text);
+}
+.piano p,
+.reference-hint {
+  color: var(--lh-text-muted);
+  font-size: 0.75rem;
+  margin-top: 1rem;
+}
+.references {
+  margin-top: 2rem;
+  border-top: 1px solid var(--lh-border);
+}
+.references li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.3rem 0;
+}
+.references ul {
+  padding: 0;
+  list-style: none;
+}
+.notice {
+  padding: 0.8rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--lh-border);
+}
+.notice.error {
+  background: var(--lh-error-surface);
+}
+.notice span {
+  flex: 1 1 350px;
+}
+.welcome {
+  padding: 8vh 4vw;
+  max-width: 780px;
+}
+.welcome h2 {
+  font-size: clamp(2.7rem, 5vw, 4.5rem);
+  line-height: 1.06;
+  letter-spacing: -0.06em;
+  margin-bottom: 1.5rem;
+}
+.welcome > p {
+  max-width: 530px;
+}
+.welcome .primary {
+  margin: 1rem 0 2rem;
+}
+.welcome-symbol {
+  font-size: 3.5rem;
+  color: var(--lh-action);
+  display: block;
+  margin-bottom: 1.5rem;
+}
+.empty-sketch {
+  padding: 2rem 0;
+}
+.empty-sketch h3 {
+  font-weight: 500;
+}
+.empty-sketch p {
+  color: var(--lh-text-muted);
+}
+.performing .section {
+  padding: 1.25rem;
+}
+.performing .section h3 {
+  font-size: 1.6rem;
+}
+.performing .chord-sequence button {
+  font-size: 1.8rem;
+  min-height: 76px;
+  min-width: 88px;
+}
+.performing .structure {
+  font-size: 1.1rem;
+}
+dialog {
+  color: var(--lh-text);
+  background: var(--lh-surface);
+  border: 1px solid var(--lh-border);
+  border-radius: 3px;
+  width: min(440px, calc(100vw - 2rem));
+  padding: 1.5rem;
+}
+dialog::backdrop {
+  background: color-mix(in srgb, var(--lh-canvas) 75%, transparent);
+}
+dialog h2 {
+  font-size: 1.4rem;
+}
+.actions {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+.startup {
   padding: 2rem;
+  max-width: 700px;
+}
+@media (max-width: 1250px) {
+  .sketch-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .chord-reference {
+    position: static;
+    border-left: 0;
+    border-top: 1px solid var(--lh-border);
+    padding: 1.25rem 0 0;
+    max-width: 600px;
+  }
+  .song-header {
+    flex-wrap: wrap;
+  }
+}
+@media (max-width: 850px) {
+  .workspace {
+    grid-template-columns: 220px minmax(0, 1fr);
+  }
+  .song-workspace {
+    padding: 1.5rem 1rem;
+  }
+  .app-header {
+    padding: 1rem;
+  }
+  .top-actions {
+    gap: 0.5rem;
+  }
+  .save-state {
+    display: none;
+  }
+  .section {
+    padding: 0.8rem;
+  }
+}
+@media (max-width: 620px) {
+  .workspace {
+    display: block;
+  }
+  .library-toggle {
+    display: block;
+  }
+  .library {
+    display: none;
+    border-right: 0;
+    border-bottom: 1px solid var(--lh-border);
+  }
+  .library.open {
+    display: flex;
+  }
+  .brand p {
+    display: none;
+  }
+  .brand h1 {
+    font-size: 1.2rem;
+  }
+  .brand-mark {
+    display: none;
+  }
+  .app-header {
+    gap: 0.5rem;
+  }
+  .mode-button,
+  .library-toggle {
+    font-size: 0.75rem;
+    padding: 0.5rem;
+  }
+  .song-workspace {
+    padding: 1.25rem 0.75rem;
+  }
+  .song-header {
+    gap: 1rem;
+  }
+  .song-menu form {
+    flex-wrap: wrap;
+  }
+  .section-heading {
+    flex-wrap: wrap;
+  }
+  .section-actions {
+    flex-wrap: wrap;
+  }
+  .welcome {
+    padding: 3rem 0.5rem;
+  }
+  .welcome h2 {
+    font-size: 2.6rem;
+  }
+  .welcome br {
+    display: none;
+  }
+  .add-section {
+    flex-wrap: wrap;
+  }
+  .add-section label {
+    flex-basis: 100%;
+  }
+  .notice {
+    padding: 0.75rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    scroll-behavior: auto !important;
+  }
+}
+.offline-label {
+  color: var(--lh-action);
+  font-size: 0.8rem;
+}
+.update-button {
+  font-size: 0.8rem;
+}
+.white-label {
+  font-size: 54px;
+}
+@media (max-width: 620px) {
+  .offline-label {
+    display: none;
+  }
+  .top-actions {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+}
+@media (max-width: 620px) {
+  .app-header {
+    flex-wrap: wrap;
+  }
+  .top-actions {
+    flex-wrap: wrap;
+  }
+  label {
+    overflow-wrap: anywhere;
+  }
 }

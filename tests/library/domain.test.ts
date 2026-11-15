@@ -230,3 +230,69 @@ describe("Stable song structure", () => {
     }
   });
 });
+it("LC-STRUCTURE boundary: zero/one section cannot perform a reorder transition", () => {
+  const empty = applyCommand(emptyLibrary(), "edit", {
+    type: "createSong",
+    id: "single",
+    title: "Synthetic",
+  });
+  expect(() =>
+    applyCommand(empty, "edit", {
+      type: "reorderSections",
+      songId: "single",
+      order: [],
+    }),
+  ).toThrow(/two sections/);
+  const one = applyCommand(empty, "edit", {
+    type: "insertSection",
+    songId: "single",
+    id: "only",
+    name: "Only",
+  });
+  expect(() =>
+    applyCommand(one, "edit", {
+      type: "reorderSections",
+      songId: "single",
+      order: ["only"],
+    }),
+  ).toThrow(/two sections/);
+});
+it("SB-CHORD-ASSIGN SB-CHORD-MODIFY: an ordered section sequence keeps its owner and unrelated chord entries", () => {
+  let l = applyCommand(emptyLibrary(), "edit", {
+    type: "createSong",
+    id: "s",
+    title: "Synthetic chords",
+  });
+  l = applyCommand(l, "edit", {
+    type: "insertSection",
+    songId: "s",
+    id: "sec",
+    name: "Verse",
+  });
+  const chords = [
+    { root: "C", quality: "major" as const },
+    { root: "Db", quality: "minor" as const },
+    { root: "F#", quality: "major" as const },
+  ];
+  l = applyCommand(l, "edit", {
+    type: "updateSection",
+    songId: "s",
+    sectionId: "sec",
+    patch: { chords },
+  });
+  expect(l.songs[0]!.sections[0]!.chords).toEqual(chords);
+  const modified = [
+    chords[0]!,
+    { root: "Db", quality: "major" as const },
+    chords[2]!,
+  ];
+  const next = applyCommand(l, "edit", {
+    type: "updateSection",
+    songId: "s",
+    sectionId: "sec",
+    patch: { chords: modified },
+  });
+  expect(next.songs[0]!.sections[0]!.id).toBe("sec");
+  expect(next.songs[0]!.sections[0]!.chords).toEqual(modified);
+  expect(l.songs[0]!.sections[0]!.chords).toEqual(chords);
+});
