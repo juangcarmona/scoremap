@@ -195,9 +195,11 @@ export function Sketch({ song, mode, execute, report }: Props) {
             </form>
             <label>
               Song notes
+              {/* Keep the live draft in the input; delayed save acknowledgements
+                  must never replace text the musician is still typing. */}
               <textarea
                 aria-label="Song notes"
-                value={song.notes}
+                defaultValue={song.notes}
                 placeholder="Personal reminders, cues, sounds…"
                 onChange={(e) => {
                   void execute({
@@ -358,7 +360,7 @@ export function Sketch({ song, mode, execute, report }: Props) {
                     Section notes
                     <textarea
                       aria-label={`Notes for ${section.name}`}
-                      value={section.notes}
+                      defaultValue={section.notes}
                       placeholder="Your cue for this section…"
                       onChange={(e) => {
                         void execute({

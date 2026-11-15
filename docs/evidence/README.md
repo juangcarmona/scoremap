@@ -4,6 +4,7 @@
 - [Initial independent plan review](reviews/plan-round-1.json): request changes.
 - [Second plan review](reviews/plan-round-2.json): one remaining correction.
 - [Accepted third plan review](reviews/plan-round-3.json): no findings.
+- [Initial candidate review](reviews/candidate-round-1.json) found possible note loss during queued saves. The input now preserves its live draft independently of storage acknowledgements; a browser regression delays real IndexedDB completion events while typing one character at a time into both note fields. The same regression fails against the original source (notes-before-regression.log) and passes against the correction. A new candidate review remains required.
 - MVP machine-readable execution and behaviour coverage are recorded under `mvp/`.
 - Real browser captures are under `screenshots/` and use synthetic test content.
 

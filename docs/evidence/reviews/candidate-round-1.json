@@ -1,0 +1,272 @@
+{
+  "envelope": {
+    "schemaVersion": 1,
+    "result": {
+      "schemaVersion": 1,
+      "runId": "cf9c87e10b6cd646c5e15e5f2045ec6757d2080a321105ad4ada93ae3cfa2eac",
+      "stage": "integrate",
+      "gate": "done",
+      "status": "blocked",
+      "evidence": [],
+      "missingEvidence": [
+        "Song and section notes can silently lose keystrokes while a save is pending. src/features/library/Sketch.tsx:198-207 and 359-369 bind controlled textarea values to session data, but LibrarySession.execute (src/features/library/application.ts:33-50) updates that data only when the command reaches the serialized queue, after the preceding commit finishes. With a commit held pending and 'a' displayed, typing 'b' queues 'ab' without updating the controlled value; React restores 'a', so typing 'c' next submits 'ac', which can become the acknowledged durable text. This violates FR-ANNOTATIONS/SB-ANNOTATIONS, whose current citation is pdac:cite id=\"SB-ANNOTATIONS\" digest=\"sha256:e9f7eeba4ec89ac374cbbe880b1a4d2899ca92f1c6fd71231d9a664a94b8660f\". Keep the editing draft synchronous and independent of persistence latency, without letting older acknowledgements overwrite newer input. The retained passing browser tests use single fill operations and save waits, and application.test.ts tests rapid song creation rather than controlled text input, so they do not detect this boundary. Add an incremental-typing browser regression with deliberately delayed persistence for both note fields, checking the complete text before and after queue completion and reload. This finding is derived from the implementation trace, not a newly executed reproduction."
+      ],
+      "unavailableChecks": [],
+      "pendingReview": [],
+      "output": {
+        "review": {
+          "binding": "e6017401558068a396fc30a95efcf442f8049ad15783daac13eeeeeda2c9b7b4",
+          "verdict": "request-changes",
+          "findings": [
+            "Song and section notes can silently lose keystrokes while a save is pending. src/features/library/Sketch.tsx:198-207 and 359-369 bind controlled textarea values to session data, but LibrarySession.execute (src/features/library/application.ts:33-50) updates that data only when the command reaches the serialized queue, after the preceding commit finishes. With a commit held pending and 'a' displayed, typing 'b' queues 'ab' without updating the controlled value; React restores 'a', so typing 'c' next submits 'ac', which can become the acknowledged durable text. This violates FR-ANNOTATIONS/SB-ANNOTATIONS, whose current citation is pdac:cite id=\"SB-ANNOTATIONS\" digest=\"sha256:e9f7eeba4ec89ac374cbbe880b1a4d2899ca92f1c6fd71231d9a664a94b8660f\". Keep the editing draft synchronous and independent of persistence latency, without letting older acknowledgements overwrite newer input. The retained passing browser tests use single fill operations and save waits, and application.test.ts tests rapid song creation rather than controlled text input, so they do not detect this boundary. Add an incremental-typing browser regression with deliberately delayed persistence for both note fields, checking the complete text before and after queue completion and reload. This finding is derived from the implementation trace, not a newly executed reproduction."
+          ]
+        }
+      },
+      "nextAction": "Resolve the independent review findings before continuation."
+    },
+    "effect": {
+      "type": "issue-comment",
+      "body": "Independent review: request-changes.\n\nSong and section notes can silently lose keystrokes while a save is pending. src/features/library/Sketch.tsx:198-207 and 359-369 bind controlled textarea values to session data, but LibrarySession.execute (src/features/library/application.ts:33-50) updates that data only when the command reaches the serialized queue, after the preceding commit finishes. With a commit held pending and 'a' displayed, typing 'b' queues 'ab' without updating the controlled value; React restores 'a', so typing 'c' next submits 'ac', which can become the acknowledged durable text. This violates FR-ANNOTATIONS/SB-ANNOTATIONS, whose current citation is pdac:cite id=\"SB-ANNOTATIONS\" digest=\"sha256:e9f7eeba4ec89ac374cbbe880b1a4d2899ca92f1c6fd71231d9a664a94b8660f\". Keep the editing draft synchronous and independent of persistence latency, without letting older acknowledgements overwrite newer input. The retained passing browser tests use single fill operations and save waits, and application.test.ts tests rapid song creation rather than controlled text input, so they do not detect this boundary. Add an incremental-typing browser regression with deliberately delayed persistence for both note fields, checking the complete text before and after queue completion and reload. This finding is derived from the implementation trace, not a newly executed reproduction."
+    }
+  },
+  "runtime": {
+    "package": {
+      "name": "@juangcarmona/lighthouse-sdlc",
+      "version": "0.24.0"
+    },
+    "harnessRevision": null,
+    "distribution": {
+      "type": "package",
+      "integrity": "sha512-Z/kenqQit6ZtPf6AmKOinZKeD2FY3+6lm0UHAp41jYjHetMbdjgM7RCLhpmnxcrGS2Sm4l5pTSEWsEAdGOyplg=="
+    },
+    "image": "sha256:aff7d94b27c5c87f22720a8a99b5dd1f0719d9444d5f777d68276942497b5909",
+    "limits": {
+      "cpus": 2,
+      "memory": "2g",
+      "pids": 128
+    },
+    "environment": null,
+    "model": "openai/gpt-6.1-sol",
+    "modelExecution": {
+      "requested": {
+        "profile": "plan",
+        "model": "openai/gpt-6.1-sol",
+        "reasoningEffort": "high"
+      },
+      "resolved": {
+        "mode": "profile",
+        "profile": "plan",
+        "model": "openai/gpt-6.1-sol",
+        "reasoningEffort": "high",
+        "engineModel": "openai/gpt-6.1-sol#high",
+        "source": "task.profile",
+        "fields": {
+          "model": "operator",
+          "reasoningEffort": "operator"
+        },
+        "capabilityEvidence": "operator-configuration-only"
+      },
+      "providerReported": {
+        "model": null,
+        "reasoningEffort": null,
+        "status": "unverified",
+        "reason": "The current adapter has no authenticated provider-settings receipt"
+      },
+      "billing": {
+        "route": "unchanged",
+        "actualCost": null,
+        "estimatedApiEquivalentCost": null,
+        "subscriptionUsage": null
+      }
+    },
+    "engine": "OpenCode 2.1.0",
+    "isolation": "Docker; no AWF egress filtering",
+    "skills": [
+      "audience-guidance",
+      "browser-e2e",
+      "concise-results",
+      "implement",
+      "independent-review",
+      "integrate",
+      "product-change",
+      "propose",
+      "refine",
+      "review",
+      "triage"
+    ],
+    "sourceRevision": "d348df5cac987f4dd2aab558eb443389a1813de7",
+    "seed": null,
+    "seedDigest": null,
+    "phases": {
+      "preflight": "passed",
+      "execution": "passed",
+      "evidence": "passed",
+      "completion": "passed"
+    },
+    "recoveredCleanup": [],
+    "productEvidence": {
+      "provider": "@prodshape/core",
+      "version": "0.25.0",
+      "serializationVersion": "v1alpha2",
+      "baselineDigest": "73be71b44e521ee388a9ab3549db868a70298b010dd960ea7cfac6c2b131eac5",
+      "artifacts": 99,
+      "acceptedModelPath": "/workspace/docs/product/model",
+      "evidenceRoot": "/workspace/.lighthouse-product-evidence"
+    },
+    "codegraph": {
+      "status": "available",
+      "tools": [
+        "codegraph_symbol_search",
+        "codegraph_get_ai_context"
+      ]
+    },
+    "budget": {
+      "configuredMs": 600000,
+      "timeoutMs": 591373,
+      "startedAt": 1794741904997,
+      "deadline": 1794742496370
+    },
+    "execution": {
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "resources": {
+        "pidsLimit": 128,
+        "pidsPeak": 37,
+        "pidsDenied": 0,
+        "memoryPeakBytes": 493785088,
+        "oomKills": 0
+      },
+      "scratch": {
+        "npmCache": "released",
+        "beforeCommand": {
+          "capacityBytes": 2147483648,
+          "availableBytes": 2147483648
+        },
+        "beforeCleanup": {
+          "capacityBytes": 2147483648,
+          "availableBytes": 2128822272
+        },
+        "afterCleanup": {
+          "capacityBytes": 2147483648,
+          "availableBytes": 2128822272
+        }
+      }
+    },
+    "independentReview": {
+      "protocol": "verdict-v1",
+      "binding": "e6017401558068a396fc30a95efcf442f8049ad15783daac13eeeeeda2c9b7b4",
+      "purpose": "candidate",
+      "sha256": "b18d3698ef30bde1dc68abe930ff18c813b2d1724decf45b3e7b3c6f527662de"
+    },
+    "lastCommand": null,
+    "cleanup": {
+      "schemaVersion": 1,
+      "identity": {
+        "repository": "juangcarmona/scoremap",
+        "runId": "cf9c87e10b6cd646c5e15e5f2045ec6757d2080a321105ad4ada93ae3cfa2eac",
+        "workflowRunId": "0",
+        "attempt": 1
+      },
+      "owner": "4b4120dd151e35352e0a3090c8e126041ce83daa453680cea2a890bd0fd42616",
+      "observedAt": "2026-11-15T11:28:37.559Z",
+      "status": "clean",
+      "resources": [
+        {
+          "type": "container",
+          "name": "lighthouse-4b4120dd151e35352e0a3090-helper-0",
+          "pending": false
+        },
+        {
+          "type": "container",
+          "name": "lighthouse-4b4120dd151e35352e0a3090-helper-1",
+          "pending": false
+        },
+        {
+          "type": "container",
+          "name": "lighthouse-4b4120dd151e35352e0a3090-helper-2",
+          "pending": false
+        },
+        {
+          "type": "container",
+          "name": "lighthouse-4b4120dd151e35352e0a3090-engine-codegraph",
+          "pending": false
+        },
+        {
+          "type": "container",
+          "name": "lighthouse-4b4120dd151e35352e0a3090-helper-4",
+          "pending": false
+        },
+        {
+          "type": "container",
+          "name": "lighthouse-4b4120dd151e35352e0a3090-engine",
+          "pending": false
+        },
+        {
+          "type": "container",
+          "name": "lighthouse-4b4120dd151e35352e0a3090-helper-6",
+          "pending": false
+        },
+        {
+          "type": "container",
+          "name": "lighthouse-4b4120dd151e35352e0a3090-helper-7",
+          "pending": false
+        },
+        {
+          "type": "container",
+          "name": "lighthouse-4b4120dd151e35352e0a3090-helper-8",
+          "pending": false
+        }
+      ],
+      "remaining": [],
+      "removalErrors": 0
+    },
+    "workspaceCleanup": {
+      "status": "clean",
+      "retained": "/home/juan/.local/share/lighthouse-runtime/engine.lock.resources/retained/4b4120dd151e35352e0a3090c8e126041ce83daa453680cea2a890bd0fd42616"
+    },
+    "telemetry": {
+      "schemaVersion": 1,
+      "stream": "9a47e477-3445-4a56-bbeb-87ea1bd51f84",
+      "component": "engine-adapter",
+      "packageVersion": "0.24.0",
+      "status": "degraded",
+      "active": false,
+      "written": 0,
+      "dropped": 674,
+      "bytes": 0,
+      "lastSequence": 0,
+      "lastObservedAt": null,
+      "retiredStreams": 0,
+      "errorCode": "RETENTION_CAPACITY",
+      "capabilities": {
+        "lifecycle": "host-observed",
+        "opencode": "native-2.1-plugin-with-cli-fallback",
+        "usage": "observed-with-coverage",
+        "resources": "linux-cgroup-v2-and-proc",
+        "billing": "unavailable",
+        "payloads": "disabled",
+        "transport": "ndjson-and-otlp-http-json-logs"
+      }
+    }
+  },
+  "request": {
+    "repository": "juangcarmona/scoremap",
+    "runId": "cf9c87e10b6cd646c5e15e5f2045ec6757d2080a321105ad4ada93ae3cfa2eac",
+    "issue": 1,
+    "stage": "integrate",
+    "worker": "independent-review",
+    "sourceRevision": "d348df5cac987f4dd2aab558eb443389a1813de7",
+    "workflowRunId": "0",
+    "attempt": 1,
+    "taskDigest": "e6017401558068a396fc30a95efcf442f8049ad15783daac13eeeeeda2c9b7b4",
+    "reviewOutput": {
+      "protocol": "verdict-v1",
+      "binding": "e6017401558068a396fc30a95efcf442f8049ad15783daac13eeeeeda2c9b7b4",
+      "purpose": "candidate"
+    }
+  },
+  "changes": [],
+  "receipt": null,
+  "source": {}
+}
