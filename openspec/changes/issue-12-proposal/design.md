@@ -35,3 +35,9 @@ GitHub enforcement/App and the unselected deployment target may block native com
 ## Review gates
 
 Independent plan assessment precedes production code. Independent implementation review evaluates observable behaviour and test strength. Missing reviews remain pending. Integration requires the actual configured native gates, including current-head owner authorization; this plan grants no new permission.
+
+## Backup application boundary and browser round trip
+
+The bounded paths additionally include src/features/library/Library.tsx, src/features/library/useLibrary.ts, src/features/library/domain.ts and tests/e2e/backup.spec.ts. This slice owns export download, file selection, readable validation feedback and explicit replacement confirmation/cancellation. A real-browser test downloads a populated library, creates different current content, selects the downloaded file, cancels once and verifies no change, then confirms replacement and reloads. Compare every song/repertoire/section identity, membership, chord, repeat, annotation and reference. Invalid-version, duplicate-ID, dangling-membership and malformed files must fail before storage writes. Failed replacement must preserve durable data.
+
+When issue #13 supplies PDF UI, its acceptance extends this same browser round trip to exact PDF bytes, attachment ownership and remembered page. PDF support cannot bypass complete backup validation.

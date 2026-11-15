@@ -21,3 +21,5 @@
 - [ ] Retain source/model revision, current citations and completed run results.
 - [ ] Obtain independent implementation review and resolve findings.
 - [ ] Publish the issue-linked PR; integrate only through the current authorized gates.
+
+- [ ] Complete the slice-specific ownership, shared-boundary and verification obligations in design.md.

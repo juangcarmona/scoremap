@@ -48,3 +48,9 @@ GitHub enforcement/App and the unselected deployment target may block native com
 ## Review gates
 
 Independent plan assessment precedes production code. Independent implementation review evaluates observable behaviour and test strength. Missing reviews remain pending. Integration requires the actual configured native gates, including current-head owner authorization; this plan grants no new permission.
+
+## Scaffolding ownership and shared commands
+
+This foundational slice owns index.html, src/app/App.tsx, src/app/main.tsx, vite.config.ts, tsconfig.json, vitest.config.ts, playwright.config.ts, eslint.config.js, tests/setup.ts, tests/e2e/shell.spec.ts, package.json/package-lock.json and .github/workflows/ci.yml. The bootstrap PR supplies test configuration; this slice supplies working entrypoints and commands. Wire strict typecheck, lint, formatting, build, unit/integration and browser commands into CI without removing product, citation, architecture or Lighthouse checks. Add the production-preview shell browser test before any app readiness claim.
+
+The pure src/features/library/domain.ts boundary initially owns song, repertoire, membership and structural commands, including stable identities, exact section permutations and performance refusal; tests/library/domain.test.ts owns direct positive, refusal and boundary checks. Later feature slices may extend this same explicit boundary within their declared scope. The application mutation boundary is src/features/library/useLibrary.ts, introduced with persistence in issue #5; every later mutation uses that serialized, mode-guarded boundary. No mutation logic belongs solely in a component.

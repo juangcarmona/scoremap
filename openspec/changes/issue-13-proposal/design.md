@@ -32,3 +32,7 @@ GitHub enforcement/App and the unselected deployment target may block native com
 ## Review gates
 
 Independent plan assessment precedes production code. Independent implementation review evaluates observable behaviour and test strength. Missing reviews remain pending. Integration requires the actual configured native gates, including current-head owner authorization; this plan grants no new permission.
+
+## Attachment and backup extension paths
+
+The bounded paths additionally include src/features/library/domain.ts, src/features/library/useLibrary.ts, src/features/library/backup.ts, src/features/library/Sketch.tsx, tests/library/backup.test.ts and tests/e2e/backup.spec.ts. Validate readable local PDF content with the renderer before replacing an attachment. Extend the completed backup browser round trip to compare attachment bytes/ownership/page after confirmed import and reload. Cover corrupted PDFs, page bounds and performance-mode view navigation; content attachment/removal remains guarded. Preserve the core app if optional PDF work cannot be qualified.

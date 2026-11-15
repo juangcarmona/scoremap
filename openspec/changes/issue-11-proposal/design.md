@@ -34,3 +34,7 @@ GitHub enforcement/App and the unselected deployment target may block native com
 ## Review gates
 
 Independent plan assessment precedes production code. Independent implementation review evaluates observable behaviour and test strength. Missing reviews remain pending. Integration requires the actual configured native gates, including current-head owner authorization; this plan grants no new permission.
+
+## Shared mutation paths
+
+The bounded paths additionally include src/features/library/domain.ts, src/features/library/useLibrary.ts and direct domain/application tests. Song and section notes use stable owner IDs and retain unsaved text on storage failure; valid web references use the same guarded save path. Reorder and reopen tests compare actual notes, references and associations.
