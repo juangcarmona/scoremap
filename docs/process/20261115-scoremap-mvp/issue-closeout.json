@@ -1,0 +1,67 @@
+[
+  {
+    "number": 2,
+    "state": "closed",
+    "url": "https://github.com/juangcarmona/scoremap/issues/2"
+  },
+  {
+    "number": 3,
+    "state": "closed",
+    "url": "https://github.com/juangcarmona/scoremap/issues/3"
+  },
+  {
+    "number": 4,
+    "state": "closed",
+    "url": "https://github.com/juangcarmona/scoremap/issues/4"
+  },
+  {
+    "number": 5,
+    "state": "closed",
+    "url": "https://github.com/juangcarmona/scoremap/issues/5"
+  },
+  {
+    "number": 6,
+    "state": "closed",
+    "url": "https://github.com/juangcarmona/scoremap/issues/6"
+  },
+  {
+    "number": 7,
+    "state": "closed",
+    "url": "https://github.com/juangcarmona/scoremap/issues/7"
+  },
+  {
+    "number": 8,
+    "state": "closed",
+    "url": "https://github.com/juangcarmona/scoremap/issues/8"
+  },
+  {
+    "number": 9,
+    "state": "closed",
+    "url": "https://github.com/juangcarmona/scoremap/issues/9"
+  },
+  {
+    "number": 10,
+    "state": "closed",
+    "url": "https://github.com/juangcarmona/scoremap/issues/10"
+  },
+  {
+    "number": 11,
+    "state": "closed",
+    "url": "https://github.com/juangcarmona/scoremap/issues/11"
+  },
+  {
+    "number": 12,
+    "state": "closed",
+    "url": "https://github.com/juangcarmona/scoremap/issues/12"
+  },
+  {
+    "kind": "app-blocker",
+    "number": 17,
+    "url": "https://github.com/juangcarmona/scoremap/issues/17"
+  },
+  {
+    "kind": "security-maintenance",
+    "number": 18,
+    "url": "https://github.com/juangcarmona/scoremap/issues/18"
+  }
+]
