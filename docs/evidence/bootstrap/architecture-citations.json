@@ -1,0 +1,178 @@
+{
+  "schema": "product-definition-as-code/citations/v1alpha1",
+  "targets": [
+    "docs/architecture"
+  ],
+  "citations": [
+    {
+      "id": "CON-SCOPE",
+      "digest": "sha256:aba4e66b4ace64df292deac32e97539e4ed2c3183669274ca1bc59d4c84ffd4c",
+      "source": "docs/architecture/01-introduction-and-goals/README.md",
+      "line": 13,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "QR-READABILITY",
+      "digest": "sha256:5de81f473af42e7737008ac66afb3d9efee7e7390bf1efd7ad17fae07049a155",
+      "source": "docs/architecture/01-introduction-and-goals/README.md",
+      "line": 19,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "CON-LOCAL-FIRST",
+      "digest": "sha256:c7143c6945173116bb26101e9f1918b6d628d271d01b058eeb6d7f64d99b1f1a",
+      "source": "docs/architecture/02-constraints/README.md",
+      "line": 11,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "CON-SCOPE",
+      "digest": "sha256:aba4e66b4ace64df292deac32e97539e4ed2c3183669274ca1bc59d4c84ffd4c",
+      "source": "docs/architecture/02-constraints/README.md",
+      "line": 15,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "CON-CONTENT",
+      "digest": "sha256:5c08415cc8047dfc3161440d4a427675c191cd7bfecef5d3c7bb139fe0a9752e",
+      "source": "docs/architecture/03-context-and-scope/README.md",
+      "line": 11,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "FR-OFFLINE",
+      "digest": "sha256:68f558e306eea39e0a533194ce6429c4c97180f94aabca6bbb6ca6a174f9cb0f",
+      "source": "docs/architecture/03-context-and-scope/README.md",
+      "line": 24,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "BR-EDIT-GUARD",
+      "digest": "sha256:20e678c4743404c64a51c01e4446026ac95811827d2f5e1c641839291ad32718",
+      "source": "docs/architecture/04-solution-strategy/README.md",
+      "line": 11,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "BR-IDENTITY",
+      "digest": "sha256:170ef1aff15cc46041fca58b4bdda33db26b4ba91b44de4fe2aeded7a9dede67",
+      "source": "docs/architecture/05-building-block-view/README.md",
+      "line": 11,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "BR-DURABILITY",
+      "digest": "sha256:f6e8a52fdb28d495f07304870d8d2bfa6c6e5adce7722d919ce64efca735c57e",
+      "source": "docs/architecture/06-runtime-view/README.md",
+      "line": 11,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "BR-EDIT-GUARD",
+      "digest": "sha256:20e678c4743404c64a51c01e4446026ac95811827d2f5e1c641839291ad32718",
+      "source": "docs/architecture/06-runtime-view/README.md",
+      "line": 15,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "CON-PLATFORM",
+      "digest": "sha256:ed4f4900b26c706198a0448376f26d57d0665462c5e77ac4dbadc04bb75e6bf5",
+      "source": "docs/architecture/07-deployment-view/README.md",
+      "line": 11,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "BR-BACKUP",
+      "digest": "sha256:4344f228dbb32818f9dfdce278ec73ac6acd8dc4689069ac6c79d12c1571b917",
+      "source": "docs/architecture/08-crosscutting-concepts/README.md",
+      "line": 11,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "BR-REFERENCES",
+      "digest": "sha256:f6c63aa91b8cd5dc754520d4015424c3c56811d90a886f62a895c9db99ce9ce3",
+      "source": "docs/architecture/08-crosscutting-concepts/README.md",
+      "line": 15,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "CON-LOCAL-FIRST",
+      "digest": "sha256:c7143c6945173116bb26101e9f1918b6d628d271d01b058eeb6d7f64d99b1f1a",
+      "source": "docs/architecture/09-architecture-decisions/ADR-0001-use-a-local-first-browser-runtime.md",
+      "line": 19,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "CON-PLATFORM",
+      "digest": "sha256:ed4f4900b26c706198a0448376f26d57d0665462c5e77ac4dbadc04bb75e6bf5",
+      "source": "docs/architecture/09-architecture-decisions/ADR-0001-use-a-local-first-browser-runtime.md",
+      "line": 20,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "BR-DURABILITY",
+      "digest": "sha256:f6e8a52fdb28d495f07304870d8d2bfa6c6e5adce7722d919ce64efca735c57e",
+      "source": "docs/architecture/09-architecture-decisions/ADR-0002-commit-validated-library-snapshots-atomically.md",
+      "line": 18,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "BR-BACKUP",
+      "digest": "sha256:4344f228dbb32818f9dfdce278ec73ac6acd8dc4689069ac6c79d12c1571b917",
+      "source": "docs/architecture/09-architecture-decisions/ADR-0002-commit-validated-library-snapshots-atomically.md",
+      "line": 19,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "QR-INTEGRITY",
+      "digest": "sha256:568e58e96aee82ee0d0e86d08db59659b9e6d9f182ef20c40e94fdd36e263180",
+      "source": "docs/architecture/10-quality-requirements/README.md",
+      "line": 11,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "QR-OFFLINE",
+      "digest": "sha256:2e3fe3576ececb67e764fd094d88c956502195e73a4061f81397cfa664792306",
+      "source": "docs/architecture/10-quality-requirements/README.md",
+      "line": 15,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "BR-DURABILITY",
+      "digest": "sha256:f6e8a52fdb28d495f07304870d8d2bfa6c6e5adce7722d919ce64efca735c57e",
+      "source": "docs/architecture/11-risks-and-technical-debt/README.md",
+      "line": 11,
+      "form": "inline",
+      "status": "current"
+    }
+  ],
+  "diagnostics": [],
+  "summary": {
+    "total": 20,
+    "current": 20,
+    "stale": 0,
+    "tampered": 0,
+    "unresolved": 0,
+    "errors": 0,
+    "warnings": 0
+  }
+}

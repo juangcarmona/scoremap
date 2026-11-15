@@ -1,0 +1,188 @@
+{
+  "repository": "juangcarmona/scoremap",
+  "repositoryId": 1458674261,
+  "parent": {
+    "number": 1,
+    "url": "https://github.com/juangcarmona/scoremap/issues/1",
+    "title": "ScoreMap MVP \u2014 usable tablet song sketches by November 20, 2026",
+    "id": 6402828969
+  },
+  "children": [
+    {
+      "number": 2,
+      "url": "https://github.com/juangcarmona/scoremap/issues/2",
+      "title": "Engineering bootstrap",
+      "id": 6402829506,
+      "dependencies": [],
+      "artifacts": [
+        "CON-LOCAL-FIRST"
+      ]
+    },
+    {
+      "number": 3,
+      "url": "https://github.com/juangcarmona/scoremap/issues/3",
+      "title": "Canonical product and behaviour baseline",
+      "id": 6402830218,
+      "dependencies": [
+        2
+      ],
+      "artifacts": [
+        "CON-SCOPE",
+        "LC-LIBRARY",
+        "LC-STRUCTURE"
+      ]
+    },
+    {
+      "number": 4,
+      "url": "https://github.com/juangcarmona/scoremap/issues/4",
+      "title": "Domain commands and invariant enforcement",
+      "id": 6402831171,
+      "dependencies": [
+        3
+      ],
+      "artifacts": [
+        "FR-SONGS",
+        "FR-SECTIONS",
+        "BR-IDENTITY",
+        "BR-EDIT-GUARD"
+      ]
+    },
+    {
+      "number": 5,
+      "url": "https://github.com/juangcarmona/scoremap/issues/5",
+      "title": "Atomic local persistence and recovery",
+      "id": 6402831948,
+      "dependencies": [
+        4
+      ],
+      "artifacts": [
+        "FR-PERSIST",
+        "BR-DURABILITY"
+      ]
+    },
+    {
+      "number": 6,
+      "url": "https://github.com/juangcarmona/scoremap/issues/6",
+      "title": "Repertoire and song interaction",
+      "id": 6402832806,
+      "dependencies": [
+        5
+      ],
+      "artifacts": [
+        "FR-REPERTOIRES",
+        "FR-MEMBERSHIP",
+        "FR-SONGS"
+      ]
+    },
+    {
+      "number": 7,
+      "url": "https://github.com/juangcarmona/scoremap/issues/7",
+      "title": "Section editing, repeats and ordering",
+      "id": 6402833652,
+      "dependencies": [
+        6
+      ],
+      "artifacts": [
+        "FR-SECTIONS",
+        "LC-STRUCTURE"
+      ]
+    },
+    {
+      "number": 8,
+      "url": "https://github.com/juangcarmona/scoremap/issues/8",
+      "title": "Musical chord model and accurate keyboard",
+      "id": 6402834509,
+      "dependencies": [
+        4
+      ],
+      "artifacts": [
+        "FR-CHORDS",
+        "BR-CHORDS"
+      ]
+    },
+    {
+      "number": 9,
+      "url": "https://github.com/juangcarmona/scoremap/issues/9",
+      "title": "Tablet song sketch and protected performance mode",
+      "id": 6402835377,
+      "dependencies": [
+        7,
+        8
+      ],
+      "artifacts": [
+        "FR-CONSULT",
+        "QR-READABILITY"
+      ]
+    },
+    {
+      "number": 10,
+      "url": "https://github.com/juangcarmona/scoremap/issues/10",
+      "title": "Installable offline PWA",
+      "id": 6402836475,
+      "dependencies": [
+        9
+      ],
+      "artifacts": [
+        "FR-OFFLINE",
+        "CON-PLATFORM"
+      ]
+    },
+    {
+      "number": 11,
+      "url": "https://github.com/juangcarmona/scoremap/issues/11",
+      "title": "Personal annotations and external references",
+      "id": 6402837407,
+      "dependencies": [
+        9
+      ],
+      "artifacts": [
+        "FR-ANNOTATIONS",
+        "FR-REFERENCES"
+      ]
+    },
+    {
+      "number": 12,
+      "url": "https://github.com/juangcarmona/scoremap/issues/12",
+      "title": "Validated backup export and import",
+      "id": 6402838294,
+      "dependencies": [
+        5,
+        11
+      ],
+      "artifacts": [
+        "FR-BACKUP",
+        "BR-BACKUP"
+      ]
+    },
+    {
+      "number": 13,
+      "url": "https://github.com/juangcarmona/scoremap/issues/13",
+      "title": "Optional local PDF attachment and viewer",
+      "id": 6402839382,
+      "dependencies": [
+        10,
+        12
+      ],
+      "artifacts": [
+        "FR-PDF",
+        "BR-PDF"
+      ]
+    },
+    {
+      "number": 14,
+      "url": "https://github.com/juangcarmona/scoremap/issues/14",
+      "title": "Independent acceptance and HTTPS deployment",
+      "id": 6402840446,
+      "dependencies": [
+        10,
+        11,
+        12
+      ],
+      "artifacts": [
+        "QR-READABILITY",
+        "QR-OFFLINE",
+        "QR-INTEGRITY"
+      ]
+    }
+  ]
+}

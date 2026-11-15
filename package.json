@@ -4,6 +4,54 @@
   "private": true,
   "type": "module",
   "description": "Your sheet music, mapped out.",
-  "engines": { "node": ">=22" },
-  "repository": { "type": "git", "url": "https://github.com/juangcarmona/scoremap.git" }
+  "engines": {
+    "node": ">=24"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/juangcarmona/scoremap.git"
+  },
+  "devDependencies": {
+    "@arcshape/cli": "0.4.0",
+    "@axe-core/playwright": "4.14.0",
+    "@eslint/js": "10.0.1",
+    "@fission-ai/openspec": "1.15.0",
+    "@juangcarmona/lighthouse": "0.13.11",
+    "@playwright/test": "1.65.1",
+    "@prodshape/cli": "0.26.1",
+    "@testing-library/jest-dom": "7.0.1",
+    "@testing-library/react": "16.3.3",
+    "@testing-library/user-event": "14.6.10",
+    "@types/node": "26.6.6",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.3.0",
+    "eslint": "10.15.0",
+    "eslint-plugin-react-hooks": "7.1.1",
+    "eslint-plugin-react-refresh": "0.5.8",
+    "fake-indexeddb": "6.2.8",
+    "jsdom": "31.0.1",
+    "markdownlint-cli2": "0.24.1",
+    "prettier": "3.10.1",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.72.2",
+    "vite": "8.3.8",
+    "vite-plugin-pwa": "2.0.0",
+    "vitest": "5.1.0",
+    "wrangler": "4.162.0"
+  },
+  "dependencies": {
+    "idb": "8.0.4",
+    "pdfjs-dist": "6.5.438",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "scripts": {
+    "verify:product": "prodshape --serialization-version v1alpha2 validate",
+    "verify:citations": "prodshape citations verify --provider openspec --format json && prodshape citations verify docs/architecture --format json",
+    "verify:architecture": "arcshape validate --docs docs/architecture --links --citations",
+    "verify:baseline": "lighthouse verify && node scripts/lighthouse-guard.mjs verify",
+    "verify:specs": "openspec validate --all --strict --no-interactive",
+    "verify": "npm run verify:product && npm run verify:citations && npm run verify:architecture && npm run verify:baseline && npm run verify:specs"
+  }
 }

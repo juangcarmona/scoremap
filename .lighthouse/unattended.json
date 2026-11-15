@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "enabled": false,
+  "routes": [
+    "ff",
+    "hotfix"
+  ],
+  "paths": [
+    "src/",
+    "tests/",
+    "public/"
+  ],
+  "reviewerProfile": "plan",
+  "allowFivePoint": false,
+  "merge": false,
+  "maxCorrections": 2,
+  "timeoutSeconds": 3600,
+  "hotfix": {
+    "setupCommands": [],
+    "testPaths": [
+      "tests/"
+    ],
+    "modules": {
+      "library": [
+        "src/features/library/",
+        "tests/library/"
+      ],
+      "sketch": [
+        "src/features/sketch/",
+        "tests/sketch/"
+      ]
+    },
+    "regressionCommand": [
+      "npm",
+      "test"
+    ],
+    "failurePattern": [
+      "ERR_ASSERTION"
+    ]
+  }
+}

@@ -1,0 +1,1796 @@
+{
+  "schemaVersion": 1,
+  "results": [
+    {
+      "id": "foundation.manifest",
+      "owner": "lighthouse",
+      "level": "required",
+      "kind": "hard",
+      "verification": "deterministic",
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "lighthouse.json"
+        }
+      ],
+      "problems": [],
+      "nextAction": null
+    },
+    {
+      "id": "repository.layout",
+      "owner": "lighthouse",
+      "level": "required",
+      "kind": "hard",
+      "verification": "deterministic",
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "src/"
+        },
+        {
+          "path": "docs/"
+        },
+        {
+          "path": "infra/"
+        },
+        {
+          "path": "scripts/"
+        }
+      ],
+      "problems": [],
+      "nextAction": null
+    },
+    {
+      "id": "repository.managed-projection",
+      "owner": "lighthouse",
+      "level": "required",
+      "kind": "hard",
+      "verification": "deterministic",
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "LIGHTHOUSE.md"
+        },
+        {
+          "path": "scripts/lighthouse-guard.mjs"
+        },
+        {
+          "path": ".husky/commit-msg"
+        },
+        {
+          "path": ".husky/pre-push"
+        },
+        {
+          "path": ".github/workflows/lighthouse.yml"
+        },
+        {
+          "path": ".agents/skills/lighthouse-init/SKILL.md"
+        },
+        {
+          "path": "docs/design/DESIGN.md"
+        },
+        {
+          "path": ".agents/skills/lighthouse-ui/SKILL.md"
+        },
+        {
+          "path": "docs/profiles/react-web-platform/README.md"
+        },
+        {
+          "path": "docs/profiles/react-web-platform/adoption.md"
+        },
+        {
+          "path": "docs/profiles/react-web-platform/structure.md"
+        },
+        {
+          "path": "docs/profiles/react-web-platform/guardrails.md"
+        },
+        {
+          "path": "docs/profiles/react-web-platform/testing.md"
+        },
+        {
+          "path": ".agents/skills/lighthouse-react-web/SKILL.md"
+        },
+        {
+          "path": "docs/profiles/pwa-capability/README.md"
+        },
+        {
+          "path": "docs/profiles/pwa-capability/adoption.md"
+        },
+        {
+          "path": "docs/profiles/pwa-capability/guardrails.md"
+        },
+        {
+          "path": "docs/profiles/pwa-capability/offline.md"
+        },
+        {
+          "path": "docs/profiles/pwa-capability/testing.md"
+        },
+        {
+          "path": ".agents/skills/lighthouse-pwa/SKILL.md"
+        },
+        {
+          "path": ".lighthouse/sdlc.json"
+        },
+        {
+          "path": ".github/workflows/lighthouse-worker-maintenance.yml"
+        },
+        {
+          "path": ".lighthouse/housekeeping.json"
+        },
+        {
+          "path": ".lighthouse/commands.json"
+        }
+      ],
+      "problems": [],
+      "nextAction": null
+    },
+    {
+      "id": "repository.branch-convention",
+      "owner": "lighthouse",
+      "level": "required",
+      "kind": "hard",
+      "verification": "deterministic",
+      "status": "passed",
+      "evidence": [
+        {
+          "value": "main"
+        },
+        {
+          "pattern": "^(feat|fix|docs|refactor|test|chore|build|ci|perf|revert)/[1-9]\\d*-[a-z0-9]+(?:-[a-z0-9]+)*$"
+        }
+      ],
+      "problems": [],
+      "nextAction": null
+    },
+    {
+      "id": "visual.design-contract",
+      "owner": "@juangcarmona/lighthouse-ui",
+      "level": "required",
+      "kind": "hard",
+      "verification": "deterministic",
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/design/DESIGN.md"
+        },
+        {
+          "path": ".agents/skills/lighthouse-ui/SKILL.md"
+        },
+        {
+          "token": "--lh-canvas"
+        },
+        {
+          "token": "--lh-surface"
+        },
+        {
+          "token": "--lh-text"
+        },
+        {
+          "token": "--lh-action"
+        },
+        {
+          "token": "--lh-border"
+        },
+        {
+          "token": "--lh-focus"
+        }
+      ],
+      "problems": [],
+      "nextAction": null
+    },
+    {
+      "id": "foundation.profile-composition",
+      "owner": "@juangcarmona/lighthouse",
+      "level": "recommended",
+      "kind": "hard",
+      "verification": "deterministic",
+      "status": "passed",
+      "evidence": [
+        {
+          "id": "react-web-platform",
+          "status": "passed",
+          "layers": [
+            "static",
+            "unit",
+            "browser-e2e",
+            "functional",
+            "architecture",
+            "operational"
+          ]
+        },
+        {
+          "id": "pwa-capability",
+          "status": "passed",
+          "layers": [
+            "static",
+            "browser-e2e",
+            "functional",
+            "operational"
+          ]
+        },
+        {
+          "id": "visual-theme",
+          "status": "passed",
+          "layers": [
+            "static",
+            "browser-e2e"
+          ]
+        }
+      ],
+      "problems": [],
+      "nextAction": null
+    },
+    {
+      "id": "foundation.pdac",
+      "owner": "lighthouse",
+      "level": "required",
+      "kind": "hard",
+      "verification": "deterministic",
+      "status": "passed",
+      "evidence": [
+        {
+          "provider": "@prodshape/cli",
+          "providerVersion": "0.26.1",
+          "serializationVersion": "v1alpha2",
+          "requiredSerializationVersion": "v1alpha2",
+          "path": "docs/product/model",
+          "command": "prodshape --serialization-version v1alpha2 validate --format json"
+        }
+      ],
+      "problems": [],
+      "nextAction": null
+    },
+    {
+      "id": "foundation.authorities",
+      "owner": "lighthouse",
+      "level": "required",
+      "kind": "hard",
+      "verification": "deterministic",
+      "status": "passed",
+      "evidence": [
+        {
+          "id": "productShape",
+          "path": "docs/product/model",
+          "version": "0.26.1",
+          "recordedVersion": "0.26.1",
+          "command": "prodshape --serialization-version v1alpha2 validate --format json"
+        },
+        {
+          "id": "arcShape",
+          "path": "docs/architecture",
+          "version": "0.4.0",
+          "recordedVersion": "0.4.0",
+          "command": "arcshape validate --docs docs/architecture --links --citations --format json"
+        }
+      ],
+      "problems": [],
+      "nextAction": null
+    },
+    {
+      "id": "foundation.capability-adoption",
+      "owner": "@juangcarmona/lighthouse-sdlc",
+      "level": "recommended",
+      "kind": "hard",
+      "verification": "deterministic",
+      "status": "unconfigured",
+      "adoptionStatus": "pending-adoption",
+      "evidence": [
+        {
+          "capability": "labels",
+          "catalogVersion": "0.5.0"
+        },
+        {
+          "capability": "github-profile",
+          "catalogVersion": "0.5.0"
+        }
+      ],
+      "problems": [
+        "labels is pending-adoption; run lighthouse capabilities plan --id labels --provider github --repo <owner/repo> --plan-file .lighthouse/reconciliation/labels.plan.json"
+      ],
+      "nextAction": "lighthouse capabilities plan --id labels --provider github --repo <owner/repo> --plan-file .lighthouse/reconciliation/labels.plan.json"
+    },
+    {
+      "id": "foundation.github-profile",
+      "owner": "@juangcarmona/lighthouse-sdlc",
+      "level": "recommended",
+      "kind": "hard",
+      "verification": "deterministic",
+      "status": "not-applicable",
+      "evidence": [],
+      "problems": [],
+      "nextAction": null
+    },
+    {
+      "id": "foundation.evidence",
+      "owner": "@juangcarmona/lighthouse-sdlc",
+      "level": "recommended",
+      "kind": "hard",
+      "verification": "deterministic",
+      "status": "unconfigured",
+      "evidence": [],
+      "problems": [],
+      "nextAction": "lighthouse-sdlc evidence --build --input <records.json> --output .lighthouse/evidence/index.json"
+    }
+  ],
+  "summary": {
+    "passed": 8,
+    "failed": 0,
+    "drift": 0,
+    "unavailable": 0,
+    "unconfigured": 2,
+    "pending-review": 0,
+    "not-applicable": 1
+  },
+  "blocking": [],
+  "problems": [],
+  "profiles": {
+    "schemaVersion": 1,
+    "application": {
+      "shape": "frontend",
+      "stacks": [
+        "react",
+        "typescript"
+      ]
+    },
+    "selected": [
+      {
+        "id": "react-web-platform",
+        "owner": "@juangcarmona/lighthouse",
+        "purpose": "React and TypeScript web applications with feature-oriented source, explicit browser contracts and reproducible evidence.",
+        "appliesTo": {
+          "shapes": [
+            "frontend",
+            "full-stack"
+          ],
+          "stacks": [
+            "react",
+            "typescript"
+          ]
+        },
+        "surfaces": [
+          "React application structure",
+          "feature slices",
+          "API client",
+          "server state",
+          "browser evidence",
+          "accessibility evidence"
+        ],
+        "prerequisites": [
+          "Node.js and a supported React toolchain"
+        ],
+        "dependencies": [
+          "visual-theme"
+        ],
+        "incompatibleWith": [],
+        "libraries": [
+          "React",
+          "TypeScript",
+          "TanStack Query",
+          "Testing Library",
+          "Vitest",
+          "Playwright",
+          "@axe-core/playwright",
+          "ESLint",
+          "typescript-eslint",
+          "Prettier"
+        ],
+        "structure": [
+          "src/app/",
+          "src/features/",
+          "src/shared/",
+          "src/api/",
+          "src/i18n/",
+          "src/design-system/",
+          "tests/"
+        ],
+        "commands": [
+          "npm run typecheck",
+          "npm run lint",
+          "npm run format:check",
+          "npm run build",
+          "npm test",
+          "npm run test:e2e"
+        ],
+        "guardrails": [
+          {
+            "id": "static",
+            "level": "required",
+            "kind": "hard",
+            "verification": "deterministic",
+            "command": "npm run typecheck",
+            "description": "Strict TypeScript and static checks pass."
+          },
+          {
+            "id": "unit",
+            "level": "required",
+            "kind": "hard",
+            "verification": "deterministic",
+            "command": "npm test",
+            "description": "Unit and component tests pass."
+          },
+          {
+            "id": "browser-e2e",
+            "level": "required",
+            "kind": "hard",
+            "verification": "deterministic",
+            "command": "npm run test:e2e",
+            "description": "Critical browser journeys have Playwright evidence."
+          },
+          {
+            "id": "functional",
+            "level": "required",
+            "kind": "soft",
+            "verification": "semantic",
+            "command": null,
+            "description": "Critical accessibility surfaces have axe and required human evidence."
+          },
+          {
+            "id": "architecture",
+            "level": "recommended",
+            "kind": "hard",
+            "verification": "deterministic",
+            "command": null,
+            "description": "Feature import boundaries remain valid."
+          },
+          {
+            "id": "operational",
+            "level": "optional",
+            "kind": "soft",
+            "verification": "human",
+            "command": null,
+            "description": "The project has reviewed performance and runtime budgets when selected."
+          }
+        ],
+        "failureConsequence": "The web profile is not ready for delivery while its required static, unit, browser or accessibility evidence is missing or failing.",
+        "repairHints": [
+          "Run the project typecheck, lint, format, build and unit commands.",
+          "Run the critical Playwright journeys and axe checks.",
+          "Select web-bff for authenticated browser sessions."
+        ],
+        "exceptions": [
+          "Record a project-owned exception with an owner, scope, reason and review date."
+        ],
+        "combinations": [
+          {
+            "with": [
+              "visual-theme"
+            ],
+            "purpose": "A web application using the Lighthouse visual contract."
+          },
+          {
+            "with": [
+              "visual-theme",
+              "web-bff",
+              "dotnet-backend"
+            ],
+            "purpose": "An authenticated web application with a server-side session boundary."
+          }
+        ],
+        "consumerFixture": "src/tests/profile-fixtures.test.mjs",
+        "upgradeStrategy": "Preserve adopter-owned source and configuration; reconcile only Lighthouse-owned profile guidance and declared projections.",
+        "verification": {
+          "layers": [
+            {
+              "id": "static",
+              "level": "required",
+              "kind": "hard",
+              "verification": "deterministic",
+              "command": "npm run typecheck"
+            },
+            {
+              "id": "unit",
+              "level": "required",
+              "kind": "hard",
+              "verification": "deterministic",
+              "command": "npm test"
+            },
+            {
+              "id": "browser-e2e",
+              "level": "required",
+              "kind": "hard",
+              "verification": "deterministic",
+              "command": "npm run test:e2e"
+            },
+            {
+              "id": "functional",
+              "level": "required",
+              "kind": "soft",
+              "verification": "semantic",
+              "command": null
+            },
+            {
+              "id": "architecture",
+              "level": "recommended",
+              "kind": "hard",
+              "verification": "deterministic",
+              "command": null
+            },
+            {
+              "id": "operational",
+              "level": "optional",
+              "kind": "soft",
+              "verification": "human",
+              "command": null
+            }
+          ]
+        },
+        "problems": [],
+        "status": "passed",
+        "nextAction": null
+      },
+      {
+        "id": "pwa-capability",
+        "owner": "@juangcarmona/lighthouse",
+        "purpose": "An optional installability and offline capability for a React web application.",
+        "appliesTo": {
+          "shapes": [
+            "frontend",
+            "full-stack"
+          ],
+          "stacks": [
+            "react"
+          ]
+        },
+        "surfaces": [
+          "manifest",
+          "icons",
+          "service worker",
+          "asset cache",
+          "update strategy",
+          "offline policy"
+        ],
+        "prerequisites": [
+          "The react-web-platform profile",
+          "A product requirement for installability or offline behavior"
+        ],
+        "dependencies": [
+          "react-web-platform"
+        ],
+        "incompatibleWith": [],
+        "libraries": [
+          "Web App Manifest",
+          "Service Worker"
+        ],
+        "structure": [
+          "public/manifest.webmanifest",
+          "public/icons/",
+          "src/service-worker.*"
+        ],
+        "commands": [
+          "npm run typecheck",
+          "npm run build",
+          "npm run test:e2e"
+        ],
+        "guardrails": [
+          {
+            "id": "static",
+            "level": "required",
+            "kind": "hard",
+            "verification": "deterministic",
+            "command": "npm run build",
+            "description": "Manifest and service-worker assets are included in the reproducible build."
+          },
+          {
+            "id": "browser-e2e",
+            "level": "required",
+            "kind": "hard",
+            "verification": "deterministic",
+            "command": "npm run test:e2e",
+            "description": "Install, update and declared offline journeys have browser evidence."
+          },
+          {
+            "id": "functional",
+            "level": "required",
+            "kind": "soft",
+            "verification": "semantic",
+            "command": null,
+            "description": "Offline scope, private-data policy and recovery behavior have human review."
+          },
+          {
+            "id": "operational",
+            "level": "recommended",
+            "kind": "hard",
+            "verification": "deterministic",
+            "command": null,
+            "description": "Cache invalidation and update telemetry are checked when selected."
+          }
+        ],
+        "failureConsequence": "The PWA capability is not ready for delivery while installability, update, offline or session evidence is missing.",
+        "repairHints": [
+          "Declare the offline bounded contexts and cache policy.",
+          "Run fresh-install, update, logout, expiry and user-change journeys.",
+          "Select web-bff for authenticated sessions."
+        ],
+        "exceptions": [
+          "Record an explicit product decision for any online-only or push exception."
+        ],
+        "combinations": [
+          {
+            "with": [
+              "visual-theme",
+              "react-web-platform"
+            ],
+            "purpose": "A public installable React web application."
+          },
+          {
+            "with": [
+              "visual-theme",
+              "react-web-platform",
+              "web-bff",
+              "dotnet-backend"
+            ],
+            "purpose": "An authenticated installable React web application."
+          }
+        ],
+        "consumerFixture": "src/tests/profile-fixtures.test.mjs",
+        "upgradeStrategy": "Preserve adopter-owned manifest, icons and service-worker code; reconcile only Lighthouse-owned guidance and profile metadata.",
+        "verification": {
+          "layers": [
+            {
+              "id": "static",
+              "level": "required",
+              "kind": "hard",
+              "verification": "deterministic",
+              "command": "npm run build"
+            },
+            {
+              "id": "browser-e2e",
+              "level": "required",
+              "kind": "hard",
+              "verification": "deterministic",
+              "command": "npm run test:e2e"
+            },
+            {
+              "id": "functional",
+              "level": "required",
+              "kind": "soft",
+              "verification": "semantic",
+              "command": null
+            },
+            {
+              "id": "operational",
+              "level": "recommended",
+              "kind": "hard",
+              "verification": "deterministic",
+              "command": null
+            }
+          ]
+        },
+        "problems": [],
+        "status": "passed",
+        "nextAction": null
+      },
+      {
+        "id": "visual-theme",
+        "owner": "@juangcarmona/lighthouse-ui",
+        "purpose": "A framework-neutral visual contract for applications with a user interface.",
+        "appliesTo": {
+          "shapes": [
+            "frontend",
+            "full-stack",
+            "mobile"
+          ],
+          "stacks": []
+        },
+        "surfaces": [
+          "semantic design tokens",
+          "DESIGN.md",
+          "UI design skill"
+        ],
+        "prerequisites": [
+          "A user-interface surface"
+        ],
+        "dependencies": [],
+        "incompatibleWith": [],
+        "libraries": [
+          "@juangcarmona/lighthouse-ui"
+        ],
+        "structure": [
+          "docs/design/DESIGN.md",
+          ".agents/skills/lighthouse-ui/SKILL.md"
+        ],
+        "commands": [
+          "lighthouse verify",
+          "npm run test:visual"
+        ],
+        "guardrails": [
+          {
+            "id": "static",
+            "level": "required",
+            "kind": "hard",
+            "verification": "deterministic",
+            "command": "lighthouse verify",
+            "description": "The token and design-guide contract passes."
+          },
+          {
+            "id": "browser-e2e",
+            "level": "recommended",
+            "kind": "soft",
+            "verification": "semantic",
+            "command": "npm run test:visual",
+            "description": "Critical visual journeys have reviewed evidence."
+          }
+        ],
+        "failureConsequence": "The visual contract is incomplete until its tokens, guide, skill and applicable visual evidence are restored.",
+        "repairHints": [
+          "Run lighthouse reconcile after reviewing the visual-theme profile plan.",
+          "Run npm run test:visual for visual changes."
+        ],
+        "exceptions": [
+          "Record a project-owned visual exception with an owner and review date."
+        ],
+        "combinations": [],
+        "consumerFixture": "src/tests/lighthouse.test.mjs",
+        "upgradeStrategy": "Preserve project-owned design content and reconcile only Lighthouse-owned visual projections.",
+        "verification": {
+          "layers": [
+            {
+              "id": "static",
+              "level": "required",
+              "kind": "hard",
+              "verification": "deterministic",
+              "command": "lighthouse verify"
+            },
+            {
+              "id": "browser-e2e",
+              "level": "recommended",
+              "kind": "soft",
+              "verification": "semantic",
+              "command": null
+            }
+          ]
+        },
+        "problems": [],
+        "status": "passed",
+        "nextAction": null
+      }
+    ],
+    "available": [
+      {
+        "id": "node-tooling",
+        "owner": "@juangcarmona/lighthouse",
+        "purpose": "Node.js tooling, package and command-line work.",
+        "appliesTo": {
+          "shapes": [
+            "library",
+            "tooling",
+            "cli",
+            "worker"
+          ],
+          "stacks": [
+            "node"
+          ]
+        },
+        "surfaces": [
+          "package scripts",
+          "Node.js verification"
+        ],
+        "verification": {
+          "layers": [
+            {
+              "id": "static",
+              "level": "required",
+              "kind": "hard",
+              "verification": "deterministic",
+              "command": "npm run verify"
+            },
+            {
+              "id": "unit",
+              "level": "recommended",
+              "kind": "hard",
+              "verification": "deterministic",
+              "command": "npm test"
+            }
+          ]
+        },
+        "prerequisites": [],
+        "dependencies": [],
+        "incompatibleWith": [],
+        "libraries": [
+          "Node.js"
+        ],
+        "structure": [
+          "src/"
+        ],
+        "commands": [
+          "npm run verify",
+          "npm test"
+        ],
+        "failureConsequence": "The selected tooling profile cannot be reported as compliant until its required static checks pass.",
+        "repairHints": [
+          "Run npm run verify and inspect the reported repository check."
+        ],
+        "exceptions": [
+          "Record a project-owned exception with an owner and review date."
+        ],
+        "combinations": [],
+        "consumerFixture": "src/tests/lighthouse.test.mjs",
+        "upgradeStrategy": "Keep the catalog entry additive and rerun lighthouse profiles and lighthouse verify after upgrade.",
+        "guardrails": [
+          {
+            "id": "static",
+            "level": "required",
+            "kind": "hard",
+            "verification": "deterministic",
+            "command": "npm run verify",
+            "description": "Repository verification passes."
+          },
+          {
+            "id": "unit",
+            "level": "recommended",
+            "kind": "hard",
+            "verification": "deterministic",
+            "command": "npm test",
+            "description": "Unit tests pass."
+          }
+        ]
+      },
+      {
+        "id": "dotnet-backend",
+        "owner": "@juangcarmona/lighthouse",
+        "purpose": ".NET backend work with Aspire composition and a modular application boundary.",
+        "appliesTo": {
+          "shapes": [
+            "backend",
+            "full-stack",
+            "service"
+          ],
+          "stacks": [
+            "dotnet"
+          ]
+        },
+        "surfaces": [
+          "Aspire composition",
+          "feature-aligned backend",
+          "Roslyn guardrails",
+          ".NET verification"
+        ],
+        "verification": {
+          "layers": [
+            {
+              "id": "static",
+              "level": "required",
+              "kind": "hard",
+              "verification": "deterministic",
+              "command": "npm run verify:dotnet"
+            },
+            {
+              "id": "unit",
+              "level": "required",
+              "kind": "hard",
+              "verification": "deterministic",
+              "command": "dotnet test"
+            },
+            {
+              "id": "architecture",
+              "level": "recommended",
+              "kind": "hard",
+              "verification": "deterministic",
+              "command": "npm run verify:dotnet"
+            },
+            {
+              "id": "integration",
+              "level": "recommended",
+              "kind": "hard",
+              "verification": "deterministic",
+              "command": null
+            },
+            {
+              "id": "functional",
+              "level": "recommended",
+              "kind": "hard",
+              "verification": "deterministic",
+              "command": null
+            }
+          ]
+        },
+        "prerequisites": [
+          ".NET SDK and Aspire tooling"
+        ],
+        "dependencies": [],
+        "incompatibleWith": [],
+        "libraries": [
+          ".NET",
+          "Aspire",
+          "NSubstitute"
+        ],
+        "structure": [
+          "src/",
+          "tests/",
+          "Directory.Build.props"
+        ],
+        "commands": [
+          "npm run verify:dotnet",
+          "dotnet test"
+        ],
+        "failureConsequence": "The backend profile is not ready for delivery while its analyzer, architecture or test checks fail.",
+        "repairHints": [
+          "Run npm run verify:dotnet and dotnet test, then resolve the reported profile check."
+        ],
+        "exceptions": [
+          "Record a narrow, expiring exception for a suppressed diagnostic."
+        ],
+        "combinations": [],
+        "consumerFixture": "src/tests/create-dotnet.test.mjs",
+        "upgradeStrategy": "Regenerate only Lighthouse-owned starter and guidance surfaces after reviewing the profile upgrade guide.",
+        "guardrails": [
+          {
+            "id": "static",
+            "level": "required",
+            "kind": "hard",
+            "verification": "deterministic",
+            "command": "npm run verify:dotnet",
+            "description": "Static backend and analyzer checks pass."
+          },
+          {
+            "id": "unit",
+            "level": "required",
+            "kind": "hard",
+            "verification": "deterministic",
+            "command": "dotnet test",
+            "description": "Backend unit tests pass."
+          },
+          {
+            "id": "architecture",
+            "level": "recommended",
+            "kind": "hard",
+            "verification": "deterministic",
+            "command": "npm run verify:dotnet",
+            "description": "Architecture checks pass."
+          },
+          {
+            "id": "integration",
+            "level": "recommended",
+            "kind": "hard",
+            "verification": "deterministic",
+            "command": null,
+            "description": "Integration evidence is available when the application requires it."
+          },
+          {
+            "id": "functional",
+            "level": "recommended",
+            "kind": "hard",
+            "verification": "deterministic",
+            "command": null,
+            "description": "Functional evidence is available when the application requires it."
+          }
+        ]
+      },
+      {
+        "id": "visual-theme",
+        "owner": "@juangcarmona/lighthouse-ui",
+        "purpose": "A framework-neutral visual contract for applications with a user interface.",
+        "appliesTo": {
+          "shapes": [
+            "frontend",
+            "full-stack",
+            "mobile"
+          ],
+          "stacks": []
+        },
+        "surfaces": [
+          "semantic design tokens",
+          "DESIGN.md",
+          "UI design skill"
+        ],
+        "verification": {
+          "layers": [
+            {
+              "id": "static",
+              "level": "required",
+              "kind": "hard",
+              "verification": "deterministic",
+              "command": "lighthouse verify"
+            },
+            {
+              "id": "browser-e2e",
+              "level": "recommended",
+              "kind": "soft",
+              "verification": "semantic",
+              "command": null
+            }
+          ]
+        },
+        "prerequisites": [
+          "A user-interface surface"
+        ],
+        "dependencies": [],
+        "incompatibleWith": [],
+        "libraries": [
+          "@juangcarmona/lighthouse-ui"
+        ],
+        "structure": [
+          "docs/design/DESIGN.md",
+          ".agents/skills/lighthouse-ui/SKILL.md"
+        ],
+        "commands": [
+          "lighthouse verify",
+          "npm run test:visual"
+        ],
+        "failureConsequence": "The visual contract is incomplete until its tokens, guide, skill and applicable visual evidence are restored.",
+        "repairHints": [
+          "Run lighthouse reconcile after reviewing the visual-theme profile plan.",
+          "Run npm run test:visual for visual changes."
+        ],
+        "exceptions": [
+          "Record a project-owned visual exception with an owner and review date."
+        ],
+        "combinations": [],
+        "consumerFixture": "src/tests/lighthouse.test.mjs",
+        "upgradeStrategy": "Preserve project-owned design content and reconcile only Lighthouse-owned visual projections.",
+        "guardrails": [
+          {
+            "id": "static",
+            "level": "required",
+            "kind": "hard",
+            "verification": "deterministic",
+            "command": "lighthouse verify",
+            "description": "The token and design-guide contract passes."
+          },
+          {
+            "id": "browser-e2e",
+            "level": "recommended",
+            "kind": "soft",
+            "verification": "semantic",
+            "command": "npm run test:visual",
+            "description": "Critical visual journeys have reviewed evidence."
+          }
+        ]
+      },
+      {
+        "id": "react-web-platform",
+        "owner": "@juangcarmona/lighthouse",
+        "purpose": "React and TypeScript web applications with feature-oriented source, explicit browser contracts and reproducible evidence.",
+        "appliesTo": {
+          "shapes": [
+            "frontend",
+            "full-stack"
+          ],
+          "stacks": [
+            "react",
+            "typescript"
+          ]
+        },
+        "surfaces": [
+          "React application structure",
+          "feature slices",
+          "API client",
+          "server state",
+          "browser evidence",
+          "accessibility evidence"
+        ],
+        "prerequisites": [
+          "Node.js and a supported React toolchain"
+        ],
+        "dependencies": [
+          "visual-theme"
+        ],
+        "incompatibleWith": [],
+        "libraries": [
+          "React",
+          "TypeScript",
+          "TanStack Query",
+          "Testing Library",
+          "Vitest",
+          "Playwright",
+          "@axe-core/playwright",
+          "ESLint",
+          "typescript-eslint",
+          "Prettier"
+        ],
+        "structure": [
+          "src/app/",
+          "src/features/",
+          "src/shared/",
+          "src/api/",
+          "src/i18n/",
+          "src/design-system/",
+          "tests/"
+        ],
+        "commands": [
+          "npm run typecheck",
+          "npm run lint",
+          "npm run format:check",
+          "npm run build",
+          "npm test",
+          "npm run test:e2e"
+        ],
+        "failureConsequence": "The web profile is not ready for delivery while its required static, unit, browser or accessibility evidence is missing or failing.",
+        "repairHints": [
+          "Run the project typecheck, lint, format, build and unit commands.",
+          "Run the critical Playwright journeys and axe checks.",
+          "Select web-bff for authenticated browser sessions."
+        ],
+        "exceptions": [
+          "Record a project-owned exception with an owner, scope, reason and review date."
+        ],
+        "combinations": [
+          {
+            "with": [
+              "visual-theme"
+            ],
+            "purpose": "A web application using the Lighthouse visual contract."
+          },
+          {
+            "with": [
+              "visual-theme",
+              "web-bff",
+              "dotnet-backend"
+            ],
+            "purpose": "An authenticated web application with a server-side session boundary."
+          }
+        ],
+        "consumerFixture": "src/tests/profile-fixtures.test.mjs",
+        "upgradeStrategy": "Preserve adopter-owned source and configuration; reconcile only Lighthouse-owned profile guidance and declared projections.",
+        "guardrails": [
+          {
+            "id": "static",
+            "level": "required",
+            "kind": "hard",
+            "verification": "deterministic",
+            "command": "npm run typecheck",
+            "description": "Strict TypeScript and static checks pass."
+          },
+          {
+            "id": "unit",
+            "level": "required",
+            "kind": "hard",
+            "verification": "deterministic",
+            "command": "npm test",
+            "description": "Unit and component tests pass."
+          },
+          {
+            "id": "browser-e2e",
+            "level": "required",
+            "kind": "hard",
+            "verification": "deterministic",
+            "command": "npm run test:e2e",
+            "description": "Critical browser journeys have Playwright evidence."
+          },
+          {
+            "id": "functional",
+            "level": "required",
+            "kind": "soft",
+            "verification": "semantic",
+            "command": null,
+            "description": "Critical accessibility surfaces have axe and required human evidence."
+          },
+          {
+            "id": "architecture",
+            "level": "recommended",
+            "kind": "hard",
+            "verification": "deterministic",
+            "command": null,
+            "description": "Feature import boundaries remain valid."
+          },
+          {
+            "id": "operational",
+            "level": "optional",
+            "kind": "soft",
+            "verification": "human",
+            "command": null,
+            "description": "The project has reviewed performance and runtime budgets when selected."
+          }
+        ],
+        "verification": {
+          "layers": [
+            {
+              "id": "static",
+              "level": "required",
+              "kind": "hard",
+              "verification": "deterministic",
+              "command": "npm run typecheck"
+            },
+            {
+              "id": "unit",
+              "level": "required",
+              "kind": "hard",
+              "verification": "deterministic",
+              "command": "npm test"
+            },
+            {
+              "id": "browser-e2e",
+              "level": "required",
+              "kind": "hard",
+              "verification": "deterministic",
+              "command": "npm run test:e2e"
+            },
+            {
+              "id": "functional",
+              "level": "required",
+              "kind": "soft",
+              "verification": "semantic",
+              "command": null
+            },
+            {
+              "id": "architecture",
+              "level": "recommended",
+              "kind": "hard",
+              "verification": "deterministic",
+              "command": null
+            },
+            {
+              "id": "operational",
+              "level": "optional",
+              "kind": "soft",
+              "verification": "human",
+              "command": null
+            }
+          ]
+        }
+      },
+      {
+        "id": "web-bff",
+        "owner": "@juangcarmona/lighthouse",
+        "purpose": "A server-side session and API boundary for authenticated web applications.",
+        "appliesTo": {
+          "shapes": [
+            "full-stack"
+          ],
+          "stacks": [
+            "react",
+            "dotnet"
+          ]
+        },
+        "surfaces": [
+          "same-origin session",
+          "OAuth callback",
+          "CSRF policy",
+          "API proxy boundary",
+          "ProblemDetails",
+          "correlation and rate limiting"
+        ],
+        "prerequisites": [
+          "An identity provider or approved test identity",
+          "A web application with an API boundary"
+        ],
+        "dependencies": [
+          "react-web-platform",
+          "dotnet-backend"
+        ],
+        "incompatibleWith": [],
+        "libraries": [
+          "ASP.NET Core",
+          "OAuth Authorization Code with PKCE"
+        ],
+        "structure": [
+          "src/",
+          "tests/",
+          "session boundary",
+          "API routes"
+        ],
+        "commands": [
+          "npm run verify",
+          "npm run verify:dotnet",
+          "npm run test:e2e"
+        ],
+        "failureConsequence": "The authenticated web profile is not ready for delivery while session, CSRF, allowlist, logout or browser evidence is missing.",
+        "repairHints": [
+          "Verify cookie flags and the PKCE callback.",
+          "Run the negative CSRF, destination, logout and expiry tests.",
+          "Keep tokens outside browser storage."
+        ],
+        "exceptions": [
+          "Record a product and architecture decision for direct browser-to-API access or a separate BFF service."
+        ],
+        "combinations": [
+          {
+            "with": [
+              "react-web-platform",
+              "dotnet-backend",
+              "visual-theme"
+            ],
+            "purpose": "An authenticated web application with Lighthouse visual and backend profiles."
+          }
+        ],
+        "consumerFixture": "src/tests/profile-fixtures.test.mjs",
+        "upgradeStrategy": "Preserve adopter-owned identity and host code; reconcile only Lighthouse-owned guidance and declared profile projections.",
+        "guardrails": [
+          {
+            "id": "static",
+            "level": "required",
+            "kind": "hard",
+            "verification": "deterministic",
+            "command": "npm run verify:dotnet",
+            "description": "The host and BFF static checks pass."
+          },
+          {
+            "id": "integration",
+            "level": "required",
+            "kind": "hard",
+            "verification": "deterministic",
+            "command": "npm run verify:dotnet",
+            "description": "Session, callback and upstream integration checks pass."
+          },
+          {
+            "id": "browser-e2e",
+            "level": "required",
+            "kind": "hard",
+            "verification": "deterministic",
+            "command": "npm run test:e2e",
+            "description": "Authenticated browser journeys have evidence."
+          },
+          {
+            "id": "functional",
+            "level": "required",
+            "kind": "soft",
+            "verification": "semantic",
+            "command": null,
+            "description": "Security policy and exception evidence have human review."
+          },
+          {
+            "id": "operational",
+            "level": "recommended",
+            "kind": "hard",
+            "verification": "deterministic",
+            "command": null,
+            "description": "Correlation, rate limiting and observability checks are configured."
+          }
+        ],
+        "verification": {
+          "layers": [
+            {
+              "id": "static",
+              "level": "required",
+              "kind": "hard",
+              "verification": "deterministic",
+              "command": "npm run verify:dotnet"
+            },
+            {
+              "id": "integration",
+              "level": "required",
+              "kind": "hard",
+              "verification": "deterministic",
+              "command": "npm run verify:dotnet"
+            },
+            {
+              "id": "browser-e2e",
+              "level": "required",
+              "kind": "hard",
+              "verification": "deterministic",
+              "command": "npm run test:e2e"
+            },
+            {
+              "id": "functional",
+              "level": "required",
+              "kind": "soft",
+              "verification": "semantic",
+              "command": null
+            },
+            {
+              "id": "operational",
+              "level": "recommended",
+              "kind": "hard",
+              "verification": "deterministic",
+              "command": null
+            }
+          ]
+        }
+      },
+      {
+        "id": "pwa-capability",
+        "owner": "@juangcarmona/lighthouse",
+        "purpose": "An optional installability and offline capability for a React web application.",
+        "appliesTo": {
+          "shapes": [
+            "frontend",
+            "full-stack"
+          ],
+          "stacks": [
+            "react"
+          ]
+        },
+        "surfaces": [
+          "manifest",
+          "icons",
+          "service worker",
+          "asset cache",
+          "update strategy",
+          "offline policy"
+        ],
+        "prerequisites": [
+          "The react-web-platform profile",
+          "A product requirement for installability or offline behavior"
+        ],
+        "dependencies": [
+          "react-web-platform"
+        ],
+        "incompatibleWith": [],
+        "libraries": [
+          "Web App Manifest",
+          "Service Worker"
+        ],
+        "structure": [
+          "public/manifest.webmanifest",
+          "public/icons/",
+          "src/service-worker.*"
+        ],
+        "commands": [
+          "npm run typecheck",
+          "npm run build",
+          "npm run test:e2e"
+        ],
+        "failureConsequence": "The PWA capability is not ready for delivery while installability, update, offline or session evidence is missing.",
+        "repairHints": [
+          "Declare the offline bounded contexts and cache policy.",
+          "Run fresh-install, update, logout, expiry and user-change journeys.",
+          "Select web-bff for authenticated sessions."
+        ],
+        "exceptions": [
+          "Record an explicit product decision for any online-only or push exception."
+        ],
+        "combinations": [
+          {
+            "with": [
+              "visual-theme",
+              "react-web-platform"
+            ],
+            "purpose": "A public installable React web application."
+          },
+          {
+            "with": [
+              "visual-theme",
+              "react-web-platform",
+              "web-bff",
+              "dotnet-backend"
+            ],
+            "purpose": "An authenticated installable React web application."
+          }
+        ],
+        "consumerFixture": "src/tests/profile-fixtures.test.mjs",
+        "upgradeStrategy": "Preserve adopter-owned manifest, icons and service-worker code; reconcile only Lighthouse-owned guidance and profile metadata.",
+        "guardrails": [
+          {
+            "id": "static",
+            "level": "required",
+            "kind": "hard",
+            "verification": "deterministic",
+            "command": "npm run build",
+            "description": "Manifest and service-worker assets are included in the reproducible build."
+          },
+          {
+            "id": "browser-e2e",
+            "level": "required",
+            "kind": "hard",
+            "verification": "deterministic",
+            "command": "npm run test:e2e",
+            "description": "Install, update and declared offline journeys have browser evidence."
+          },
+          {
+            "id": "functional",
+            "level": "required",
+            "kind": "soft",
+            "verification": "semantic",
+            "command": null,
+            "description": "Offline scope, private-data policy and recovery behavior have human review."
+          },
+          {
+            "id": "operational",
+            "level": "recommended",
+            "kind": "hard",
+            "verification": "deterministic",
+            "command": null,
+            "description": "Cache invalidation and update telemetry are checked when selected."
+          }
+        ],
+        "verification": {
+          "layers": [
+            {
+              "id": "static",
+              "level": "required",
+              "kind": "hard",
+              "verification": "deterministic",
+              "command": "npm run build"
+            },
+            {
+              "id": "browser-e2e",
+              "level": "required",
+              "kind": "hard",
+              "verification": "deterministic",
+              "command": "npm run test:e2e"
+            },
+            {
+              "id": "functional",
+              "level": "required",
+              "kind": "soft",
+              "verification": "semantic",
+              "command": null
+            },
+            {
+              "id": "operational",
+              "level": "recommended",
+              "kind": "hard",
+              "verification": "deterministic",
+              "command": null
+            }
+          ]
+        }
+      },
+      {
+        "id": "mobile-expo",
+        "owner": "@juangcarmona/lighthouse",
+        "purpose": "An Expo and React Native profile for products with real Android or iOS requirements.",
+        "appliesTo": {
+          "shapes": [
+            "mobile",
+            "full-stack"
+          ],
+          "stacks": [
+            "expo",
+            "react-native"
+          ]
+        },
+        "surfaces": [
+          "Expo application",
+          "native navigation",
+          "secure storage",
+          "deep links",
+          "permissions",
+          "push notifications",
+          "native builds"
+        ],
+        "prerequisites": [
+          "Android or iOS is a product requirement",
+          "Expo tooling and a selected emulator or device target"
+        ],
+        "dependencies": [],
+        "incompatibleWith": [
+          "mobile-maui"
+        ],
+        "libraries": [
+          "Expo",
+          "React Native",
+          "Expo Router",
+          "TypeScript",
+          "TanStack Query",
+          "Expo SecureStore"
+        ],
+        "structure": [
+          "app/",
+          "src/features/",
+          "src/shared/",
+          "tests/"
+        ],
+        "commands": [
+          "npx expo doctor",
+          "npm test",
+          "npx expo start"
+        ],
+        "failureConsequence": "The mobile profile is not ready for delivery while native authentication, storage, permissions or device evidence is missing.",
+        "repairHints": [
+          "Run npx expo doctor and the selected native test target.",
+          "Verify secure storage, logout, expiry and user-change behavior.",
+          "Keep optional web export evidence separate."
+        ],
+        "exceptions": [
+          "Record a product decision for each omitted native platform capability or web export."
+        ],
+        "combinations": [
+          {
+            "with": [
+              "dotnet-backend"
+            ],
+            "purpose": "A TypeScript mobile application with a Lighthouse backend."
+          }
+        ],
+        "consumerFixture": "src/tests/profile-fixtures.test.mjs",
+        "upgradeStrategy": "Preserve adopter-owned Expo source, native configuration and permissions; reconcile only Lighthouse-owned guidance and profile metadata.",
+        "guardrails": [
+          {
+            "id": "static",
+            "level": "required",
+            "kind": "hard",
+            "verification": "deterministic",
+            "command": "npx expo doctor",
+            "description": "Expo configuration and static checks pass."
+          },
+          {
+            "id": "unit",
+            "level": "required",
+            "kind": "hard",
+            "verification": "deterministic",
+            "command": "npm test",
+            "description": "Unit and component tests pass."
+          },
+          {
+            "id": "functional",
+            "level": "required",
+            "kind": "hard",
+            "verification": "deterministic",
+            "command": "npx expo start",
+            "description": "Authentication, secure storage and native interaction evidence passes on the selected target."
+          },
+          {
+            "id": "browser-e2e",
+            "level": "optional",
+            "kind": "hard",
+            "verification": "deterministic",
+            "command": "npx expo export --platform web",
+            "description": "Selected web export has separate browser evidence."
+          },
+          {
+            "id": "operational",
+            "level": "recommended",
+            "kind": "soft",
+            "verification": "human",
+            "command": null,
+            "description": "Permissions, push and signing decisions have human review."
+          }
+        ],
+        "verification": {
+          "layers": [
+            {
+              "id": "static",
+              "level": "required",
+              "kind": "hard",
+              "verification": "deterministic",
+              "command": "npx expo doctor"
+            },
+            {
+              "id": "unit",
+              "level": "required",
+              "kind": "hard",
+              "verification": "deterministic",
+              "command": "npm test"
+            },
+            {
+              "id": "functional",
+              "level": "required",
+              "kind": "hard",
+              "verification": "deterministic",
+              "command": "npx expo start"
+            },
+            {
+              "id": "browser-e2e",
+              "level": "optional",
+              "kind": "hard",
+              "verification": "deterministic",
+              "command": "npx expo export --platform web"
+            },
+            {
+              "id": "operational",
+              "level": "recommended",
+              "kind": "soft",
+              "verification": "human",
+              "command": null
+            }
+          ]
+        }
+      },
+      {
+        "id": "mobile-maui",
+        "owner": "@juangcarmona/lighthouse",
+        "purpose": "A native .NET MAUI profile for products with real Android or iOS requirements.",
+        "appliesTo": {
+          "shapes": [
+            "mobile",
+            "full-stack"
+          ],
+          "stacks": [
+            "maui",
+            "dotnet"
+          ]
+        },
+        "surfaces": [
+          ".NET MAUI application",
+          "native lifecycle",
+          "secure storage",
+          "deep links",
+          "permissions",
+          "device capabilities",
+          "native builds"
+        ],
+        "prerequisites": [
+          "Android or iOS is a product requirement",
+          ".NET SDK and a selected emulator or device target"
+        ],
+        "dependencies": [],
+        "incompatibleWith": [
+          "mobile-expo"
+        ],
+        "libraries": [
+          ".NET MAUI",
+          "C#",
+          "XAML",
+          "OIDC Authorization Code with PKCE"
+        ],
+        "structure": [
+          "src/",
+          "tests/",
+          "platforms/"
+        ],
+        "commands": [
+          "dotnet restore --locked-mode",
+          "dotnet build",
+          "dotnet test"
+        ],
+        "failureConsequence": "The mobile profile is not ready for delivery while native authentication, storage, permissions or device evidence is missing.",
+        "repairHints": [
+          "Run locked restore, analyzers and the selected device test.",
+          "Verify secure storage, logout, expiry and user-change behavior.",
+          "Select exactly one native mobile profile unless a product decision says otherwise."
+        ],
+        "exceptions": [
+          "Record a product decision for each omitted target, device capability or signing step."
+        ],
+        "combinations": [
+          {
+            "with": [
+              "dotnet-backend"
+            ],
+            "purpose": "A native .NET mobile application with a Lighthouse backend."
+          }
+        ],
+        "consumerFixture": "src/tests/profile-fixtures.test.mjs",
+        "upgradeStrategy": "Preserve adopter-owned MAUI source, platform configuration and permissions; reconcile only Lighthouse-owned guidance and profile metadata.",
+        "guardrails": [
+          {
+            "id": "static",
+            "level": "required",
+            "kind": "hard",
+            "verification": "deterministic",
+            "command": "dotnet build",
+            "description": "Locked restore, analyzers and build checks pass."
+          },
+          {
+            "id": "unit",
+            "level": "required",
+            "kind": "hard",
+            "verification": "deterministic",
+            "command": "dotnet test",
+            "description": "Unit and client tests pass."
+          },
+          {
+            "id": "functional",
+            "level": "required",
+            "kind": "hard",
+            "verification": "deterministic",
+            "command": "dotnet test",
+            "description": "Authentication, secure storage and native interaction evidence passes on the selected target."
+          },
+          {
+            "id": "operational",
+            "level": "recommended",
+            "kind": "soft",
+            "verification": "human",
+            "command": null,
+            "description": "Permissions, device capabilities and signing decisions have human review."
+          }
+        ],
+        "verification": {
+          "layers": [
+            {
+              "id": "static",
+              "level": "required",
+              "kind": "hard",
+              "verification": "deterministic",
+              "command": "dotnet build"
+            },
+            {
+              "id": "unit",
+              "level": "required",
+              "kind": "hard",
+              "verification": "deterministic",
+              "command": "dotnet test"
+            },
+            {
+              "id": "functional",
+              "level": "required",
+              "kind": "hard",
+              "verification": "deterministic",
+              "command": "dotnet test"
+            },
+            {
+              "id": "operational",
+              "level": "recommended",
+              "kind": "soft",
+              "verification": "human",
+              "command": null
+            }
+          ]
+        }
+      }
+    ],
+    "status": "passed"
+  }
+}

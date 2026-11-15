@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "profileVersion": 1,
+  "repository": "juangcarmona/scoremap",
+  "intake": "preserve",
+  "requiredChecks": [
+    {
+      "context": "Verify ScoreMap",
+      "integrationId": 15368
+    }
+  ],
+  "requiredApprovals": 0,
+  "evidenceBranch": "lighthouse-evidence",
+  "releaseWorkflowReady": false,
+  "overrides": {
+    "releases.immutable": {
+      "value": null,
+      "reason": "No release publisher is selected for the MVP."
+    }
+  },
+  "completion": {
+    "publishEvidence": true,
+    "postMergeWorkflows": [
+      "ci.yml"
+    ]
+  }
+}

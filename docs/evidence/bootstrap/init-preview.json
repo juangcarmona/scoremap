@@ -1,0 +1,233 @@
+{
+  "schemaVersion": 1,
+  "intent": "Local-first installable song sketches for tablet performance consultation, with explicit domain invariants and behaviour-derived verification.",
+  "product": "ScoreMap",
+  "application": {
+    "shape": "frontend",
+    "stacks": [
+      "react",
+      "typescript"
+    ]
+  },
+  "profiles": [
+    "react-web-platform",
+    "pwa-capability",
+    "visual-theme"
+  ],
+  "reference": null,
+  "openQuestions": [],
+  "status": "ready",
+  "manifest": {
+    "product": "ScoreMap",
+    "application": {
+      "shape": "frontend",
+      "stacks": [
+        "react",
+        "typescript"
+      ]
+    },
+    "profiles": [
+      "react-web-platform",
+      "pwa-capability",
+      "visual-theme"
+    ]
+  },
+  "operations": [
+    {
+      "path": "lighthouse.json",
+      "action": "create"
+    },
+    {
+      "path": "src/",
+      "action": "create"
+    },
+    {
+      "path": "docs/",
+      "action": "create"
+    },
+    {
+      "path": "infra/",
+      "action": "create"
+    },
+    {
+      "path": "scripts/",
+      "action": "create"
+    },
+    {
+      "path": ".husky/",
+      "action": "create"
+    },
+    {
+      "path": ".github/",
+      "action": "create"
+    },
+    {
+      "path": ".agents/",
+      "action": "create"
+    },
+    {
+      "path": ".lighthouse/",
+      "action": "create"
+    },
+    {
+      "path": ".github/workflows/",
+      "action": "create"
+    },
+    {
+      "path": ".agents/skills/",
+      "action": "create"
+    },
+    {
+      "path": "docs/design/",
+      "action": "create"
+    },
+    {
+      "path": "docs/profiles/",
+      "action": "create"
+    },
+    {
+      "path": ".agents/skills/lighthouse-init/",
+      "action": "create"
+    },
+    {
+      "path": ".agents/skills/lighthouse-ui/",
+      "action": "create"
+    },
+    {
+      "path": "docs/profiles/react-web-platform/",
+      "action": "create"
+    },
+    {
+      "path": ".agents/skills/lighthouse-react-web/",
+      "action": "create"
+    },
+    {
+      "path": "docs/profiles/pwa-capability/",
+      "action": "create"
+    },
+    {
+      "path": ".agents/skills/lighthouse-pwa/",
+      "action": "create"
+    },
+    {
+      "path": "src/.gitkeep",
+      "action": "create"
+    },
+    {
+      "path": "infra/.gitkeep",
+      "action": "create"
+    },
+    {
+      "path": "LIGHTHOUSE.md",
+      "action": "create"
+    },
+    {
+      "path": "scripts/lighthouse-guard.mjs",
+      "action": "create"
+    },
+    {
+      "path": ".husky/commit-msg",
+      "action": "create"
+    },
+    {
+      "path": ".husky/pre-push",
+      "action": "create"
+    },
+    {
+      "path": ".github/workflows/lighthouse.yml",
+      "action": "create"
+    },
+    {
+      "path": ".agents/skills/lighthouse-init/SKILL.md",
+      "action": "create"
+    },
+    {
+      "path": "docs/design/DESIGN.md",
+      "action": "create"
+    },
+    {
+      "path": ".agents/skills/lighthouse-ui/SKILL.md",
+      "action": "create"
+    },
+    {
+      "path": "docs/profiles/react-web-platform/README.md",
+      "action": "create"
+    },
+    {
+      "path": "docs/profiles/react-web-platform/adoption.md",
+      "action": "create"
+    },
+    {
+      "path": "docs/profiles/react-web-platform/structure.md",
+      "action": "create"
+    },
+    {
+      "path": "docs/profiles/react-web-platform/guardrails.md",
+      "action": "create"
+    },
+    {
+      "path": "docs/profiles/react-web-platform/testing.md",
+      "action": "create"
+    },
+    {
+      "path": ".agents/skills/lighthouse-react-web/SKILL.md",
+      "action": "create"
+    },
+    {
+      "path": "docs/profiles/pwa-capability/README.md",
+      "action": "create"
+    },
+    {
+      "path": "docs/profiles/pwa-capability/adoption.md",
+      "action": "create"
+    },
+    {
+      "path": "docs/profiles/pwa-capability/guardrails.md",
+      "action": "create"
+    },
+    {
+      "path": "docs/profiles/pwa-capability/offline.md",
+      "action": "create"
+    },
+    {
+      "path": "docs/profiles/pwa-capability/testing.md",
+      "action": "create"
+    },
+    {
+      "path": ".agents/skills/lighthouse-pwa/SKILL.md",
+      "action": "create"
+    },
+    {
+      "path": ".lighthouse/sdlc.json",
+      "action": "create"
+    },
+    {
+      "path": ".github/workflows/lighthouse-worker-maintenance.yml",
+      "action": "create"
+    },
+    {
+      "path": ".lighthouse/housekeeping.json",
+      "action": "create"
+    },
+    {
+      "path": ".lighthouse/commands.json",
+      "action": "create"
+    },
+    {
+      "path": ".lighthouse/upgrade.json",
+      "action": "create"
+    }
+  ],
+  "conflicts": [],
+  "productDefinition": {
+    "requiredSerializationVersion": "v1alpha2",
+    "serializationVersion": null,
+    "providerVersion": "0.26.1",
+    "status": "unconfigured",
+    "diagnostics": [
+      "Explicit .product/config.yaml is required; an implicit provider default is not PDaC v1alpha2 adoption."
+    ],
+    "nextAction": "For a new model, run prodshape --serialization-version v1alpha2 init --full --sdd none --gitignore. For existing product content, review the migration guide before initialization."
+  },
+  "apply": "lighthouse init --plan-file <path> --apply"
+}

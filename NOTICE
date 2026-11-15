@@ -1,0 +1,6 @@
+ScoreMap includes Lighthouse-authored repository guidance and workflows from
+@juangcarmona/lighthouse 0.13.11, @juangcarmona/lighthouse-sdlc 0.24.0 and
+@juangcarmona/lighthouse-ui 0.2.1, under Apache-2.0.
+Applicable upstream license and notice texts remain in the installed packages.
+ArcShape scaffold and arc42-derived material retain their upstream attribution.
+No license is assigned here to ScoreMap application code.

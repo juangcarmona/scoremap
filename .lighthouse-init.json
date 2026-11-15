@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "product": "ScoreMap",
+  "intent": "Local-first installable song sketches for tablet performance consultation, with explicit domain invariants and behaviour-derived verification.",
+  "application": { "shape": "frontend", "stacks": ["react", "typescript"] },
+  "profiles": ["react-web-platform", "pwa-capability", "visual-theme"],
+  "openQuestions": []
+}

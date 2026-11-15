@@ -1,0 +1,51 @@
+{
+  "scope": "Implement only accepted ScoreMap behaviours for the requested issue; preserve product/architecture authority and all repository policy.",
+  "paths": [
+    "src/",
+    "tests/",
+    "public/",
+    "index.html",
+    "vite.config.ts",
+    "vitest.config.ts",
+    "playwright.config.ts",
+    "tsconfig.json",
+    "tsconfig.app.json",
+    "eslint.config.js",
+    "package.json",
+    "package-lock.json",
+    "scripts/verify-traceability.mjs"
+  ],
+  "checks": [
+    [
+      "npm",
+      "ci",
+      "--ignore-scripts"
+    ],
+    [
+      "npm",
+      "run",
+      "verify"
+    ],
+    [
+      "npm",
+      "run",
+      "test:e2e"
+    ]
+  ],
+  "reviewRequired": true,
+  "verification": {
+    "paths": [
+      "tests/",
+      "src/**/*.test.ts",
+      "src/**/*.test.tsx",
+      "vitest.config.ts",
+      "playwright.config.ts",
+      "package.json",
+      "package-lock.json",
+      "scripts/verify-traceability.mjs"
+    ],
+    "corrections": {
+      "enabled": false
+    }
+  }
+}
