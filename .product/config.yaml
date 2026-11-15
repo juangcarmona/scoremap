@@ -1,7 +1,7 @@
 version: v1alpha2
 product-root: docs/product
 validation:
-  warnings-as-errors: false
+  warnings-as-errors: true
 extensions:
   prodshape:
     generated:

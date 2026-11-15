@@ -9,8 +9,8 @@ A repository-scoped lighthouse-workflow runner is online. Its mounted engine-sco
 ## Blocked prerequisites
 
 - GitHub GET rules/branches/main returns HTTP 403: upgrade to GitHub Pro or make this repository public. The repository must remain private. No completion/epic/unattended merge may bypass enforced checks.
-- The authenticated OAuth token cannot list GitHub App installations (HTTP 403). Required: repository-scoped private App installation with Contents read/write, LIGHTHOUSE_CI_APP_CLIENT_ID variable and LIGHTHOUSE_CI_APP_PRIVATE_KEY secret. Repository secrets/variables were initially empty. Source-repository setup does not apply automatically.
-- Cloudflare Wrangler reports unauthenticated. No Cloudflare credential was supplied to this environment; deployment awaits an authorized credential provisioning route.
+- The authenticated OAuth token cannot list GitHub App installations (HTTP 403). Required: repository-scoped private App installation with Contents read/write, LIGHTHOUSE_CI_APP_CLIENT_ID variable and LIGHTHOUSE_CI_APP_PRIVATE_KEY secret. Repository secrets/variables were initially empty; the App client ID and private-key secret subsequently became available and require native access verification. Source-repository setup does not apply automatically.
+- The owner has excluded Cloudflare and Wrangler. No deployment provider is selected; the application remains an HTTPS-ready PWA.
 - Physical Android tablet installation has no device target available here. Chromium mobile emulation is separate evidence.
 
 Workers are installed separately from activation. Bounded unattended policy retains enabled=false and merge=false; epic/completion stay disabled until their live prerequisites can be verified. Refinement may be enabled independently after its runner and default-branch workflow are verified. Never copy CI private keys into source or chat.
