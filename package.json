@@ -64,6 +64,7 @@
     "test": "vitest run",
     "test:e2e": "playwright test",
     "verify:app": "npm run typecheck && npm run lint && npm run format:check && npm test && npm run build",
-    "evidence:record": "node scripts/record-verification.mjs && prodshape evidence verify docs/evidence/mvp/verification-evidence.json --format json"
+    "evidence:record": "node scripts/record-verification.mjs && prodshape evidence verify docs/evidence/mvp/verification-evidence.json --format json",
+    "verify:delivery": "node scripts/verify-delivery.mjs"
   }
 }
