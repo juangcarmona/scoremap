@@ -1,0 +1,9 @@
+{
+  "name": "scoremap",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Your sheet music, mapped out.",
+  "engines": { "node": ">=22" },
+  "repository": { "type": "git", "url": "https://github.com/juangcarmona/scoremap.git" }
+}
