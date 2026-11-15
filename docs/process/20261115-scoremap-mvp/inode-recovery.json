@@ -1,0 +1,19 @@
+{
+  "scope": "Completed ScoreMap local-review provider dependencies and caches only",
+  "removed": [
+    "/tmp/scoremap-research/review-plan/da1b56c59b069695d12d9f25cbc5b62b36622a916e4d7fad66d47530f1d90fef/tmp/lighthouse-0-1/product-provider/node_modules",
+    "/tmp/scoremap-research/review-plan/da1b56c59b069695d12d9f25cbc5b62b36622a916e4d7fad66d47530f1d90fef/tmp/lighthouse-0-1/product-provider/home/cache",
+    "/tmp/scoremap-research/review-plan/087f9982c6ffba5a0ea2f8ddd8522fa463c080cf977b046a970ab569e60aef45/tmp/lighthouse-0-1/product-provider/node_modules",
+    "/tmp/scoremap-research/review-plan/087f9982c6ffba5a0ea2f8ddd8522fa463c080cf977b046a970ab569e60aef45/tmp/lighthouse-0-1/product-provider/home/cache",
+    "/tmp/scoremap-research/review-plan/95d4571394c1f8aa1daf7c48e21ee23063e627c410549c11e94e601db7a1ba8e/tmp/lighthouse-0-1/product-provider/node_modules",
+    "/tmp/scoremap-research/review-plan/95d4571394c1f8aa1daf7c48e21ee23063e627c410549c11e94e601db7a1ba8e/tmp/lighthouse-0-1/product-provider/home/cache",
+    "/tmp/scoremap-research/review-plan/5994e791d5548a3c27b7a3cb751e04346386a985b25540f1c3d149a1557bd35d/tmp/lighthouse-0-1/product-provider/node_modules",
+    "/tmp/scoremap-research/review-plan/5994e791d5548a3c27b7a3cb751e04346386a985b25540f1c3d149a1557bd35d/tmp/lighthouse-0-1/product-provider/home/cache",
+    "/tmp/scoremap-research/review-candidate/cf9c87e10b6cd646c5e15e5f2045ec6757d2080a321105ad4ada93ae3cfa2eac/tmp/lighthouse-0-1/product-provider/node_modules",
+    "/tmp/scoremap-research/review-candidate/cf9c87e10b6cd646c5e15e5f2045ec6757d2080a321105ad4ada93ae3cfa2eac/tmp/lighthouse-0-1/product-provider/home/cache",
+    "/tmp/scoremap-research/review-candidate-round-2/1363acb33c41c80b32a53c016bcabe20f52f3b2453fc2e83b5220190013dd1ba/tmp/lighthouse-0-1/product-provider/node_modules",
+    "/tmp/scoremap-research/review-candidate-round-2/1363acb33c41c80b32a53c016bcabe20f52f3b2453fc2e83b5220190013dd1ba/tmp/lighthouse-0-1/product-provider/home/cache"
+  ],
+  "openReferencesBefore": [],
+  "otherRepositoriesModified": false
+}
