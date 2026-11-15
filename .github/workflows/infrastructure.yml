@@ -18,7 +18,7 @@ jobs:
           owner: juangcarmona
           repositories: scoremap
           permission-contents: write
-      - name: Verify exact private target with App credentials
+      - name: Verify exact target with App credentials
         env:
           GH_TOKEN: ${{ steps.app.outputs.token }}
         run: node scripts/check-repository-target.mjs

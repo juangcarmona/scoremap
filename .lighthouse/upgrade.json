@@ -23,12 +23,12 @@
     },
     "github-profile": {
       "id": "github-profile",
-      "status": "available",
+      "status": "adopted",
       "selection": "opt-in",
       "provider": "github",
       "version": "1",
       "catalogVersion": "0.5.0",
-      "nextAction": "lighthouse capabilities select --id github-profile --provider github"
+      "nextAction": null
     }
   },
   "projections": {

@@ -10,7 +10,10 @@ and personal notes.
 Primary target: Android tablet in landscape; secondary target: Android phone.
 Initial MVP deadline: Friday, November 20, 2026.
 
-This repository is private. No public license has been selected.
+This repository is public. No public license has been selected.
+
+The owner configures and publishes Cloudflare Pages at https://scoremap.jgcarmona.com.
+This is the intended target; no deployment is claimed.
 
 ProductShape owns accepted product intent; ArcShape owns architecture;
 OpenSpec owns temporary delivery specifications; Lighthouse owns delivery guardrails.

@@ -38,7 +38,7 @@ Derive executable tests from every relevant SB; valid lifecycle transitions use 
 
 ## Risks / Trade-offs
 
-GitHub enforcement/App and the unselected deployment target may block native completion or deployment independently of local correctness. Device emulation does not prove physical Android installation. Whole-library snapshots may need measured future migration for large PDFs.
+GitHub enforcement/App and owner-managed publication may block native completion or deployment independently of local correctness. Device emulation does not prove physical Android installation. Whole-library snapshots may need measured future migration for large PDFs.
 
 ## Review gates
 
@@ -46,4 +46,4 @@ Independent plan assessment precedes production code. Independent implementation
 
 ## Final observable acceptance
 
-Review actual complete successful and refused backup browser journeys, not only import rejection scenarios. Require the two-revision production service-worker update receipt, real offline reload/edit/save/recovery, direct mutation-guard tests and musical keyboard geometry evidence. Review exact-source unit/integration and browser output, tablet landscape/narrow viewport/200% text captures and axe results. Physical Android installation and the owner-selected HTTPS deployment target are separate gates; no unselected hosting provider is introduced.
+Review actual complete successful and refused backup browser journeys, not only import rejection scenarios. Require the two-revision production service-worker update receipt, real offline reload/edit/save/recovery, direct mutation-guard tests and musical keyboard geometry evidence. Review exact-source unit/integration and browser output, tablet landscape/narrow viewport/200% text captures and axe results. Physical Android installation and the owner-managed HTTPS deployment target are separate gates; no unselected hosting provider is introduced.

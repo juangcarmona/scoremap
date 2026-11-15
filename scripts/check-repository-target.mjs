@@ -6,8 +6,8 @@ const repository = JSON.parse(
 if (
   repository.full_name !== 'juangcarmona/scoremap' ||
   repository.id !== 1458674261 ||
-  !repository.private
+  repository.private
 ) {
   throw new Error('ScoreMap repository identity or visibility does not match.');
 }
-console.log(JSON.stringify({ repository: repository.full_name, id: repository.id, private: true }));
+console.log(JSON.stringify({ repository: repository.full_name, id: repository.id, private: false }));
