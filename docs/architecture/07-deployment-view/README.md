@@ -6,7 +6,7 @@ description: Static delivery and installation boundary
 
 # 7. Deployment view
 
-The target deployment is a static HTTPS origin with Vite-built assets, a manifest, icons and a service worker. Cloudflare Pages is the preferred host when credentials are available. Deployment status is recorded in delivery evidence, not inferred from source integration.
+The target deployment is a static HTTPS origin with Vite-built assets, a manifest, icons and a service worker. The owner configures and publishes Cloudflare Pages at https://scoremap.jgcarmona.com. The project has no Wrangler deployment dependency. Build: `npm ci --ignore-scripts && npm run build`; output: `dist`; Node 24. No deployment has been performed by this agent. Deployment status is recorded in delivery evidence, not inferred from source integration.
 
 <!-- pdac:cite id="CON-PLATFORM" digest="sha256:ed4f4900b26c706198a0448376f26d57d0665462c5e77ac4dbadc04bb75e6bf5" -->
 

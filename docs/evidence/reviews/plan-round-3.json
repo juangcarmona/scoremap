@@ -1,0 +1,68 @@
+{
+  "executionOrigin": "local trusted-host invocation of Lighthouse SDLC 0.24.0; no native Actions provenance",
+  "sourceRevision": "ac84c29d53f2882421f766ae4c82eeb7d6057fdf",
+  "review": {
+    "binding": "61eed1d97738221827ebd502dbc4c88d87f31e279fd8947f608083dd129a9261",
+    "verdict": "accept",
+    "findings": []
+  },
+  "modelExecution": {
+    "requested": {
+      "profile": "plan",
+      "model": "openai/gpt-6.1-sol",
+      "reasoningEffort": "high"
+    },
+    "resolved": {
+      "mode": "profile",
+      "profile": "plan",
+      "model": "openai/gpt-6.1-sol",
+      "reasoningEffort": "high",
+      "engineModel": "openai/gpt-6.1-sol#high",
+      "source": "task.profile",
+      "fields": {
+        "model": "operator",
+        "reasoningEffort": "operator"
+      },
+      "capabilityEvidence": "operator-configuration-only"
+    },
+    "providerReported": {
+      "model": null,
+      "reasoningEffort": null,
+      "status": "unverified",
+      "reason": "The current adapter has no authenticated provider-settings receipt"
+    },
+    "billing": {
+      "route": "unchanged",
+      "actualCost": null,
+      "estimatedApiEquivalentCost": null,
+      "subscriptionUsage": null
+    }
+  },
+  "execution": {
+    "status": "passed",
+    "exitCode": 0,
+    "signal": null,
+    "resources": {
+      "pidsLimit": 128,
+      "pidsPeak": 36,
+      "pidsDenied": 0,
+      "memoryPeakBytes": 361619456,
+      "oomKills": 0
+    },
+    "scratch": {
+      "npmCache": "released",
+      "beforeCommand": {
+        "capacityBytes": 2147483648,
+        "availableBytes": 2147483648
+      },
+      "beforeCleanup": {
+        "capacityBytes": 2147483648,
+        "availableBytes": 2128822272
+      },
+      "afterCleanup": {
+        "capacityBytes": 2147483648,
+        "availableBytes": 2128822272
+      }
+    }
+  }
+}

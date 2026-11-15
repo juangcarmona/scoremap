@@ -1,0 +1,74 @@
+{
+  "inspectedAt": "2026-11-15",
+  "normativeSpec": {
+    "repository": "product-definition-as-code/spec",
+    "revision": "197353d4ab82e107ec277458bf81354617d62e7b",
+    "serialization": "v1alpha2"
+  },
+  "versions": {
+    "@juangcarmona/lighthouse": {
+      "version": "0.13.11",
+      "integrity": "sha512-1ZsOKiGLmRE1ZPIvxL/wGkWfkfFwP/OvOY8qwZyUAMY+p0V9akBp3YgXZmGEltzMNjKGUAihxLkA+O0X1GYb2g=="
+    },
+    "@juangcarmona/lighthouse-sdlc": {
+      "version": "0.24.0",
+      "integrity": "sha512-Z/kenqQit6ZtPf6AmKOinZKeD2FY3+6lm0UHAp41jYjHetMbdjgM7RCLhpmnxcrGS2Sm4l5pTSEWsEAdGOyplg=="
+    },
+    "@prodshape/cli": {
+      "version": "0.26.1",
+      "integrity": "sha512-JAivR+Ys3WG7W42Fwf6WjJe3HiD5Xo6Rq7moWDG0b536hQ98w4P4wx+hBBnvCxFP3+KMyyc+msnUd61+IImLYw=="
+    },
+    "@prodshape/core": {
+      "version": "0.25.0",
+      "integrity": "sha512-tlP42CGVfi+/XAERDz2+kjgqqPf9Q/BXH3gaE9h6t/VNoFd/Eraqx959StH4UD7jP5h5l85AH7knOXeQ2XvQ3A=="
+    },
+    "@arcshape/cli": {
+      "version": "0.4.0",
+      "integrity": "sha512-sd5cbbKBHxM4cZuSawe4kYeeiTV/RENrNDnEc+oXUzlk3qY9dJYPNS2gXurV14dfTc0kppy7xrvHizBsNsXv2w=="
+    },
+    "@fission-ai/openspec": {
+      "version": "1.15.0",
+      "integrity": "sha512-lG/EPEiL22bB70yKJhWWSPk1UQGLnwO7Dp+hNc/jUmBwb0qxPLzHCUkXEfkny4iYDOsgnsNQmc39/g9QcvnBnA=="
+    }
+  },
+  "tooling": {
+    "@arcshape/cli": "0.4.0",
+    "@axe-core/playwright": "4.14.0",
+    "@eslint/js": "10.0.1",
+    "@fission-ai/openspec": "1.15.0",
+    "@juangcarmona/lighthouse": "0.13.11",
+    "@playwright/test": "1.65.1",
+    "@prodshape/cli": "0.26.1",
+    "@testing-library/jest-dom": "7.0.1",
+    "@testing-library/react": "16.3.3",
+    "@testing-library/user-event": "14.6.10",
+    "@types/node": "26.6.6",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.3.0",
+    "eslint": "10.15.0",
+    "eslint-plugin-react-hooks": "7.1.1",
+    "eslint-plugin-react-refresh": "0.5.8",
+    "fake-indexeddb": "6.2.8",
+    "jsdom": "31.0.1",
+    "markdownlint-cli2": "0.24.1",
+    "prettier": "3.10.1",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.72.2",
+    "vite": "8.3.8",
+    "vite-plugin-pwa": "2.0.0",
+    "vitest": "5.1.0"
+  },
+  "productionAudit": {
+    "info": 0,
+    "low": 0,
+    "moderate": 0,
+    "high": 0,
+    "critical": 0,
+    "total": 0
+  },
+  "limits": [
+    "Registry installation is distinct from native execution and product acceptance.",
+    "Latest OpenSpec 2.0.0 was inspected; installed 1.15.0 follows the current Lighthouse integration contract."
+  ]
+}

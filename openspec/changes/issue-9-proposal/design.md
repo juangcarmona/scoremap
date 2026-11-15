@@ -29,8 +29,16 @@ Derive executable tests from every relevant SB; valid lifecycle transitions use 
 
 ## Risks / Trade-offs
 
-GitHub enforcement/App and Cloudflare credentials may block native completion or deployment independently of local correctness. Device emulation does not prove physical Android installation. Whole-library snapshots may need measured future migration for large PDFs.
+GitHub enforcement/App and owner-managed publication may block native completion or deployment independently of local correctness. Device emulation does not prove physical Android installation. Whole-library snapshots may need measured future migration for large PDFs.
 
 ## Review gates
 
 Independent plan assessment precedes production code. Independent implementation review evaluates observable behaviour and test strength. Missing reviews remain pending. Integration requires the actual configured native gates, including current-head owner authorization; this plan grants no new permission.
+
+## Guard and navigation paths
+
+The bounded paths include src/features/library/useLibrary.ts, src/features/library/domain.ts and direct application guard tests. All content commands, import, external-reference edits and attachment changes share the mode guard. PDF view-page memory is an explicit permitted consultation operation. Mode itself is transient. Test direct command rejection and UI control absence, rapid song switching and no musical-content mutation on mode transitions.
+
+## Guarded chord editor integration from issue #8
+
+This slice owns src/features/library/Sketch.tsx, src/features/library/domain.ts, src/features/library/useLibrary.ts, tests/library/domain.test.ts, tests/library/application.test.ts and tests/e2e/performance.spec.ts for SB-CHORD-ASSIGN, SB-CHORD-MODIFY and SB-CHORD-INVALID. Integrate the pure #8 chord model through the #5 serialized edit-mode guard and expose ordered section chord selection/replacement. Direct tests reject unsupported roots/qualities and all content writes in performance mode; browser tests select a new chord/quality and compare the chord label, selected state and actual highlighted MIDI keys immediately, then switch mode and prove no content mutation. Existing invariants and associations survive the edit.

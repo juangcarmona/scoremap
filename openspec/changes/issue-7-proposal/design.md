@@ -33,8 +33,12 @@ Derive executable tests from every relevant SB; valid lifecycle transitions use 
 
 ## Risks / Trade-offs
 
-GitHub enforcement/App and Cloudflare credentials may block native completion or deployment independently of local correctness. Device emulation does not prove physical Android installation. Whole-library snapshots may need measured future migration for large PDFs.
+GitHub enforcement/App and owner-managed publication may block native completion or deployment independently of local correctness. Device emulation does not prove physical Android installation. Whole-library snapshots may need measured future migration for large PDFs.
 
 ## Review gates
 
 Independent plan assessment precedes production code. Independent implementation review evaluates observable behaviour and test strength. Missing reviews remain pending. Integration requires the actual configured native gates, including current-head owner authorization; this plan grants no new permission.
+
+## Shared mutation paths
+
+The bounded paths additionally include src/features/library/domain.ts, src/features/library/useLibrary.ts and tests/library/domain.test.ts. Reorder commands must receive an exact permutation and preserve associated content; touch buttons provide accessible move-up/down behaviour. Test first/last no-op boundaries, duplicate/missing identities, repeat 1/99 and invalid counts. Source rollback never rewrites stored musical data.

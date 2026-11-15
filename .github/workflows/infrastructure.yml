@@ -1,0 +1,24 @@
+name: ScoreMap infrastructure readiness
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  app-access:
+    name: Verify repository App installation
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/create-github-app-token@v3
+        id: app
+        with:
+          client-id: ${{ vars.LIGHTHOUSE_CI_APP_CLIENT_ID }}
+          private-key: ${{ secrets.LIGHTHOUSE_CI_APP_PRIVATE_KEY }}
+          owner: juangcarmona
+          repositories: scoremap
+          permission-contents: write
+      - name: Verify exact target with App credentials
+        env:
+          GH_TOKEN: ${{ steps.app.outputs.token }}
+        run: node scripts/check-repository-target.mjs

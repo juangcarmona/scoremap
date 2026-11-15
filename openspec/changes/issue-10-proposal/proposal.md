@@ -8,7 +8,7 @@ Realize the already supplied ScoreMap product intent for [issue #10](https://git
 
 ## What Changes
 
-Implement the accepted behaviours cited below in the bounded paths `vite.config.ts`, `public/manifest.webmanifest`, `tests/e2e/offline.spec.ts`. Dependencies: #9.
+Implement the accepted behaviours cited below in the bounded paths `vite.config.ts`, `public/manifest.webmanifest`, `tests/e2e/offline.spec.ts`. Dependencies: #9, #11.
 
 ## Capabilities
 

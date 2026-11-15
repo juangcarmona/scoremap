@@ -26,8 +26,12 @@ Derive executable tests from every relevant SB; valid lifecycle transitions use 
 
 ## Risks / Trade-offs
 
-GitHub enforcement/App and Cloudflare credentials may block native completion or deployment independently of local correctness. Device emulation does not prove physical Android installation. Whole-library snapshots may need measured future migration for large PDFs.
+GitHub enforcement/App and owner-managed publication may block native completion or deployment independently of local correctness. Device emulation does not prove physical Android installation. Whole-library snapshots may need measured future migration for large PDFs.
 
 ## Review gates
 
 Independent plan assessment precedes production code. Independent implementation review evaluates observable behaviour and test strength. Missing reviews remain pending. Integration requires the actual configured native gates, including current-head owner authorization; this plan grants no new permission.
+
+## Serialized application boundary
+
+This slice also owns src/features/library/useLibrary.ts, tests/library/application.test.ts and necessary domain.ts extensions. Commands execute serially against the latest in-memory candidate and expected durable revision, check current interaction mode, and acknowledge success only after the IndexedDB commit. Storage failure retains the previous durable revision and exposes unsaved candidate export. Integration tests cover stale sessions, corrupt/unsupported startup records and refused content mutations in performance mode. Rollback restores source without deleting or recreating browser storage.

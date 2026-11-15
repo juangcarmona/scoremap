@@ -1,0 +1,13 @@
+node_modules
+dist
+package-lock.json
+.github
+.agents
+.product
+.lighthouse
+LIGHTHOUSE.md
+docs/evidence
+docs/product
+openspec
+test-results
+playwright-report

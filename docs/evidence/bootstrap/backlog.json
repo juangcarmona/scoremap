@@ -120,7 +120,8 @@
       "title": "Installable offline PWA",
       "id": 6402836475,
       "dependencies": [
-        9
+        9,
+        11
       ],
       "artifacts": [
         "FR-OFFLINE",

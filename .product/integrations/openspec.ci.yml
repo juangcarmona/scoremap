@@ -9,10 +9,9 @@
 # Blocking behaviour:
 # - unresolved citations, tampered embedded projections, unclassified current documents
 #   and bound documents with zero citations always fail the gate;
-# - stale citations DO NOT block this gate: .product/config.yaml sets
-#   `validation.warnings-as-errors: false`, so PRODUCT061 stays a warning. To make stale
-#   citations block the merge, set `validation.warnings-as-errors: true` in
-#   .product/config.yaml. The integration never changes that policy for you.
+# - stale citations BLOCK this gate: .product/config.yaml sets
+#   `validation.warnings-as-errors: true`, escalating the PRODUCT061 warning to an error.
+#   The integration never changes that policy; relax it by setting the key to false.
 # - citations in archived changes are checked too, but their problems are reported as
 #   warnings: archived history cannot be edited, so a problem there is information,
 #   not something this gate can make anyone fix. Pass --include-archived to apply the

@@ -27,8 +27,12 @@ Derive executable tests from every relevant SB; valid lifecycle transitions use 
 
 ## Risks / Trade-offs
 
-GitHub enforcement/App and Cloudflare credentials may block native completion or deployment independently of local correctness. Device emulation does not prove physical Android installation. Whole-library snapshots may need measured future migration for large PDFs.
+GitHub enforcement/App and owner-managed publication may block native completion or deployment independently of local correctness. Device emulation does not prove physical Android installation. Whole-library snapshots may need measured future migration for large PDFs.
 
 ## Review gates
 
 Independent plan assessment precedes production code. Independent implementation review evaluates observable behaviour and test strength. Missing reviews remain pending. Integration requires the actual configured native gates, including current-head owner authorization; this plan grants no new permission.
+
+## Pure musical slice and guarded integration ownership
+
+Issue #8 completes only the pure chord parser/pitch-class model and accurate piano geometry/presentation with deterministic musical verification. It does not claim the section chord-editing application flow is delivered. The application's SB-CHORD-ASSIGN/MODIFY/INVALID integration and browser-visible keyboard refresh belong to issue #9, after its #7 and #8 prerequisites; #7 already depends on #5's serialized application boundary. No issue #8 completion claim may include unimplemented editor integration.

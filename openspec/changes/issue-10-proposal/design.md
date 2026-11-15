@@ -24,8 +24,14 @@ Derive executable tests from every relevant SB; valid lifecycle transitions use 
 
 ## Risks / Trade-offs
 
-GitHub enforcement/App and Cloudflare credentials may block native completion or deployment independently of local correctness. Device emulation does not prove physical Android installation. Whole-library snapshots may need measured future migration for large PDFs.
+GitHub enforcement/App and owner-managed publication may block native completion or deployment independently of local correctness. Device emulation does not prove physical Android installation. Whole-library snapshots may need measured future migration for large PDFs.
 
 ## Review gates
 
 Independent plan assessment precedes production code. Independent implementation review evaluates observable behaviour and test strength. Missing reviews remain pending. Integration requires the actual configured native gates, including current-head owner authorization; this plan grants no new permission.
+
+## Corrected dependency and production update verification
+
+Issue #11 is an additional prerequisite: this slice's offline journey edits an annotation that must already exist in the application. Native GitHub dependency records must match this plan.
+
+The bounded paths include src/app/App.tsx, src/app/registerPwa.ts, src/service-worker.ts when required by the selected plugin route, public/icons/, tests/e2e/offline.spec.ts, tests/e2e/update.spec.ts, vite.config.ts and package scripts. Use production builds and a real browser, not Vite dev-service-worker assumptions. First cache build A and save content, then serve build B at the same origin and request a service-worker update. Assert B remains waiting during performance consultation and no automatic reload occurs. Activate only after explicit update action; assert acknowledged content survives activation and a later offline reload. Test first install separately with manifest/icon/installability evidence. Existing workers are never removed as an update shortcut.
