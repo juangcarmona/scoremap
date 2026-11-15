@@ -1,6 +1,6 @@
 {
-  "sourceRevision": "669c02ee8008db4be254e5d94d6e5132ab6cc035",
-  "startedAt": "2026-11-15T11:21:02.026Z",
+  "sourceRevision": "f0aa29156c4a4692c6b0281bf847be2effd6ac9b",
+  "startedAt": "2026-11-15T11:32:58.168Z",
   "executionOrigin": "local",
   "commands": [
     {
@@ -9,8 +9,8 @@
         "run",
         "verify"
       ],
-      "startedAt": "2026-11-15T11:21:02.026Z",
-      "endedAt": "2026-11-15T11:21:21.806Z",
+      "startedAt": "2026-11-15T11:32:58.168Z",
+      "endedAt": "2026-11-15T11:33:18.206Z",
       "exitCode": 0,
       "signal": null
     },
@@ -20,8 +20,8 @@
         "run",
         "test:e2e"
       ],
-      "startedAt": "2026-11-15T11:21:21.822Z",
-      "endedAt": "2026-11-15T11:21:51.214Z",
+      "startedAt": "2026-11-15T11:33:18.223Z",
+      "endedAt": "2026-11-15T11:33:56.020Z",
       "exitCode": 0,
       "signal": null
     },
@@ -31,12 +31,12 @@
         "run",
         "evidence:record"
       ],
-      "startedAt": "2026-11-15T11:21:51.230Z",
-      "endedAt": "2026-11-15T11:22:01.296Z",
+      "startedAt": "2026-11-15T11:33:56.031Z",
+      "endedAt": "2026-11-15T11:34:06.239Z",
       "exitCode": 0,
       "signal": null
     }
   ],
   "status": "passed",
-  "endedAt": "2026-11-15T11:22:01.313Z"
+  "endedAt": "2026-11-15T11:34:06.255Z"
 }

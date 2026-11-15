@@ -1,5 +1,5 @@
 {
-  "sourceRevision": "669c02ee8008db4be254e5d94d6e5132ab6cc035",
+  "sourceRevision": "f0aa29156c4a4692c6b0281bf847be2effd6ac9b",
   "modelDigest": "sha256:b3c79ac8d2c2eb323cb9dd2bbef08e33cf8891beb84e76efcddd8b83f6b63304",
   "serializationVersion": "v1alpha2",
   "executionOrigin": {
@@ -11,7 +11,7 @@
   ],
   "tests": {
     "unit": 73,
-    "browser": 13
+    "browser": 14
   },
   "summary": {
     "behaviours": 44,
@@ -41,6 +41,15 @@
           "testId": "vitest:tests/library/domain.test.ts:18:Stable song structure SB-ANNOTATIONS: notes stay with owners through edits and reorder",
           "file": "tests/library/domain.test.ts",
           "level": "domain",
+          "outcome": "passed",
+          "behaviours": [
+            "SB-ANNOTATIONS"
+          ]
+        },
+        {
+          "testId": "playwright:tablet-chromium:SB-ANNOTATIONS: incremental note typing survives delayed IndexedDB acknowledgements",
+          "file": "tests/e2e/notes.spec.ts",
+          "level": "end-to-end",
           "outcome": "passed",
           "behaviours": [
             "SB-ANNOTATIONS"

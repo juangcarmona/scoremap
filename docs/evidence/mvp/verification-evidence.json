@@ -1,8 +1,8 @@
 {
   "format": "pdac-verification-evidence/v1alpha1",
   "provider": "ScoreMap Vitest and Playwright completed reports",
-  "run-id": "local-669c02ee8008db4be254e5d94d6e5132ab6cc035",
-  "revision": "669c02ee8008db4be254e5d94d6e5132ab6cc035",
+  "run-id": "local-f0aa29156c4a4692c6b0281bf847be2effd6ac9b",
+  "revision": "f0aa29156c4a4692c6b0281bf847be2effd6ac9b",
   "results": [
     {
       "test-id": "vitest:tests/library/application.test.ts:0:Serialized application commands SB-PERSIST-RECOVER: rapid commands serialize against the latest candidate",
@@ -1006,6 +1006,17 @@
         {
           "id": "SB-MEMBERSHIP-REMOVE",
           "digest": "sha256:76ff8dfb68346d6bcaa2716da66062cd284902f6bdf5003a77538132041bd71c"
+        }
+      ]
+    },
+    {
+      "test-id": "playwright:tablet-chromium:SB-ANNOTATIONS: incremental note typing survives delayed IndexedDB acknowledgements",
+      "level": "end-to-end",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-ANNOTATIONS",
+          "digest": "sha256:e9f7eeba4ec89ac374cbbe880b1a4d2899ca92f1c6fd71231d9a664a94b8660f"
         }
       ]
     },
