@@ -1,0 +1,39 @@
+{
+  "observedAt": "2026-11-15T12:02:49.200613+00:00",
+  "main": "517c4b14ae3b97522c08c0a0b9246fe00117adda",
+  "appReadiness": {
+    "status": "failed",
+    "run": "https://github.com/juangcarmona/scoremap/actions/runs/43711387082",
+    "httpStatus": 401,
+    "message": "A JSON web token could not be decoded",
+    "installationAccess": "not verified",
+    "followUp": 17
+  },
+  "dependabot": [
+    {
+      "dependency": "katex",
+      "status": "security_update_not_possible",
+      "run": "https://github.com/juangcarmona/scoremap/actions/runs/43711392230"
+    },
+    {
+      "dependency": "minimatch",
+      "status": "security_update_not_possible",
+      "run": "https://github.com/juangcarmona/scoremap/actions/runs/43711392242"
+    }
+  ],
+  "securityFollowUp": 18,
+  "productionAudit": {
+    "info": 0,
+    "low": 0,
+    "moderate": 0,
+    "high": 0,
+    "critical": 0,
+    "total": 0
+  },
+  "customDomain": {
+    "url": "https://scoremap.jgcarmona.com",
+    "status": "did not resolve from operator host"
+  },
+  "fullNativeAutonomousDelivery": "not demonstrated",
+  "unattendedMergeEnabled": false
+}
