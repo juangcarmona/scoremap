@@ -224,18 +224,29 @@ export function VoicingPresets({
         type="button"
         disabled={!presets.isSuccess || busy}
         onClick={() =>
-          downloadText(
-            JSON.stringify(
-              {
-                format: "scoremap-voicing-presets",
-                version: 1,
-                presets: presets.data,
-              },
-              null,
-              2,
-            ),
-            "scoremap-owned-voicings.json",
-          )
+          void store
+            .list()
+            .then((current) =>
+              downloadText(
+                JSON.stringify(
+                  {
+                    format: "scoremap-voicing-presets",
+                    version: 1,
+                    presets: current,
+                  },
+                  null,
+                  2,
+                ),
+                "scoremap-owned-voicings.json",
+              ),
+            )
+            .catch((error: unknown) =>
+              setFailure(
+                error instanceof Error
+                  ? error.message
+                  : "Your voicings could not be exported.",
+              ),
+            )
         }
       >
         Export reusable voicings

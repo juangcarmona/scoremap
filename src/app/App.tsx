@@ -1,6 +1,10 @@
+import { PendingWork } from "../features/library/PendingWork";
 import { copySongIdentities } from "../features/library/identityCopy";
 import { VoicingPresets } from "../features/library/VoicingPresets";
-import { PresetProvider } from "../features/library/PresetContext";
+import {
+  PresetProvider,
+  useAuthorizeSongExport,
+} from "../features/library/PresetContext";
 import { isRichSong } from "../features/library/score";
 import {
   occupiedIdentities,
@@ -52,6 +56,7 @@ function LibraryApp({
   identity,
 }: { store?: LibraryStore; identity?: SessionInfo } = {}) {
   const { session, loadError } = useLibrary(store);
+  const authorizeExport = useAuthorizeSongExport();
   const [selected, updateSelected] = useState<string | null>(() =>
     new URL(location.href).searchParams.get("song"),
   );
@@ -107,7 +112,9 @@ function LibraryApp({
   const fileInput = useRef<HTMLInputElement>(null);
   const importCopy = useRef(false);
   const library = session?.data;
-  const edit = session?.mode === "edit";
+  const protectedPending =
+    store instanceof PrivateLibraryStore && store.pendingRecovery;
+  const edit = session?.mode === "edit" && !protectedPending;
   const activeRep = library?.repertoires.find((r) => r.id === group);
   const memberIds = new Set(library?.repertoires.flatMap((r) => r.songIds));
   const songs =
@@ -281,20 +288,23 @@ function LibraryApp({
             report={report}
           />
           <span className="save-state" role="status">
-            {session.error
-              ? "Unsaved changes"
-              : session.pending
-                ? identity
-                  ? "Saving to your private library…"
-                  : "Saving on this device…"
-                : identity
-                  ? "Saved to your private library"
-                  : "Saved on this device"}
+            {protectedPending
+              ? "Pending save needs review"
+              : session.error
+                ? "Unsaved changes"
+                : session.pending
+                  ? identity
+                    ? "Saving to your private library…"
+                    : "Saving on this device…"
+                  : identity
+                    ? "Saved to your private library"
+                    : "Saved on this device"}
           </span>
           <button
             type="button"
             className="mode-button"
-            aria-pressed={!edit}
+            aria-pressed={session.mode !== "edit"}
+            disabled={protectedPending}
             onClick={() => {
               if (!leavePreview()) return;
               void session.whenIdle().then(() => {
@@ -308,7 +318,11 @@ function LibraryApp({
               });
             }}
           >
-            {edit ? "Enter performance" : "Switch to edit"}
+            {protectedPending
+              ? "Review pending work before editing"
+              : edit
+                ? "Enter performance"
+                : "Switch to edit"}
           </button>
           <button
             type="button"
@@ -336,11 +350,33 @@ function LibraryApp({
           <button
             type="button"
             onClick={() =>
-              downloadText(exportBackup(library), "scoremap-backup.json")
+              void authorizeExport()
+                .then(() =>
+                  downloadText(exportBackup(library), "scoremap-backup.json"),
+                )
+                .catch(report)
             }
           >
             Export your work
           </button>
+          {session.error && store instanceof PrivateLibraryStore && (
+            <button
+              type="button"
+              onClick={() => {
+                if (
+                  window.confirm(
+                    "Discard the unsaved changes on this device and reopen your saved private library?",
+                  )
+                )
+                  void store
+                    .discardPending()
+                    .then(() => location.reload())
+                    .catch(report);
+              }}
+            >
+              Discard unsaved work
+            </button>
+          )}
           {!session.error && (
             <button type="button" onClick={() => setError("")}>
               Dismiss
@@ -348,28 +384,15 @@ function LibraryApp({
           )}
         </div>
       )}
-      {store instanceof PrivateLibraryStore && store.pendingRecovery && (
-        <div className="notice" role="status">
-          <span>
-            Protected pending work from your previous session is available.
-          </span>
-          <button
-            type="button"
-            onClick={() => {
-              void store
-                .recoverPending()
-                .then((value) =>
-                  downloadText(
-                    exportBackup(value),
-                    "scoremap-pending-recovery.json",
-                  ),
-                )
-                .catch(report);
-            }}
-          >
-            Export pending work to compare
-          </button>
-        </div>
+      {store instanceof PrivateLibraryStore && protectedPending && (
+        <PendingWork
+          store={store}
+          current={library}
+          editing={session.mode === "edit"}
+          retry={() => recover(() => store.retryPending())}
+          removed={() => setImportEpoch((epoch) => epoch + 1)}
+          report={report}
+        />
       )}
       {recovering && (
         <p className="notice" role="status">
@@ -502,12 +525,14 @@ function LibraryApp({
               onClick={() => {
                 void session
                   .whenIdle()
+                  .then(() => authorizeExport())
                   .then(() =>
                     downloadText(
                       exportBackup(session.data!),
                       "scoremap-backup.json",
                     ),
-                  );
+                  )
+                  .catch(report);
               }}
             >
               Export backup

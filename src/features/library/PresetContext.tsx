@@ -13,6 +13,7 @@ import {
 } from "./presetStorage";
 import type { PrivateLibraryStore } from "./privateStorage";
 const Context = createContext<PresetStore | null>(null);
+const ExportContext = createContext<() => Promise<void>>(async () => undefined);
 export function PresetProvider({
   store,
   children,
@@ -41,13 +42,23 @@ export function PresetProvider({
     [client, presets],
   );
   return (
-    <Context.Provider value={presets}>
-      <QueryClientProvider client={client}>{children}</QueryClientProvider>
-    </Context.Provider>
+    <ExportContext.Provider
+      value={async () => {
+        await store?.checkAccess();
+      }}
+    >
+      <Context.Provider value={presets}>
+        <QueryClientProvider client={client}>{children}</QueryClientProvider>
+      </Context.Provider>
+    </ExportContext.Provider>
   );
 }
 export function usePresetStore() {
   const store = useContext(Context);
   if (!store) throw new Error("The preset owner scope is unavailable.");
   return store;
+}
+
+export function useAuthorizeSongExport() {
+  return useContext(ExportContext);
 }

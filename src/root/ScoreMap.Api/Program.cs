@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Globalization;
 using System.Net;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.RateLimiting;
@@ -56,6 +57,7 @@ builder.Services.AddAuthentication(options => { options.DefaultScheme = CookieAu
       {
         var sub = context.Principal?.FindFirstValue("sub") ?? throw new InvalidOperationException("Missing provider subject.");
         ((ClaimsIdentity)context.Principal!.Identity!).AddClaim(new Claim("scoremap:principal", context.SecurityToken.Issuer + "|" + sub));
+        ((ClaimsIdentity)context.Principal.Identity!).AddClaim(new Claim("scoremap:session", Guid.NewGuid().ToString()));
         return Task.CompletedTask;
       };
       options.Events.OnRemoteFailure = context =>
@@ -73,6 +75,12 @@ builder.Services.AddProblemDetails(options => options.CustomizeProblemDetails = 
 builder.Services.AddRateLimiter(options =>
 {
   options.RejectionStatusCode = 429;
+  options.OnRejected = (context, _) =>
+  {
+    if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
+      context.HttpContext.Response.Headers.RetryAfter = Math.Ceiling(retryAfter.TotalSeconds).ToString(CultureInfo.InvariantCulture);
+    return ValueTask.CompletedTask;
+  };
   options.AddPolicy("private-api", context => RateLimitPartition.GetFixedWindowLimiter(context.User.FindFirstValue("scoremap:principal") ?? context.Connection.RemoteIpAddress?.ToString() ?? "unknown", _ => new FixedWindowRateLimiterOptions { PermitLimit = 300, Window = TimeSpan.FromMinutes(1), QueueLimit = 0 }));
   options.AddPolicy("login", context => RateLimitPartition.GetFixedWindowLimiter(context.Connection.RemoteIpAddress?.ToString() ?? "unknown", _ => new FixedWindowRateLimiterOptions { PermitLimit = 30, Window = TimeSpan.FromMinutes(1), QueueLimit = 0 }));
 });
@@ -106,7 +114,16 @@ app.Use(async (context, next) =>
   await next(context);
 });
 app.MapGet("/auth/login", () => Results.Challenge(new AuthenticationProperties { RedirectUri = "/" }, [OpenIdConnectDefaults.AuthenticationScheme])).RequireRateLimiting("login");
-app.MapGet("/auth/session", (HttpContext context, IAntiforgery antiforgery) => context.User.Identity?.IsAuthenticated == true ? Results.Json(new { authenticated = true, principal = LibraryModule.Principal(context.User), name = context.User.FindFirstValue("preferred_username") ?? "Musician", csrf = antiforgery.GetAndStoreTokens(context).RequestToken }) : Results.Json(new { authenticated = false }));
+app.MapGet("/auth/session", async (HttpContext context, IAntiforgery antiforgery) =>
+{
+  var ticket = await context.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+  var checkedAt = DateTimeOffset.UtcNow;
+  if (!ticket.Succeeded || ticket.Properties?.ExpiresUtc is not DateTimeOffset sessionExpiry || context.User.FindFirstValue("scoremap:session") is not { Length: > 0 } sessionId || !DateTimeOffset.TryParse(ticket.Properties.GetTokenValue("expires_at"), CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out var tokenExpiry))
+    return Results.Json(new { authenticated = false });
+  var expiresAt = sessionExpiry < tokenExpiry ? sessionExpiry : tokenExpiry;
+  if (expiresAt <= checkedAt) return Results.Json(new { authenticated = false });
+  return Results.Json(new { authenticated = true, principal = LibraryModule.Principal(context.User), name = context.User.FindFirstValue("preferred_username") ?? "Musician", csrf = antiforgery.GetAndStoreTokens(context).RequestToken, sessionId, checkedAt, expiresAt });
+});
 app.MapPost("/auth/logout", () => Results.SignOut(new AuthenticationProperties { RedirectUri = "/" }, [CookieAuthenticationDefaults.AuthenticationScheme, OpenIdConnectDefaults.AuthenticationScheme])).RequireAuthorization();
 app.MapHealthChecks("/health/ready");
 app.MapPrivateLibrary();

@@ -1,3 +1,4 @@
+import { useAuthorizeSongExport } from "./PresetContext";
 import { VoicingPresets } from "./VoicingPresets";
 import type { SavedPreset } from "./voicingPresets";
 import { useState } from "react";
@@ -50,6 +51,7 @@ export function VoicingBuilder({
   onPickPreset: (preset: SavedPreset) => void;
 }) {
   const { preference } = useNotation();
+  const authorizeExport = useAuthorizeSongExport();
   const [voicingId] = useState(() => voicing?.id ?? crypto.randomUUID());
   const selectedEvents = () =>
     part.events.filter((event) => event.voicingId === voicingId);
@@ -441,22 +443,26 @@ export function VoicingBuilder({
           <button
             type="button"
             onClick={() =>
-              downloadText(
-                JSON.stringify(
-                  {
-                    format: "scoremap-voicing-preview",
-                    version: 1,
-                    songId: song.id,
-                    eventId: harmonic.id,
-                    partId: part.id,
-                    name,
-                    events: draft,
-                  },
-                  null,
-                  2,
-                ),
-                "scoremap-played-note-preview.json",
-              )
+              void authorizeExport()
+                .then(() =>
+                  downloadText(
+                    JSON.stringify(
+                      {
+                        format: "scoremap-voicing-preview",
+                        version: 1,
+                        songId: song.id,
+                        eventId: harmonic.id,
+                        partId: part.id,
+                        name,
+                        events: draft,
+                      },
+                      null,
+                      2,
+                    ),
+                    "scoremap-played-note-preview.json",
+                  ),
+                )
+                .catch(report)
             }
           >
             Export played-note preview

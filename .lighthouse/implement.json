@@ -307,5 +307,78 @@
       ],
       "corrections": {}
     }
+  },
+  "26": {
+    "scope": "Implement accepted complete arrangement durability, protected pending recovery, stable import/claim receipts, explicit conflicts/history and scoped session/offline boundaries under issue #26. Preserve existing admission, atomic commits, current resource authorization and all checks; qualify each new private offline/key capability before enabling it. No canonical product changes, production deployment or integration-gate bypass.",
+    "paths": [
+      "src/",
+      "tests/",
+      "public/",
+      "index.html",
+      "vite.config.ts",
+      "vitest.config.ts",
+      "playwright.config.ts",
+      "tsconfig.json",
+      "tsconfig.app.json",
+      "eslint.config.js",
+      "package.json",
+      "package-lock.json",
+      "scripts/verify-traceability.mjs",
+      "config/",
+      "deployment/",
+      "global.json",
+      "Directory.Build.props",
+      "Directory.Packages.props",
+      "ScoreMap.slnx",
+      ".config/dotnet-tools.json",
+      ".editorconfig",
+      ".gitignore",
+      ".dockerignore",
+      "playwright.connected.config.ts",
+      "scripts/dev-private.mjs",
+      "scripts/verify-backend-boundaries.mjs",
+      "scripts/verify-security.mjs",
+      "scripts/verify-delivery.mjs",
+      "docs/architecture/",
+      "openspec/changes/issue-25-proposal/",
+      "scripts/verify-frontend-boundaries.mjs",
+      "scripts/build-container.mjs",
+      "openspec/changes/issue-26-durable-recovery/",
+      "docs/evidence/music/"
+    ],
+    "checks": [
+      [
+        "npm",
+        "ci",
+        "--ignore-scripts"
+      ],
+      [
+        "npm",
+        "run",
+        "verify"
+      ],
+      [
+        "npm",
+        "run",
+        "test:e2e"
+      ]
+    ],
+    "reviewRequired": true,
+    "verification": {
+      "paths": [
+        "tests/",
+        "vitest.config.ts",
+        "playwright.config.ts",
+        "package.json",
+        "package-lock.json",
+        "tests/backend/",
+        "tests/connected/",
+        "playwright.connected.config.ts",
+        "scripts/verify-backend-boundaries.mjs",
+        "scripts/verify-security.mjs",
+        "scripts/verify-frontend-boundaries.mjs"
+      ],
+      "corrections": {}
+    }
   }
 }

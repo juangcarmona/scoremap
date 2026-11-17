@@ -32,7 +32,11 @@ export async function login(
   await signIn(page, username);
   return { context, page };
 }
+let previousLoginAt = 0;
 export async function signIn(page: Page, username: string) {
+  const wait = Math.max(0, previousLoginAt + 2100 - Date.now());
+  if (wait) await new Promise((resolve) => setTimeout(resolve, wait));
+  previousLoginAt = Date.now();
   await page.goto("/");
   await page.getByRole("link", { name: "Sign in", exact: true }).click();
   const user = fixture.users.find((u) => u.username === username)!;

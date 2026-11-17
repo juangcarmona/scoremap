@@ -78,7 +78,7 @@ export class LibrarySession {
       this.durableRevision = saved.revision;
       this.error = "";
     } catch (error) {
-      this.error = `Not saved: ${error instanceof Error ? error.message : "local storage failed."} Your unsaved work is available for export.`;
+      this.error = `${this.store.scope === "private" ? "Save not confirmed" : "Not saved"}: ${error instanceof Error ? error.message : "storage failed."} Keep your pending work until the saved result is confirmed.`;
       throw error;
     } finally {
       this.changed();

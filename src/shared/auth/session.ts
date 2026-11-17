@@ -3,4 +3,7 @@ export interface SessionInfo {
   principal: string;
   name: string;
   csrf: string;
+  sessionId: string;
+  checkedAt: string;
+  expiresAt: string;
 }

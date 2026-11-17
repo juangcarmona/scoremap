@@ -1,5 +1,4 @@
 import { openDB } from "idb";
-import { QueryClient } from "@tanstack/react-query";
 import { validateLibrary, type Library } from "./domain";
 import type { LibraryStore } from "./storage";
 
@@ -24,15 +23,18 @@ interface PendingRecord {
   cipher: ArrayBuffer;
   commandId: string;
 }
-const query = new QueryClient({
-  defaultOptions: { queries: { retry: false, staleTime: 0 } },
-});
 const pendingDb = () =>
   openDB("scoremap-protected-pending", 1, {
     upgrade(db) {
       db.createObjectStore("pending");
     },
   });
+// Explicit local deletion grants neither decryption nor server write authority.
+export async function discardProtectedPending(principal: string) {
+  const db = await pendingDb();
+  await db.delete("pending", principal);
+  db.close();
+}
 export class PrivateLibraryStore implements LibraryStore {
   readonly scope = "private";
   readonly notation: NotationStore = {
@@ -50,17 +52,40 @@ export class PrivateLibraryStore implements LibraryStore {
   private retry: { candidate: string; commandId: string } | null = null;
   private recoveryRetry: { candidate: string; commandId: string } | null = null;
   pendingRecovery = false;
+  private controller = new AbortController();
+  private generation = 0;
+  private terminated = false;
   constructor(
     readonly identity: SessionInfo,
     private lock: () => void,
+    private authorized: () => boolean,
   ) {}
   version(songId: string) {
     return this.versions[songId] ?? 0;
   }
+  updateAuthorization(authorized: () => boolean) {
+    this.authorized = authorized;
+  }
+  lockAccess() {
+    if (this.terminated) return;
+    this.terminated = true;
+    void this.close();
+    this.lock();
+  }
+  private assertAccess(generation = this.generation) {
+    if (this.terminated || !this.authorized()) this.lockAccess();
+    if (this.controller.signal.aborted || generation !== this.generation)
+      throw new Error(
+        "Your private library is locked. Sign in again to recover protected pending work.",
+      );
+  }
   async request<T>(path: string, init: RequestInit = {}): Promise<T> {
+    this.assertAccess();
+    const generation = this.generation;
     const response = await fetch(path, {
       ...init,
       credentials: "same-origin",
+      signal: this.controller.signal,
       cache: "no-store",
       headers: {
         "Content-Type": "application/json",
@@ -68,13 +93,13 @@ export class PrivateLibraryStore implements LibraryStore {
         ...init.headers,
       },
     });
+    this.assertAccess(generation);
     if (!response.ok) {
       if (response.status === 401 || response.status === 403) {
-        this.key = null;
-        this.lock();
+        this.lockAccess();
       }
       let detail =
-        "The server could not acknowledge this operation. Your saved music is unchanged.";
+        "The server could not confirm this operation. Keep your pending work and check the saved result before retrying.";
       try {
         detail =
           ((await response.json()) as { detail?: string }).detail ?? detail;
@@ -83,15 +108,19 @@ export class PrivateLibraryStore implements LibraryStore {
       }
       throw new Error(detail);
     }
-    return response.status === 204
-      ? (undefined as T)
-      : ((await response.json()) as T);
+    const result =
+      response.status === 204
+        ? (undefined as T)
+        : ((await response.json()) as T);
+    this.assertAccess(generation);
+    return result;
   }
   async load() {
-    const view = await query.fetchQuery({
-      queryKey: ["private-library", this.identity.principal],
-      queryFn: () => this.request<LibraryView>("/api/library"),
-    });
+    if (this.controller.signal.aborted && !this.terminated && this.authorized())
+      this.controller = new AbortController();
+    this.assertAccess();
+    const generation = this.generation;
+    const view = await this.request<LibraryView>("/api/library");
     this.versions = view.versions;
     this.capabilities = view.capabilities;
     const db = await pendingDb();
@@ -100,8 +129,10 @@ export class PrivateLibraryStore implements LibraryStore {
     const recovery = await this.request<RecoveryKey>("/api/recovery-keys", {
       method: "POST",
     });
+    const key = await this.importKey(recovery.key);
+    this.assertAccess(generation);
     this.keyId = recovery.id;
-    this.key = await this.importKey(recovery.key);
+    this.key = key;
     return validateLibrary(view.library);
   }
   private importKey(value: string) {
@@ -120,8 +151,8 @@ export class PrivateLibraryStore implements LibraryStore {
         ([id, role]) => view.capabilities[id] !== role,
       )
     ) {
-      this.key = null;
-      this.lock();
+      this.lockAccess();
+      this.assertAccess();
     }
   }
   async commit(
@@ -129,7 +160,13 @@ export class PrivateLibraryStore implements LibraryStore {
     expectedRevision: number,
     intent?: "import",
   ): Promise<Library> {
+    this.assertAccess();
+    const generation = this.generation;
     validateLibrary(candidate);
+    if (this.pendingRecovery)
+      throw new Error(
+        "Review and retry, export, or explicitly remove your previous pending work before saving new changes.",
+      );
     if (!this.key)
       throw new Error("Sign in again before saving private music.");
     const serialized = JSON.stringify({
@@ -143,6 +180,7 @@ export class PrivateLibraryStore implements LibraryStore {
         ? this.retry.commandId
         : crypto.randomUUID();
     this.retry = { candidate: serialized, commandId };
+    const keyId = this.keyId;
     const iv = crypto.getRandomValues(new Uint8Array(12));
     const cipher = await crypto.subtle.encrypt(
       { name: "AES-GCM", iv },
@@ -153,7 +191,7 @@ export class PrivateLibraryStore implements LibraryStore {
     // Retain only ciphertext and an opaque key/command reference across session termination.
     await db.put(
       "pending",
-      { keyId: this.keyId, iv, cipher, commandId } satisfies PendingRecord,
+      { keyId, iv, cipher, commandId } satisfies PendingRecord,
       this.identity.principal,
     );
     db.close();
@@ -172,17 +210,22 @@ export class PrivateLibraryStore implements LibraryStore {
     this.versions = saved.versions;
     this.capabilities = saved.capabilities;
     this.retry = null;
-    const completed = await pendingDb();
-    await completed.delete("pending", this.identity.principal);
-    completed.close();
+    this.assertAccess(generation);
+    await this.removePending(commandId);
     return validateLibrary(saved.library);
   }
-  async recoverPending(): Promise<Library> {
+  private async pendingRecord() {
     const db = await pendingDb();
     const pending = (await db.get("pending", this.identity.principal)) as
       PendingRecord | undefined;
     db.close();
     if (!pending) throw new Error("No protected pending work was found.");
+    return pending;
+  }
+  private async unlockPending() {
+    this.assertAccess();
+    const generation = this.generation;
+    const pending = await this.pendingRecord();
     const key = await this.request<RecoveryKey>(
       `/api/recovery-keys/${pending.keyId}/unlock`,
       { method: "POST" },
@@ -194,8 +237,47 @@ export class PrivateLibraryStore implements LibraryStore {
     );
     const record = JSON.parse(new TextDecoder().decode(plaintext)) as {
       library: unknown;
+      expectedRevision: number;
+      versions: Record<string, number>;
+      import: boolean;
     };
-    return validateLibrary(record.library);
+    this.assertAccess(generation);
+    const library = validateLibrary(record.library);
+    return { record: { ...record, library }, pending };
+  }
+  async recoverPending(): Promise<Library> {
+    return (await this.unlockPending()).record.library;
+  }
+  private async removePending(commandId: string) {
+    const db = await pendingDb();
+    const tx = db.transaction("pending", "readwrite");
+    const existing = (await tx.store.get(this.identity.principal)) as
+      PendingRecord | undefined;
+    if (existing?.commandId === commandId)
+      await tx.store.delete(this.identity.principal);
+    await tx.done;
+    db.close();
+    this.pendingRecovery = false;
+  }
+  async discardPending() {
+    const pending = await this.pendingRecord();
+    await this.removePending(pending.commandId);
+  }
+  async retryPending() {
+    const { record, pending } = await this.unlockPending();
+    const saved = await this.request<LibraryView>("/api/library", {
+      method: "PUT",
+      body: JSON.stringify({
+        ...record,
+        commandId: pending.commandId,
+        mode: "edit",
+        recoveryKeyId: pending.keyId,
+      }),
+    });
+    this.versions = saved.versions;
+    this.capabilities = saved.capabilities;
+    await this.removePending(pending.commandId);
+    return validateLibrary(saved.library);
   }
   recoverSong(
     songId: string,
@@ -230,9 +312,13 @@ export class PrivateLibraryStore implements LibraryStore {
   }
   close() {
     this.key = null;
-    query.removeQueries({
-      queryKey: ["private-library", this.identity.principal],
-    });
+    this.keyId = "";
+    this.retry = null;
+    this.recoveryRetry = null;
+    this.controller.abort();
+    this.generation += 1;
+    this.versions = {};
+    this.capabilities = {};
     return Promise.resolve();
   }
 }

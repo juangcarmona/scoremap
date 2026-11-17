@@ -47,6 +47,25 @@ export function SongHistory({
     enabled: open,
     retry: false,
   });
+  async function exportVersion(revision: number) {
+    const current = await store.request<Version[]>(
+      `/api/songs/${encodeURIComponent(song.id)}/history`,
+    );
+    const version = current.find((entry) => entry.revision === revision);
+    if (!version)
+      throw new Error(
+        "This historical version is no longer available. Reload before exporting.",
+      );
+    downloadText(
+      exportBackup({
+        schemaVersion: isRichSong(version.content) ? 2 : 1,
+        revision: 0,
+        songs: [version.content],
+        repertoires: [],
+      }),
+      `scoremap-song-version-${version.revision}.json`,
+    );
+  }
   const canRestore =
     editable && (deleted || store.capabilities[song.id] !== "viewer");
   return (
@@ -75,14 +94,12 @@ export function SongHistory({
           <button
             type="button"
             onClick={() =>
-              downloadText(
-                exportBackup({
-                  schemaVersion: isRichSong(version.content) ? 2 : 1,
-                  revision: 0,
-                  songs: [version.content],
-                  repertoires: [],
-                }),
-                `scoremap-song-version-${version.revision}.json`,
+              void exportVersion(version.revision).catch((error: unknown) =>
+                setStatus(
+                  error instanceof Error
+                    ? error.message
+                    : "The historical version could not be exported.",
+                ),
               )
             }
           >
