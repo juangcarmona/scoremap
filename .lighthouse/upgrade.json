@@ -3,7 +3,7 @@
   "schemaVersion": 1,
   "package": {
     "name": "@juangcarmona/lighthouse",
-    "version": "0.13.16"
+    "version": "0.13.19"
   },
   "baseline": "0.1.0",
   "capabilities": {
@@ -35,10 +35,10 @@
     "harness": "1",
     "sdlc": "1"
   },
-  "lastAppliedMigration": "upgrade-0.13.16",
+  "lastAppliedMigration": "upgrade-0.13.19",
   "files": {
     "LIGHTHOUSE.md": {
-      "hash": "c66fa9b530cf61c5b44b68e59bdfb9029f5efafe689f3a619065153d95bd71fd",
+      "hash": "b0691245b0bc489be2eb604641d0aeaaa971b1ff25a07fda82c598b6715b2f3d",
       "scope": "harness"
     },
     "scripts/lighthouse-guard.mjs": {
@@ -118,11 +118,11 @@
       "scope": "harness"
     },
     ".lighthouse/sdlc.json": {
-      "hash": "4e7657ad472b2a815e47b8625390f8eca02f5caaf2fb830ce5dbc4acb324ad03",
+      "hash": "163f3371dd18677cd1e5992d8306331e5ac64afef7a9ff05ca75874bf6c32591",
       "scope": "sdlc"
     },
     ".github/workflows/lighthouse-worker-maintenance.yml": {
-      "hash": "f403364f650e0789ecfa26d59f0f6497d5c43af6eab50d4f8ff3eb027ba38f47",
+      "hash": "eac710329a7dbce0fc746b429e83979e56efa4586408ec04d533f5c4ba7633b7",
       "scope": "sdlc"
     },
     ".lighthouse/housekeeping.json": {
@@ -130,7 +130,7 @@
       "scope": "sdlc"
     },
     ".lighthouse/commands.json": {
-      "hash": "2a1bf709c4435767e316db58c7b471ba77fa7440c5918aa56276be42e7230b15",
+      "hash": "97546b195e9a7d7737cc9b03631ab17e28c37b8a2283d8849986871d2f602b98",
       "scope": "sdlc"
     }
   }
