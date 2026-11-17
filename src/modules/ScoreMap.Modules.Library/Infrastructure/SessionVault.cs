@@ -12,12 +12,13 @@ internal sealed class SessionVault(NpgsqlDataSource dataSource, IDataProtectionP
   public async Task<string> StoreAsync(AuthenticationTicket ticket)
   {
     var id = Convert.ToHexString(RandomNumberGenerator.GetBytes(32));
-    await RenewAsync(id, ticket).ConfigureAwait(false);
+    await Persist(id, ticket, true).ConfigureAwait(false);
     return id;
   }
-  public async Task RenewAsync(string key, AuthenticationTicket ticket)
+  public Task RenewAsync(string key, AuthenticationTicket ticket) => Persist(key, ticket, false);
+  private async Task Persist(string key, AuthenticationTicket ticket, bool create)
   {
-    var command = dataSource.CreateCommand("INSERT INTO sm_sessions(id,ticket,expires) VALUES($1,$2,$3) ON CONFLICT(id) DO UPDATE SET ticket=$2,expires=$3");
+    var command = dataSource.CreateCommand(create ? "INSERT INTO sm_sessions(id,ticket,expires) VALUES($1,$2,$3)" : "UPDATE sm_sessions SET ticket=$2,expires=$3 WHERE id=$1 AND expires>now()");
     await using (command.ConfigureAwait(false))
     {
       command.Parameters.AddWithValue(key); command.Parameters.AddWithValue(protector.Protect(TicketSerializer.Default.Serialize(ticket))); command.Parameters.AddWithValue(ticket.Properties.ExpiresUtc ?? DateTimeOffset.UtcNow.AddHours(8));

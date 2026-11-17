@@ -81,6 +81,7 @@
     "verify:music-catalogue": "node scripts/harmony-catalogue.mjs",
     "verify:deployment": "node scripts/publish-production.mjs --verify",
     "publish:production": "node scripts/publish-production.mjs",
-    "test:deployment": "python3 scripts/qualify-production.py"
+    "test:deployment": "python3 scripts/qualify-production.py",
+    "test:session-vault": "python3 scripts/qualify-session-vault.py"
   }
 }

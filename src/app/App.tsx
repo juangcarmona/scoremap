@@ -1,3 +1,6 @@
+import { DeviceProvider } from "../features/library/DeviceContext";
+import { DeviceConfigurations } from "../features/library/DeviceConfigurations";
+import { PersonalRecovery } from "../features/library/PersonalRecovery";
 import { ImportPreview } from "../features/library/ImportPreview";
 import type { ImportProvenance } from "../features/library/importSelection";
 import { IndexedLibraryStore } from "../features/library/storage";
@@ -49,7 +52,11 @@ export function App(
       <PresetProvider
         store={store instanceof PrivateLibraryStore ? store : undefined}
       >
-        <LibraryApp {...props} />
+        <DeviceProvider
+          store={store instanceof PrivateLibraryStore ? store : undefined}
+        >
+          <LibraryApp {...props} />
+        </DeviceProvider>
       </PresetProvider>
     </NotationProvider>
   );
@@ -270,6 +277,8 @@ function LibraryApp({
                     (session.pending ||
                       session.error ||
                       protectedPending ||
+                      (store instanceof PrivateLibraryStore &&
+                        (await store.personal.list()).length > 0) ||
                       !protectedWork) &&
                     !window.confirm(
                       protectedWork
@@ -356,6 +365,15 @@ function LibraryApp({
           </button>
         </div>
       </header>
+      {store instanceof PrivateLibraryStore && (
+        <PersonalRecovery
+          store={store.personal}
+          reopen={async () => {
+            await session.whenProtected();
+            window.location.reload();
+          }}
+        />
+      )}
       {(error || session.error) && (
         <div role="alert" className="notice error">
           <span>{session.error || error}</span>
@@ -591,6 +609,7 @@ function LibraryApp({
           )}
           <footer className="library-footer">
             <VoicingPresets editable={edit} />
+            <DeviceConfigurations editable={edit} />
             {store instanceof PrivateLibraryStore && (
               <DeletedSongs
                 store={store}

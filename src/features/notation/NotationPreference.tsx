@@ -97,6 +97,7 @@ function AccountNotation({
     retry: false,
   });
   const [draft, setDraft] = useState<Notation | null>(null);
+  const [recoveryError, setRecoveryError] = useState("");
   const retry = useRef<NotationRequest | null>(null);
   const active = useRef(true);
   const mutation = useMutation({
@@ -117,6 +118,7 @@ function AccountNotation({
   }, [client, principal]);
   function choose(preference: Notation) {
     if (!saved.data || mutation.isPending || !validNotation(preference)) return;
+    setRecoveryError("");
     setDraft(preference);
     const previous = retry.current;
     const request =
@@ -132,7 +134,8 @@ function AccountNotation({
     retry.current = request;
     mutation.mutate(request);
   }
-  const error = saved.error?.message ?? mutation.error?.message ?? "";
+  const error =
+    recoveryError || saved.error?.message || mutation.error?.message || "";
   return (
     <NotationContext.Provider
       value={{
@@ -147,13 +150,26 @@ function AccountNotation({
           else if (draft) choose(draft);
         },
         reload: () => {
-          void saved.refetch().then((result) => {
-            if (result.isSuccess) {
-              setDraft(null);
-              retry.current = null;
-              mutation.reset();
-            }
-          });
+          void saved
+            .refetch()
+            .then(async (result) => {
+              if (result.isSuccess) {
+                if (retry.current) await store.discard?.(retry.current);
+                if (!active.current) return;
+                setRecoveryError("");
+                setDraft(null);
+                retry.current = null;
+                mutation.reset();
+              }
+            })
+            .catch((error: unknown) => {
+              if (active.current)
+                setRecoveryError(
+                  error instanceof Error
+                    ? error.message
+                    : "The protected choice could not be removed. Keep it until recovery is confirmed.",
+                );
+            });
         },
       }}
     >

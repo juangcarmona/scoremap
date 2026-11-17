@@ -939,7 +939,7 @@ dialog h2 {
   border: 1px solid var(--lh-border);
   min-width: 0;
 }
-.configuration-form > h4,
+.configuration-form > h3,
 .configuration-form > p,
 .configuration-form > fieldset {
   grid-column: 1 / -1;
@@ -1010,4 +1010,10 @@ dialog h2 {
 
 .sketch-layout > .arrangement-workspace {
   grid-column: 1 / -1;
+}
+
+.personal-recovery pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-width: 100%;
 }

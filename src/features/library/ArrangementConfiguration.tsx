@@ -1,3 +1,4 @@
+import { CopyDeviceConfiguration } from "./CopyDeviceConfiguration";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { Command } from "./domain";
@@ -138,7 +139,7 @@ function AddPart({
         }
       }}
     >
-      <h4>New independent part</h4>
+      <h3>New independent part</h3>
       <label>
         Part name
         <input name="name" required disabled={busy} />
@@ -627,6 +628,17 @@ export function ArrangementConfiguration({
               </button>
             </details>
           ))}
+          <CopyDeviceConfiguration
+            busy={busy}
+            copy={(device) =>
+              run({
+                type: "addDevice",
+                songId: song.id,
+                arrangementId: arrangement.id,
+                device,
+              })
+            }
+          />
           <form
             className="configuration-form"
             aria-label="Add physical keyboard"
@@ -650,7 +662,7 @@ export function ArrangementConfiguration({
               );
             }}
           >
-            <h4>New physical keyboard</h4>
+            <h3>New physical keyboard</h3>
             <label>
               Keyboard name
               <input name="name" required disabled={busy} />

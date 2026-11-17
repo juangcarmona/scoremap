@@ -34,6 +34,8 @@ internal sealed partial class LibraryRepository(NpgsqlDataSource dataSource) : I
             CREATE TABLE IF NOT EXISTS sm_sessions(id text PRIMARY KEY, ticket bytea NOT NULL, expires timestamptz NOT NULL);
             CREATE TABLE IF NOT EXISTS sm_voicing_presets(principal text NOT NULL,id text NOT NULL,revision bigint NOT NULL,content jsonb,deleted boolean NOT NULL DEFAULT false,PRIMARY KEY(principal,id));
             CREATE TABLE IF NOT EXISTS sm_preset_receipts(principal text NOT NULL,command uuid NOT NULL,hash text NOT NULL,preset text NOT NULL,revision bigint NOT NULL,PRIMARY KEY(principal,command));
+            CREATE TABLE IF NOT EXISTS sm_device_configurations(principal text NOT NULL,id text NOT NULL,revision bigint NOT NULL,content jsonb,deleted boolean NOT NULL DEFAULT false,PRIMARY KEY(principal,id));
+            CREATE TABLE IF NOT EXISTS sm_device_receipts(principal text NOT NULL,command uuid NOT NULL,hash text NOT NULL,configuration text NOT NULL,revision bigint NOT NULL,PRIMARY KEY(principal,command));
             CREATE TABLE IF NOT EXISTS sm_notation(principal text PRIMARY KEY,revision bigint NOT NULL,mode text NOT NULL CHECK(mode IN ('anglo','latin','dual')),primary_notation text NOT NULL CHECK(primary_notation IN ('anglo','latin')),CHECK(mode='dual' OR mode=primary_notation));
             CREATE TABLE IF NOT EXISTS sm_notation_receipts(principal text NOT NULL,command uuid NOT NULL,hash text NOT NULL,response jsonb NOT NULL,PRIMARY KEY(principal,command));
             UPDATE sm_receipts SET response=jsonb_build_object('Revision',response#>'{Library,revision}','Versions',response->'Versions','Capabilities',response->'Capabilities') WHERE response ? 'Library';
@@ -147,7 +149,7 @@ internal sealed partial class LibraryRepository(NpgsqlDataSource dataSource) : I
       await Execute(connection, "UPDATE sm_libraries SET revision=revision+1,repertoires=$2::jsonb,song_order=$3 WHERE principal=$1", cancellationToken, principal, document.Value.GetProperty("repertoires").GetRawText(), document.Songs.Select(song => song.GetProperty("id").GetString()!).ToArray()).ConfigureAwait(false);
       if (request.RecoveryKeyId is Guid recoveryId)
       {
-        var bound = await Execute(connection, "UPDATE sm_recovery_keys SET resources=ARRAY(SELECT DISTINCT unnest(resources || $3)) WHERE id=$1 AND principal=$2", cancellationToken, recoveryId, principal, document.Songs.Select(song => song.GetProperty("id").GetString()!).ToArray()).ConfigureAwait(false);
+        var bound = await Execute(connection, "UPDATE sm_recovery_keys SET resources=ARRAY(SELECT DISTINCT unnest(resources || $3)) WHERE id=$1 AND principal=$2 AND purpose='song'", cancellationToken, recoveryId, principal, document.Songs.Select(song => song.GetProperty("id").GetString()!).ToArray()).ConfigureAwait(false);
         LibraryDocument.Require(bound == 1, "Private recovery key is unavailable; sign in again without discarding your pending work.");
       }
       var saved = await ReadView(connection, principal, cancellationToken).ConfigureAwait(false);

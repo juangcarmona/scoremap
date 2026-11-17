@@ -176,7 +176,15 @@ test("real OIDC, current JSON import, atomic save and a clean second session", a
   expect(refused.status()).toBe(409);
   const noCsrf = await page.request.put("/api/library", { data: {} });
   expect(noCsrf.status()).toBe(400);
+  const logout = page.waitForResponse(
+    (response) =>
+      new URL(response.url()).pathname === "/auth/logout" &&
+      response.request().method() === "POST",
+  );
   await page.getByRole("button", { name: "Sign out", exact: true }).click();
+  const terminated = await logout;
+  expect(terminated.status()).toBe(302);
+  await terminated.finished();
   await expect(
     page.getByRole("link", { name: "Sign in", exact: true }),
   ).toBeVisible();
@@ -1103,6 +1111,20 @@ test("SB-VOICING: actual private builder acknowledges one exact octave edit, pre
   browser,
 }) => {
   const owner = await login(browser, "owner-a");
+  const notation = await (
+    await api(owner.page, "/api/preferences/notation")
+  ).json();
+  if (notation.mode !== "anglo")
+    expect(
+      (
+        await api(owner.page, "/api/preferences/notation", "PUT", {
+          mode: "anglo",
+          primary: "anglo",
+          expectedRevision: notation.revision,
+          commandId: crypto.randomUUID(),
+        })
+      ).status(),
+    ).toBe(200);
   const source = JSON.parse(
     await readFile("tests/fixtures/library-v2.json", "utf8"),
   ) as Library;

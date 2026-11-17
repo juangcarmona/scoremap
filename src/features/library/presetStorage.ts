@@ -1,3 +1,4 @@
+import type { PersonalPending } from "./personalPending";
 import { openDB, type DBSchema, type IDBPDatabase } from "idb";
 import {
   validatePresetMutation,
@@ -50,6 +51,7 @@ export class RemotePresetStore extends RetriablePresetStore {
   constructor(
     readonly scope: string,
     private request: <T>(path: string, init?: RequestInit) => Promise<T>,
+    private pending: Pick<PersonalPending, "mutate">,
   ) {
     super();
   }
@@ -59,10 +61,7 @@ export class RemotePresetStore extends RetriablePresetStore {
     return value.map(savedPreset);
   }
   protected send(request: PresetMutation & { commandId: string }) {
-    return this.request<SavedPreset>("/api/voicing-presets", {
-      method: "POST",
-      body: JSON.stringify(request),
-    });
+    return this.pending.mutate("preset", request, savedPreset);
   }
 }
 interface PresetDatabase extends DBSchema {

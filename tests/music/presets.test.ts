@@ -94,7 +94,15 @@ describe("Independently owned conditional reusable voicings", () => {
       if (requests.length === 1) throw new Error("Lost response");
       return { id: preset.id, revision: 1, preset };
     });
-    const store = new RemotePresetStore("principal-a", request as never);
+    const store = new RemotePresetStore("principal-a", request as never, {
+      mutate: async (_kind, body, validate) =>
+        validate(
+          await request("/api/voicing-presets", {
+            method: "POST",
+            body: JSON.stringify(body),
+          }),
+        ),
+    });
     await expect(store.mutate(create)).rejects.toThrow(/Lost/);
     expect(await store.mutate(create)).toEqual({
       id: preset.id,

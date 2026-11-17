@@ -12,6 +12,7 @@ export type NotationRequest = Notation & {
 export interface NotationStore {
   read(): Promise<NotationSettings>;
   save(request: NotationRequest): Promise<NotationSettings>;
+  discard?(request: NotationRequest): Promise<void>;
 }
 export const defaultNotation: Notation = { mode: "anglo", primary: "anglo" };
 export function validNotation(value: unknown): value is Notation {
@@ -33,6 +34,15 @@ export function validNotation(value: unknown): value is Notation {
     ((preference.mode === "anglo" || preference.mode === "latin") &&
       preference.primary === preference.mode)
   );
+}
+export function notationSettings(value: unknown): NotationSettings {
+  if (
+    !validNotation(value) ||
+    !Number.isSafeInteger((value as NotationSettings).revision) ||
+    (value as NotationSettings).revision < 0
+  )
+    throw new Error("The server did not acknowledge valid notation settings.");
+  return value as NotationSettings;
 }
 const latin: Record<string, string> = {
   C: "Do",

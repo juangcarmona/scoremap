@@ -344,7 +344,8 @@
       "scripts/verify-frontend-boundaries.mjs",
       "scripts/build-container.mjs",
       "openspec/changes/issue-26-durable-recovery/",
-      "docs/evidence/music/"
+      "docs/evidence/music/",
+      "scripts/qualify-session-vault.py"
     ],
     "checks": [
       [
@@ -376,7 +377,8 @@
         "playwright.connected.config.ts",
         "scripts/verify-backend-boundaries.mjs",
         "scripts/verify-security.mjs",
-        "scripts/verify-frontend-boundaries.mjs"
+        "scripts/verify-frontend-boundaries.mjs",
+        "scripts/qualify-session-vault.py"
       ],
       "corrections": {}
     }

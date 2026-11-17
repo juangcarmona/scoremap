@@ -6,4 +6,5 @@
  <Project Path="src/root/ScoreMap.AppHost/ScoreMap.AppHost.csproj" />
  <Project Path="src/root/ScoreMap.Deployment/ScoreMap.Deployment.csproj" />
  <Project Path="tests/backend/ScoreMap.Library.Tests/ScoreMap.Library.Tests.csproj" />
+ <Project Path="tests/runtime/ScoreMap.SessionProbe/ScoreMap.SessionProbe.csproj" />
 </Solution>

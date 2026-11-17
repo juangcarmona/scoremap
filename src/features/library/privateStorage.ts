@@ -4,12 +4,17 @@ import {
   readPending,
   writePending,
   removePending as removeStoredPending,
-  discardProtectedPending,
+  discardProtectedPending as discardSongPending,
   type PendingKey,
   type PendingRecord,
   type RetainedDraft,
 } from "./protectedPending";
-export { discardProtectedPending };
+import { PersonalPending, discardPersonalPending } from "./personalPending";
+import { notationSettings } from "../../shared/music/notation";
+export async function discardProtectedPending(principal: string) {
+  await discardSongPending(principal);
+  await discardPersonalPending(principal);
+}
 import type { ImportProvenance } from "./importSelection";
 import { validateLibrary, type Library, type Song } from "./domain";
 import { copySongIdentities } from "./identityCopy";
@@ -38,11 +43,11 @@ export class PrivateLibraryStore implements LibraryStore {
   readonly notation: NotationStore = {
     read: () => this.request<NotationSettings>("/api/preferences/notation"),
     save: (request) =>
-      this.request<NotationSettings>("/api/preferences/notation", {
-        method: "PUT",
-        body: JSON.stringify(request),
-      }),
+      this.personal.mutate("notation", request, notationSettings),
+    discard: (request) =>
+      this.personal.discardOwn("notation", "notation", request.commandId),
   };
+  readonly personal: PersonalPending;
   private versions: Record<string, number> = {};
   capabilities: LibraryView["capabilities"] = {};
   private key: CryptoKey | null = null;
@@ -109,7 +114,13 @@ export class PrivateLibraryStore implements LibraryStore {
     readonly identity: SessionInfo,
     private lock: () => void,
     private authorized: () => boolean,
-  ) {}
+  ) {
+    this.personal = new PersonalPending(
+      identity.principal,
+      (path, init) => this.request(path, init),
+      () => !this.terminated && this.authorized(),
+    );
+  }
   version(songId: string) {
     return Object.hasOwn(this.versions, songId) ? this.versions[songId]! : 0;
   }
@@ -233,6 +244,12 @@ export class PrivateLibraryStore implements LibraryStore {
     }
   }
   async whenProtected() {
+    await Promise.all([
+      this.whenSongProtected(),
+      this.personal.whenProtected(),
+    ]);
+  }
+  private async whenSongProtected() {
     for (;;) {
       const latest = this.lastPrepared;
       if (!latest) {
@@ -322,7 +339,7 @@ export class PrivateLibraryStore implements LibraryStore {
     const write: PreparedLibrarySave = {
       retained,
       save: async (expectedRevision) => {
-        await this.whenProtected();
+        await this.whenSongProtected();
         this.assertAccess(generation);
         if (acknowledged) return structuredClone(acknowledged);
         if (!sent && intent !== "import") {
@@ -644,6 +661,7 @@ export class PrivateLibraryStore implements LibraryStore {
     });
   }
   close() {
+    this.personal.close();
     this.key = null;
     this.keyId = "";
     this.lastPrepared = null;

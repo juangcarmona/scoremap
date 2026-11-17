@@ -86,3 +86,34 @@ A successful transfer confirmation MUST distinguish the acknowledged destination
 - **GIVEN** an actual complete import commit whose acknowledgement succeeds
 - **WHEN** its next fresh authorized readback fails
 - **THEN** the product reports saved-but-unverified reconstruction, keeps the original source and existing destination, and a repeated identity-preserving selection encounters the existing identities without another write.
+
+### Requirement: Independent protected personal commands
+Principal-owned preferences and reusable resources MUST retain their complete original command under an independent protected recovery purpose before service transport. Their separate acknowledgement MUST match the intended revision and content before local removal. Current same-principal online authorization MUST precede recovery; no command replays automatically after reopening. A song grant MUST NOT expose personal work, and a personal key MUST NOT authorize song recovery or a song commit.
+
+#### Scenario: Lost preference response and account switch
+- **GIVEN** a personal preference command committed on the service whose response was lost and whose original request is protected on the device
+- **WHEN** the musician signs out, uses another account and later reauthenticates as the original principal
+- **THEN** the other account cannot open the record, the original principal explicitly reviews and retries its original command without another preference revision, and song content/revisions remain unchanged.
+
+#### Scenario: Song revocation leaves personal ownership independent
+- **GIVEN** a principal with both a scoped song-recovery key and an independently owned personal key
+- **WHEN** the song owner revokes that principal's grant
+- **THEN** song-key unlock refuses, fresh same-principal personal-key unlock remains independent, opposite-purpose unlock and personal-key song commits refuse, and an explicit key deletion prevents later unlock.
+
+#### Scenario: Personal protection failure and independent music save
+- **GIVEN** a failed personal-record protection operation and a valid independently protected song edit
+- **WHEN** the song commit is acknowledged and the musician requests voluntary termination
+- **THEN** the song remains acknowledged while the personal failure remains visible for an explicit retention decision; it is never reported as protected or part of the song transaction.
+
+### Requirement: Independent reusable device configurations
+Reusable device configurations MUST have separate principal ownership, explicit physical ranges, versions, expected-revision admission and retry receipts. Anonymous resource commits remain local and separate. Applying an acknowledged configuration MUST copy a new song-owned device identity without changing existing music or introducing a live dependency. Separate transfer MUST validate its supported version and complete content, keep the source and require an explicit independent copy.
+
+#### Scenario: Copied configuration remains independent
+- **GIVEN** an acknowledged reusable keyboard configuration and a song with three physical keyboards plus an independent second arrangement
+- **WHEN** the musician copies the configuration into one arrangement and subsequently edits/removes the reusable resource
+- **THEN** the fourth device has its own identity, all prior parts, notes, bindings, shared form and the second arrangement remain unchanged, and later resource changes do not mutate the song copy.
+
+#### Scenario: Lost resource acknowledgement
+- **GIVEN** a complete protected device-configuration command whose actual committed response was lost
+- **WHEN** the same principal reopens, explicitly reviews the protected original command and retries it
+- **THEN** the service reconciles its original receipt without a duplicate resource revision or a song/library revision, and other principals cannot acquire its ownership through the resource identity or a song grant.

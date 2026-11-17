@@ -141,3 +141,31 @@ it("reconciles an ambiguous original receipt before sending newer protected work
   expect(await retainedDrafts(f.identity.principal)).toEqual([]);
   await f.store.close();
 });
+
+it("keeps song acknowledgement independent of a personal-resource protection failure while termination reports that failure", async () => {
+  const f = fixture();
+  await f.session.load();
+  await expect(
+    f.store.personal.mutate(
+      "notation",
+      {
+        mode: "latin",
+        primary: "latin",
+        expectedRevision: 0,
+        commandId: crypto.randomUUID(),
+      },
+      (value) => value,
+    ),
+  ).rejects.toThrow("Unexpected fixture request");
+  await f.session.execute({
+    type: "createSong",
+    id: "song",
+    title: "Saved music",
+  });
+  expect(f.durable().songs[0]?.title).toBe("Saved music");
+  expect(f.session.error).toBe("");
+  await expect(f.session.whenProtected()).rejects.toThrow(
+    "Unexpected fixture request",
+  );
+  await f.store.close();
+});

@@ -23,8 +23,10 @@ export function PresetProvider({
 }) {
   const [presets] = useState<PresetStore>(() =>
     store
-      ? new RemotePresetStore(store.identity.principal, (path, init) =>
-          store.request(path, init),
+      ? new RemotePresetStore(
+          store.identity.principal,
+          (path, init) => store.request(path, init),
+          store.personal,
         )
       : new LocalPresetStore(),
   );
