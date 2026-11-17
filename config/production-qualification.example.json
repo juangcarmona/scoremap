@@ -1,0 +1,6 @@
+{
+  "SchemaVersion": 1,
+  "ApplicationImage": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "ApplicationRevision": "0000000000000000000000000000000000000000",
+  "PublicationDirectory": "/path/to/an/immutable/scoremap-publication"
+}

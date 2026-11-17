@@ -5,6 +5,7 @@
 
 - [x] Add the separate production AppHost, pinned package/lock and generated protected Compose snapshot.
 - [x] Execute publication, synthetic rendering, snapshot matching and direct-execution refusal without starting containers.
-- [ ] Retain immutable committed-source publication and existing-destination refusal receipts.
-- [ ] Complete disposable Production identity/TLS, persistence/key restart and rich backup/restore qualification.
+- [x] Retain immutable committed-source publication and existing-destination refusal receipts.
+- [x] Exercise staged disposable Production identity/TLS, persistence/key restart and rich backup/restore with outdated-snapshot refusal.
+- [ ] Complete a single final qualification command from committed verification inputs and retain its source-bound receipt.
 - [ ] Retain required security, independent-review and native integration gates; actual operator deployment remains separate.

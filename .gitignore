@@ -23,3 +23,6 @@ dist-private/
 
 # Generated portable production publication; operator files stay outside Git.
 deployment/output/
+
+# Python qualification interpreter caches.
+__pycache__/

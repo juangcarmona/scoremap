@@ -3,7 +3,7 @@ import {readFile,mkdir,writeFile} from 'node:fs/promises';
 const paths=execFileSync('git',['ls-files','--cached','--others','--exclude-standard','-z'],{encoding:'utf8'}).split('\0').filter(Boolean);
 const credentials=[/\bgh[pousr]_[A-Za-z0-9]{30,}\b/u,/\bgithub_pat_[A-Za-z0-9_]{40,}\b/u,/\bnpm_[A-Za-z0-9]{30,}\b/u,/-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/u,/\bAKIA[A-Z0-9]{16}\b/u,/\beyJ[A-Za-z0-9_-]{12,}\.[A-Za-z0-9_-]{12,}\.[A-Za-z0-9_-]{12,}\b/u];
 for(const path of [...new Set(paths)]){
- if(/(?:^|\/)(?:bin|obj|node_modules)\//u.test(path)||!path.match(/\.(?:cs|json|md|ya?ml|[cm]?js|tsx?|css|props|xml|txt|config)$/u))continue;
+ if(/(?:^|\/)(?:bin|obj|node_modules)\//u.test(path)||!path.match(/\.(?:cs|json|md|ya?ml|[cm]?js|tsx?|css|py|props|xml|txt|config)$/u))continue;
  const text=await readFile(path,'utf8');
  if(credentials.some(pattern=>pattern.test(text)))throw new Error('Credential-like material detected in '+path+'; keep actual secrets outside Git.');
 }

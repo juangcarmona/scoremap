@@ -420,7 +420,9 @@
       "docs/evidence/music/",
       "scripts/publish-production.mjs",
       "openspec/changes/issue-28-production-publication/",
-      "docs/evidence/deployment/"
+      "docs/evidence/deployment/",
+      "scripts/qualify-production.py",
+      "playwright.deployment.config.ts"
     ],
     "checks": [
       [
@@ -455,7 +457,10 @@
         "scripts/verify-frontend-boundaries.mjs",
         "scripts/publish-production.mjs",
         "src/root/ScoreMap.Deployment/",
-        "deployment/compose.yaml"
+        "deployment/compose.yaml",
+        "scripts/qualify-production.py",
+        "playwright.deployment.config.ts",
+        "tests/deployment/"
       ],
       "corrections": {}
     }
