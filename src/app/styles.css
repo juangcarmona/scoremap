@@ -676,6 +676,9 @@ dialog h2 {
   .save-state {
     display: none;
   }
+  .private-library .save-state {
+    display: inline;
+  }
   .section {
     padding: 0.8rem;
   }
@@ -779,5 +782,11 @@ dialog h2 {
   }
   label {
     overflow-wrap: anywhere;
+  }
+}
+
+@media (max-width: 620px) {
+  .private-brand p {
+    display: block;
   }
 }

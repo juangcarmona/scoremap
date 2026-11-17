@@ -13,7 +13,10 @@ export default defineConfig({
         globPatterns: ["**/*.{js,css,html,png,svg,webmanifest}"],
         maximumFileSizeToCacheInBytes: 6 * 1024 * 1024,
         navigateFallback: "index.html",
-        navigateFallbackDenylist: [/^\/(api|auth|health)(\/|$)/],
+        navigateFallbackDenylist: [
+          /^\/(api|auth|health)([/?]|$)/,
+          /^\/(signin-oidc|signout-callback-oidc)([/?]|$)/,
+        ],
         clientsClaim: true,
         skipWaiting: false,
         cleanupOutdatedCaches: true,

@@ -58,6 +58,11 @@ builder.Services.AddAuthentication(options => { options.DefaultScheme = CookieAu
         ((ClaimsIdentity)context.Principal!.Identity!).AddClaim(new Claim("scoremap:principal", context.SecurityToken.Issuer + "|" + sub));
         return Task.CompletedTask;
       };
+      options.Events.OnRemoteFailure = context =>
+      {
+        context.HandleResponse();
+        return Results.Problem(statusCode: 400, title: "Sign-in could not be completed", detail: "Start sign-in again from ScoreMap. No private library was opened.").ExecuteAsync(context.HttpContext);
+      };
     });
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {

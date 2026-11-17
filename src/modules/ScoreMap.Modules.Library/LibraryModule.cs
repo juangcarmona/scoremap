@@ -19,6 +19,7 @@ public static class LibraryModule
     services.AddSingleton<LibraryRepository>();
     services.AddHealthChecks().AddCheck<DatabaseHealth>("postgresql");
     services.AddSingleton<ILibraryRepository>(s => s.GetRequiredService<LibraryRepository>());
+    services.AddSingleton<HistoryQueryHandler>(); services.AddSingleton<RecoverSongHandler>();
     services.AddSingleton<ReadLibraryHandler>(); services.AddSingleton<SaveLibraryHandler>(); services.AddSingleton<GrantSongHandler>(); services.AddSingleton<SessionVault>(); services.AddSingleton<RecoveryVault>(); services.AddSingleton<IRecoveryKeyRepository>(s => s.GetRequiredService<RecoveryVault>()); services.AddSingleton<RecoveryKeyHandler>();
     services.AddOptions<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme).Configure<SessionVault>((options, vault) => options.SessionStore = vault);
     return services;
@@ -41,6 +42,11 @@ public static class LibraryModule
     api.MapPost("/recovery-keys", async (ClaimsPrincipal user, RecoveryKeyHandler handler, CancellationToken ct) => Results.Json(await handler.Handle(new RecoveryCommand(Principal(user), "create", Guid.Empty), ct).ConfigureAwait(false)));
     api.MapPost("/recovery-keys/{id:guid}/unlock", async (ClaimsPrincipal user, Guid id, RecoveryKeyHandler handler, CancellationToken ct) => Results.Json(await handler.Handle(new RecoveryCommand(Principal(user), "unlock", id), ct).ConfigureAwait(false)));
     api.MapDelete("/recovery-keys/{id:guid}", async (ClaimsPrincipal user, Guid id, RecoveryKeyHandler handler, CancellationToken ct) => { await handler.Handle(new RecoveryCommand(Principal(user), "delete", id), ct).ConfigureAwait(false); return Results.NoContent(); });
+    api.MapGet("/trash", async (ClaimsPrincipal user, HistoryQueryHandler handler, CancellationToken ct) => Results.Json(await handler.Handle(new HistoryQuery(Principal(user), null), ct).ConfigureAwait(false)));
+    api.MapGet("/songs/{id}/history", async (ClaimsPrincipal user, string id, HistoryQueryHandler handler, CancellationToken ct) => Results.Json(await handler.Handle(new HistoryQuery(Principal(user), id), ct).ConfigureAwait(false)));
+    api.MapPost("/songs/{id}/restore", async (ClaimsPrincipal user, string id, RestoreRequest request, RecoverSongHandler handler, CancellationToken ct) => Results.Json(await handler.Handle(new RecoverSong(Principal(user), id, "restore", request), ct).ConfigureAwait(false)));
+    api.MapPost("/songs/{id}/purge", async (ClaimsPrincipal user, string id, RestoreRequest request, RecoverSongHandler handler, CancellationToken ct) => Results.Json(await handler.Handle(new RecoverSong(Principal(user), id, "purge", request), ct).ConfigureAwait(false)));
+    api.Map("/{**path}", () => Results.Problem(statusCode: 404, title: "Not found", detail: "The private resource is unavailable."));
     return app;
   }
   public static string Principal(ClaimsPrincipal user) => user.FindFirstValue("scoremap:principal") ?? throw new AccessDeniedException("A stable authenticated principal is required.");

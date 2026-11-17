@@ -36,11 +36,15 @@ export class PrivateLibraryStore implements LibraryStore {
   private key: CryptoKey | null = null;
   private keyId = "";
   private retry: { candidate: string; commandId: string } | null = null;
+  private recoveryRetry: { candidate: string; commandId: string } | null = null;
   pendingRecovery = false;
   constructor(
     readonly identity: SessionInfo,
     private lock: () => void,
   ) {}
+  version(songId: string) {
+    return this.versions[songId] ?? 0;
+  }
   async request<T>(path: string, init: RequestInit = {}): Promise<T> {
     const response = await fetch(path, {
       ...init,
@@ -180,6 +184,37 @@ export class PrivateLibraryStore implements LibraryStore {
       library: unknown;
     };
     return validateLibrary(record.library);
+  }
+  recoverSong(
+    songId: string,
+    operation: "restore" | "purge",
+    expectedRevision: number,
+    revision?: number,
+    confirmation?: string,
+  ) {
+    const request = {
+      expectedRevision,
+      revision,
+      confirmation,
+      confirmed: true,
+      mode: "edit",
+    };
+    const candidate = JSON.stringify({ songId, operation, request });
+    const commandId =
+      this.recoveryRetry?.candidate === candidate
+        ? this.recoveryRetry.commandId
+        : crypto.randomUUID();
+    this.recoveryRetry = { candidate, commandId };
+    return this.request(
+      `/api/songs/${encodeURIComponent(songId)}/${operation}`,
+      {
+        method: "POST",
+        body: JSON.stringify({ ...request, commandId }),
+      },
+    ).then((acknowledgement) => {
+      this.recoveryRetry = null;
+      return acknowledgement;
+    });
   }
   close() {
     this.key = null;

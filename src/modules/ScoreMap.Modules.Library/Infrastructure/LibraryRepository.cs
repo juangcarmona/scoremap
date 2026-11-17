@@ -8,7 +8,7 @@ using Npgsql;
 
 namespace JuanGCarmona.ScoreMap.Modules.Library.Infrastructure;
 
-internal sealed class LibraryRepository(NpgsqlDataSource dataSource) : ILibraryRepository
+internal sealed partial class LibraryRepository(NpgsqlDataSource dataSource) : ILibraryRepository
 {
   internal async Task Initialize(CancellationToken cancellationToken)
   {
@@ -25,6 +25,7 @@ internal sealed class LibraryRepository(NpgsqlDataSource dataSource) : ILibraryR
             CREATE TABLE IF NOT EXISTS sm_history(song text NOT NULL REFERENCES sm_songs(id), revision bigint NOT NULL, content jsonb NOT NULL, deleted boolean NOT NULL, created_at timestamptz NOT NULL DEFAULT now(), PRIMARY KEY(song,revision));
             CREATE TABLE IF NOT EXISTS sm_receipts(principal text NOT NULL, command uuid NOT NULL, hash text NOT NULL, response jsonb NOT NULL, PRIMARY KEY(principal,command));
             CREATE TABLE IF NOT EXISTS sm_sessions(id text PRIMARY KEY, ticket bytea NOT NULL, expires timestamptz NOT NULL);
+            UPDATE sm_receipts SET response=jsonb_build_object('Revision',response#>'{Library,revision}','Versions',response->'Versions','Capabilities',response->'Capabilities') WHERE response ? 'Library';
             COMMIT;
             """);
     await using (command.ConfigureAwait(false))
@@ -111,7 +112,7 @@ internal sealed class LibraryRepository(NpgsqlDataSource dataSource) : ILibraryR
       await Lock(connection, cancellationToken).ConfigureAwait(false);
       await Execute(connection, "INSERT INTO sm_libraries(principal) VALUES($1) ON CONFLICT DO NOTHING", cancellationToken, principal).ConfigureAwait(false);
       var current = await ReadView(connection, principal, cancellationToken).ConfigureAwait(false);
-      var receipt = await Receipt(connection, principal, request.CommandId, hash, cancellationToken).ConfigureAwait(false);
+      var receipt = await Receipt(connection, principal, request.CommandId, hash, current, cancellationToken).ConfigureAwait(false);
       if (receipt is not null)
       {
         if (receipt.Capabilities.Keys.Any(id => !current.Capabilities.ContainsKey(id))) throw new AccessDeniedException("Receipt content is no longer available under current permissions.");
@@ -131,7 +132,7 @@ internal sealed class LibraryRepository(NpgsqlDataSource dataSource) : ILibraryR
         LibraryDocument.Require(bound == 1, "Private recovery key is unavailable; sign in again without discarding your pending work.");
       }
       var saved = await ReadView(connection, principal, cancellationToken).ConfigureAwait(false);
-      await Execute(connection, "INSERT INTO sm_receipts(principal,command,hash,response) VALUES($1,$2,$3,$4::jsonb)", cancellationToken, principal, request.CommandId, hash, JsonSerializer.Serialize(saved)).ConfigureAwait(false);
+      await Execute(connection, "INSERT INTO sm_receipts(principal,command,hash,response) VALUES($1,$2,$3,$4::jsonb)", cancellationToken, principal, request.CommandId, hash, JsonSerializer.Serialize(new LibraryReceipt(saved.Library.GetProperty("revision").GetInt64(), saved.Versions, saved.Capabilities))).ConfigureAwait(false);
       await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
       return saved;
     }
@@ -152,6 +153,7 @@ internal sealed class LibraryRepository(NpgsqlDataSource dataSource) : ILibraryR
       if (await Scalar(connection, "SELECT 1 FROM sm_songs WHERE id=$1 AND owner=$2 AND NOT deleted AND NOT purged", ct, song, owner).ConfigureAwait(false) is null) throw new AccessDeniedException("This song is unavailable.");
       await Execute(connection, "DELETE FROM sm_grants WHERE song=$1 AND principal=$2", ct, song, request.Principal).ConfigureAwait(false);
       if (request.Role is not null) await Execute(connection, "INSERT INTO sm_grants(song,principal,role) VALUES($1,$2,$3)", ct, song, request.Principal, request.Role).ConfigureAwait(false);
+      _ = new LibraryDocument((await ReadView(connection, request.Principal, ct).ConfigureAwait(false)).Library);
       await transaction.CommitAsync(ct).ConfigureAwait(false);
     }
   }
@@ -170,7 +172,7 @@ internal sealed class LibraryRepository(NpgsqlDataSource dataSource) : ILibraryR
                 WHERE principal<>$2 AND EXISTS(SELECT 1 FROM jsonb_array_elements(repertoires) r WHERE r->'songIds' ? $1)
                 """, cancellationToken, id, principal).ConfigureAwait(false);
   }
-  private static async Task<LibraryView?> Receipt(NpgsqlConnection connection, string principal, Guid commandId, string hash, CancellationToken ct)
+  private static async Task<LibraryView?> Receipt(NpgsqlConnection connection, string principal, Guid commandId, string hash, LibraryView current, CancellationToken ct)
   {
     var command = new NpgsqlCommand("SELECT hash,response::text FROM sm_receipts WHERE principal=$1 AND command=$2", connection);
     await using var commandDisposal = command.ConfigureAwait(false);
@@ -179,7 +181,13 @@ internal sealed class LibraryRepository(NpgsqlDataSource dataSource) : ILibraryR
     await using var readerDisposal = reader.ConfigureAwait(false);
     if (!await reader.ReadAsync(ct).ConfigureAwait(false)) return null;
     if (!string.Equals(reader.GetString(0), hash, StringComparison.Ordinal)) throw new RevisionConflictException("A command identity cannot be reused with different content.");
-    return JsonSerializer.Deserialize<LibraryView>(reader.GetString(1))!;
+    using var response = JsonDocument.Parse(reader.GetString(1));
+    if (response.RootElement.TryGetProperty("Purged", out _)) throw new RevisionConflictException("This receipt contains permanently purged content and cannot be replayed.");
+    var acknowledged = JsonSerializer.Deserialize<LibraryReceipt>(reader.GetString(1))!;
+    if (acknowledged.Capabilities.Keys.Any(id => !current.Capabilities.ContainsKey(id))) throw new AccessDeniedException("The receipt is outside your current resource permissions.");
+    if (acknowledged.Revision != current.Library.GetProperty("revision").GetInt64() || acknowledged.Versions.Count != current.Versions.Count || acknowledged.Versions.Any(p => !current.Versions.TryGetValue(p.Key, out var version) || version != p.Value) || acknowledged.Capabilities.Any(p => !current.Capabilities.TryGetValue(p.Key, out var role) || !string.Equals(role, p.Value, StringComparison.Ordinal)))
+      throw new RevisionConflictException("This command was acknowledged, but newer content or permissions exist. Export pending work and reload to compare before continuing.");
+    return current;
   }
 
   private static async Task SaveSongs(NpgsqlConnection connection, string principal, LibraryView current, CommitLibrary request, Dictionary<string, JsonElement> previous, IReadOnlyDictionary<string, JsonElement> proposed, CancellationToken cancellationToken)
@@ -205,4 +213,5 @@ internal sealed class LibraryRepository(NpgsqlDataSource dataSource) : ILibraryR
       await Execute(connection, "INSERT INTO sm_history(song,revision,content,deleted) VALUES($1,$2,$3::jsonb,false)", cancellationToken, id, version, song.GetRawText()).ConfigureAwait(false);
     }
   }
+  private sealed record LibraryReceipt(long Revision, IReadOnlyDictionary<string, long> Versions, IReadOnlyDictionary<string, string> Capabilities);
 }

@@ -58,3 +58,27 @@ The private adapter MUST retain only protected pending records across session te
 - **GIVEN** a valid private candidate whose service acknowledgement cannot be obtained
 - **WHEN** its session ends
 - **THEN** the original durable revision remains unchanged and only an account-bound ciphertext record persists for explicit authorized recovery.
+
+### Requirement: Current-format song history and owner recovery
+
+The private library MUST retain supported complete song versions, require current authorization and edit mode for restoration, and distinguish recoverable deletion from an explicitly confirmed permanent purge. Purge MUST prevent resurrection of the same identity.
+
+#### Scenario: Owner recovery without obsolete access
+
+- **GIVEN** a current-format owned song with history, grants and repertoire membership
+- **WHEN** its owner deletes and explicitly restores it
+- **THEN** its song/content identities and history survive, while former grants and memberships remain removed.
+
+<!-- pdac:cite id="FR-SONGS" digest="sha256:db0ae5a70a9b74fd370621e6c7395f924e13f1ba2a931b59514f6eda7c946625" -->
+
+#### Scenario: Permanent purge and retry
+
+- **GIVEN** an owner-authorized deleted song and a separately confirmed exact-title purge
+- **WHEN** purge commits and the same command is retried
+- **THEN** the metadata acknowledgement repeats without another mutation, retained musical history is unavailable, and restore or import of that identity refuses.
+
+#### Scenario: Conflicting or failed recovery
+
+- **GIVEN** unsaved local work, a stale revision, insufficient permission or a competing restore/purge
+- **WHEN** recovery is attempted
+- **THEN** guards refuse without discarding pending work or partially changing durable music; only one competing valid command can acknowledge the expected revision.

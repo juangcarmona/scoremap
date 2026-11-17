@@ -2,6 +2,7 @@ import type { SessionInfo } from "../shared/auth/session";
 import { useCallback, useEffect, useState } from "react";
 import {
   useQuery,
+  useQueryClient,
   QueryClient,
   QueryClientProvider,
 } from "@tanstack/react-query";
@@ -67,6 +68,7 @@ function OpenLibrary({
   onLock: () => void;
 }) {
   const [store] = useState(() => new PrivateLibraryStore(identity, onLock));
+  const queryClient = useQueryClient();
   useEffect(() => {
     const timer = window.setInterval(() => {
       void store.checkAccess().catch(onLock);
@@ -74,8 +76,11 @@ function OpenLibrary({
     return () => {
       clearInterval(timer);
       void store.close();
+      queryClient.removeQueries({
+        predicate: (query) => query.queryKey[1] === identity.principal,
+      });
     };
-  }, [store, onLock]);
+  }, [store, onLock, queryClient, identity.principal]);
   return <App store={store} identity={identity} />;
 }
 

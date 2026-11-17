@@ -7,7 +7,7 @@ The portable target is the built React PWA and ASP.NET Core BFF/API, PostgreSQL 
 Use Node 24 and the SDK pinned in `global.json`, Docker and the two synthetic example files:
 
 ```sh
-npm ci --ignore-scripts
+npx --yes --package=npm@10.9.4 -- npm ci --ignore-scripts
 npm run build:private
 npm run dev:private -- config/application.example.json config/development-users.example.json
 ```
@@ -19,6 +19,12 @@ The bootstrap validates version, required and unknown application fields, the or
 Use **Import backup** for a current v1 ScoreMap library-envelope export. The confirmation states song/repertoire counts and preserves existing songs and the original file. Duplicate or already-owned identities refuse without replacement; **Import as new copies** explicitly creates and remaps fresh identities. Edit a note, wait for **Saved to your private library**, then sign in in a new browser profile and open the same song. A local device acknowledgement does not mean server storage. Unsaved private work is encrypted on the device and requires the same reauthenticated principal and current resource permissions to unlock; export it explicitly for comparison. Persistent private offline editing is disabled.
 
 The derived provider-import file is mounted individually and readable to the container UID; its parent directories remain mode 0700. Original selected operator files and the generated application file stay mode 0600.
+
+Private **Delete song** moves the whole supported song and its saved versions into **Deleted songs**. Only the current owner can read or recover deleted content. Deletion removes song grants and repertoire memberships; restoration keeps those removed. **Song history** previews earlier notes, form and chords; the owner or a current editor can explicitly restore an active version as a new version, preserving intervening history. Performance mode cannot restore or purge. Unsaved work must be saved or compared before recovery.
+
+**Remove permanently** requires typing the exact deleted song title. It atomically removes retained live musical content/history and leaves only an identity tombstone and metadata receipt. Retrying the same command does not repeat it; old imports, stale commands and restore cannot resurrect that identity. This does not erase prior exports or operator backups. Restoring operator backups requires preserving current purge and authorization state.
+
+The development graph binds to loopback. From another machine, forward both application and provider ports through your existing SSH access, then open the application on `http://localhost:5280` there. The browser's callback origin must match the selected provider configuration; exposing the Vite static preview alone does not supply login or private server storage.
 
 Stop with Ctrl+C. Restart with the same files/InstanceId to recover the same database, provider and session keys. Stopping does not remove volumes or delete music.
 

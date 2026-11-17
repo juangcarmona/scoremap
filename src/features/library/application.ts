@@ -88,4 +88,21 @@ export class LibrarySession {
       await this.save(this.data);
     });
   }
+  reconcile(work: () => Promise<unknown>) {
+    return this.schedule(async () => {
+      requireEdit(this.mode);
+      if (this.error)
+        throw new Error(
+          "Save or export and compare your unsaved work before restoring music.",
+        );
+      await work();
+      try {
+        await this.load();
+      } catch (error) {
+        this.error =
+          "The recovery was acknowledged, but the updated library could not be opened. Reload to check the saved result before editing.";
+        throw error;
+      }
+    });
+  }
 }

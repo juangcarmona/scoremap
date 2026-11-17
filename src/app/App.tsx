@@ -1,4 +1,5 @@
 import { SongAccess } from "../features/library/SongAccess";
+import { SongHistory, DeletedSongs } from "../features/library/SongRecovery";
 import { PwaStatus } from "./PwaStatus";
 import { useCallback, useRef, useState } from "react";
 import { useLibrary } from "../features/library/useLibrary";
@@ -31,6 +32,7 @@ export function App({
   >(null);
   const [error, setError] = useState("");
   const [importEpoch, setImportEpoch] = useState(0);
+  const [recovering, setRecovering] = useState(false);
   // Interaction drafts survive sketch remounts while persistence remains queued.
   const [noteDrafts, setNoteDrafts] = useState<ReadonlyMap<string, string>>(
     () => new Map(),
@@ -74,6 +76,17 @@ export function App({
     if (!session) throw new Error("The library is still loading.");
     await session.execute(command);
   };
+  async function recover(work: () => Promise<unknown>) {
+    if (!session) throw new Error("The library is still loading.");
+    setRecovering(true);
+    try {
+      await session.reconcile(work);
+      setNoteDrafts(new Map());
+      setImportEpoch((value) => value + 1);
+    } finally {
+      setRecovering(false);
+    }
+  }
   function selectSong(id: string) {
     setSelected(id);
     const url = new URL(location.href);
@@ -139,11 +152,11 @@ export function App({
     );
   return (
     <div
-      className={`app ${edit ? "editing" : "performing"}`}
+      className={`app ${edit ? "editing" : "performing"}${identity ? " private-library" : ""}`}
       data-build-revision={import.meta.env.VITE_SCOREMAP_BUILD ?? "development"}
     >
-      <header className="app-header">
-        <div className="brand">
+      <header className="app-header" inert={recovering}>
+        <div className={`brand${identity ? " private-brand" : ""}`}>
           <h1>
             ScoreMap
             <span className="brand-mark" aria-hidden="true">
@@ -285,7 +298,12 @@ export function App({
           </button>
         </div>
       )}
-      <div className="workspace">
+      {recovering && (
+        <p className="notice" role="status">
+          Saving your recovery operation to the private library…
+        </p>
+      )}
+      <div className="workspace" inert={recovering}>
         <aside
           className={`library ${libraryOpen ? "open" : ""}`}
           aria-label="Music library"
@@ -328,14 +346,13 @@ export function App({
                 <button
                   type="button"
                   className={group === rep.id ? "active" : ""}
-                  aria-label={`Open repertoire ${rep.title}`}
+                  aria-label={`Open repertoire ${rep.title} ${rep.songIds.length}`}
                   onClick={() => {
                     setGroup(rep.id);
                     setSelected(null);
                   }}
                 >
-                  {rep.title}
-                  <span>{rep.songIds.length}</span>
+                  {rep.title} <span>{rep.songIds.length}</span>
                 </button>
                 {edit && (
                   <button
@@ -398,6 +415,14 @@ export function App({
             </p>
           )}
           <footer className="library-footer">
+            {store instanceof PrivateLibraryStore && (
+              <DeletedSongs
+                store={store}
+                editable={edit}
+                recover={recover}
+                revision={library.revision}
+              />
+            )}
             <button
               type="button"
               onClick={() => {
@@ -592,7 +617,9 @@ export function App({
                         onClick={() => {
                           if (
                             window.confirm(
-                              `Delete song “${song.title}” and all its sections, notes and attachments?`,
+                              identity
+                                ? `Move “${song.title}” to deleted songs? Its music and history will remain recoverable only by you. Sharing permissions and repertoire memberships will be removed.`
+                                : `Delete song “${song.title}” and all its sections, notes and attachments?`,
                             )
                           )
                             void execute({
@@ -610,12 +637,25 @@ export function App({
                 )}
               </header>
               {store instanceof PrivateLibraryStore && song && (
-                <SongAccess
-                  key={song.id}
-                  store={store}
-                  songId={song.id}
-                  editable={edit}
-                />
+                <>
+                  <SongAccess
+                    key={song.id}
+                    store={store}
+                    songId={song.id}
+                    editable={edit}
+                  />
+                  <SongHistory
+                    key={`${song.id}-${library.revision}-${importEpoch}`}
+                    store={store}
+                    song={{
+                      id: song.id,
+                      title: song.title,
+                      revision: store.version(song.id),
+                    }}
+                    editable={edit}
+                    recover={recover}
+                  />
+                </>
               )}
               <Sketch
                 key={`${song.id}-${importEpoch}`}
@@ -729,7 +769,9 @@ export function App({
                 </button>
               )}
               <p className="muted">
-                No account. Your own music. Ready offline after the first load.
+                {identity
+                  ? "Import an existing ScoreMap backup or create a song. Changes are saved to your private server library."
+                  : "No account. Your own music. Ready offline after the first load."}
               </p>
             </div>
           )}

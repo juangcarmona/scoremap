@@ -93,4 +93,48 @@ describe("Serialized application commands", () => {
     expect(session.data?.songs).toEqual([]);
     expect(session.durableRevision).toBe(2);
   });
+  it("recovery cannot replace unsaved work or bypass performance mode", async () => {
+    const f = fixture();
+    await f.session.load();
+    f.session.setMode("performance");
+    let invoked = false;
+    const recover = async () => {
+      invoked = true;
+    };
+    await expect(f.session.reconcile(recover)).rejects.toThrow(/Performance/);
+    expect(invoked).toBe(false);
+    f.session.setMode("edit");
+    f.fail(true);
+    await expect(
+      f.session.execute({ type: "createSong", id: "draft", title: "Unsaved" }),
+    ).rejects.toThrow();
+    await expect(f.session.reconcile(recover)).rejects.toThrow(/unsaved work/);
+    expect(invoked).toBe(false);
+    expect(f.session.data?.songs[0]?.title).toBe("Unsaved");
+  });
+  it("recovery serializes with edits and refreshes the acknowledged revision", async () => {
+    const f = fixture();
+    await f.session.load();
+    await Promise.all([
+      f.session.execute({
+        type: "createSong",
+        id: "song",
+        title: "Saved first",
+      }),
+      f.session.reconcile(async () => {
+        f.durable().songs[0]!.title = "Restored version";
+        f.durable().revision++;
+      }),
+      f.session.execute({
+        type: "createSong",
+        id: "second",
+        title: "Saved after",
+      }),
+    ]);
+    expect(f.durable().songs.map((song) => song.title)).toEqual([
+      "Restored version",
+      "Saved after",
+    ]);
+    expect(f.session.durableRevision).toBe(3);
+  });
 });

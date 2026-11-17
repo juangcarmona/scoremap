@@ -1,7 +1,7 @@
 FROM node:24-bookworm-slim AS web
 WORKDIR /build
 COPY package.json package-lock.json ./
-RUN npm ci --ignore-scripts
+RUN npx --yes --package=npm@10.9.4 -- npm ci --ignore-scripts
 COPY . .
 ARG SOURCE_REVISION
 RUN VITE_SCOREMAP_BUILD=$SOURCE_REVISION npm run build:private
