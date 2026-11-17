@@ -1,0 +1,22 @@
+FROM node:24-bookworm-slim AS web
+WORKDIR /build
+COPY package.json package-lock.json ./
+RUN npm ci --ignore-scripts
+COPY . .
+ARG SOURCE_REVISION
+RUN VITE_SCOREMAP_BUILD=$SOURCE_REVISION npm run build:private
+
+FROM mcr.microsoft.com/dotnet/sdk:10.0.115 AS backend
+WORKDIR /build
+COPY . .
+RUN dotnet restore ScoreMap.slnx --locked-mode
+RUN dotnet publish src/root/ScoreMap.Api -c Release --no-restore -o /out
+
+FROM mcr.microsoft.com/dotnet/aspnet:10.0.15
+WORKDIR /app
+COPY --from=backend /out ./
+COPY --from=web /build/dist-private ./wwwroot
+ENV ASPNETCORE_ENVIRONMENT=Production ASPNETCORE_HTTP_PORTS=8080 SCOREMAP_APPLICATION_FILE=/run/scoremap/application.json
+RUN mkdir -p /var/lib/scoremap/keys && chown -R $APP_UID /var/lib/scoremap && chmod 700 /var/lib/scoremap/keys
+USER $APP_UID
+ENTRYPOINT ["dotnet", "ScoreMap.Api.dll"]

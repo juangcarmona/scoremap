@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises';
 import { execFileSync, spawnSync } from 'node:child_process';
 const revision=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
-const paths=['src','tests','scripts','package.json','package-lock.json','*.config.ts','*.config.js','tsconfig.json','.product','docs/product/model','openspec','lighthouse.json','.github/workflows/ci.yml'];
+const paths=['src','tests','scripts','package.json','package-lock.json','*.config.ts','*.config.js','tsconfig.json','.product','docs/product/model','openspec','lighthouse.json','.github/workflows/ci.yml','global.json','Directory.Build.props','Directory.Packages.props','ScoreMap.slnx','config','deployment','.lighthouse','.agents','docs/architecture','docs/profiles','docs/design','.github','.gitignore','.dockerignore','LIGHTHOUSE.md','.editorconfig','.config'];
 function unchanged(){execFileSync('git',['diff','--exit-code','HEAD','--',...paths],{stdio:'pipe'});const untracked=execFileSync('git',['ls-files','--others','--exclude-standard','--',...paths],{encoding:'utf8'}).trim();if(untracked)throw new Error('Commit verification inputs before retaining execution evidence.');}
 unchanged();const receipt={sourceRevision:revision,startedAt:new Date().toISOString(),executionOrigin:process.env.GITHUB_ACTIONS==='true'?'github-actions':'local',commands:[],status:'running'};
 await fs.mkdir('docs/evidence/mvp',{recursive:true});

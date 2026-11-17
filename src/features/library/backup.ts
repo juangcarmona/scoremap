@@ -49,3 +49,27 @@ export function downloadText(text: string, filename: string) {
   a.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
+
+export function copyBackupLibrary(library: Library): Library {
+  const copy = structuredClone(validateLibrary(library));
+  const identities = new Map<string, string>();
+  const remap = (id: string) => {
+    let mapped = identities.get(id);
+    if (!mapped) {
+      mapped = crypto.randomUUID();
+      identities.set(id, mapped);
+    }
+    return mapped;
+  };
+  for (const song of copy.songs) {
+    song.id = remap(song.id);
+    for (const section of song.sections) section.id = remap(section.id);
+    for (const ref of song.references) ref.id = remap(ref.id);
+    if (song.pdf) song.pdf.id = remap(song.pdf.id);
+  }
+  for (const repertoire of copy.repertoires) {
+    repertoire.id = remap(repertoire.id);
+    repertoire.songIds = repertoire.songIds.map(remap);
+  }
+  return validateLibrary(copy);
+}

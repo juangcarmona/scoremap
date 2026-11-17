@@ -4,8 +4,14 @@ interface ScoreMapDatabase extends DBSchema {
   library: { key: string; value: Library };
 }
 export interface LibraryStore {
+  readonly scope?: "private";
+  close?(): Promise<void>;
   load(): Promise<Library>;
-  commit(candidate: Library, expectedRevision: number): Promise<Library>;
+  commit(
+    candidate: Library,
+    expectedRevision: number,
+    intent?: "import",
+  ): Promise<Library>;
 }
 export class IndexedLibraryStore implements LibraryStore {
   private connection: Promise<IDBPDatabase<ScoreMapDatabase>>;

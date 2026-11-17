@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+ <ItemGroup>
+  <ProjectReference Include="../../modules/ScoreMap.Modules.Library/ScoreMap.Modules.Library.csproj" />
+  <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" />
+ </ItemGroup>
+</Project>

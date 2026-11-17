@@ -1,3 +1,4 @@
+import { SongAccess } from "../features/library/SongAccess";
 import { PwaStatus } from "./PwaStatus";
 import { useCallback, useRef, useState } from "react";
 import { useLibrary } from "../features/library/useLibrary";
@@ -7,12 +8,19 @@ import {
   downloadText,
   exportBackup,
   importBackup,
+  copyBackupLibrary,
   MAX_IMPORT_BYTES,
 } from "../features/library/backup";
+import type { LibraryStore } from "../features/library/storage";
+import { PrivateLibraryStore } from "../features/library/privateStorage";
+import type { SessionInfo } from "../shared/auth/session";
 import type { Command } from "../features/library/domain";
 
-export function App() {
-  const { session, loadError } = useLibrary();
+export function App({
+  store,
+  identity,
+}: { store?: LibraryStore; identity?: SessionInfo } = {}) {
+  const { session, loadError } = useLibrary(store);
   const [selected, setSelected] = useState<string | null>(() =>
     new URL(location.href).searchParams.get("song"),
   );
@@ -29,6 +37,7 @@ export function App() {
   );
   const [libraryOpen, setLibraryOpen] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
+  const importCopy = useRef(false);
   const library = session?.data;
   const edit = session?.mode === "edit";
   const activeRep = library?.repertoires.find((r) => r.id === group);
@@ -43,6 +52,14 @@ export function App() {
         `${s.title} ${s.artist}`.toLowerCase().includes(search.toLowerCase()),
     ) ?? [];
   const song = library?.songs.find((s) => s.id === selected) ?? songs[0];
+  const songEdit =
+    edit &&
+    (!(store instanceof PrivateLibraryStore) ||
+      !song ||
+      store.capabilities[song.id] !== "viewer");
+  const canDeleteSong =
+    !(store instanceof PrivateLibraryStore) ||
+    (song && store.capabilities[song.id] === "owner");
   const report = useCallback(
     (e: unknown) =>
       setError(
@@ -92,7 +109,11 @@ export function App() {
       <main className="startup">
         <h1>ScoreMap</h1>
         <div role="alert">
-          <h2>Your local library could not be opened.</h2>
+          <h2>
+            {identity
+              ? "Your private library could not be opened."
+              : "Your local library could not be opened."}
+          </h2>
           <p>{loadError}</p>
           <p>
             Your existing data has not been replaced. Keep this browser’s site
@@ -109,7 +130,11 @@ export function App() {
     return (
       <main className="startup">
         <h1>ScoreMap</h1>
-        <p role="status">Opening your local music…</p>
+        <p role="status">
+          {identity
+            ? "Opening your private music…"
+            : "Opening your local music…"}
+        </p>
       </main>
     );
   return (
@@ -125,9 +150,41 @@ export function App() {
               ▦
             </span>
           </h1>
-          <p>Your sheet music, mapped out.</p>
+          <p>
+            {identity
+              ? `${identity.name} · Private library`
+              : "Your sheet music, mapped out."}
+          </p>
         </div>
         <div className="top-actions">
+          {identity && (
+            <button
+              type="button"
+              onClick={() => {
+                void session.whenIdle().then(async () => {
+                  if (
+                    session.error &&
+                    !window.confirm(
+                      "Your unsaved work will remain protected for this account. Sign out now?",
+                    )
+                  )
+                    return;
+                  const form = document.createElement("form");
+                  form.method = "post";
+                  form.action = "/auth/logout";
+                  const csrf = document.createElement("input");
+                  csrf.type = "hidden";
+                  csrf.name = "__RequestVerificationToken";
+                  csrf.value = identity.csrf;
+                  form.append(csrf);
+                  document.body.append(form);
+                  form.submit();
+                });
+              }}
+            >
+              Sign out
+            </button>
+          )}
           <PwaStatus
             beforeUpdate={async () => {
               await session.whenIdle();
@@ -142,8 +199,12 @@ export function App() {
             {session.error
               ? "Unsaved changes"
               : session.pending
-                ? "Saving on this device…"
-                : "Saved on this device"}
+                ? identity
+                  ? "Saving to your private library…"
+                  : "Saving on this device…"
+                : identity
+                  ? "Saved to your private library"
+                  : "Saved on this device"}
           </span>
           <button
             type="button"
@@ -199,6 +260,29 @@ export function App() {
               Dismiss
             </button>
           )}
+        </div>
+      )}
+      {store instanceof PrivateLibraryStore && store.pendingRecovery && (
+        <div className="notice" role="status">
+          <span>
+            Protected pending work from your previous session is available.
+          </span>
+          <button
+            type="button"
+            onClick={() => {
+              void store
+                .recoverPending()
+                .then((value) =>
+                  downloadText(
+                    exportBackup(value),
+                    "scoremap-pending-recovery.json",
+                  ),
+                )
+                .catch(report);
+            }}
+          >
+            Export pending work to compare
+          </button>
         </div>
       )}
       <div className="workspace">
@@ -333,10 +417,24 @@ export function App() {
               <>
                 <button
                   type="button"
-                  onClick={() => fileInput.current?.click()}
+                  onClick={() => {
+                    importCopy.current = false;
+                    fileInput.current?.click();
+                  }}
                 >
                   Import backup
                 </button>
+                {identity && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      importCopy.current = true;
+                      fileInput.current?.click();
+                    }}
+                  >
+                    Import as new copies
+                  </button>
+                )}
                 <input
                   ref={fileInput}
                   type="file"
@@ -352,15 +450,34 @@ export function App() {
                         throw new Error(
                           "This backup exceeds the 64 MiB import limit.",
                         );
-                      const imported = importBackup(await file.text());
+                      let imported = importBackup(await file.text());
+                      if (identity && importCopy.current)
+                        imported = copyBackupLibrary(imported);
                       await session.whenIdle();
                       if (
                         !window.confirm(
-                          "Replace your entire local library with this backup? Export your current work first if you want to keep it.",
+                          identity
+                            ? `Import ${imported.songs.length} songs and ${imported.repertoires.length} repertoires into your private library${importCopy.current ? " as new copies with new identities" : " preserving their identities"}? Existing music and the original file will be kept.`
+                            : "Replace your entire local library with this backup? Export your current work first if you want to keep it.",
                         )
                       )
                         return;
-                      await session.replace(imported, true);
+                      await session.replace(
+                        identity
+                          ? {
+                              ...session.data!,
+                              songs: [
+                                ...session.data!.songs,
+                                ...imported.songs,
+                              ],
+                              repertoires: [
+                                ...session.data!.repertoires,
+                                ...imported.repertoires,
+                              ],
+                            }
+                          : imported,
+                        true,
+                      );
                       setImportEpoch((n) => n + 1);
                       setNoteDrafts(new Map());
                       setSelected(null);
@@ -397,7 +514,9 @@ export function App() {
               </>
             )}
             <p>
-              Your library stays on this device.
+              {identity
+                ? "Your private library is stored on your server."
+                : "Your library stays on this device."}
               <br />
               Keep a backup of your work.
             </p>
@@ -414,7 +533,7 @@ export function App() {
                   <h2>{song.title}</h2>
                   {song.artist && <p className="artist">{song.artist}</p>}
                 </div>
-                {edit && (
+                {songEdit && (
                   <div className="song-menu">
                     {activeRep ? (
                       <button
@@ -466,25 +585,38 @@ export function App() {
                         </form>
                       )
                     )}
-                    <button
-                      type="button"
-                      className="danger-link"
-                      onClick={() => {
-                        if (
-                          window.confirm(
-                            `Delete song “${song.title}” and all its sections, notes and attachments?`,
+                    {canDeleteSong && (
+                      <button
+                        type="button"
+                        className="danger-link"
+                        onClick={() => {
+                          if (
+                            window.confirm(
+                              `Delete song “${song.title}” and all its sections, notes and attachments?`,
+                            )
                           )
-                        )
-                          void execute({ type: "deleteSong", songId: song.id })
-                            .then(() => setSelected(null))
-                            .catch(report);
-                      }}
-                    >
-                      Delete song
-                    </button>
+                            void execute({
+                              type: "deleteSong",
+                              songId: song.id,
+                            })
+                              .then(() => setSelected(null))
+                              .catch(report);
+                        }}
+                      >
+                        Delete song
+                      </button>
+                    )}
                   </div>
                 )}
               </header>
+              {store instanceof PrivateLibraryStore && song && (
+                <SongAccess
+                  key={song.id}
+                  store={store}
+                  songId={song.id}
+                  editable={edit}
+                />
+              )}
               <Sketch
                 key={`${song.id}-${importEpoch}`}
                 song={song}
@@ -492,7 +624,7 @@ export function App() {
                 setNoteDraft={(id, text) =>
                   setNoteDrafts((drafts) => new Map(drafts).set(id, text))
                 }
-                mode={session.mode}
+                mode={songEdit ? session.mode : "performance"}
                 execute={execute}
                 report={report}
               />
@@ -515,7 +647,7 @@ export function App() {
                       >
                         {ref.title} ↗
                       </a>
-                      {edit && (
+                      {songEdit && (
                         <button
                           type="button"
                           aria-label={`Remove reference ${ref.title}`}
@@ -533,7 +665,7 @@ export function App() {
                     </li>
                   ))}
                 </ul>
-                {edit && (
+                {songEdit && (
                   <form
                     aria-label="Add external reference"
                     onSubmit={(e) => {
@@ -587,7 +719,7 @@ export function App() {
                 <br />
                 Take a clear sketch to rehearsal and performance.
               </p>
-              {edit && (
+              {songEdit && (
                 <button
                   type="button"
                   className="primary"

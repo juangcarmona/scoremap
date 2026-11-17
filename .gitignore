@@ -12,3 +12,11 @@ test-results/
 # Product Definition as Code: regenerable outputs, never canonical.
 .product/generated/
 .product/cache/
+
+# .NET outputs and private runtime inputs
+**/bin/
+**/obj/
+.runtime/
+config/*.private.json
+
+dist-private/

@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+ <PropertyGroup><IsTestProject>true</IsTestProject></PropertyGroup>
+ <ItemGroup>
+  <PackageReference Include="Microsoft.NET.Test.Sdk" />
+  <PackageReference Include="xunit" />
+  <PackageReference Include="xunit.runner.visualstudio" PrivateAssets="all" />
+  <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
+  <ProjectReference Include="../../../src/modules/ScoreMap.Modules.Library/ScoreMap.Modules.Library.csproj" />
+  <ProjectReference Include="../../../src/dotnet/Lighthouse.Analyzers/Lighthouse.Analyzers.csproj" />
+ </ItemGroup>
+</Project>

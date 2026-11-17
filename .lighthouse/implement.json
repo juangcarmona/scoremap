@@ -44,5 +44,75 @@
       ],
       "corrections": {}
     }
+  },
+  "25": {
+    "scope": "Implement the owner-authorized first connected private-library MVP from applied CHG-ARRANGEMENT-EVOLUTION. Retain current v1 imports and anonymous data, principal-derived ownership, real OIDC/Keycloak, server-held sessions, edit/domain guards, current resource grants, conditional atomic PostgreSQL commits, protected pending records and explicit failures. Preserve all existing checks and independent review. Add only necessary .NET/Aspire/Compose/configuration and verification surfaces; no production deployment, credential publication, managed control-plane edits or direct canonical-model changes. Full musical/offline/retention scope remains tracked.",
+    "paths": [
+      "src/",
+      "tests/",
+      "public/",
+      "index.html",
+      "vite.config.ts",
+      "vitest.config.ts",
+      "playwright.config.ts",
+      "tsconfig.json",
+      "tsconfig.app.json",
+      "eslint.config.js",
+      "package.json",
+      "package-lock.json",
+      "scripts/verify-traceability.mjs",
+      "config/",
+      "deployment/",
+      "global.json",
+      "Directory.Build.props",
+      "Directory.Packages.props",
+      "ScoreMap.slnx",
+      ".config/dotnet-tools.json",
+      ".editorconfig",
+      ".gitignore",
+      ".dockerignore",
+      "playwright.connected.config.ts",
+      "scripts/dev-private.mjs",
+      "scripts/verify-backend-boundaries.mjs",
+      "scripts/verify-security.mjs",
+      "scripts/verify-delivery.mjs",
+      "docs/architecture/",
+      "openspec/changes/issue-25-proposal/",
+      "scripts/verify-frontend-boundaries.mjs"
+    ],
+    "checks": [
+      [
+        "npm",
+        "ci",
+        "--ignore-scripts"
+      ],
+      [
+        "npm",
+        "run",
+        "verify"
+      ],
+      [
+        "npm",
+        "run",
+        "test:e2e"
+      ]
+    ],
+    "reviewRequired": true,
+    "verification": {
+      "paths": [
+        "tests/",
+        "vitest.config.ts",
+        "playwright.config.ts",
+        "package.json",
+        "package-lock.json",
+        "tests/backend/",
+        "tests/connected/",
+        "playwright.connected.config.ts",
+        "scripts/verify-backend-boundaries.mjs",
+        "scripts/verify-security.mjs",
+        "scripts/verify-frontend-boundaries.mjs"
+      ],
+      "corrections": {}
+    }
   }
 }

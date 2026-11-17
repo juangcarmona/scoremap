@@ -1,116 +1,98 @@
 ---
 id: LC-LIBRARY
 type: domain-lifecycle
-title: Library song presence
-status: active
+title: Library active song presence
+status: draft
 subject: TERM-LIBRARY
 states:
   - id: EMPTY
-    title: No songs
+    title: No active songs
     initial: true
   - id: POPULATED
-    title: At least one song
+    title: At least one active song
 transitions:
   - id: CREATE-FIRST
-    title: Create the first song
-    from:
-      - EMPTY
+    title: Create the first active song
+    from: [EMPTY]
     to: POPULATED
-    trigger: Create the first song
-    initiated-by:
-      - ACT-MUSICIAN
-    governed-by:
-      - BR-IDENTITY
-      - BR-EDIT-GUARD
-    realized-by:
-      - UC-SONGS
+    trigger: Create a valid first active song and receive durable acknowledgement
+    initiated-by: [ACT-MUSICIAN]
+    governed-by: [BR-IDENTITY, BR-EDIT-GUARD, BR-DURABILITY, BR-ACCESS, BR-SESSION]
+    realized-by: [UC-SONGS]
   - id: CREATE
-    title: Create another song
-    from:
-      - POPULATED
+    title: Create another active song
+    from: [POPULATED]
     to: POPULATED
-    trigger: Create another song
-    initiated-by:
-      - ACT-MUSICIAN
-    governed-by:
-      - BR-IDENTITY
-      - BR-EDIT-GUARD
-    realized-by:
-      - UC-SONGS
+    trigger: Create another valid active song and receive durable acknowledgement
+    initiated-by: [ACT-MUSICIAN]
+    governed-by: [BR-IDENTITY, BR-EDIT-GUARD, BR-DURABILITY, BR-ACCESS, BR-SESSION]
+    realized-by: [UC-SONGS]
   - id: DELETE-LAST
-    title: Delete the only song
-    from:
-      - POPULATED
+    title: Delete the only active song
+    from: [POPULATED]
     to: EMPTY
-    trigger: Delete the only song
-    initiated-by:
-      - ACT-MUSICIAN
-    governed-by:
-      - BR-IDENTITY
-      - BR-EDIT-GUARD
-    realized-by:
-      - UC-SONGS
+    trigger: Delete the only active song and receive durable acknowledgement
+    initiated-by: [ACT-MUSICIAN]
+    governed-by: [BR-IDENTITY, BR-EDIT-GUARD, BR-DURABILITY, BR-ACCESS, BR-SESSION]
+    realized-by: [UC-SONGS]
   - id: DELETE
-    title: Delete a song while other songs remain
-    from:
-      - POPULATED
+    title: Delete an active song while another remains
+    from: [POPULATED]
     to: POPULATED
-    trigger: Delete a song while other songs remain
-    initiated-by:
-      - ACT-MUSICIAN
-    governed-by:
-      - BR-IDENTITY
-      - BR-EDIT-GUARD
-    realized-by:
-      - UC-SONGS
+    trigger: Delete an active song while another active song remains and receive durable acknowledgement
+    initiated-by: [ACT-MUSICIAN]
+    governed-by: [BR-IDENTITY, BR-EDIT-GUARD, BR-DURABILITY, BR-ACCESS, BR-SESSION]
+    realized-by: [UC-SONGS]
   - id: IMPORT-EMPTY
-    title: Import a confirmed valid backup containing no songs
-    from:
-      - EMPTY
-      - POPULATED
+    title: Replace anonymous content with a confirmed valid empty backup
+    from: [EMPTY, POPULATED]
     to: EMPTY
-    trigger: Import a confirmed valid backup containing no songs
-    initiated-by:
-      - ACT-MUSICIAN
-    governed-by:
-      - BR-BACKUP
-      - BR-DURABILITY
-      - BR-EDIT-GUARD
-    realized-by:
-      - UC-BACKUP
+    trigger: Confirm a supported complete anonymous replacement containing no songs and receive durable acknowledgement
+    initiated-by: [ACT-MUSICIAN]
+    governed-by: [BR-BACKUP, BR-DURABILITY, BR-EDIT-GUARD]
+    realized-by: [UC-BACKUP]
   - id: IMPORT-POPULATED
-    title: Import a confirmed valid backup containing songs
-    from:
-      - EMPTY
-      - POPULATED
+    title: Import confirmed valid active songs
+    from: [EMPTY, POPULATED]
     to: POPULATED
-    trigger: Import a confirmed valid backup containing songs
-    initiated-by:
-      - ACT-MUSICIAN
-    governed-by:
-      - BR-BACKUP
-      - BR-DURABILITY
-      - BR-EDIT-GUARD
-    realized-by:
-      - UC-BACKUP
+    trigger: Confirm a supported import or claim containing active songs and receive durable acknowledgement at the declared library boundary
+    initiated-by: [ACT-MUSICIAN]
+    governed-by: [BR-BACKUP, BR-DURABILITY, BR-EDIT-GUARD, BR-IDENTITY, BR-ACCESS, BR-SESSION]
+    realized-by: [UC-BACKUP]
+  - id: RESTORE
+    title: Restore a retained deleted song to active presence
+    from: [EMPTY, POPULATED]
+    to: POPULATED
+    trigger: Confirm a valid current-owner restoration of retained deleted content and receive durable acknowledgement
+    initiated-by: [ACT-MUSICIAN]
+    governed-by: [BR-IDENTITY, BR-EDIT-GUARD, BR-DURABILITY, BR-ACCESS, BR-SESSION]
+    realized-by: [UC-SONGS]
 ---
 
 ## Purpose
 
-Expose meaningful persistent content states and valid guarded operations.
+Expose the persistent presence of active songs in one declared personal-library scope. Preserve the existing EMPTY/POPULATED distinction and transition identities while distinguishing private retained deletion from active availability.
 
 ## Invariants
 
-Song IDs remain unique; memberships resolve; a successful write is recoverable. EMPTY means exactly zero songs; POPULATED means at least one.
+EMPTY means exactly zero active songs; POPULATED means at least one active song. Retained deleted songs and purged identities do not count as active. Hidden or inaccessible songs are not erased by a caller's filtered view: state describes the declared library's content, not the current screen or one grantee's visible subset. Repertoires and independently owned reusable resources may exist in either state. Memberships resolve to active songs without duplicates.
+
+Stable song/content identities survive reorder and authorized restoration. Private deletion removes memberships atomically but retains owner-only song-owned content/history under LC-SONG-RETENTION. Anonymous deletion retains its local current-data semantics. Acknowledgement is required at the appropriate complete durable boundary; neither a queued draft nor a private device copy changes acknowledged active presence.
 
 ## State Semantics
 
-State is derived from persistent content, never from the current screen, editing mode or a fabricated publishing lifecycle.
+Presence is derived from persistent active content. It does not describe whether the musician is editing, selected an event, has signed in, has unsaved work or is offline. LC-STRUCTURE independently describes section presence within a song and retains its EMPTY/ARRANGED topology. Private-song retention is separate from library presence: an EMPTY private library may still contain owner-only deleted recovery data.
 
 ## Transition Semantics
 
-Every transition requires its governed business rules. An invalid operation is refused without a transition; failures are separate Structured Behaviours.
+CREATE-FIRST and CREATE retain their distinct starting presence conditions. DELETE-LAST requires exactly one active song; DELETE requires another active song to remain. Their private effects also move the selected song from ACTIVE to DELETED retention and invalidate grants, without deleting unrelated resources. Same-state CREATE and DELETE are meaningful acknowledged changes to the active collection, not fabricated save-state transitions.
+
+IMPORT-EMPTY remains an explicitly confirmed anonymous complete replacement; it cannot empty a private account through an imported backup. IMPORT-POPULATED preserves the existing anonymous replacement case and also describes a complete acknowledged private import/claim introducing active songs under current authority. Private work does not replace unselected destination songs, imported grants confer no authority and partial multi-boundary progress is reported per receipt.
+
+RESTORE reintroduces an existing retained identity as an active song. It produces POPULATED from either valid starting presence and coincides with LC-SONG-RETENTION RESTORE for that song. It creates a new acknowledged content revision but neither restores old grants nor silently recreates repertoire memberships. Identity/revision/reference conflicts refuse before activation. Reading deleted data or purging already deleted content does not change active presence.
+
+Every admitted transition enforces its rules, applicable current capability, edit guard, complete validity and expected revision. BR-ACCESS/BR-SESSION apply to private content without imposing private sign-in on anonymous local work. A refused, cancelled or failed command performs no transition. Ambiguous responses reconcile actual committed receipts rather than assume rollback or perform duplicate effects.
 
 ## Boundaries
 
-Repertoires can exist in either state. No song Draft, Published or Archived lifecycle is introduced.
+This lifecycle does not grant authority, promise erasure or enumerate every musical-content edit. Opening, consulting, session locking, notation changes and saves that do not affect active presence are not transitions here. A behaviour's single covers-transition reference cannot be expanded into an invented multi-transition field merely because a command has effects in both library presence and song retention.

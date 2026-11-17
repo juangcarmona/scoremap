@@ -1,4 +1,4 @@
-import { assertChord, type Chord } from "../library/domain";
+import { assertChord, type Chord } from "../../shared/music/chord";
 const naturals: Record<string, number> = {
   C: 0,
   D: 2,

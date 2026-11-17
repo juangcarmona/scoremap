@@ -75,3 +75,14 @@ describe("Deterministic musical relationships", () => {
     expect(() => pianoKeys(-1)).toThrow();
   });
 });
+
+it("Chord boundaries reject inherited or unexpected fields", async () => {
+  const { assertChord } = await import("../../src/shared/music/chord");
+  const inherited = Object.assign(Object.create({ root: "C" }), {
+    quality: "major",
+    unexpected: "field",
+  });
+  expect(() => assertChord(inherited)).toThrow(
+    "Missing or unexpected data fields.",
+  );
+});

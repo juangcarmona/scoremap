@@ -2,18 +2,18 @@
 id: TERM-CHORD
 type: domain-term
 title: Chord
-status: active
+status: draft
 defined-in: BC-SKETCH
 ---
 
 ## Definition
 
-A spelled root pitch and quality whose major or minor triad has a deterministic pitch-class set.
+A spelled root, canonical catalogue quality/extension, compatible degree alterations and optional explicit slash bass, from which theoretical spelled degrees and pitch classes derive. Harmonic identity contains no display-language strings or mandatory played octaves. Major/minor triad meaning is preserved.
 
 ## Distinguish From
 
-A UI selection or screen is not this persistent domain object.
+A voicing chooses exact performed pitches and register. Enharmonic pitch equivalence does not make two spellings identical. Candidate detection is a suggestion, not established harmonic identity.
 
 ## Usage
 
-Used by the musician when preparing or consulting personally authored content.
+All notation modes render the same identity. A custom manually chosen voicing can remain honestly unidentified or ambiguous without fabricating a chord match.

@@ -1,0 +1,138 @@
+{
+  "realm": "scoremap-development",
+  "enabled": true,
+  "sslRequired": "none",
+  "registrationAllowed": false,
+  "resetPasswordAllowed": false,
+  "clients": [
+    {
+      "clientId": "scoremap-web",
+      "enabled": true,
+      "publicClient": false,
+      "secret": "synthetic-development-client-only",
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "redirectUris": [
+        "http://localhost:5280/signin-oidc"
+      ],
+      "webOrigins": [
+        "http://localhost:5280"
+      ],
+      "attributes": {
+        "post.logout.redirect.uris": "http://localhost:5280/##http://localhost:5280/signout-callback-oidc"
+      },
+      "protocolMappers": [
+        {
+          "name": "scoremap-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.client.audience": "scoremap-web",
+            "id.token.claim": "false",
+            "access.token.claim": "true",
+            "introspection.token.claim": "true"
+          }
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "id": "00000000-0000-4000-8000-000000000001",
+      "username": "owner-a",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Synthetic",
+      "lastName": "owner-a",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "Trial-owner-a-only-2026!",
+          "temporary": false
+        }
+      ],
+      "email": "owner-a@scoremap.invalid"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000002",
+      "username": "owner-b",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Synthetic",
+      "lastName": "owner-b",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "Trial-owner-b-only-2026!",
+          "temporary": false
+        }
+      ],
+      "email": "owner-b@scoremap.invalid"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000003",
+      "username": "editor",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Synthetic",
+      "lastName": "editor",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "Trial-editor-only-2026!",
+          "temporary": false
+        }
+      ],
+      "email": "editor@scoremap.invalid"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000004",
+      "username": "viewer",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Synthetic",
+      "lastName": "viewer",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "Trial-viewer-only-2026!",
+          "temporary": false
+        }
+      ],
+      "email": "viewer@scoremap.invalid"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000005",
+      "username": "disabled",
+      "enabled": false,
+      "emailVerified": true,
+      "firstName": "Synthetic",
+      "lastName": "disabled",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "Trial-disabled-only-2026!",
+          "temporary": false
+        }
+      ],
+      "email": "disabled@scoremap.invalid"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000006",
+      "username": "outsider",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Synthetic",
+      "lastName": "outsider",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "Trial-outsider-only-2026!",
+          "temporary": false
+        }
+      ],
+      "email": "outsider@scoremap.invalid"
+    }
+  ]
+}

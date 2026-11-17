@@ -1,0 +1,7 @@
+# Dependency gates
+
+The connected candidate accepts MIT, ISC and Apache-2.0 for its declared browser runtime dependencies. `verify:security` checks the declared runtime set against an npm-generated CycloneDX build inventory and rejects missing components or an unapproved runtime license. The inventory intentionally includes the build toolchain: npm's omit-dev SBOM selector can omit React peer nodes, so a smaller output is not accepted as complete proof. Older npm hosts use the explicitly pinned npm10.9.4 compatibility command for SBOM output.
+
+The runtime npm audit gate rejects reported vulnerabilities at low or above. The separate development/toolchain gate rejects high/critical advisories and retains lower-severity findings in its report; the pre-existing tooling work remains issue18. This does not declare those lower-severity findings fixed or accepted indefinitely. NuGet restore audits all package dependencies with warnings-as-errors. Dependency audit success is not code, authentication, license review of the entire toolchain, image scanning or production qualification.
+
+The narrow credential-pattern check detects common credential material in candidate files; it does not prove the absence of every secret. Synthetic development fixture passwords are deliberate published test data and cannot be production defaults. Actual operator credentials and user music remain outside Git and public reports.

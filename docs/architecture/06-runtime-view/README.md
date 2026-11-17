@@ -8,8 +8,20 @@ description: Mutation, failure and recovery interactions
 
 A mutation is admitted only in edit mode, produces a valid candidate and is serialized with other local mutations. The IndexedDB transaction compares the expected revision and atomically writes the next snapshot. The UI acknowledges success after commit. Storage failure or conflict preserves the previous durable revision and exposes a recovery/export path; unreadable storage is never overwritten during startup.
 
-<!-- pdac:cite id="BR-DURABILITY" digest="sha256:f6e8a52fdb28d495f07304870d8d2bfa6c6e5adce7722d919ce64efca735c57e" -->
+<!-- pdac:cite id="BR-DURABILITY" digest="sha256:6b075527861da086b9571e8d117c7844348a437e363423bca46f60cc83b02e0b" -->
 
 Opening the application reads and validates the stored envelope. A first use with no record produces a valid empty library. Performance mode permits navigation and PDF page memory, while all musical content commands remain guarded.
 
 <!-- pdac:cite id="BR-EDIT-GUARD" digest="sha256:20e678c4743404c64a51c01e4446026ac95811827d2f5e1c641839291ad32718" -->
+
+## Accepted server target: one authorized commit
+
+The following interaction is required by ADR-0003/0004 and #25/#26, not an existing server path. [Section 08](../08-crosscutting-concepts/README.md) owns the shared admission/authority rules; #20 must accept the commit aggregate before implementation.
+
+1. The editor retains a recoverable local candidate and sends a command with its expected server revision and retry identity, using the protected BFF session. UI state distinguishes local durability from server acknowledgement.
+2. The HTTP boundary validates the request/session/CSRF context and invokes the module use case, not a DbContext. The use case enforces resource capability, edit admission and domain invariants independently of the rendered UI.
+3. Infrastructure conditionally commits the accepted aggregate, new revision and recovery history in PostgreSQL. Revision comparison and authorization/revocation handling must close their concurrency race within the accepted transaction policy.
+4. Only the acknowledged committed result updates the server-saved state. An older response cannot overwrite a newer local draft. Other devices reconstruct the authorized complete revision through the same application boundary.
+5. Invalid or unauthorized commands do not mutate. A stale revision returns a predictable conflict and retains pending work. An ambiguous timeout is reconciled with the commit/retry identity before another write; it is not treated as proof of rollback. Session expiry/revocation stops replay under the accepted private-cache policy.
+
+Real HTTP/PostgreSQL tests must exercise these paths and failure timing; analyzer success cannot prove this runtime sequence. Production qualification uses the production artifact contract from [section 07](../07-deployment-view/README.md), separately from development execution and actual operator deployment.

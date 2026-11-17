@@ -42,6 +42,7 @@
     "yaml": "2.9.1"
   },
   "dependencies": {
+    "@tanstack/react-query": "5.107.2",
     "idb": "8.0.4",
     "pdfjs-dist": "6.5.438",
     "react": "19.3.1",
@@ -53,7 +54,7 @@
     "verify:architecture": "arcshape validate --docs docs/architecture --links --citations",
     "verify:baseline": "lighthouse verify && node scripts/lighthouse-guard.mjs verify",
     "verify:specs": "openspec validate --all --strict --no-interactive",
-    "verify": "npm run verify:product && npm run verify:citations && npm run verify:architecture && npm run verify:baseline && npm run verify:specs && npm run verify:app",
+    "verify": "npm run verify:product && npm run verify:citations && npm run verify:architecture && npm run verify:baseline && npm run verify:specs && npm run verify:backend && npm run verify:security && npm run verify:frontend-boundaries && npm run verify:app",
     "dev": "vite --host 0.0.0.0",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
@@ -65,6 +66,13 @@
     "test:e2e": "playwright test",
     "verify:app": "npm run typecheck && npm run lint && npm run format:check && npm test && npm run build",
     "evidence:record": "node scripts/record-verification.mjs && prodshape evidence verify docs/evidence/mvp/verification-evidence.json --format json",
-    "verify:delivery": "node scripts/verify-delivery.mjs"
+    "verify:delivery": "node scripts/verify-delivery.mjs",
+    "build:private": "VITE_SCOREMAP_PRIVATE=1 npm run build",
+    "dev:private": "node scripts/dev-private.mjs",
+    "verify:backend": "npm run verify:dotnet",
+    "test:connected": "playwright test --config=playwright.connected.config.ts",
+    "verify:security": "node scripts/verify-security.mjs",
+    "verify:dotnet": "node node_modules/@juangcarmona/lighthouse/src/verify-dotnet.mjs && node scripts/verify-backend-boundaries.mjs",
+    "verify:frontend-boundaries": "node scripts/verify-frontend-boundaries.mjs"
   }
 }

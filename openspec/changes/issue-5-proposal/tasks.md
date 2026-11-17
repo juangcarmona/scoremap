@@ -4,11 +4,11 @@
 
 <!-- pdac:cite id="SB-PERSIST-CONFLICT" digest="sha256:3a7fdc4b47da270a63bc50bf681af96793fb46a8283af9093b01d9959f026b37" -->
 <!-- pdac:cite id="SB-PERSIST-FAILURE" digest="sha256:31db2bb51e3c0495ac05dc1b53938c2de756eef9176e3ba747f6b877ee014357" -->
-<!-- pdac:cite id="SB-PERSIST-RECOVER" digest="sha256:bdcc4abc19436e6b008b9d88047efe937f948e71d6c817e0c06209b3b498cd26" -->
+<!-- pdac:cite id="SB-PERSIST-RECOVER" digest="sha256:3bb4bec701cf460455382daec1bd17f1e87e0a7f2f5cddc33e244a5b6287d9af" -->
 <!-- pdac:cite id="SB-RECOVERY-INVALID" digest="sha256:0ad0f1f37ef7919e9cbdc0708cc377af07901380f00504ed86d24617bc767ec5" -->
-<!-- pdac:cite id="BR-DURABILITY" digest="sha256:f6e8a52fdb28d495f07304870d8d2bfa6c6e5adce7722d919ce64efca735c57e" -->
-<!-- pdac:cite id="FR-PERSIST" digest="sha256:dd2162a91bdda6f1fbded015f3964843f40041d2fb3b4f5cf54d2616586cffc8" -->
-<!-- pdac:cite id="UC-PERSIST" digest="sha256:25240c400f6e45ab69524737119d2d7a7645030a148def3086f3aed73fa08c2a" -->
+<!-- pdac:cite id="BR-DURABILITY" digest="sha256:6b075527861da086b9571e8d117c7844348a437e363423bca46f60cc83b02e0b" -->
+<!-- pdac:cite id="FR-PERSIST" digest="sha256:5f901e669e39923921cd1d28302b3f308460a72bda3bce53d83ffa7255934cd4" -->
+<!-- pdac:cite id="UC-PERSIST" digest="sha256:11f7381952aca132adad468fc62c648341ccc68c29bdc3b805020ee0997c3d0b" -->
 
 - [ ] Independently assess this plan and its behaviour/invariant coverage.
 - [ ] Implement the bounded source paths: src/features/library/storage.ts, tests/library/storage.test.ts.

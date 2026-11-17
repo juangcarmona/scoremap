@@ -10,4 +10,10 @@ The planned source boundary is `src/features/library/`: pure domain types and co
 
 <!-- pdac:cite id="BR-EDIT-GUARD" digest="sha256:20e678c4743404c64a51c01e4446026ac95811827d2f5e1c641839291ad32718" -->
 
-The architecture needs no server-state query layer. Native local React state represents transient selections and mode. See [ADR-0001](../09-architecture-decisions/ADR-0001-use-a-local-first-browser-runtime.md).
+The current alpha needs no server-state query layer. Native local React state represents transient selections and mode. See [ADR-0001](../09-architecture-decisions/ADR-0001-use-a-local-first-browser-runtime.md).
+
+## Accepted evolution strategy
+
+Keep the React PWA and deliver useful musical editing slices before requiring server integration. Add one self-hosted ASP.NET Core BFF/API, PostgreSQL and Aspire composition under [ADR-0003](../09-architecture-decisions/ADR-0003-self-host-the-private-application-with-aspire.md). Use a domain-centric modular monolith with feature-oriented use cases and explicit logical layers under [ADR-0004](../09-architecture-decisions/ADR-0004-enforce-feature-and-layer-boundaries-with-executable-checks.md), not a service or project for every musical noun.
+
+Reuse the installed Lighthouse .NET profile and analyzer/verifier contract. Adapt Raccord's executable dependency checks and DomusMind's pure-domain and development/deployment separation, without importing their financial/household models or optional infrastructure. [Section 05](../05-building-block-view/README.md) owns the target dependency graph; [section 10](../10-quality-requirements/README.md) owns required enforcement evidence. These are target obligations, not checks already running in this frontend-only repository. Product Change #20 remains the semantic implementation gate.

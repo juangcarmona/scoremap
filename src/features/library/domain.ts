@@ -1,5 +1,6 @@
 export type Mode = "edit" | "performance";
-export type Chord = { root: string; quality: "major" | "minor" };
+import { assertChord, type Chord } from "../../shared/music/chord";
+export { assertChord, type Chord };
 export type Section = {
   id: string;
   name: string;
@@ -66,17 +67,6 @@ function name(value: unknown): asserts value is string {
 }
 function array(value: unknown): asserts value is unknown[] {
   requireValue(Array.isArray(value), "Expected a list.");
-}
-export function assertChord(value: unknown): asserts value is Chord {
-  object(value, ["root", "quality"]);
-  requireValue(
-    typeof value.root === "string" && /^[A-G][#b]?$/.test(value.root),
-    "Choose a root from A to G with an optional sharp or flat.",
-  );
-  requireValue(
-    value.quality === "major" || value.quality === "minor",
-    "Choose a major or minor chord.",
-  );
 }
 export function assertWebUrl(value: unknown): asserts value is string {
   text(value);

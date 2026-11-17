@@ -1,0 +1,21 @@
+{
+  "SchemaVersion": 1,
+  "Environment": "Production",
+  "InstanceId": "scoremap",
+  "Application": {
+    "PublicOrigin": "https://scoremap.example.invalid",
+    "WebRoot": "/app/wwwroot",
+    "ProductionQualified": false
+  },
+  "Identity": {
+    "Authority": "https://identity.example.invalid/realms/scoremap",
+    "ClientId": "scoremap-web",
+    "ClientSecret": "REPLACE-IN-PRIVATE-CONFIGURATION",
+    "DevelopmentFixture": false
+  },
+  "Storage": {
+    "ConnectionString": "Host=database;Database=scoremap;Username=scoremap;Password=REPLACE-IN-PRIVATE-CONFIGURATION",
+    "KeysPath": "/var/lib/scoremap/keys"
+  },
+  "Ingress": { "TrustedProxy": "127.0.0.1" }
+}

@@ -11,11 +11,11 @@
 <!-- pdac:cite id="SB-SECTION-REORDER" digest="sha256:610413c7eae977e5760aa413f58ec499375fdafe0952dca8cbc7591cbda639e5" -->
 <!-- pdac:cite id="SB-SECTION-REPEAT-BOUNDARY" digest="sha256:8290678c017a749dd78b1b1d6ef192b85a7ec141d1cc1f0a1926c91c957217c7" -->
 <!-- pdac:cite id="BR-EDIT-GUARD" digest="sha256:20e678c4743404c64a51c01e4446026ac95811827d2f5e1c641839291ad32718" -->
-<!-- pdac:cite id="BR-IDENTITY" digest="sha256:170ef1aff15cc46041fca58b4bdda33db26b4ba91b44de4fe2aeded7a9dede67" -->
-<!-- pdac:cite id="BR-STRUCTURE" digest="sha256:bae8c2932ecf49f6d3c71e3042b5bee18ff82a1abc06bed90b731c02479772d4" -->
+<!-- pdac:cite id="BR-IDENTITY" digest="sha256:6b3d38400ae82fdc926ae2b7a9eee5d02e684c50502545f323adc41cea150768" -->
+<!-- pdac:cite id="BR-STRUCTURE" digest="sha256:db3410bd8a3fe7f3da94e63ee8804b1c75f03b8f7dd1e7858cfd05aed03a0686" -->
 <!-- pdac:cite id="LC-STRUCTURE" digest="sha256:31caaa7320486ab3a837e8b0f3ac2b14f6e5623b664f131cb85af1ce030a24ef" -->
-<!-- pdac:cite id="FR-SECTIONS" digest="sha256:82754b46d99da6500dc9adeefe583ed54fda178dac5ce005cc48171e441cae45" -->
-<!-- pdac:cite id="UC-SECTIONS" digest="sha256:80f9b239becb5c08f4df621992fbcf260ad02e5e84368b04ef97d96f5792d1dc" -->
+<!-- pdac:cite id="FR-SECTIONS" digest="sha256:a8314412962608a99effe44d9872f7c8261e039e75182e25d111b353609dc95b" -->
+<!-- pdac:cite id="UC-SECTIONS" digest="sha256:e928650b0097c6c084f0a5da9483b55153571c56163b84edf7e280c991c97ebd" -->
 
 - [ ] Independently assess this plan and its behaviour/invariant coverage.
 - [ ] Implement the bounded source paths: src/features/library/Sketch.tsx, tests/e2e/sketch.spec.ts.

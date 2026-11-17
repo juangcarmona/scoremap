@@ -10,13 +10,13 @@ description: Initial architecture for the tablet musician tool
 
 The initial architecture uses a browser application and local library to serve the song sketch directly. The scope is fixed by the owner request; this document describes its technical realization.
 
-<!-- pdac:cite id="CON-SCOPE" digest="sha256:aba4e66b4ace64df292deac32e97539e4ed2c3183669274ca1bc59d4c84ffd4c" -->
+<!-- pdac:cite id="CON-SCOPE" digest="sha256:2934fbcf8f42cd477a77c5f9fb3fecc17beca485b243c2031279056347655216" -->
 
 ## Quality goals
 
 Consultation stays readable at tablet distance; domain tests protect musical and identity correctness, and browser tests exercise actual local recovery and offline interaction.
 
-<!-- pdac:cite id="QR-READABILITY" digest="sha256:5de81f473af42e7737008ac66afb3d9efee7e7390bf1efd7ad17fae07049a155" -->
+<!-- pdac:cite id="QR-READABILITY" digest="sha256:fd18e2b171a6c15b68dc256acc88c7cf32f0376d723faf7a662a374ce49a9f5f" -->
 
 ## Stakeholders
 

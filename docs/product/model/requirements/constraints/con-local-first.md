@@ -1,22 +1,19 @@
 ---
 id: CON-LOCAL-FIRST
 type: constraint
-title: Local first instrument-agnostic product
-status: active
-applies-to:
-  - BC-LIBRARY
-  - BC-SKETCH
-  - BC-RECOVERY
+title: Private authority with bounded local work
+status: draft
+applies-to: [BC-LIBRARY, BC-SKETCH, BC-RECOVERY]
 ---
 
 ## Constraint
 
-No backend, authentication, cloud database, synchronization or mandatory external API. Domain semantics remain instrument-agnostic. User data remains in browser-native local storage.
+Musical meaning MUST remain instrument-agnostic. Anonymous libraries remain device-local until explicit claim. A private self-hosted service is the acknowledged authority for authenticated libraries and recovery across devices; device durability alone is not remote save. Private local access and pending work MUST obey current resource permissions and the protected-session policy. No managed cloud database or public multi-tenant service is required.
 
 ## Rationale
 
-Approved product boundaries supplied by the owner on November 15, 2026.
+The owner-selected evolution requires private ownership and server recovery without discarding useful local musical work.
 
 ## Consequences
 
-Delivery specifications and architecture must preserve this boundary.
+Current anonymous work remains recoverable. Authenticated content cannot inherit unconditional anonymous offline access. Network protection never substitutes for resource authorization.

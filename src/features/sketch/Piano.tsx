@@ -1,5 +1,5 @@
 import { chordLabel, chordNotes, pianoKeys } from "./chords";
-import type { Chord } from "../library/domain";
+import type { Chord } from "../../shared/music/chord";
 const keys = pianoKeys();
 export function Piano({ chord }: { chord: Chord }) {
   const notes = new Set(chordNotes(chord));

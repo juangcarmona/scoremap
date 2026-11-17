@@ -43,7 +43,7 @@ export class LibrarySession {
 
   execute(command: Command) {
     return this.schedule(async () => {
-      if (!this.data) throw new Error("Local data has not loaded.");
+      if (!this.data) throw new Error("Your library has not loaded.");
       const candidate = applyCommand(this.data, this.mode, command);
       this.data = candidate;
       this.changed();
@@ -54,10 +54,14 @@ export class LibrarySession {
     return this.schedule(async () => {
       requireEdit(this.mode);
       if (!confirmed) return;
-      if (!this.data) throw new Error("Local data has not loaded.");
+      if (!this.data) throw new Error("Your library has not loaded.");
       const candidate = structuredClone(validateLibrary(value));
       // Replacement is visible only after commit; failures retain the current candidate.
-      const saved = await this.store.commit(candidate, this.durableRevision);
+      const saved = await this.store.commit(
+        candidate,
+        this.durableRevision,
+        "import",
+      );
       this.data = saved;
       this.durableRevision = saved.revision;
       this.error = "";
@@ -80,7 +84,7 @@ export class LibrarySession {
   retrySave() {
     return this.schedule(async () => {
       requireEdit(this.mode);
-      if (!this.data) throw new Error("Local data has not loaded.");
+      if (!this.data) throw new Error("Your library has not loaded.");
       await this.save(this.data);
     });
   }
