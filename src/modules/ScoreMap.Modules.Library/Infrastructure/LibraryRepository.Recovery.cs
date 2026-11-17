@@ -22,7 +22,7 @@ internal sealed partial class LibraryRepository
     var connection = await dataSource.OpenConnectionAsync(cancellationToken).ConfigureAwait(false);
     await using var disposal = connection.ConfigureAwait(false);
     var value = await Scalar(connection, """
-            SELECT (SELECT COALESCE(jsonb_agg(jsonb_build_object('revision',h.revision,'content',h.content,'deleted',h.deleted,'created',h.created_at) ORDER BY h.revision DESC),'[]')::text FROM sm_history h WHERE h.song=s.id)
+            SELECT (SELECT COALESCE(jsonb_agg(jsonb_build_object('revision',h.revision,'content',h.content,'deleted',h.deleted,'created',h.created_at,'actor',h.actor,'operation',h.operation,'baseRevision',h.base_revision,'sourceRevision',h.source_revision,'commandId',h.command_id) ORDER BY h.revision DESC),'[]')::text FROM sm_history h WHERE h.song=s.id)
             FROM sm_songs s LEFT JOIN sm_grants g ON g.song=s.id AND g.principal=$2
             WHERE s.id=$1 AND NOT s.purged AND (s.owner=$2 OR (NOT s.deleted AND g.principal=$2))
             """, cancellationToken, song, principal).ConfigureAwait(false);
@@ -72,7 +72,7 @@ internal sealed partial class LibraryRepository
     _ = new LibraryDocument(complete);
     var next = state.GetProperty("revision").GetInt64() + 1;
     await Execute(connection, "UPDATE sm_songs SET deleted=false,revision=$2,content=$3::jsonb WHERE id=$1", ct, song, next, content.GetRawText()).ConfigureAwait(false);
-    await Execute(connection, "INSERT INTO sm_history(song,revision,content,deleted) VALUES($1,$2,$3::jsonb,false)", ct, song, next, content.GetRawText()).ConfigureAwait(false);
+    await Execute(connection, "INSERT INTO sm_history(song,revision,content,deleted,actor,operation,base_revision,source_revision,command_id) VALUES($1,$2,$3::jsonb,false,$4,'restore',$5,$6,$7)", ct, song, next, content.GetRawText(), principal, next - 1, request.Revision ?? next - 1, request.CommandId).ConfigureAwait(false);
     if (state.GetProperty("deleted").GetBoolean()) await Execute(connection, "DELETE FROM sm_grants WHERE song=$1", ct, song).ConfigureAwait(false);
     await Execute(connection, "INSERT INTO sm_libraries(principal) VALUES($1) ON CONFLICT DO NOTHING", ct, principal).ConfigureAwait(false);
     await Execute(connection, "UPDATE sm_libraries SET revision=revision+1,song_order=CASE WHEN $2=ANY(song_order) THEN song_order ELSE array_append(song_order,$2) END WHERE principal=$1", ct, principal, song).ConfigureAwait(false);

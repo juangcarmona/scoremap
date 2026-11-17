@@ -31,3 +31,9 @@ The initial complete 22-case run failed one import at a generic HTTP refusal; no
 Logout waits for local protection rather than network idle, warns when protection fails, aborts the application context and submits actual provider termination. Successful local protection is labelled separately from a confirmed service save. Protection failures preserve acknowledged service data and never claim device durability. Reopened records require fresh same-principal resource authorization before review, export or replay.
 
 Import selection/source provenance, complete personal-resource pending protection and the separately scoped private offline lease remain open. This checkpoint does not change the failed mandatory aggregate security gate, source-bound delivery, independent-review or production-deployment boundaries above.
+
+## Trusted history metadata extension
+
+New history rows record the trusted acting principal, operation, base revision and stable command in the same PostgreSQL transaction as content. Restores separately record their selected source revision. Additive nullable columns leave older history unmodified; retained legacy sources do not claim original authorship. History remains behind current song authorization, and purge removes its metadata with the retained content.
+
+The two actual-service authorization/recovery cases passed with new assertions for an editor's trusted identity, exactly one history row after command retry, creation/edit bases, restore base 2 versus source 1 at revision 3, immutable intervening rows, an idempotent repeated restore and complete deletion metadata. The application verifier passed 143 tests plus its type/lint/format/build checks; 29 backend tests and all six deliberate compiler refusals passed. Product citations, architecture and strict OpenSpec validation passed. These are source-input executions, separate from immutable-artifact qualification and the still-failed aggregate security gate.

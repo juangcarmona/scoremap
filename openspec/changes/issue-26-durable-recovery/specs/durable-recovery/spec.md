@@ -62,3 +62,11 @@ Voluntary logout MUST wait for latest local protection rather than a network res
 - **GIVEN** a real service commit with a held response and a durably protected original command
 - **WHEN** the musician confirms voluntary logout
 - **THEN** real provider termination completes before that response is released, and later same-principal fresh authorization can reconcile its original receipt without another revision.
+
+### Requirement: Trusted recoverable revision metadata
+New private history revisions MUST retain the trusted acting principal, operation, base song revision and command identity in the same transaction as content. Restore MUST record its selected source revision independently of the base revision. Older history MUST remain unchanged without fabricated authorship. Retained legacy import sources MUST NOT identify the importer as their original author. Purge MUST remove the retained history and its metadata.
+
+#### Scenario: Historical restore preserves intervening work
+- **GIVEN** a current authorized song at revision 2 with recoverable revision 1
+- **WHEN** an authorized musician restores revision 1
+- **THEN** revision 3 records base revision 2 and source revision 1 with the trusted actor and stable command, while revisions 1 and 2 remain immutable and a retry creates no new version.

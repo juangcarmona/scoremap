@@ -24,6 +24,11 @@ internal sealed partial class LibraryRepository(NpgsqlDataSource dataSource) : I
             CREATE TABLE IF NOT EXISTS sm_grants(song text NOT NULL REFERENCES sm_songs(id), principal text NOT NULL, role text NOT NULL CHECK(role IN ('editor','viewer')), PRIMARY KEY(song,principal));
             CREATE TABLE IF NOT EXISTS sm_history(song text NOT NULL REFERENCES sm_songs(id), revision bigint NOT NULL, content jsonb NOT NULL, deleted boolean NOT NULL, created_at timestamptz NOT NULL DEFAULT now(), PRIMARY KEY(song,revision));
             CREATE TABLE IF NOT EXISTS sm_migrations(song text NOT NULL REFERENCES sm_songs(id),from_revision bigint NOT NULL,to_revision bigint NOT NULL,mapping jsonb NOT NULL,PRIMARY KEY(song,to_revision));
+            ALTER TABLE sm_history ADD COLUMN IF NOT EXISTS actor text;
+            ALTER TABLE sm_history ADD COLUMN IF NOT EXISTS operation text;
+            ALTER TABLE sm_history ADD COLUMN IF NOT EXISTS base_revision bigint;
+            ALTER TABLE sm_history ADD COLUMN IF NOT EXISTS source_revision bigint;
+            ALTER TABLE sm_history ADD COLUMN IF NOT EXISTS command_id uuid;
             CREATE TABLE IF NOT EXISTS sm_receipts(principal text NOT NULL, command uuid NOT NULL, hash text NOT NULL, response jsonb NOT NULL, PRIMARY KEY(principal,command));
             CREATE TABLE IF NOT EXISTS sm_sessions(id text PRIMARY KEY, ticket bytea NOT NULL, expires timestamptz NOT NULL);
             CREATE TABLE IF NOT EXISTS sm_voicing_presets(principal text NOT NULL,id text NOT NULL,revision bigint NOT NULL,content jsonb,deleted boolean NOT NULL DEFAULT false,PRIMARY KEY(principal,id));
@@ -175,7 +180,7 @@ internal sealed partial class LibraryRepository(NpgsqlDataSource dataSource) : I
     if (!string.Equals(current.Capabilities[id], "owner", StringComparison.Ordinal)) throw new AccessDeniedException("Only the song owner can delete it. Shared songs cannot be removed by replacing your library.");
     CheckVersion(id, request.Versions, current.Versions);
     await Execute(connection, "UPDATE sm_songs SET deleted=true,revision=revision+1 WHERE id=$1", cancellationToken, id).ConfigureAwait(false);
-    await Execute(connection, "INSERT INTO sm_history(song,revision,content,deleted) VALUES($1,$2,$3::jsonb,true)", cancellationToken, id, current.Versions[id] + 1, song.GetRawText()).ConfigureAwait(false);
+    await Execute(connection, "INSERT INTO sm_history(song,revision,content,deleted,actor,operation,base_revision,command_id) VALUES($1,$2,$3::jsonb,true,$4,'delete',$5,$6)", cancellationToken, id, current.Versions[id] + 1, song.GetRawText(), principal, current.Versions[id], request.CommandId).ConfigureAwait(false);
     await Execute(connection, "DELETE FROM sm_grants WHERE song=$1", cancellationToken, id).ConfigureAwait(false);
     await Execute(connection, """
                 UPDATE sm_libraries SET revision=revision+1,repertoires=(
@@ -222,8 +227,8 @@ internal sealed partial class LibraryRepository(NpgsqlDataSource dataSource) : I
         version = 1;
         await Execute(connection, "INSERT INTO sm_songs(id,owner,revision,content) VALUES($1,$2,1,$3::jsonb)", cancellationToken, id, principal, song.GetRawText()).ConfigureAwait(false);
       }
-      await RetainMigration(connection, id, version, song, previous.GetValueOrDefault(id), migrationSources.GetValueOrDefault(id), cancellationToken).ConfigureAwait(false);
-      await Execute(connection, "INSERT INTO sm_history(song,revision,content,deleted) VALUES($1,$2,$3::jsonb,false)", cancellationToken, id, version, song.GetRawText()).ConfigureAwait(false);
+      await RetainMigration(connection, id, version, song, previous.GetValueOrDefault(id), migrationSources.GetValueOrDefault(id), request.CommandId, cancellationToken).ConfigureAwait(false);
+      await Execute(connection, "INSERT INTO sm_history(song,revision,content,deleted,actor,operation,base_revision,command_id) VALUES($1,$2,$3::jsonb,false,$4,$5,$6,$7)", cancellationToken, id, version, song.GetRawText(), principal, request.Import ? "import" : previous.ContainsKey(id) ? "edit" : "create", version - 1, request.CommandId).ConfigureAwait(false);
     }
   }
   private sealed record LibraryReceipt(long Revision, IReadOnlyDictionary<string, long> Versions, IReadOnlyDictionary<string, string> Capabilities);

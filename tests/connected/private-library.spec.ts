@@ -297,6 +297,25 @@ test("song-scoped editor/viewer grants, revocation, versions and retry receipts"
     verify.library.songs.find((s: { id: string }) => s.id === id).notes,
   ).toBe("Acknowledged editor change");
   expect(verify.versions[id]).toBe(committed.versions[id]);
+  const editorPrincipal = (
+    await (await editor.page.request.get("/auth/session")).json()
+  ).principal;
+  const editedHistory = await (
+    await api(owner.page, `/api/songs/${id}/history`)
+  ).json();
+  expect(editedHistory[0]).toMatchObject({
+    actor: editorPrincipal,
+    operation: "edit",
+    baseRevision: committed.versions[id] - 1,
+    sourceRevision: null,
+    commandId: command.commandId,
+  });
+  expect(
+    editedHistory.filter(
+      (entry: { commandId: string }) => entry.commandId === command.commandId,
+    ),
+  ).toHaveLength(1);
+
   await grant(editor.page, "revoke");
   const revoked = await (await api(editor.page, "/api/library")).json();
   expect(revoked.library.songs.some((song: Song) => song.id === id)).toBe(
@@ -334,6 +353,27 @@ test("current-format song history, retained deletion, restore and irreversible p
   });
   await saveView(owner.page, (library) => {
     library.songs.find((s) => s.id === song.id)!.notes = "Newer saved cue";
+  });
+  const ownerPrincipal = (
+    await (await owner.page.request.get("/auth/session")).json()
+  ).principal;
+  const originalHistory = await (
+    await api(owner.page, `/api/songs/${song.id}/history`)
+  ).json();
+  expect(originalHistory).toHaveLength(2);
+  expect(originalHistory[0]).toMatchObject({
+    revision: 2,
+    actor: ownerPrincipal,
+    operation: "edit",
+    baseRevision: 1,
+    sourceRevision: null,
+  });
+  expect(originalHistory[1]).toMatchObject({
+    revision: 1,
+    actor: ownerPrincipal,
+    operation: "create",
+    baseRevision: 0,
+    sourceRevision: null,
   });
   const editorIdentity = await (
     await editor.page.request.get("/auth/session")
@@ -381,6 +421,32 @@ test("current-format song history, retained deletion, restore and irreversible p
       (entry: { revision: number }) => entry.revision,
     ),
   ).toEqual([3, 2, 1]);
+  const restoredHistory = await (
+    await api(owner.page, `/api/songs/${song.id}/history`)
+  ).json();
+  expect(restoredHistory[0]).toMatchObject({
+    revision: 3,
+    actor: ownerPrincipal,
+    operation: "restore",
+    baseRevision: 2,
+    sourceRevision: 1,
+  });
+  expect(restoredHistory.slice(1)).toEqual(originalHistory);
+  const restoredCommand = restoredHistory[0].commandId;
+  expect(
+    (
+      await api(owner.page, `/api/songs/${song.id}/restore`, "POST", {
+        expectedRevision: 2,
+        commandId: restoredCommand,
+        mode: "edit",
+        confirmed: true,
+        revision: 1,
+      })
+    ).status(),
+  ).toBe(200);
+  expect(
+    await (await api(owner.page, `/api/songs/${song.id}/history`)).json(),
+  ).toEqual(restoredHistory);
   owner.page.once("dialog", (dialog) => dialog.accept());
   await owner.page
     .getByRole("button", { name: "Delete song", exact: true })
@@ -401,6 +467,18 @@ test("current-format song history, retained deletion, restore and irreversible p
       (s: Song) => s.id === song.id,
     ),
   ).toBe(false);
+  const deletionHistory = await (
+    await api(owner.page, `/api/songs/${song.id}/history`)
+  ).json();
+  expect(deletionHistory[0]).toMatchObject({
+    revision: 4,
+    actor: ownerPrincipal,
+    operation: "delete",
+    baseRevision: 3,
+    sourceRevision: null,
+    deleted: true,
+  });
+  expect(deletionHistory.slice(1)).toEqual(restoredHistory);
   const restoreCommand = {
     expectedRevision: 4,
     commandId: crypto.randomUUID(),

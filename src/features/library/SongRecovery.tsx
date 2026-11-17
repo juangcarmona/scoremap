@@ -13,6 +13,18 @@ type Version = {
   content: Song;
   deleted: boolean;
   created: string;
+  actor: string | null;
+  operation:
+    | "create"
+    | "edit"
+    | "import"
+    | "delete"
+    | "restore"
+    | "legacy-source"
+    | null;
+  baseRevision: number | null;
+  sourceRevision: number | null;
+  commandId: string | null;
 };
 type RecoveryProps = {
   store: PrivateLibraryStore;
@@ -88,6 +100,19 @@ export function SongHistory({
             {version.deleted ? " · deleted" : ""} ·{" "}
             {new Date(version.created).toLocaleString()}
           </summary>
+          <p>
+            {version.operation === "legacy-source"
+              ? "Original legacy import source; its author was not recorded."
+              : version.actor
+                ? `${version.actor === store.identity.principal ? "You" : "Another authorized contributor"} · ${version.operation ?? "saved"}`
+                : "Author and operation were not recorded for this older version."}
+            {version.baseRevision !== null &&
+              version.baseRevision !== undefined &&
+              ` · Based on version ${version.baseRevision}`}
+            {version.sourceRevision !== null &&
+              version.sourceRevision !== undefined &&
+              ` · Restored from version ${version.sourceRevision}`}
+          </p>
           <h3>{version.content.title}</h3>
           {version.content.artist && <p>{version.content.artist}</p>}
           <p>{version.content.notes}</p>
