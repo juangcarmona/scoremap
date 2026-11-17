@@ -29,7 +29,7 @@ internal sealed partial class LibraryDocument
     Require(Integer(meter.GetProperty("numerator")) > 0, "Meter needs a positive numerator."); var denominator = Integer(meter.GetProperty("denominator")); Require(denominator > 0 && (denominator & (denominator - 1)) == 0, "Meter denominator must be a power of two.");
     Require(Fraction(value.GetProperty("length")).N > 0, "A measure needs positive exact length.");
   }
-  private static HashSet<int> HarmonyPitches(JsonElement value)
+  internal static HashSet<int> HarmonyPitches(JsonElement value)
   {
     var root = Text(value.GetProperty("root")); var quality = Text(value.GetProperty("quality")); Require(RootPattern().IsMatch(root) && ChordCatalogue.Qualities.ContainsKey(quality), "Unsupported harmony or root spelling.");
     var degrees = ChordCatalogue.Qualities[quality].Degrees.ToList(); var altered = new HashSet<string>(StringComparer.Ordinal);
@@ -52,9 +52,9 @@ internal sealed partial class LibraryDocument
     var match = PitchSpelling().Match(spelling); Require(match.Success, "Invalid spelled pitch."); var natural = spelling[0] switch { 'C' => 0, 'D' => 2, 'E' => 4, 'F' => 5, 'G' => 7, 'A' => 9, 'B' => 11, _ => throw new ArgumentException("Invalid spelled note.", nameof(spelling)) };
     var accidental = match.Groups["accidental"].Value; return natural + (accidental.StartsWith('b') ? -accidental.Length : accidental.Length);
   }
-  private static void Pitch(JsonElement pitch)
+  internal static void Pitch(JsonElement pitch)
   {
-    Object(pitch, ["spelling", "octave", "midi"]); var octave = Integer(pitch.GetProperty("octave")); var midi = Integer(pitch.GetProperty("midi")); Require(octave is >= -1 and <= 9 && midi is >= 0 and <= 127, "Performed pitch is outside C-1 through G9."); Require(12 * (octave + 1) + SpellingPitch(Text(pitch.GetProperty("spelling"))) == midi, "Performed spelling, octave and absolute pitch must agree.");
+    Object(pitch, ["spelling", "octave", "midi"]); var octave = Integer(pitch.GetProperty("octave")); var midi = Integer(pitch.GetProperty("midi")); Require(midi is >= 0 and <= 127, "Performed pitch is outside C-1 through G9."); Require(12 * (new BigInteger(octave) + 1) + SpellingPitch(Text(pitch.GetProperty("spelling"))) == midi, "Performed spelling, octave and absolute pitch must agree.");
   }
   private static void HarmonicEvent(JsonElement value, Dictionary<string, JsonElement> measures, Action<JsonElement> identity)
   {

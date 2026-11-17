@@ -51,6 +51,15 @@ export function theoreticalHarmony(identity: HarmonyIdentity) {
       : {}),
   };
 }
+export function performedPitchAt(midi: number, spelling?: string) {
+  if (!Number.isInteger(midi) || midi < 0 || midi > 127)
+    throw new Error("Performed pitch is outside C-1 through G9.");
+  spelling ??= Note.get(Note.fromMidi(midi)).pc;
+  const reference = Note.midi(spelling + "4");
+  if (reference === null || !Number.isInteger((midi - reference) / 12))
+    throw new Error("The selected spelling does not match this key.");
+  return { spelling, octave: 4 + (midi - reference) / 12, midi };
+}
 type CandidateDefinition = { quality: ChordQuality; alterations: Alteration[] };
 const candidates = new Map<string, CandidateDefinition>();
 for (const quality of Object.keys(harmonyCatalogue) as ChordQuality[]) {
@@ -84,13 +93,18 @@ export function identifyHarmony(
   spellings: readonly string[],
 ): HarmonyCandidate[] {
   if (spellings.length === 0) return [];
-  const normalized = spellings.map((spelling) => {
+  const selected = spellings.map((spelling) => {
     const note = Note.get(spelling);
     if (note.empty || note.chroma === undefined)
       throw new Error("A selected pitch could not be identified.");
-    // Detection proposes labels only; original performed spelling/register is never rewritten.
-    return Note.get(Note.fromMidi(60 + note.chroma)).pc;
+    return { pitchClass: note.chroma, midi: Note.midi(spelling) };
   });
+  if (selected.every((note) => note.midi !== null))
+    selected.sort((left, right) => left.midi! - right.midi!);
+  // Detection proposes labels only; original performed spelling/register is never rewritten.
+  const normalized = selected.map(
+    (note) => Note.get(Note.fromMidi(60 + note.pitchClass)).pc,
+  );
   return detect(normalized, { assumePerfectFifth: false }).flatMap((symbol) => {
     const parsed = /^([A-G][#b]?)(scoremapq\d+)(?:\/([A-G][#b]?))?$/u.exec(
       symbol,

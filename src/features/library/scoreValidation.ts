@@ -57,7 +57,7 @@ export function assertPerformedPitch(
   const octave = integer(value.octave);
   const midi = integer(value.midi);
   requireValue(
-    octave >= -1 && octave <= 9 && midi >= 0 && midi <= 127,
+    midi >= 0 && midi <= 127,
     "Performed pitch is outside C-1 through G9.",
   );
   const natural: Record<string, number> = {
@@ -71,11 +71,11 @@ export function assertPerformedPitch(
   };
   const accidental = parsed[2] ?? "";
   const expected =
-    12 * (octave + 1) +
-    natural[parsed[1]!]! +
-    (accidental.startsWith("b") ? -accidental.length : accidental.length);
+    12n * (BigInt(octave) + 1n) +
+    BigInt(natural[parsed[1]!]!) +
+    BigInt(accidental.startsWith("b") ? -accidental.length : accidental.length);
   requireValue(
-    expected === midi,
+    expected === BigInt(midi),
     "Performed spelling, octave and absolute pitch must agree.",
   );
 }

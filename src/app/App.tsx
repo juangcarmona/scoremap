@@ -1,3 +1,5 @@
+import { VoicingPresets } from "../features/library/VoicingPresets";
+import { PresetProvider } from "../features/library/PresetContext";
 import { isRichSong } from "../features/library/score";
 import {
   occupiedIdentities,
@@ -10,7 +12,7 @@ import {
 } from "../features/notation/NotationPreference";
 import { SongHistory, DeletedSongs } from "../features/library/SongRecovery";
 import { PwaStatus } from "./PwaStatus";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useLibrary } from "../features/library/useLibrary";
 import { NameDialog } from "../features/library/NameDialog";
 import { Sketch } from "../features/library/Sketch";
@@ -36,7 +38,11 @@ export function App(
         ? { store: store.notation, principal: store.identity.principal }
         : {})}
     >
-      <LibraryApp {...props} />
+      <PresetProvider
+        store={store instanceof PrivateLibraryStore ? store : undefined}
+      >
+        <LibraryApp {...props} />
+      </PresetProvider>
     </NotationProvider>
   );
 }
@@ -45,7 +51,7 @@ function LibraryApp({
   identity,
 }: { store?: LibraryStore; identity?: SessionInfo } = {}) {
   const { session, loadError } = useLibrary(store);
-  const [selected, setSelected] = useState<string | null>(() =>
+  const [selected, updateSelected] = useState<string | null>(() =>
     new URL(location.href).searchParams.get("song"),
   );
   const [group, setGroup] = useState("all");
@@ -55,6 +61,35 @@ function LibraryApp({
   >(null);
   const [error, setError] = useState("");
   const [importEpoch, setImportEpoch] = useState(0);
+  const [previewDirty, setPreviewDirty] = useState(false);
+  useEffect(() => {
+    const protect = (event: BeforeUnloadEvent) => {
+      if (previewDirty) {
+        event.preventDefault();
+        event.returnValue = "";
+      }
+    };
+    window.addEventListener("beforeunload", protect);
+    return () => window.removeEventListener("beforeunload", protect);
+  }, [previewDirty]);
+  function leavePreview() {
+    if (
+      previewDirty &&
+      !window.confirm(
+        "Discard the uncommitted played-note preview? Export or apply it first if you want to keep it.",
+      )
+    )
+      return false;
+    if (previewDirty) {
+      setPreviewDirty(false);
+      setImportEpoch((epoch) => epoch + 1);
+    }
+    return true;
+  }
+  function setSelected(id: string | null) {
+    if (leavePreview()) updateSelected(id);
+  }
+
   const [recovering, setRecovering] = useState(false);
   const [migrationSources, setMigrationSources] = useState<
     Awaited<
@@ -205,6 +240,7 @@ function LibraryApp({
             <button
               type="button"
               onClick={() => {
+                if (!leavePreview()) return;
                 void session.whenIdle().then(async () => {
                   if (
                     session.error &&
@@ -232,6 +268,10 @@ function LibraryApp({
           <PwaStatus
             beforeUpdate={async () => {
               await session.whenIdle();
+              if (previewDirty)
+                throw new Error(
+                  "Apply or export your played-note preview before updating.",
+                );
               if (session.error)
                 throw new Error(
                   "Export or save your unsaved work before updating.",
@@ -255,6 +295,7 @@ function LibraryApp({
             className="mode-button"
             aria-pressed={!edit}
             onClick={() => {
+              if (!leavePreview()) return;
               void session.whenIdle().then(() => {
                 const mode = edit ? "performance" : "edit";
                 session.setMode(mode);
@@ -446,6 +487,7 @@ function LibraryApp({
             </p>
           )}
           <footer className="library-footer">
+            <VoicingPresets editable={edit} />
             {store instanceof PrivateLibraryStore && (
               <DeletedSongs
                 store={store}
@@ -763,6 +805,8 @@ function LibraryApp({
                 </>
               )}
               <Sketch
+                previewDirty={previewDirty}
+                onPreviewDirty={setPreviewDirty}
                 key={`${song.id}-${importEpoch}`}
                 song={song}
                 noteDrafts={noteDrafts}

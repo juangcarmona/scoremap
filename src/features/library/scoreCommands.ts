@@ -18,7 +18,7 @@ import {
 } from "./score";
 import { migrateSong } from "./scoreMigration";
 import { compareFraction, fractionEndWithin } from "./scoreValidation";
-import { requireValue } from "./validation";
+import { requireValue, sameData } from "./validation";
 export type Reconciliation = {
   notes: string[];
   voicings: string[];
@@ -50,6 +50,12 @@ export type ScoreCommand = { songId: string } & (
     }
   | { type: "addArrangement"; arrangement: Arrangement }
   | { type: "removeArrangement"; arrangementId: string; confirmed: boolean }
+  | {
+      type: "replaceArrangement";
+      arrangementId: string;
+      expected: Arrangement;
+      arrangement: Arrangement;
+    }
   | { type: "addPart"; arrangementId: string; part: Part; binding?: Binding }
   | {
       type: "updatePart";
@@ -67,6 +73,16 @@ export type ScoreCommand = { songId: string } & (
   | { type: "setBinding"; arrangementId: string; binding: Binding }
   | { type: "removeBinding"; arrangementId: string; bindingId: string }
   | { type: "addVoicing"; arrangementId: string; voicing: Voicing }
+  | {
+      type: "setVoicingPerformance";
+      arrangementId: string;
+      partId: string;
+      voicingId: string;
+      voicing: Voicing | null;
+      events: NoteEvent[];
+      expected: { voicing: Voicing | null; events: NoteEvent[] };
+      reconciliation?: Reconciliation;
+    }
   | {
       type: "setNoteEvent";
       arrangementId: string;
@@ -90,6 +106,7 @@ const kinds = new Set([
   "setHarmonyTiming",
   "addArrangement",
   "removeArrangement",
+  "replaceArrangement",
   "addPart",
   "updatePart",
   "addDevice",
@@ -97,6 +114,7 @@ const kinds = new Set([
   "setBinding",
   "removeBinding",
   "addVoicing",
+  "setVoicingPerformance",
   "setNoteEvent",
   "removeNoteEvent",
 ]);
@@ -371,6 +389,21 @@ export function applyScoreCommand(
         (entry) => entry.id !== command.arrangementId,
       );
       break;
+    case "replaceArrangement":
+      requireValue(
+        sameData(arrangement, command.expected),
+        "This arrangement changed after the edit. Keep the current music and reopen before undoing.",
+      );
+      requireValue(
+        command.arrangement.id === command.arrangementId,
+        "Undo must preserve the arrangement identity.",
+      );
+      song.arrangements[
+        song.arrangements.findIndex(
+          (candidate) => candidate.id === command.arrangementId,
+        )
+      ] = structuredClone(command.arrangement);
+      break;
     case "addPart":
       arrangement!.parts.push(structuredClone(command.part));
       if (command.binding) {
@@ -430,6 +463,65 @@ export function applyScoreCommand(
     case "addVoicing":
       arrangement!.voicings.push(structuredClone(command.voicing));
       break;
+    case "setVoicingPerformance": {
+      const previous =
+        arrangement!.voicings.find(
+          (voicing) => voicing.id === command.voicingId,
+        ) ?? null;
+      const events = part!.events.filter(
+        (event) => event.voicingId === command.voicingId,
+      );
+      requireValue(
+        sameData(previous, command.expected.voicing) &&
+          sameData(events, command.expected.events),
+        "This performed scope changed while the preview was open. Keep/export your draft and reopen it before applying or undoing.",
+      );
+      requireValue(
+        (command.voicing === null && command.events.length === 0) ||
+          (command.voicing?.id === command.voicingId &&
+            (!previous || command.voicing.harmonyId === previous.harmonyId)),
+        "Keep this identified voicing's harmonic reference and identity.",
+      );
+      requireValue(
+        command.events.every((event) => event.voicingId === command.voicingId),
+        "Every proposed occurrence must belong to the selected voicing.",
+      );
+      const removed = events
+        .filter(
+          (event) =>
+            !command.events.some((candidate) => candidate.id === event.id),
+        )
+        .map((event) => event.id);
+      reconcileSharedRemoval(
+        song,
+        sharedImpact(song, [], removed),
+        command.reconciliation,
+      );
+      const index = arrangement!.voicings.findIndex(
+        (voicing) => voicing.id === command.voicingId,
+      );
+      if (command.voicing === null)
+        arrangement!.voicings = arrangement!.voicings.filter(
+          (voicing) => voicing.id !== command.voicingId,
+        );
+      else if (index < 0)
+        arrangement!.voicings.push(structuredClone(command.voicing));
+      else arrangement!.voicings[index] = structuredClone(command.voicing);
+      const currentIds = new Set(events.map((event) => event.id));
+      part!.events = part!.events.flatMap((event) =>
+        event.voicingId !== command.voicingId
+          ? [event]
+          : command.events
+              .filter((candidate) => candidate.id === event.id)
+              .map((candidate) => structuredClone(candidate)),
+      );
+      part!.events.push(
+        ...command.events
+          .filter((event) => !currentIds.has(event.id))
+          .map((event) => structuredClone(event)),
+      );
+      break;
+    }
     case "setNoteEvent": {
       const index = part!.events.findIndex(
         (note) => note.id === command.event.id,

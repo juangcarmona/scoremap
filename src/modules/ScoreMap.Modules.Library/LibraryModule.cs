@@ -20,6 +20,7 @@ public static class LibraryModule
     services.AddHealthChecks().AddCheck<DatabaseHealth>("postgresql");
     services.AddSingleton<ILibraryRepository>(s => s.GetRequiredService<LibraryRepository>());
     services.AddSingleton<HistoryQueryHandler>(); services.AddSingleton<RecoverSongHandler>();
+    services.AddSingleton<PresetCommandHandler>(); services.AddSingleton<PresetQueryHandler>();
     services.AddSingleton<ReadNotationHandler>(); services.AddSingleton<SaveNotationHandler>();
     services.AddSingleton<ReadLibraryHandler>(); services.AddSingleton<SaveLibraryHandler>(); services.AddSingleton<GrantSongHandler>(); services.AddSingleton<SessionVault>(); services.AddSingleton<RecoveryVault>(); services.AddSingleton<IRecoveryKeyRepository>(s => s.GetRequiredService<RecoveryVault>()); services.AddSingleton<RecoveryKeyHandler>();
     services.AddOptions<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme).Configure<SessionVault>((options, vault) => options.SessionStore = vault);
@@ -39,6 +40,8 @@ public static class LibraryModule
       { context.Response.StatusCode = 400; await Fault(context, 400, "Invalid or unsupported ScoreMap data. Existing content has not been replaced.").ConfigureAwait(false); }
     });
     var api = app.MapGroup("/api").RequireAuthorization().RequireRateLimiting("private-api");
+    api.MapGet("/voicing-presets", async (ClaimsPrincipal user, PresetQueryHandler handler, CancellationToken ct) => Results.Json(await handler.Handle(new PresetQuery(Principal(user)), ct).ConfigureAwait(false)));
+    api.MapPost("/voicing-presets", async (ClaimsPrincipal user, PresetRequest request, PresetCommandHandler handler, CancellationToken ct) => Results.Json(await handler.Handle(new PresetCommand(Principal(user), request), ct).ConfigureAwait(false)));
     api.MapGet("/preferences/notation", async (ClaimsPrincipal user, ReadNotationHandler handler, CancellationToken ct) => Results.Json(await handler.Handle(new ReadNotation(Principal(user)), ct).ConfigureAwait(false)));
     api.MapPut("/preferences/notation", async (ClaimsPrincipal user, NotationRequest request, SaveNotationHandler handler, CancellationToken ct) => Results.Json(await handler.Handle(new SaveNotation(Principal(user), request), ct).ConfigureAwait(false)));
     api.MapGet("/library", async (ClaimsPrincipal user, ReadLibraryHandler handler, CancellationToken ct) => Results.Json(await handler.Handle(new ReadLibrary(Principal(user)), ct).ConfigureAwait(false)));

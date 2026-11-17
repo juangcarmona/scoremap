@@ -6,6 +6,8 @@ namespace JuanGCarmona.ScoreMap.Modules.Library.Application;
 
 internal interface ILibraryRepository
 {
+  Task<System.Text.Json.JsonElement> ReadPresets(string principal, CancellationToken cancellationToken);
+  Task<System.Text.Json.JsonElement> MutatePreset(string principal, PresetRequest request, CancellationToken cancellationToken);
   Task<NotationSettings> ReadNotation(string principal, CancellationToken cancellationToken);
   Task<NotationSettings> SaveNotation(string principal, NotationRequest request, CancellationToken cancellationToken);
   Task<System.Text.Json.JsonElement> Trash(string principal, CancellationToken cancellationToken);

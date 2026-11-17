@@ -59,9 +59,9 @@ internal sealed partial class LibraryDocument
     }
   }
   internal static void Require([DoesNotReturnIf(false)] bool condition, string detail) { if (!condition) throw new ArgumentException(detail, nameof(condition)); }
-  private static string Text(JsonElement value) { Require(value.ValueKind == JsonValueKind.String, "Expected text."); return value.GetString()!; }
-  private static string Name(JsonElement value) { var text = Text(value); Require(!string.IsNullOrWhiteSpace(text), "A name or identity is required."); return text; }
-  private static void Object(JsonElement value, string[] required, string[]? optional = null)
+  internal static string Text(JsonElement value) { Require(value.ValueKind == JsonValueKind.String, "Expected text."); return value.GetString()!; }
+  internal static string Name(JsonElement value) { var text = Text(value); Require(!string.IsNullOrWhiteSpace(text), "A name or identity is required."); return text; }
+  internal static void Object(JsonElement value, string[] required, string[]? optional = null)
   {
     Require(value.ValueKind == JsonValueKind.Object, "Expected an object.");
     var keys = value.EnumerateObject().Select(p => p.Name).ToArray();

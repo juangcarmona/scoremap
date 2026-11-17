@@ -212,5 +212,54 @@
       ],
       "corrections": {}
     }
+  },
+  "23": {
+    "scope": "Implement the accepted interactive song builder, exact performed-pitch piano, guarded previews/apply/cancel/undo, explicit identification and independently owned versioned reusable presets. Preserve complete song invariants, private authorization, all existing checks and independent review. No canonical product edits, hardware/audio engine or production deployment.",
+    "paths": [
+      "src/",
+      "tests/",
+      "package.json",
+      "package-lock.json",
+      "scripts/verify-frontend-boundaries.mjs",
+      "docs/architecture/",
+      "docs/evidence/music/",
+      "openspec/changes/issue-23-interactive-builder/"
+    ],
+    "checks": [
+      [
+        "npm",
+        "ci",
+        "--ignore-scripts"
+      ],
+      [
+        "npm",
+        "run",
+        "verify"
+      ],
+      [
+        "npm",
+        "run",
+        "test:e2e"
+      ]
+    ],
+    "reviewRequired": true,
+    "verification": {
+      "paths": [
+        "tests/",
+        "vitest.config.ts",
+        "playwright.config.ts",
+        "package.json",
+        "package-lock.json",
+        "tests/backend/",
+        "tests/connected/",
+        "playwright.connected.config.ts",
+        "scripts/verify-backend-boundaries.mjs",
+        "scripts/verify-security.mjs",
+        "scripts/verify-frontend-boundaries.mjs",
+        "tests/fixtures/",
+        "scripts/harmony-catalogue.mjs"
+      ],
+      "corrections": {}
+    }
   }
 }

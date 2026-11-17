@@ -6,7 +6,7 @@ import ts from 'typescript';
 const tonalBoundary=(source,name)=>!name.startsWith('@tonaljs/')||source==='src/shared/music/theory.ts';
 assert.equal(tonalBoundary('src/features/library/Sketch.tsx','@tonaljs/note'),false);
 assert.equal(tonalBoundary('src/shared/music/theory.ts','@tonaljs/note'),true);
-const musicalExports=new Set(['src/features/sketch/Piano.tsx','src/features/sketch/chords.ts']);
+const musicalExports=new Set(['src/features/sketch/Piano.tsx','src/features/sketch/chords.ts','src/features/sketch/PerformedPiano.tsx']);
 function allowed(source,target){
  if(source.startsWith('src/shared/'))return target.startsWith('src/shared/');
  const feature=source.match(/^src\/features\/([^/]+)\//u)?.[1];
@@ -38,4 +38,4 @@ async function walk(dir){for(const entry of await readdir(dir,{withFileTypes:tru
  }
  check(file);
 }}}
-await walk('src');console.log('Frontend dependency direction and seven passing/refusing boundary fixtures passed.');
+await walk('src');console.log('Frontend dependency direction and nine passing/refusing boundary fixtures passed.');

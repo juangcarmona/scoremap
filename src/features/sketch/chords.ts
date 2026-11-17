@@ -33,8 +33,8 @@ export type PianoKey = {
 export function pianoKeys(firstOctave = 3, octaves = 2): PianoKey[] {
   if (
     !Number.isInteger(firstOctave) ||
-    firstOctave < 0 ||
-    firstOctave > 7 ||
+    firstOctave < -1 ||
+    firstOctave > 9 ||
     !Number.isInteger(octaves) ||
     octaves < 1 ||
     octaves > 3 ||
@@ -42,17 +42,20 @@ export function pianoKeys(firstOctave = 3, octaves = 2): PianoKey[] {
   )
     throw new Error("Unsupported keyboard octave range.");
   let whites = 0;
-  return Array.from({ length: 12 * octaves }, (_, i) => {
-    const pc = i % 12;
-    const black = [1, 3, 6, 8, 10].includes(pc);
-    const x = black ? whites - 0.31 : whites++;
-    return {
-      midi: (firstOctave + 1) * 12 + i,
-      pitchClass: pc,
-      name: `${names[pc]}${firstOctave + Math.floor(i / 12)}`,
-      black,
-      x,
-      width: black ? 0.62 : 1,
-    };
-  });
+  return Array.from(
+    { length: Math.min(12 * octaves, 128 - (firstOctave + 1) * 12) },
+    (_, i) => {
+      const pc = i % 12;
+      const black = [1, 3, 6, 8, 10].includes(pc);
+      const x = black ? whites - 0.31 : whites++;
+      return {
+        midi: (firstOctave + 1) * 12 + i,
+        pitchClass: pc,
+        name: `${names[pc]}${firstOctave + Math.floor(i / 12)}`,
+        black,
+        x,
+        width: black ? 0.62 : 1,
+      };
+    },
+  );
 }

@@ -1103,7 +1103,7 @@ test("account notation persists independently, ignores anonymous settings and re
   }
 });
 
-test("versioned musical graph commits and reopens with exact pitches, scoped references, retained prior content and atomic refusals", async ({
+test("SB-VOICING: actual private builder acknowledges one exact octave edit, preserving shared form, independent parts, history and personal resources", async ({
   browser,
 }) => {
   const owner = await login(browser, "owner-a");
@@ -1169,9 +1169,67 @@ test("versioned musical graph commits and reopens with exact pitches, scoped ref
     octave: 5,
     midi: 83,
   };
-  const committed = await saveView(owner.page, (library) => {
-    library.songs[library.songs.findIndex((s) => s.id === rich.id)] = changed;
+  const independentId = crypto.randomUUID();
+  expect(
+    (
+      await api(owner.page, "/api/voicing-presets", "POST", {
+        operation: "save",
+        id: independentId,
+        expectedRevision: 0,
+        mode: "edit",
+        commandId: crypto.randomUUID(),
+        content: {
+          id: independentId,
+          name: "Independent unchanged preset",
+          harmony: { root: "C", quality: "major-seventh" },
+          pitches: [{ spelling: "C", octave: 3, midi: 48 }],
+          custom: false,
+        },
+      })
+    ).status(),
+  ).toBe(200);
+  const personalBefore = await (
+    await api(owner.page, "/api/voicing-presets")
+  ).json();
+  const preferenceBefore = await (
+    await api(owner.page, "/api/preferences/notation")
+  ).json();
+  await owner.page.reload();
+  await openSong(owner.page, rich.title);
+  await owner.page
+    .getByLabel("Active performed part", { exact: true })
+    .selectOption(changed.arrangements[0]!.parts[1]!.id);
+  const builder = owner.page.getByRole("region", {
+    name: "Played-note builder for Right",
+    exact: true,
   });
+  await builder
+    .getByRole("button", { name: "Raise B4 one octave", exact: true })
+    .click();
+  await expect(builder.locator(".played-note-list")).toHaveText(
+    "Performed: E4 · B5",
+  );
+  await expect(
+    builder.getByRole("status").filter({ hasText: "Outside this view" }),
+  ).toContainText("B5");
+  expect(
+    (await (await api(owner.page, "/api/library")).json()).library.songs.find(
+      (s: Song) => s.id === rich.id,
+    ),
+  ).toEqual(rich);
+  await builder
+    .getByRole("button", { name: "Apply played notes", exact: true })
+    .click();
+  await expect(owner.page.locator(".save-state")).toHaveText(
+    "Saved to your private library",
+  );
+  const committed = await (await api(owner.page, "/api/library")).json();
+  expect(await (await api(owner.page, "/api/voicing-presets")).json()).toEqual(
+    personalBefore,
+  );
+  expect(
+    await (await api(owner.page, "/api/preferences/notation")).json(),
+  ).toEqual(preferenceBefore);
   expect(committed.library.songs.find((s: Song) => s.id === rich.id)).toEqual(
     changed,
   );
@@ -1217,4 +1275,238 @@ test("versioned musical graph commits and reopens with exact pitches, scoped ref
     clean.context.close(),
     stranger.context.close(),
   ]);
+});
+
+test("independent private presets enforce owner scope, edit mode, versions and stable receipts without changing song copies", async ({
+  browser,
+}) => {
+  const owner = await login(browser, "owner-a");
+  const other = await login(browser, "owner-b");
+  const id = crypto.randomUUID();
+  const content = {
+    id,
+    name: `Synthetic preset ${id.slice(0, 8)}`,
+    harmony: { root: "Db", quality: "major" },
+    pitches: [
+      { spelling: "Db", octave: 3, midi: 49 },
+      { spelling: "F", octave: 3, midi: 53 },
+      { spelling: "Ab", octave: 4, midi: 68 },
+    ],
+    custom: false,
+  };
+  const command = {
+    operation: "save",
+    id,
+    expectedRevision: 0,
+    commandId: crypto.randomUUID(),
+    mode: "edit",
+    content,
+  };
+  const first = await api(owner.page, "/api/voicing-presets", "POST", command);
+  expect(first.status()).toBe(200);
+  const saved = await first.json();
+  expect(saved).toEqual({ id, revision: 1, preset: content });
+  const repeated = await api(
+    owner.page,
+    "/api/voicing-presets",
+    "POST",
+    command,
+  );
+  expect(repeated.status()).toBe(200);
+  expect(await repeated.json()).toEqual(saved);
+  expect(
+    (await (await api(other.page, "/api/voicing-presets")).json()).some(
+      (preset: { id: string }) => preset.id === id,
+    ),
+  ).toBe(false);
+  const song = syntheticSong();
+  await saveView(owner.page, (library) => library.songs.push(song));
+  const otherIdentity = await (
+    await other.page.request.get("/auth/session")
+  ).json();
+  expect(
+    (
+      await api(owner.page, `/api/songs/${song.id}/grants`, "PUT", {
+        principal: otherIdentity.principal,
+        role: "editor",
+      })
+    ).status(),
+  ).toBe(204);
+  expect(
+    (await (await api(other.page, "/api/voicing-presets")).json()).some(
+      (preset: { id: string }) => preset.id === id,
+    ),
+  ).toBe(false);
+  const before = await (await api(owner.page, "/api/library")).json();
+  expect(
+    (
+      await api(owner.page, "/api/voicing-presets", "POST", {
+        ...command,
+        mode: "performance",
+        expectedRevision: 1,
+        commandId: crypto.randomUUID(),
+      })
+    ).status(),
+  ).toBe(400);
+  expect(
+    (
+      await api(owner.page, "/api/voicing-presets", "POST", {
+        ...command,
+        commandId: crypto.randomUUID(),
+      })
+    ).status(),
+  ).toBe(409);
+  expect(
+    (
+      await api(owner.page, "/api/voicing-presets", "POST", {
+        ...command,
+        expectedRevision: 1,
+        commandId: crypto.randomUUID(),
+        content: { ...content, owner: "forged" },
+      })
+    ).status(),
+  ).toBe(400);
+  const altered = structuredClone(content);
+  altered.pitches[2] = { spelling: "Ab", octave: 5, midi: 80 };
+  const update = {
+    ...command,
+    content: altered,
+    expectedRevision: 1,
+    commandId: crypto.randomUUID(),
+  };
+  const second = await api(owner.page, "/api/voicing-presets", "POST", update);
+  expect(second.status()).toBe(200);
+  expect(await second.json()).toEqual({ id, revision: 2, preset: altered });
+  expect(await (await api(owner.page, "/api/library")).json()).toEqual(before);
+  const clean = await login(browser, "owner-a");
+  expect(
+    (await (await api(clean.page, "/api/voicing-presets")).json()).find(
+      (preset: { id: string }) => preset.id === id,
+    ),
+  ).toEqual({ id, revision: 2, preset: altered });
+  expect(
+    (
+      await api(other.page, "/api/voicing-presets", "POST", {
+        ...command,
+        content: { ...content, name: "Independent B preset" },
+        commandId: crypto.randomUUID(),
+      })
+    ).status(),
+  ).toBe(200);
+  expect(
+    (await (await api(owner.page, "/api/voicing-presets")).json()).find(
+      (preset: { id: string }) => preset.id === id,
+    ).preset.name,
+  ).toBe(content.name);
+  const deleted = await api(owner.page, "/api/voicing-presets", "POST", {
+    operation: "delete",
+    id,
+    expectedRevision: 2,
+    mode: "edit",
+    content: null,
+    commandId: crypto.randomUUID(),
+  });
+  expect(deleted.status()).toBe(200);
+  expect(await deleted.json()).toEqual({ id, revision: 3, preset: null });
+  expect(await (await api(owner.page, "/api/library")).json()).toEqual(before);
+  expect(
+    (await (await api(other.page, "/api/voicing-presets")).json()).find(
+      (preset: { id: string }) => preset.id === id,
+    ).preset.name,
+  ).toBe("Independent B preset");
+  await Promise.all([
+    owner.context.close(),
+    other.context.close(),
+    clean.context.close(),
+  ]);
+});
+
+test("private reusable-voicing import resumes a lost committed response after reload without duplicates or a song revision", async ({
+  browser,
+}) => {
+  const owner = await login(browser, "owner-a");
+  const before = await (await api(owner.page, "/api/library")).json();
+  const resources = await (
+    await api(owner.page, "/api/voicing-presets")
+  ).json();
+  const suffix = crypto.randomUUID();
+  const originals = ["First", "Second"].map((name, index) => ({
+    id: `source-${index}`,
+    revision: 7,
+    preset: {
+      id: `source-${index}`,
+      name: `Synthetic ${name} import ${suffix}`,
+      harmony: { root: "C", quality: "major-seventh" },
+      pitches: [
+        { spelling: "E", octave: 4, midi: 64 },
+        { spelling: "B", octave: 4, midi: 71 },
+      ],
+      custom: false,
+    },
+  }));
+  const buffer = Buffer.from(
+    JSON.stringify({
+      format: "scoremap-voicing-presets",
+      version: 1,
+      presets: originals,
+    }),
+  );
+  let lost = false;
+  await owner.page.route("**/api/voicing-presets", async (route) => {
+    if (route.request().method() === "POST" && !lost) {
+      lost = true;
+      const response = await route.fetch();
+      expect(response.status()).toBe(200);
+      await route.abort("failed");
+    } else await route.continue();
+  });
+  let panel = owner.page.locator(".library-footer");
+  await panel
+    .getByText("Your private reusable voicings", { exact: true })
+    .click();
+  owner.page.once("dialog", (dialog) => dialog.accept());
+  await panel
+    .getByLabel("Reusable voicing import file", { exact: true })
+    .setInputFiles({
+      name: "synthetic-private-presets.json",
+      mimeType: "application/json",
+      buffer,
+    });
+  await expect(panel.getByRole("alert")).toContainText("0 of 2 voicings saved");
+  const interrupted = await (
+    await api(owner.page, "/api/voicing-presets")
+  ).json();
+  expect(interrupted).toHaveLength(resources.length + 1);
+  await owner.page.reload();
+  panel = owner.page.locator(".library-footer");
+  await panel
+    .getByText("Your private reusable voicings", { exact: true })
+    .click();
+  owner.page.once("dialog", (dialog) => dialog.accept());
+  await panel
+    .getByLabel("Reusable voicing import file", { exact: true })
+    .setInputFiles({
+      name: "synthetic-private-presets.json",
+      mimeType: "application/json",
+      buffer,
+    });
+  await expect(
+    panel.getByText(
+      "Reusable voicing import completed. Review the saved list; source files are kept.",
+      { exact: true },
+    ),
+  ).toBeVisible();
+  const final = await (await api(owner.page, "/api/voicing-presets")).json();
+  expect(final).toHaveLength(resources.length + 2);
+  for (const original of originals) {
+    const matches = final.filter(
+      (value: { preset: { name: string } }) =>
+        value.preset.name === original.preset.name,
+    );
+    expect(matches).toHaveLength(1);
+    expect(matches[0].revision).toBe(1);
+    expect(matches[0].preset.pitches).toEqual(original.preset.pitches);
+  }
+  expect(await (await api(owner.page, "/api/library")).json()).toEqual(before);
+  await owner.context.close();
 });
