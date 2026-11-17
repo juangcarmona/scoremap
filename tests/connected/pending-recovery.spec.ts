@@ -709,3 +709,69 @@ test("a retained legacy draft copies once through atomic v1 migration and reconc
   );
   await Promise.all([owner.context.close(), second.context.close()]);
 });
+
+test("typing protects the latest complete draft and coalesces a burst into one real service revision", async ({
+  browser,
+}) => {
+  const owner = await login(browser, "owner-a");
+  const song = await prepare(owner.page);
+  const before = await (await api(owner.page, "/api/library")).json();
+  const historyBefore = await (
+    await api(owner.page, `/api/songs/${song.id}/history`)
+  ).json();
+  await owner.page
+    .getByText("Song details & personal notes", { exact: true })
+    .click();
+  const notes = owner.page.getByLabel("Song notes", { exact: true });
+  await notes.fill("");
+  await expect(owner.page.locator(".save-state")).toHaveText(
+    "Saved to your private library",
+  );
+  const cleared = await (await api(owner.page, "/api/library")).json();
+  const historyCleared = await (
+    await api(owner.page, `/api/songs/${song.id}/history`)
+  ).json();
+  let sends = 0;
+  owner.page.on("request", (request) => {
+    if (
+      new URL(request.url()).pathname === "/api/library" &&
+      request.method() === "PUT"
+    )
+      sends++;
+  });
+  const reminder =
+    "Play softly, keep both hands independent, and watch the final repeat.";
+  await notes.pressSequentially(reminder, { delay: 4 });
+  await expect(notes).toHaveValue(reminder);
+  await expect(owner.page.locator(".save-state")).toHaveText(
+    "Saved to your private library",
+  );
+  const after = await (await api(owner.page, "/api/library")).json();
+  const historyAfter = await (
+    await api(owner.page, `/api/songs/${song.id}/history`)
+  ).json();
+  expect(sends).toBe(1);
+  expect(after.library.revision).toBe(cleared.library.revision + 1);
+  expect(historyAfter).toHaveLength(historyCleared.length + 1);
+  const expected = structuredClone(cleared.library);
+  expected.revision++;
+  expected.songs.find((candidate: RichSong) => candidate.id === song.id).notes =
+    reminder;
+  expect(after.library).toEqual(expected);
+  expect(historyAfter[0].content).toEqual(
+    after.library.songs.find((candidate: RichSong) => candidate.id === song.id),
+  );
+  expect(cleared.library.revision).toBeGreaterThanOrEqual(
+    before.library.revision,
+  );
+  expect(historyCleared.length).toBeGreaterThanOrEqual(historyBefore.length);
+  await owner.page.reload();
+  await openSong(owner.page, song.title);
+  await owner.page
+    .getByText("Song details & personal notes", { exact: true })
+    .click();
+  await expect(
+    owner.page.getByLabel("Song notes", { exact: true }),
+  ).toHaveValue(reminder);
+  await owner.context.close();
+});

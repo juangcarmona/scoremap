@@ -53,6 +53,7 @@ export class PrivateLibraryStore implements LibraryStore {
   private protectionError: unknown = null;
   private acknowledgedRevision = 0;
   private stageTail: Promise<void> = Promise.resolve();
+  private unconfirmed: PreparedLibrarySave | null = null;
   private lastPrepared: {
     candidate: Library;
     intent: "import" | undefined;
@@ -267,7 +268,7 @@ export class PrivateLibraryStore implements LibraryStore {
       sameData(previous.candidate, candidate)
     )
       return previous.write;
-    const library = structuredClone(candidate);
+    let library: Library | null = structuredClone(candidate);
     source = source ? structuredClone(source) : undefined;
     const key = this.key,
       keyId = this.keyId;
@@ -279,11 +280,12 @@ export class PrivateLibraryStore implements LibraryStore {
     const initialRevision = this.acknowledgedRevision;
     const initialVersions = { ...this.versions };
     let sent: string | null = null;
+    let acknowledged: Library | null = null;
     const retain = async (
       expectedRevision: number,
       versions: Record<string, number>,
     ) => {
-      if (sequence !== this.sequence) return;
+      if (sequence !== this.sequence || !library) return;
       const serialized = JSON.stringify({
         library,
         expectedRevision,
@@ -322,7 +324,30 @@ export class PrivateLibraryStore implements LibraryStore {
       save: async (expectedRevision) => {
         await this.whenProtected();
         this.assertAccess(generation);
+        if (acknowledged) return structuredClone(acknowledged);
+        if (!sent && intent !== "import") {
+          await new Promise((resolve) => setTimeout(resolve, 500));
+          this.assertAccess(generation);
+          if (sequence !== this.sequence) {
+            const latest = this.lastPrepared;
+            if (!latest || latest.write === write)
+              throw new Error(
+                "The latest draft could not be protected. Keep your pending work.",
+              );
+            library = null;
+            return latest.write.save(expectedRevision);
+          }
+        }
+        if (!library)
+          throw new Error(
+            "This draft has been replaced by protected newer work.",
+          );
         if (!sent) {
+          if (this.unconfirmed && this.unconfirmed !== write) {
+            await this.unconfirmed.save(this.acknowledgedRevision);
+            this.assertAccess(generation);
+            expectedRevision = this.acknowledgedRevision;
+          }
           const versions = { ...this.versions };
           if (sequence === this.sequence)
             await retain(expectedRevision, versions);
@@ -338,6 +363,7 @@ export class PrivateLibraryStore implements LibraryStore {
           });
         }
         let saved: LibraryView;
+        this.unconfirmed = write;
         try {
           saved = await this.request<LibraryView>("/api/library", {
             method: "PUT",
@@ -361,7 +387,9 @@ export class PrivateLibraryStore implements LibraryStore {
         this.acknowledgedRevision = saved.library.revision;
         await removeStoredPending(slot, commandId);
         if (sequence === this.sequence) this.protectedSequence = 0;
-        return validateLibrary(saved.library);
+        acknowledged = structuredClone(validateLibrary(saved.library));
+        if (this.unconfirmed === write) this.unconfirmed = null;
+        return structuredClone(acknowledged);
       },
     };
     this.lastPrepared = {
@@ -619,6 +647,7 @@ export class PrivateLibraryStore implements LibraryStore {
     this.key = null;
     this.keyId = "";
     this.lastPrepared = null;
+    this.unconfirmed = null;
     this.drafts = [];
     this.selected = null;
     this.recoveryRetry = null;

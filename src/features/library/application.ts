@@ -21,6 +21,12 @@ export class LibrarySession {
     return this.store.migrationSources?.() ?? Promise.resolve([]);
   }
   private queue: Promise<unknown> = Promise.resolve();
+  private waitingSave: {
+    candidate: Library;
+    prepared: PreparedLibrarySave | undefined;
+    generation: number;
+    done: Promise<void>;
+  } | null = null;
   private generation = 0;
   private barriers = 0;
   get reconciling() {
@@ -77,9 +83,21 @@ export class LibrarySession {
         await this.save(write.candidate, write.generation, write.prepared);
       });
     const write = this.admit(command);
-    return this.schedule(() =>
-      this.save(write.candidate, write.generation, write.prepared),
-    );
+    if (this.store.scope !== "private" || !write.prepared)
+      return this.schedule(() =>
+        this.save(write.candidate, write.generation, write.prepared),
+      );
+    if (this.waitingSave) {
+      Object.assign(this.waitingSave, write);
+      return this.waitingSave.done;
+    }
+    const waiting = { ...write, done: Promise.resolve() };
+    this.waitingSave = waiting;
+    waiting.done = this.schedule(async () => {
+      if (this.waitingSave === waiting) this.waitingSave = null;
+      await this.save(waiting.candidate, waiting.generation, waiting.prepared);
+    });
+    return waiting.done;
   }
   replace(value: unknown, confirmed: boolean, source?: ImportProvenance) {
     this.barriers += 1;
@@ -110,9 +128,14 @@ export class LibrarySession {
     candidate: Library,
     generation: number,
     prepared?: PreparedLibrarySave,
+    explicitRetry = false,
   ) {
     try {
       if (prepared) await prepared.retained;
+      if (this.store.scope === "private" && this.error && !explicitRetry)
+        throw new Error(
+          "Resolve the previous unconfirmed save before sending more changes.",
+        );
       const saved = prepared
         ? await prepared.save(this.durableRevision)
         : await this.store.commit(candidate, this.durableRevision);
@@ -133,7 +156,7 @@ export class LibrarySession {
       requireEdit(this.mode);
       if (!this.data) throw new Error("Your library has not loaded.");
       const prepared = this.store.prepare?.(this.data);
-      await this.save(this.data, this.generation, prepared);
+      await this.save(this.data, this.generation, prepared, true);
     });
   }
   reconcile(work: () => Promise<unknown>) {

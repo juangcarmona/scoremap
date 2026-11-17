@@ -233,3 +233,107 @@ describe("Admitted drafts and delayed acknowledgements", () => {
     expect(session.error).toBe("");
   });
 });
+
+it("bounds private queued saves while protecting every admitted interaction", async () => {
+  let durable = emptyLibrary(),
+    release!: () => void,
+    started!: () => void;
+  const gate = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  const active = new Promise<void>((resolve) => {
+    started = resolve;
+  });
+  const protectedSizes: number[] = [],
+    sentSizes: number[] = [];
+  const store: LibraryStore = {
+    scope: "private",
+    load: async () => durable,
+    commit: async () => {
+      throw new Error("Prepared transport required");
+    },
+    prepare: (candidate) => {
+      protectedSizes.push(candidate.songs.length);
+      return {
+        retained: Promise.resolve(),
+        save: async (expected) => {
+          sentSizes.push(candidate.songs.length);
+          if (sentSizes.length === 1) {
+            started();
+            await gate;
+          }
+          expect(expected).toBe(durable.revision);
+          durable = { ...structuredClone(candidate), revision: expected + 1 };
+          return structuredClone(durable);
+        },
+      };
+    },
+  };
+  const session = new LibrarySession(store);
+  await session.load();
+  const writes = [
+    session.execute({ type: "createSong", id: "first", title: "First" }),
+  ];
+  await active;
+  for (let n = 1; n <= 100; n++)
+    writes.push(
+      session.execute({ type: "createSong", id: `s${n}`, title: `Song ${n}` }),
+    );
+  expect(protectedSizes).toHaveLength(101);
+  expect(session.pending).toBe(2);
+  release();
+  await Promise.all(writes);
+  expect(sentSizes).toEqual([1, 101]);
+  expect(session.data).toEqual(durable);
+  expect(session.durableRevision).toBe(2);
+});
+
+it("retains queued private edits after an unknown save and waits for explicit retry", async () => {
+  let fail = true,
+    sends = 0,
+    started!: () => void,
+    release!: () => void;
+  const active = new Promise<void>((resolve) => {
+    started = resolve;
+  });
+  const gate = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  const store: LibraryStore = {
+    scope: "private",
+    load: async () => emptyLibrary(),
+    commit: async () => {
+      throw new Error("Prepared transport required");
+    },
+    prepare: (candidate) => ({
+      retained: Promise.resolve(),
+      save: async (expected) => {
+        sends++;
+        if (fail) {
+          started();
+          await gate;
+          throw new Error("Unknown response");
+        }
+        return { ...candidate, revision: expected + 1 };
+      },
+    }),
+  };
+  const session = new LibrarySession(store);
+  await session.load();
+  const first = session.execute({ type: "createSong", id: "a", title: "A" });
+  await active;
+  const second = session.execute({ type: "createSong", id: "b", title: "B" });
+  const results = Promise.allSettled([first, second]);
+  release();
+  expect((await results).map((result) => result.status)).toEqual([
+    "rejected",
+    "rejected",
+  ]);
+  expect(sends).toBe(1);
+  expect(session.data?.songs.map((song) => song.id)).toEqual(["a", "b"]);
+  expect(session.error).toContain("Save not confirmed");
+  fail = false;
+  await session.retrySave();
+  expect(sends).toBe(2);
+  expect(session.error).toBe("");
+});
