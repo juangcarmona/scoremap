@@ -73,6 +73,7 @@
     "test:connected": "playwright test --config=playwright.connected.config.ts",
     "verify:security": "node scripts/verify-security.mjs",
     "verify:dotnet": "node node_modules/@juangcarmona/lighthouse/src/verify-dotnet.mjs && node scripts/verify-backend-boundaries.mjs",
-    "verify:frontend-boundaries": "node scripts/verify-frontend-boundaries.mjs"
+    "verify:frontend-boundaries": "node scripts/verify-frontend-boundaries.mjs",
+    "build:container": "node scripts/build-container.mjs"
   }
 }

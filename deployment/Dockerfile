@@ -6,7 +6,7 @@ COPY . .
 ARG SOURCE_REVISION
 RUN VITE_SCOREMAP_BUILD=$SOURCE_REVISION npm run build:private
 
-FROM mcr.microsoft.com/dotnet/sdk:10.0.115 AS backend
+FROM mcr.microsoft.com/dotnet/sdk:10.0.103 AS backend
 WORKDIR /build
 COPY . .
 RUN dotnet restore ScoreMap.slnx --locked-mode
@@ -14,6 +14,8 @@ RUN dotnet publish src/root/ScoreMap.Api -c Release --no-restore -o /out
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0.15
 WORKDIR /app
+ARG SOURCE_REVISION
+LABEL org.opencontainers.image.revision=$SOURCE_REVISION
 COPY --from=backend /out ./
 COPY --from=web /build/dist-private ./wwwroot
 ENV ASPNETCORE_ENVIRONMENT=Production ASPNETCORE_HTTP_PORTS=8080 SCOREMAP_APPLICATION_FILE=/run/scoremap/application.json

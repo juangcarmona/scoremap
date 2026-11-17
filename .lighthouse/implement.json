@@ -78,7 +78,8 @@
       "scripts/verify-delivery.mjs",
       "docs/architecture/",
       "openspec/changes/issue-25-proposal/",
-      "scripts/verify-frontend-boundaries.mjs"
+      "scripts/verify-frontend-boundaries.mjs",
+      "scripts/build-container.mjs"
     ],
     "checks": [
       [
