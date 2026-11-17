@@ -6,7 +6,7 @@ description: Current static delivery and the accepted private development and pr
 
 # 7. Deployment view
 
-## Current alpha
+## Original anonymous alpha
 
 The alpha deployment contract is a static HTTPS origin with Vite-built assets, a manifest, icons and a service worker. Its original static hosting choice does not constrain the next self-hosted deployment. The project has no Wrangler deployment dependency. Build: `npm ci --ignore-scripts && npm run build`; output: `dist`; Node 24. Deployment status is recorded in delivery evidence, not inferred from source integration.
 
@@ -16,11 +16,11 @@ The origin is part of data ownership: moving domains does not migrate IndexedDB.
 
 ## Accepted target: development is not production
 
-[ADR-0003](../09-architecture-decisions/ADR-0003-self-host-the-private-application-with-aspire.md) selects self-hosting with Aspire. This is a deployment contract for subsequent implementation; no backend, production composition or deployment is delivered by this document. The physical destination does not define the environment: an operator-managed machine can host a production deployment regardless of its location or name.
+[ADR-0003](../09-architecture-decisions/ADR-0003-self-host-the-private-application-with-aspire.md) selects self-hosting with Aspire. The candidate now implements the API/BFF, Development graph and a separate production publication entrypoint. Its source, publication, runtime qualification and actual deployment remain separately evidenced. The physical destination does not define the environment: an operator-managed machine can host a production deployment regardless of its location or name.
 
 | Environment | Building blocks and operating contract |
 | --- | --- |
-| Development | Aspire AppHost composes the API/BFF, React development server and PostgreSQL. Development-only identity/test data and diagnostics are isolated, labeled and gated by Development. Local volume persistence is explicit; reset never targets production data. |
+| Development | Aspire AppHost composes the API/BFF serving separately built private PWA assets, the selected real identity fixture and PostgreSQL. Development-only identity/test data and diagnostics are isolated, labeled and gated by Development. Local volume persistence is explicit; reset never targets production data. |
 | Automated integration | Isolated Aspire/application stack, real PostgreSQL and synthetic principals/content. Deterministic seed/reset and resource cleanup affect only execution-owned test resources. No dependency on personal production credentials or arrangements. |
 | Production | Versioned built PWA and API/BFF artifacts plus PostgreSQL, published through an Aspire Docker Compose deployment composition. Operator supplies private target/ingress/identity/secrets. Production startup fails closed for missing required configuration, development identity, seeded users or in-memory persistence fallbacks. |
 
@@ -47,3 +47,10 @@ The [Development AppHost](../../../src/root/ScoreMap.AppHost/Program.cs) starts 
 The candidate has separate anonymous and private web build outputs so browser verification cannot replace a running private application with the anonymous shell. Production artifacts use the private output, the BFF and a separately configured established OIDC provider. [Compose](../../../deployment/compose.yaml) keeps the database private and binds application ingress to loopback for an operator TLS proxy. A local execution is not a production build, restore rehearsal or Internet deployment.
 
 <!-- pdac:cite id="BR-SESSION" digest="sha256:a8c63526b6fe52375791a737ed14280609d00938808928153d49fd2627416326" -->
+
+
+## Separate production publication
+
+The [production AppHost](../../../src/root/ScoreMap.Deployment/Program.cs) contains only the prebuilt private application image and persistent PostgreSQL/key volumes. It refuses direct execution, disables dashboard publication and emits no development provider or seeded users. Its generated [portable Compose snapshot](../../../deployment/compose.yaml) binds application ingress to loopback, exposes no database host port, mounts private configuration read-only and receives the database password through an operator-selected secret file. Database readiness precedes application startup. The established external OIDC provider and TLS proxy remain operator integration inputs.
+
+`npm run verify:deployment` restores locked dependencies, generates the model in an isolated temporary directory, compares the snapshot, renders synthetic file selectors and observes direct-run refusal. It starts no containers. `npm run publish:production -- <empty-output-directory>` publishes from a committed Git archive and writes revision/tool/generated-file digests; it preserves nonempty destinations. Publication has no operator credentials or musical data and does not select or qualify an application image. Disposable Production identity/TLS/restart/restore qualification and the actual operator deployment remain separate.

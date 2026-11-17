@@ -34,6 +34,14 @@ npm run test:connected
 
 Connected tests require an execution-owned synthetic instance. They perform real browser authentication and PostgreSQL requests. Traces are disabled to avoid retaining credentials or session material. Keep all captures private until checked for synthetic content and redaction.
 
+## Production publication
+
+The separate `src/root/ScoreMap.Deployment` AppHost owns production composition; `compose.yaml` is its verified generated snapshot. It cannot run the Development environment. `npm run verify:deployment` executes locked publication, snapshot matching, synthetic Compose rendering and direct-execution refusal without starting containers.
+
+After committing the candidate, run `npm run publish:production -- <empty-output-directory>`. The command uses a committed Git archive and the pinned Aspire CLI, then writes portable Compose artifacts and `publication-receipt.json` with source/tool/file digests. A nonempty output directory is preserved and refused. Generated artifacts contain selectors for a separately qualified image, private application configuration and a database-password file; they contain no operator secrets, identity fixture or musical data. This follows the [Aspire Compose publication contract](https://aspire.dev/deployment/docker-compose/).
+
+The existing Development AppHost, identity fixture and actual trial volumes remain separate. Publishing does not start containers, configure a target machine or attest runtime/TLS/restore qualification.
+
 ## Production preparation
 
 1. Complete the connected security, concurrency, persistence and restore checks on the exact candidate revision. Build the committed revision with `npm run build:container -- scoremap:trial`. Its Git archive context excludes untracked and private operator files. Resolve and retain base-image digests for an actual release; the Node major tag in this development Dockerfile is not a reproducible release pin.

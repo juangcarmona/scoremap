@@ -380,5 +380,84 @@
       ],
       "corrections": {}
     }
+  },
+  "28": {
+    "scope": "Implement the accepted issue #28 production publication baseline: a separate guarded Aspire-to-Compose entrypoint, locked typed dependencies, parameterized protected artifacts and executed passing/refusing publication checks. Preserve all existing module/security/product gates. No actual operator deployment, credentials, product-model changes or review-gate bypass.",
+    "paths": [
+      "src/",
+      "tests/",
+      "public/",
+      "index.html",
+      "vite.config.ts",
+      "vitest.config.ts",
+      "playwright.config.ts",
+      "tsconfig.json",
+      "tsconfig.app.json",
+      "eslint.config.js",
+      "package.json",
+      "package-lock.json",
+      "scripts/verify-traceability.mjs",
+      "config/",
+      "deployment/",
+      "global.json",
+      "Directory.Build.props",
+      "Directory.Packages.props",
+      "ScoreMap.slnx",
+      ".config/dotnet-tools.json",
+      ".editorconfig",
+      ".gitignore",
+      ".dockerignore",
+      "playwright.connected.config.ts",
+      "scripts/dev-private.mjs",
+      "scripts/verify-backend-boundaries.mjs",
+      "scripts/verify-security.mjs",
+      "scripts/verify-delivery.mjs",
+      "docs/architecture/",
+      "openspec/changes/issue-25-proposal/",
+      "scripts/verify-frontend-boundaries.mjs",
+      "scripts/build-container.mjs",
+      "openspec/changes/issue-26-durable-recovery/",
+      "docs/evidence/music/",
+      "scripts/publish-production.mjs",
+      "openspec/changes/issue-28-production-publication/",
+      "docs/evidence/deployment/"
+    ],
+    "checks": [
+      [
+        "npm",
+        "ci",
+        "--ignore-scripts"
+      ],
+      [
+        "npm",
+        "run",
+        "verify"
+      ],
+      [
+        "npm",
+        "run",
+        "test:e2e"
+      ]
+    ],
+    "reviewRequired": true,
+    "verification": {
+      "paths": [
+        "tests/",
+        "vitest.config.ts",
+        "playwright.config.ts",
+        "package.json",
+        "package-lock.json",
+        "tests/backend/",
+        "tests/connected/",
+        "playwright.connected.config.ts",
+        "scripts/verify-backend-boundaries.mjs",
+        "scripts/verify-security.mjs",
+        "scripts/verify-frontend-boundaries.mjs",
+        "scripts/publish-production.mjs",
+        "src/root/ScoreMap.Deployment/",
+        "deployment/compose.yaml"
+      ],
+      "corrections": {}
+    }
   }
 }

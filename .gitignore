@@ -20,3 +20,6 @@ test-results/
 config/*.private.json
 
 dist-private/
+
+# Generated portable production publication; operator files stay outside Git.
+deployment/output/

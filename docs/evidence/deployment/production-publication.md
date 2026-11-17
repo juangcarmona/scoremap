@@ -1,0 +1,9 @@
+# Separate production publication checkpoint
+
+The candidate has a separate Aspire 13.6.5 publication entrypoint for a prebuilt private application image and persistent PostgreSQL/session-key volumes. The checked-in Compose file is its generated snapshot. Runtime identity/TLS settings and secrets remain private operator inputs; no Development provider, seeded users or dashboard is published.
+
+Actual execution passed typed root compilation, locked publication, exact snapshot comparison, synthetic Compose configuration rendering and direct compiled-program refusal. The declared verifier also invoked a publication against an occupied synthetic operator directory, observed refusal and checked its sole existing file remained byte-for-byte unchanged. It started no containers. The full Node 24 aggregate passed product/citation/architecture/baseline/OpenSpec/catalogue/backend checks, including 30 backend tests and six deliberate compiler refusals, plus the new publication gate; it then failed the unchanged mandatory tooling audit tracked in [issue #38](https://github.com/juangcarmona/scoremap/issues/38). No security exception or filter was introduced.
+
+The immutable publication command archives committed source, checks its executing driver matches that archive, restores locked dependencies, invokes the pinned CLI and retains source/tool/generated-file digests. Existing destinations are checked before publication and again before exclusive file writes. A post-commit immutable execution receipt is still required separately from the working-tree verifier described here.
+
+Authored composition and observed structural publication are separate from disposable Production real-OIDC/TLS/restart/backup/restore qualification, an independently reviewed release image, native integration and actual operator deployment. Those boundaries remain open. Physical-device acceptance is separate from browser emulation.

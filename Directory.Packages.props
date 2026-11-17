@@ -3,6 +3,7 @@
  <ItemGroup>
   <PackageVersion Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="10.0.14" />
   <PackageVersion Include="Npgsql" Version="10.0.3" />
+  <PackageVersion Include="Aspire.Hosting.Docker" Version="13.6.5" />
   <PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="13.6.5" />
   <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="5.0.0" />
   <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="3.11.0" />
