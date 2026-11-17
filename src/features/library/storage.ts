@@ -5,11 +5,17 @@ import { emptyLibrary, validateLibrary, type Library } from "./domain";
 interface ScoreMapDatabase extends DBSchema {
   library: { key: string; value: Library };
 }
+export interface PreparedLibrarySave {
+  retained: Promise<void>;
+  save(expectedRevision: number): Promise<Library>;
+}
 export interface LibraryStore {
   readonly scope?: "private";
   close?(): Promise<void>;
   load(): Promise<Library>;
   migrationSources?(): Promise<{ key: string; library: Library }[]>;
+  prepare?(candidate: Library, intent?: "import"): PreparedLibrarySave;
+  whenProtected?(): Promise<void>;
   commit(
     candidate: Library,
     expectedRevision: number,

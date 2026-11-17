@@ -38,3 +38,27 @@ Opaque destination identities and a command identifier MUST be retained atomical
 - **GIVEN** a protected complete pending song whose original retry is stale and a separately acknowledged newer original
 - **WHEN** the musician confirms a recovery copy and its actual commit response is lost
 - **THEN** reloading and confirming that same copy reconciles its retained identity without another write/revision, preserves the complete pending music and leaves the original's content/history plus protected ciphertext unchanged.
+
+### Requirement: Protect admitted drafts before transport
+Each admitted musical edit MUST derive the latest complete valid candidate and retain protected principal/context-bound work before transport. Older acknowledgements MUST NOT replace newer drafts. A failed protection commit MUST send no such write, claim no local retention and preserve prior acknowledgement. Confirmed restore/import MUST form a barrier so later commands apply to the restored state.
+
+#### Scenario: New typing behind an older response
+- **GIVEN** an actual service commit whose response is held and newer admitted typing in the same private song
+- **WHEN** the browser reloads after acknowledging protected retention of the newer draft
+- **THEN** the complete latest typed draft remains recoverable under fresh permission, the older service revision remains acknowledged and no newer write is automatically replayed.
+
+### Requirement: Independent protected editing contexts
+Each editing context MUST retain its own protected record without overwriting another tab. Supported legacy record keys MUST remain recoverable; unknown versions MUST remain intact. Unlock, export and replay MUST require the same stable principal and fresh current resource checks.
+
+#### Scenario: Two pending tabs
+- **GIVEN** two real authenticated tabs that opened the same acknowledged revision
+- **WHEN** each retains a different unacknowledged draft and both are closed
+- **THEN** reopening permits explicit authorized review/export of each distinct protected draft without changing acknowledged music or silently choosing a winner.
+
+### Requirement: Terminate without waiting for an unknown network result
+Voluntary logout MUST wait for latest local protection rather than a network response, offer an accurate explicit decision on protection failure, end the old context and preserve protected work without automatic replay. Requests MUST be bounded and original anonymous data MUST survive.
+
+#### Scenario: Logout with a committed but undelivered response
+- **GIVEN** a real service commit with a held response and a durably protected original command
+- **WHEN** the musician confirms voluntary logout
+- **THEN** real provider termination completes before that response is released, and later same-principal fresh authorization can reconcile its original receipt without another revision.

@@ -138,3 +138,98 @@ describe("Serialized application commands", () => {
     expect(f.session.durableRevision).toBe(3);
   });
 });
+
+describe("Admitted drafts and delayed acknowledgements", () => {
+  it("protects the newer complete candidate before the older service reply and never replaces it with that older reply", async () => {
+    let releaseFirst!: () => void,
+      releaseSecond!: () => void,
+      firstStarted!: () => void;
+    const firstGate = new Promise<void>((resolve) => {
+      releaseFirst = resolve;
+    });
+    const secondGate = new Promise<void>((resolve) => {
+      releaseSecond = resolve;
+    });
+    const started = new Promise<void>((resolve) => {
+      firstStarted = resolve;
+    });
+    let durable = emptyLibrary(),
+      sends = 0;
+    const retained: string[][] = [];
+    const store: LibraryStore = {
+      load: async () => structuredClone(durable),
+      commit: async () => {
+        throw new Error("Prepared saves must use their transport boundary");
+      },
+      whenProtected: async () => undefined,
+      prepare: (candidate) => {
+        retained.push(candidate.songs.map((song) => song.id));
+        return {
+          retained: Promise.resolve(),
+          save: async (expected) => {
+            sends++;
+            if (sends === 1) {
+              firstStarted();
+              await firstGate;
+            } else await secondGate;
+            expect(expected).toBe(durable.revision);
+            durable = { ...structuredClone(candidate), revision: expected + 1 };
+            return structuredClone(durable);
+          },
+        };
+      },
+    };
+    const session = new LibrarySession(store);
+    await session.load();
+    const first = session.execute({ type: "createSong", id: "a", title: "A" });
+    await started;
+    const second = session.execute({ type: "createSong", id: "b", title: "B" });
+    await session.whenProtected();
+    expect(retained).toEqual([["a"], ["a", "b"]]);
+    expect(session.data?.songs.map((song) => song.id)).toEqual(["a", "b"]);
+    releaseFirst();
+    await first;
+    expect(durable.songs.map((song) => song.id)).toEqual(["a"]);
+    expect(session.data?.songs.map((song) => song.id)).toEqual(["a", "b"]);
+    expect(session.durableRevision).toBe(1);
+    releaseSecond();
+    await second;
+    expect(session.data).toEqual(durable);
+    expect(session.durableRevision).toBe(2);
+  });
+  it("a failed protection boundary preserves the intended draft, sends no transport and permits explicit protection retry", async () => {
+    let fail = true,
+      sends = 0;
+    const store: LibraryStore = {
+      scope: "private",
+      load: async () => emptyLibrary(),
+      commit: async () => {
+        throw new Error("Unexpected unstaged transport");
+      },
+      prepare: (candidate) => ({
+        retained: fail
+          ? Promise.reject(new Error("Protection quota"))
+          : Promise.resolve(),
+        save: async (expected) => {
+          sends++;
+          return { ...candidate, revision: expected + 1 };
+        },
+      }),
+    };
+    const session = new LibrarySession(store);
+    await session.load();
+    await expect(
+      session.execute({ type: "createSong", id: "draft", title: "Draft" }),
+    ).rejects.toThrow("Protection quota");
+    expect(sends).toBe(0);
+    expect(session.data?.songs[0]?.title).toBe("Draft");
+    expect(session.durableRevision).toBe(0);
+    expect(session.error).toContain("Save not confirmed");
+    fail = false;
+    await session.retrySave();
+    expect(sends).toBe(1);
+    expect(session.data?.songs[0]?.title).toBe("Draft");
+    expect(session.durableRevision).toBe(1);
+    expect(session.error).toBe("");
+  });
+});

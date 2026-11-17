@@ -185,7 +185,14 @@ test("SB-SESSION-LOCK: a real principal's known deadline locks complete performe
   await edit(owner.page, song);
   const retained = await protectedRecord(owner.page);
   expect(retained).toHaveLength(1);
-  expect(retained[0]!.fields).toEqual(["cipher", "commandId", "iv", "keyId"]);
+  expect(retained[0]!.fields).toEqual([
+    "cipher",
+    "commandId",
+    "formatVersion",
+    "generation",
+    "iv",
+    "keyId",
+  ]);
   await owner.page.unroute("**/api/library");
   // Keep genuine background checks pending: no forged identity/session result grants or renews authority.
   let release!: () => void;
@@ -545,6 +552,8 @@ test("stale protected work refuses overwrite and saves one complete independent 
     "cipher",
     "commandId",
     "copies",
+    "formatVersion",
+    "generation",
     "iv",
     "keyId",
   ]);

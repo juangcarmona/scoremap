@@ -597,7 +597,14 @@ test("protected pending work survives logout, refuses another account and recove
     }));
   });
   expect(persisted).toHaveLength(1);
-  expect(persisted[0]!.fields).toEqual(["cipher", "commandId", "iv", "keyId"]);
+  expect(persisted[0]!.fields).toEqual([
+    "cipher",
+    "commandId",
+    "formatVersion",
+    "generation",
+    "iv",
+    "keyId",
+  ]);
   expect(persisted[0]!.encrypted).toBe(true);
   expect(persisted[0]!.text).not.toContain(note);
   const ownerKey = persisted[0]!.keyId;

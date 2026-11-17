@@ -154,6 +154,7 @@ function LibraryApp({
     setRecovering(true);
     try {
       await session.reconcile(work);
+      setError("");
       setNoteDrafts(new Map());
       setImportEpoch((value) => value + 1);
     } finally {
@@ -228,7 +229,7 @@ function LibraryApp({
       className={`app ${edit ? "editing" : "performing"}${identity ? " private-library" : ""}`}
       data-build-revision={import.meta.env.VITE_SCOREMAP_BUILD ?? "development"}
     >
-      <header className="app-header" inert={recovering}>
+      <header className="app-header" inert={recovering || session.reconciling}>
         <div className={`brand${identity ? " private-brand" : ""}`}>
           <h1>
             ScoreMap
@@ -249,11 +250,22 @@ function LibraryApp({
               type="button"
               onClick={() => {
                 if (!leavePreview()) return;
-                void session.whenIdle().then(async () => {
+                void (async () => {
+                  let protectedWork = true;
+                  try {
+                    await session.whenProtected();
+                  } catch {
+                    protectedWork = false;
+                  }
                   if (
-                    session.error &&
+                    (session.pending ||
+                      session.error ||
+                      protectedPending ||
+                      !protectedWork) &&
                     !window.confirm(
-                      "Your unsaved work will remain protected for this account. Sign out now?",
+                      protectedWork
+                        ? "An operation is still awaiting confirmation. Sign out now? Saved music and protected pending work will be kept."
+                        : "This device could not protect the latest changes. Signing out may lose those changes. Continue?",
                     )
                   )
                     return;
@@ -266,8 +278,9 @@ function LibraryApp({
                   csrf.value = identity.csrf;
                   form.append(csrf);
                   document.body.append(form);
+                  if (store instanceof PrivateLibraryStore) store.lockAccess();
                   form.submit();
-                });
+                })().catch(report);
               }}
             >
               Sign out
@@ -395,12 +408,21 @@ function LibraryApp({
           report={report}
         />
       )}
+      {identity &&
+        store instanceof PrivateLibraryStore &&
+        store.protectedOnDevice &&
+        session.pending > 0 && (
+          <p className="notice" role="status">
+            Your latest changes are protected on this device. Waiting for
+            confirmation from your private library.
+          </p>
+        )}
       {recovering && (
         <p className="notice" role="status">
           Saving your recovery operation to the private library…
         </p>
       )}
-      <div className="workspace" inert={recovering}>
+      <div className="workspace" inert={recovering || session.reconciling}>
         <aside
           className={`library ${libraryOpen ? "open" : ""}`}
           aria-label="Music library"
@@ -620,6 +642,7 @@ function LibraryApp({
                         )
                       )
                         return;
+                      if (!leavePreview()) return;
                       await session.replace(
                         identity
                           ? {

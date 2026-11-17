@@ -30,6 +30,7 @@ export function PendingWork({
   report: (error: unknown) => void;
 }) {
   const [pending, setPending] = useState<Library | null>(null);
+  const [selected, setSelected] = useState(store.selectedPending);
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState("");
   async function run(work: () => Promise<unknown>) {
@@ -66,6 +67,32 @@ export function PendingWork({
         A previous save has not been confirmed. Your current saved library is
         available below; review this protected draft before editing again.
       </p>
+      {store.pendingChoices.length > 1 && (
+        <label>
+          Pending draft
+          <select
+            aria-label="Pending draft"
+            disabled={busy}
+            value={
+              store.pendingChoices.some((choice) => choice.id === selected)
+                ? selected
+                : store.selectedPending
+            }
+            onChange={(event) => {
+              store.selectPending(event.target.value);
+              setSelected(event.target.value);
+              setPending(null);
+              setStatus("");
+            }}
+          >
+            {store.pendingChoices.map((choice) => (
+              <option key={choice.id} value={choice.id}>
+                {choice.name}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
       <div className="button-row">
         <button
           type="button"

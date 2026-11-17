@@ -29,12 +29,18 @@ export async function login(
 ) {
   const context = await browser.newContext(options);
   const page = await context.newPage();
+  page.on("response", (response) => {
+    if (response.status() === 429)
+      console.warn(
+        `[synthetic-rate-limit] ${new URL(response.url()).pathname} retryAfter=${response.headers()["retry-after"] ?? "unavailable"}`,
+      );
+  });
   await signIn(page, username);
   return { context, page };
 }
 let previousLoginAt = 0;
 export async function signIn(page: Page, username: string) {
-  const wait = Math.max(0, previousLoginAt + 2100 - Date.now());
+  const wait = Math.max(0, previousLoginAt + 5000 - Date.now());
   if (wait) await new Promise((resolve) => setTimeout(resolve, wait));
   previousLoginAt = Date.now();
   await page.goto("/");

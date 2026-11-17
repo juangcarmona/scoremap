@@ -6,7 +6,7 @@ description: Storage, backup, update and trust mechanisms
 
 # 8. Cross-cutting concepts
 
-The initial stored envelope has schema version 1 and a monotonic revision. Load and import validate complete content and associations; future migrations must be explicit and atomic. Unknown versions stop without writes. Import is confirmed replacement rather than implicit merge. IDs are opaque stable browser-generated UUIDs.
+The anonymous envelope initially used schema version 1; the current candidate accepts versions 1 and 2 with a monotonic revision and explicit legacy migration. Load and import validate complete content and associations; future migrations must be explicit and atomic. Unknown versions stop without writes. Anonymous import is confirmed replacement; private import preserves existing songs and uses explicit independently owned copies. IDs are opaque stable browser-generated UUIDs.
 
 <!-- pdac:cite id="BR-BACKUP" digest="sha256:0ca300361becac0a9858d098ab1e029b5bc1dfe41a06a58ecc40408fee32ed3b" -->
 
@@ -16,7 +16,7 @@ External URLs accept only HTTP(S), text uses React escaping, and no application 
 
 ## Accepted server target: admission, authority and transactions
 
-The following mechanisms apply to the accepted next architecture in ADR-0003/0004, pending Product Change #20 and implementation. The current device-only semantics above remain implemented reality.
+The following mechanisms apply to the accepted architecture in ADR-0003/0004 and its implemented private-library candidate after the validated arrangement Product Change. Integration, independent review and production qualification remain separate gates.
 
 Content admission combines authenticated resource capability, edit-mode admission, domain validation and expected-revision checks; none substitutes for another. Direct/non-HTTP use-case calls cannot bypass validation or capability checks. Reads, nested resource references, history, export, restore and role changes require the same explicit ownership policy. The server derives identity/ownership from trusted session context, never a submitted owner ID.
 
@@ -26,7 +26,7 @@ The existing content guard remains an independent invariant.
 
 The accepted account-library commit aggregate is server-authoritative after transaction acknowledgement. Validation, musical content/configuration changes, revision comparison/increment and recoverable revision creation commit together. Transport timeouts and retries use idempotency/reconciliation rather than claiming failure proves no commit. Stale or unauthorized work never silently overwrites acknowledged data; pending device work remains separately recoverable under the accepted session policy. A migration failure preserves the prior recoverable version. EF Core InMemory tests cannot establish PostgreSQL atomicity, isolation or migration correctness.
 
-These mechanisms carry the existing acknowledged-durability rule across the new persistence boundary; #20 and #26 determine the aggregate and recovery policies, not an implicit transaction spanning browser and server.
+These mechanisms carry the acknowledged-durability rule across the new persistence boundary. Device protection and the server aggregate commit are separate transactions, with explicit recovery and no cross-boundary atomicity claim.
 
 <!-- pdac:cite id="BR-DURABILITY" digest="sha256:6b075527861da086b9571e8d117c7844348a437e363423bca46f60cc83b02e0b" -->
 
@@ -72,3 +72,12 @@ Every private adapter request is bound to a cancellable context generation and c
 A reopened pending command blocks new musical edits until an explicit decision. Review first obtains a same-principal current-resource unlock; original-save retry uses the retained command ID, expected revisions and recovery-key reference. A lost acknowledgement reconciles the existing receipt without a second revision. Conflicts and permission refusal retain the protected record; no automatic replay or merge occurs. Conditional record removal prevents an older acknowledgement from deleting a different pending command. Explicit local removal remains available without decrypting the refused record. For a stale original retry, the musician can explicitly save one pending song as a separate private copy. An atomic local journal adds only opaque source/destination identities and a command ID to the original protected record before dispatch; its musical ciphertext remains unchanged. Copying remaps the complete owned graph, preserves descriptive external preset provenance and leaves existing content, memberships and history untouched. A lost response is reconciled by a fresh owner-authorized complete comparison at the retained destination identity. Changed/deleted destinations refuse rather than create another copy. Legacy copies enter the existing atomic migration boundary, retain their raw source at history revision 0 and reconstruct the same generated graph on retry. The original protected draft remains until explicit removal; no automatic conflict merge occurs.
 
 Private song/preview exports recheck current scope immediately before download. Personal-resource exports fetch their independently owned current collection; historical export fetches the chosen revision through the authorized history endpoint again. A cached visible label or previously loaded historical body is insufficient. The full bounded private-offline lease and its independent key lifecycle qualification remain pending and disabled.
+
+
+## Protecting the latest interaction before transport
+
+The [prepared-save port](../../../src/features/library/storage.ts) separates local retention from ordered service transport. Normal commands derive their latest complete valid candidate immediately; a generation check permits an older acknowledgement to advance the known service revision without replacing newer admitted content. Import and history reconciliation remain admission barriers. A failed initial protection step sends no save request and remains explicitly retryable. Once sent, a request keeps its exact command/body/expected revisions for reconciliation; an unknown outcome never authorizes automatic rebasing.
+
+The [atomic pending store](../../../src/features/library/protectedPending.ts) keeps one latest ciphertext per stable principal and random editing context in the existing version-1 IndexedDB store. Generation and matching-command checks prevent older writes or acknowledgements from replacing/removing a newer record. Legacy principal-string records remain readable alongside compound keys; unsupported versions are preserved. Selection, review and removal act on the chosen record. Explicit principal removal leaves anonymous data and other principals untouched. See [ADR-0006](../09-architecture-decisions/ADR-0006-retain-protected-drafts-by-editing-context.md).
+
+Voluntary logout waits for latest local retention, reports failure truthfully, then closes the cancellable context and submits provider termination without waiting for transport. A bounded request timeout handles unknown responses. An unconfirmed import is immediately exposed for explicit review and blocks new content changes until resolved. Neither encrypted device retention nor its opaque counters grant resource permission or private offline authority.
