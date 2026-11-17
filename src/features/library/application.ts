@@ -6,6 +6,7 @@ import {
   type Library,
   type Mode,
 } from "./domain";
+import type { ImportProvenance } from "./importSelection";
 import type { LibraryStore, PreparedLibrarySave } from "./storage";
 export class LibrarySession {
   mode: Mode = "edit";
@@ -80,7 +81,7 @@ export class LibrarySession {
       this.save(write.candidate, write.generation, write.prepared),
     );
   }
-  replace(value: unknown, confirmed: boolean) {
+  replace(value: unknown, confirmed: boolean, source?: ImportProvenance) {
     this.barriers += 1;
     return this.schedule(async () => {
       try {
@@ -93,6 +94,7 @@ export class LibrarySession {
           candidate,
           this.durableRevision,
           "import",
+          source,
         );
         this.data = saved;
         this.generation += 1;

@@ -1,3 +1,4 @@
+import type { ImportProvenance } from "./importSelection";
 import { isRichSong } from "./score";
 import { planImportedMigration } from "./migrationPlanning";
 import { openDB, type DBSchema, type IDBPDatabase } from "idb";
@@ -14,12 +15,17 @@ export interface LibraryStore {
   close?(): Promise<void>;
   load(): Promise<Library>;
   migrationSources?(): Promise<{ key: string; library: Library }[]>;
-  prepare?(candidate: Library, intent?: "import"): PreparedLibrarySave;
+  prepare?(
+    candidate: Library,
+    intent?: "import",
+    source?: ImportProvenance,
+  ): PreparedLibrarySave;
   whenProtected?(): Promise<void>;
   commit(
     candidate: Library,
     expectedRevision: number,
     intent?: "import",
+    source?: ImportProvenance,
   ): Promise<Library>;
 }
 export class IndexedLibraryStore implements LibraryStore {

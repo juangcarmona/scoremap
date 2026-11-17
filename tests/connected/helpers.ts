@@ -40,6 +40,26 @@ export async function login(
 }
 let previousLoginAt = 0;
 export async function signIn(page: Page, username: string) {
+  await expect
+    .poll(
+      async () => {
+        try {
+          return (
+            await page.request.get(new URL("/health/ready", target).href, {
+              timeout: 2000,
+            })
+          ).status();
+        } catch {
+          return 0;
+        }
+      },
+      {
+        timeout: 30000,
+        message:
+          "Wait for the selected synthetic application readiness before browser login",
+      },
+    )
+    .toBe(200);
   const wait = Math.max(0, previousLoginAt + 5000 - Date.now());
   if (wait) await new Promise((resolve) => setTimeout(resolve, wait));
   previousLoginAt = Date.now();

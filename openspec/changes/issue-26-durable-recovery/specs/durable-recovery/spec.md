@@ -70,3 +70,19 @@ New private history revisions MUST retain the trusted acting principal, operatio
 - **GIVEN** a current authorized song at revision 2 with recoverable revision 1
 - **WHEN** an authorized musician restores revision 1
 - **THEN** revision 3 records base revision 2 and source revision 1 with the trusted actor and stable command, while revisions 1 and 2 remain immutable and a retry creates no new version.
+
+### Requirement: Selected non-destructive private transfer
+Private import and same-origin anonymous claim MUST preview an explicit selection of complete songs and optionally their limited repertoire memberships. Existing destination data and original sources MUST remain intact. Identity collisions MUST refuse before activation with an explicit independent-copy option. Declared source schema/revision/scope MUST remain separate from trusted destination ownership and acknowledgement. Independently owned personal resources MUST use their separate controls.
+
+#### Scenario: Selected claim and collision copy
+- **GIVEN** a validated anonymous library containing two complete rich songs and a repertoire containing both
+- **WHEN** its owner confirms one selected song and later explicitly copies a colliding selection
+- **THEN** only selected complete graphs and limited memberships are committed, the anonymous source remains unchanged, and a lost copy response is reconciled by its original protected command without duplicate identities or revisions.
+
+### Requirement: Verify private transfer reconstruction
+A successful transfer confirmation MUST distinguish the acknowledged destination commit from a subsequent fresh authorized reconstruction. Original anonymous work MUST remain retained until that reconstruction is verified and any later removal is explicitly chosen. A failed readback MUST report the acknowledged commit truthfully without pretending rollback or silently importing another copy.
+
+#### Scenario: Acknowledged import with unavailable readback
+- **GIVEN** an actual complete import commit whose acknowledgement succeeds
+- **WHEN** its next fresh authorized readback fails
+- **THEN** the product reports saved-but-unverified reconstruction, keeps the original source and existing destination, and a repeated identity-preserving selection encounters the existing identities without another write.

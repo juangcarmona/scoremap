@@ -1,3 +1,6 @@
+import { ImportPreview } from "../features/library/ImportPreview";
+import type { ImportProvenance } from "../features/library/importSelection";
+import { IndexedLibraryStore } from "../features/library/storage";
 import { PendingWork } from "../features/library/PendingWork";
 import { copySongIdentities } from "../features/library/identityCopy";
 import { VoicingPresets } from "../features/library/VoicingPresets";
@@ -25,12 +28,12 @@ import {
   downloadText,
   exportBackup,
   importBackup,
-  copyBackupLibrary,
   MAX_IMPORT_BYTES,
 } from "../features/library/backup";
 import type { LibraryStore } from "../features/library/storage";
 import { PrivateLibraryStore } from "../features/library/privateStorage";
 import type { SessionInfo } from "../shared/auth/session";
+import type { Library } from "../features/library/domain";
 import type { Command } from "../features/library/domain";
 
 export function App(
@@ -66,6 +69,12 @@ function LibraryApp({
     "song" | "repertoire" | { id: string; title: string } | null
   >(null);
   const [error, setError] = useState("");
+  const [transfer, setTransfer] = useState<{
+    source: Library;
+    kind: ImportProvenance["kind"];
+    copy: boolean;
+  } | null>(null);
+  const [transferResult, setTransferResult] = useState("");
   const [importEpoch, setImportEpoch] = useState(0);
   const [previewDirty, setPreviewDirty] = useState(false);
   useEffect(() => {
@@ -397,6 +406,53 @@ function LibraryApp({
           )}
         </div>
       )}
+      {transfer && store instanceof PrivateLibraryStore && (
+        <ImportPreview
+          source={transfer.source}
+          kind={transfer.kind}
+          copy={transfer.copy}
+          destination={library}
+          onClose={() => setTransfer(null)}
+          onImport={async (imported, source) => {
+            try {
+              if (!leavePreview()) return;
+              await session.whenIdle();
+              await session.replace(
+                {
+                  ...session.data!,
+                  songs: [...session.data!.songs, ...imported.songs],
+                  repertoires: [
+                    ...session.data!.repertoires,
+                    ...imported.repertoires,
+                  ],
+                },
+                true,
+                source,
+              );
+              const acknowledged = structuredClone(session.data!);
+              await store.verifyImported(acknowledged, imported);
+              setImportEpoch((n) => n + 1);
+              setNoteDrafts(new Map());
+              setSelected(null);
+              setGroup("all");
+              setSearch("");
+              setError("");
+              setTransferResult(
+                `${imported.songs.length} selected songs imported and verified from your private library. The original ${source.kind === "anonymous" ? "browser library" : "file"} is kept.`,
+              );
+            } catch (failure) {
+              report(failure);
+            } finally {
+              setTransfer(null);
+            }
+          }}
+        />
+      )}
+      {transferResult && (
+        <p className="notice" role="status">
+          {transferResult}
+        </p>
+      )}
       {store instanceof PrivateLibraryStore && protectedPending && (
         <PendingWork
           store={store}
@@ -615,6 +671,30 @@ function LibraryApp({
                     Import as new copies
                   </button>
                 )}
+                {identity && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      void (async () => {
+                        await session.whenIdle();
+                        const anonymous = new IndexedLibraryStore();
+                        try {
+                          const source = await anonymous.load();
+                          setTransferResult("");
+                          setTransfer({
+                            source,
+                            kind: "anonymous",
+                            copy: false,
+                          });
+                        } finally {
+                          await anonymous.close();
+                        }
+                      })().catch(report);
+                    }}
+                  >
+                    Import songs from this browser
+                  </button>
+                )}
                 <input
                   ref={fileInput}
                   type="file"
@@ -630,10 +710,17 @@ function LibraryApp({
                         throw new Error(
                           "This backup exceeds the 64 MiB import limit.",
                         );
-                      let imported = importBackup(await file.text());
-                      if (identity && importCopy.current)
-                        imported = copyBackupLibrary(imported);
+                      const imported = importBackup(await file.text());
                       await session.whenIdle();
+                      if (identity) {
+                        setTransferResult("");
+                        setTransfer({
+                          source: imported,
+                          kind: "backup",
+                          copy: importCopy.current,
+                        });
+                        return;
+                      }
                       if (
                         !window.confirm(
                           identity

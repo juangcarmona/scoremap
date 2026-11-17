@@ -370,6 +370,10 @@ test("an unconfirmed JSON import remains visible for immediate original-command 
         }),
       ),
     });
+  await owner.page
+    .getByRole("dialog", { name: "Import selected songs", exact: true })
+    .getByRole("button", { name: "Import selection", exact: true })
+    .click();
   await expect(owner.page.getByRole("alert")).toContainText(
     "Synthetic import could not be confirmed",
   );
@@ -412,5 +416,24 @@ test("an unconfirmed JSON import remains visible for immediate original-command 
     history.map((version: { revision: number }) => version.revision),
   ).toEqual([1, 0]);
   expect(history[1].content).toEqual(source);
+  expect(history[0]).toMatchObject({
+    sourceRevision: 73,
+    source: {
+      kind: "backup",
+      schemaVersion: 1,
+      revision: 73,
+      songCount: 1,
+      repertoireCount: 0,
+      copied: false,
+    },
+    operation: "import",
+  });
+  expect(history[1]).toMatchObject({
+    actor: null,
+    operation: "legacy-source",
+    baseRevision: null,
+    sourceRevision: null,
+    source: null,
+  });
   await owner.context.close();
 });

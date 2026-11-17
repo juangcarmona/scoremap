@@ -69,6 +69,10 @@ test("real OIDC, current JSON import, atomic save and a clean second session", a
     mimeType: "application/json",
     buffer: Buffer.from(JSON.stringify(backup)),
   });
+  await page
+    .getByRole("dialog", { name: "Import selected songs", exact: true })
+    .getByRole("button", { name: "Import selection", exact: true })
+    .click();
   await page.getByRole("button", { name: new RegExp(title) }).click();
   await expect(
     page.getByRole("heading", { name: title, exact: true }),

@@ -22,7 +22,7 @@ internal sealed partial class LibraryRepository
     var connection = await dataSource.OpenConnectionAsync(cancellationToken).ConfigureAwait(false);
     await using var disposal = connection.ConfigureAwait(false);
     var value = await Scalar(connection, """
-            SELECT (SELECT COALESCE(jsonb_agg(jsonb_build_object('revision',h.revision,'content',h.content,'deleted',h.deleted,'created',h.created_at,'actor',h.actor,'operation',h.operation,'baseRevision',h.base_revision,'sourceRevision',h.source_revision,'commandId',h.command_id) ORDER BY h.revision DESC),'[]')::text FROM sm_history h WHERE h.song=s.id)
+            SELECT (SELECT COALESCE(jsonb_agg(jsonb_build_object('revision',h.revision,'content',h.content,'deleted',h.deleted,'created',h.created_at,'actor',h.actor,'operation',h.operation,'baseRevision',h.base_revision,'sourceRevision',h.source_revision,'commandId',h.command_id,'source',h.source) ORDER BY h.revision DESC),'[]')::text FROM sm_history h WHERE h.song=s.id)
             FROM sm_songs s LEFT JOIN sm_grants g ON g.song=s.id AND g.principal=$2
             WHERE s.id=$1 AND NOT s.purged AND (s.owner=$2 OR (NOT s.deleted AND g.principal=$2))
             """, cancellationToken, song, principal).ConfigureAwait(false);

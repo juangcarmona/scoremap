@@ -86,3 +86,10 @@ Voluntary logout waits for latest local retention, reports failure truthfully, t
 ## Recoverable revision provenance
 
 New history rows retain the trusted acting principal, operation, base song revision and command identity atomically with the musical content and receipt. A restore additionally identifies the selected source revision, independently of its current base. Imported legacy source snapshots identify their retention operation without attributing original authorship to the importer. Additive nullable columns leave older complete rows and their timestamps unchanged; the interface states when older authorship was not recorded. History authorization remains current song scope, and purge removes content and this metadata together.
+
+
+## Selected transfer and anonymous claim
+
+Private file import and same-origin anonymous claim share an explicit complete-song selection preview. Selection preserves source ordering and all song-owned content; repertoire memberships are limited to selected songs and can be excluded. Identity-preserving collisions refuse, with an explicitly selected independent-copy route. That route remaps complete internal identities before confirmation; the existing protected original-command receipt preserves its exact destination identities after an ambiguous response. The anonymous store and original source file remain untouched. Origin transfer still requires export from the old origin.
+
+Declared source kind, schema version, revision, selected counts and copy choice travel inside the protected command and its stable retry body. The service validates the new destination scope, derives ownership from the session and retains source provenance in history independently of its destination revision/actor. These source declarations are descriptive, never authority. After acknowledgement, a separate fresh authorized read compares the complete admitted songs and limited repertoires. A failed readback reports acknowledged-but-unverified reconstruction and retains the source; it does not claim rollback or create another copy. Independent personal resources keep their separate acknowledgement/import boundaries.

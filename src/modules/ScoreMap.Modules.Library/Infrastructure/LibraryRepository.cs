@@ -29,6 +29,7 @@ internal sealed partial class LibraryRepository(NpgsqlDataSource dataSource) : I
             ALTER TABLE sm_history ADD COLUMN IF NOT EXISTS base_revision bigint;
             ALTER TABLE sm_history ADD COLUMN IF NOT EXISTS source_revision bigint;
             ALTER TABLE sm_history ADD COLUMN IF NOT EXISTS command_id uuid;
+            ALTER TABLE sm_history ADD COLUMN IF NOT EXISTS source jsonb;
             CREATE TABLE IF NOT EXISTS sm_receipts(principal text NOT NULL, command uuid NOT NULL, hash text NOT NULL, response jsonb NOT NULL, PRIMARY KEY(principal,command));
             CREATE TABLE IF NOT EXISTS sm_sessions(id text PRIMARY KEY, ticket bytea NOT NULL, expires timestamptz NOT NULL);
             CREATE TABLE IF NOT EXISTS sm_voicing_presets(principal text NOT NULL,id text NOT NULL,revision bigint NOT NULL,content jsonb,deleted boolean NOT NULL DEFAULT false,PRIMARY KEY(principal,id));
@@ -132,6 +133,7 @@ internal sealed partial class LibraryRepository(NpgsqlDataSource dataSource) : I
       var previous = current.Library.GetProperty("songs").EnumerateArray().ToDictionary(s => s.GetProperty("id").GetString()!, StringComparer.Ordinal);
       var proposed = document.Songs.ToDictionary(s => s.GetProperty("id").GetString()!, StringComparer.Ordinal);
       if (request.Import && previous.Any(p => !proposed.TryGetValue(p.Key, out var retained) || !JsonElement.DeepEquals(p.Value, retained))) throw new RevisionConflictException("Import cannot replace existing private songs. Import explicitly confirmed new copies instead.");
+      ValidateImportSource(current, document, request.Source, previous, proposed);
       var migrationSources = new Dictionary<string, JsonElement>(StringComparer.Ordinal);
       if (request.Import)
       {
@@ -153,6 +155,13 @@ internal sealed partial class LibraryRepository(NpgsqlDataSource dataSource) : I
       await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
       return saved;
     }
+  }
+  private static void ValidateImportSource(LibraryView current, LibraryDocument document, ImportSource? source, Dictionary<string, JsonElement> previous, Dictionary<string, JsonElement> proposed)
+  {
+    if (source is null) return;
+    var previousRepertoires = current.Library.GetProperty("repertoires").EnumerateArray().Select(value => value.GetProperty("id").GetString()).ToHashSet(StringComparer.Ordinal);
+    var addedRepertoires = document.Value.GetProperty("repertoires").EnumerateArray().Count(value => !previousRepertoires.Contains(value.GetProperty("id").GetString()));
+    LibraryDocument.Require(source.SongCount == proposed.Keys.Count(id => !previous.ContainsKey(id)) && source.RepertoireCount == addedRepertoires, "The declared selected import scope does not match its complete new destination boundaries.");
   }
   private static void CheckVersion(string id, IReadOnlyDictionary<string, long> expected, IReadOnlyDictionary<string, long> actual)
   {
@@ -228,7 +237,7 @@ internal sealed partial class LibraryRepository(NpgsqlDataSource dataSource) : I
         await Execute(connection, "INSERT INTO sm_songs(id,owner,revision,content) VALUES($1,$2,1,$3::jsonb)", cancellationToken, id, principal, song.GetRawText()).ConfigureAwait(false);
       }
       await RetainMigration(connection, id, version, song, previous.GetValueOrDefault(id), migrationSources.GetValueOrDefault(id), request.CommandId, cancellationToken).ConfigureAwait(false);
-      await Execute(connection, "INSERT INTO sm_history(song,revision,content,deleted,actor,operation,base_revision,command_id) VALUES($1,$2,$3::jsonb,false,$4,$5,$6,$7)", cancellationToken, id, version, song.GetRawText(), principal, request.Import ? "import" : previous.ContainsKey(id) ? "edit" : "create", version - 1, request.CommandId).ConfigureAwait(false);
+      await Execute(connection, "INSERT INTO sm_history(song,revision,content,deleted,actor,operation,base_revision,command_id,source_revision,source) VALUES($1,$2,$3::jsonb,false,$4,$5,$6,$7,$8,$9::jsonb)", cancellationToken, id, version, song.GetRawText(), principal, request.Import ? "import" : previous.ContainsKey(id) ? "edit" : "create", version - 1, request.CommandId, request.Source is { } provenance ? provenance.Revision : DBNull.Value, request.Source is not null ? JsonSerializer.Serialize(request.Source, JsonSerializerOptions.Web) : DBNull.Value).ConfigureAwait(false);
     }
   }
   private sealed record LibraryReceipt(long Revision, IReadOnlyDictionary<string, long> Versions, IReadOnlyDictionary<string, string> Capabilities);

@@ -10,6 +10,7 @@ import {
   type RetainedDraft,
 } from "./protectedPending";
 export { discardProtectedPending };
+import type { ImportProvenance } from "./importSelection";
 import { validateLibrary, type Library, type Song } from "./domain";
 import { copySongIdentities } from "./identityCopy";
 import { isRichSong } from "./score";
@@ -55,6 +56,7 @@ export class PrivateLibraryStore implements LibraryStore {
   private lastPrepared: {
     candidate: Library;
     intent: "import" | undefined;
+    source?: ImportProvenance;
     write: PreparedLibrarySave;
   } | null = null;
   private drafts: RetainedDraft[] = [];
@@ -244,7 +246,11 @@ export class PrivateLibraryStore implements LibraryStore {
       if (latest === this.lastPrepared) return;
     }
   }
-  prepare(candidate: Library, intent?: "import"): PreparedLibrarySave {
+  prepare(
+    candidate: Library,
+    intent?: "import",
+    source?: ImportProvenance,
+  ): PreparedLibrarySave {
     this.assertAccess();
     validateLibrary(candidate);
     if (this.pendingRecovery)
@@ -257,10 +263,12 @@ export class PrivateLibraryStore implements LibraryStore {
     if (
       previous &&
       previous.intent === intent &&
+      sameData(previous.source, source) &&
       sameData(previous.candidate, candidate)
     )
       return previous.write;
     const library = structuredClone(candidate);
+    source = source ? structuredClone(source) : undefined;
     const key = this.key,
       keyId = this.keyId;
     const sequence = ++this.sequence;
@@ -281,6 +289,7 @@ export class PrivateLibraryStore implements LibraryStore {
         expectedRevision,
         versions,
         import: intent === "import",
+        ...(source ? { source } : {}),
       });
       const iv = crypto.getRandomValues(new Uint8Array(12));
       const cipher = await crypto.subtle.encrypt(
@@ -325,6 +334,7 @@ export class PrivateLibraryStore implements LibraryStore {
             mode: "edit",
             recoveryKeyId: keyId,
             import: intent === "import",
+            ...(source ? { source } : {}),
           });
         }
         let saved: LibraryView;
@@ -354,7 +364,12 @@ export class PrivateLibraryStore implements LibraryStore {
         return validateLibrary(saved.library);
       },
     };
-    this.lastPrepared = { candidate: library, intent, write };
+    this.lastPrepared = {
+      candidate: library,
+      intent,
+      write,
+      ...(source ? { source } : {}),
+    };
     void retained.catch((error: unknown) => {
       if (sequence === this.sequence) {
         this.protectionError = error;
@@ -363,8 +378,49 @@ export class PrivateLibraryStore implements LibraryStore {
     });
     return write;
   }
-  commit(candidate: Library, expectedRevision: number, intent?: "import") {
-    return this.prepare(candidate, intent).save(expectedRevision);
+  commit(
+    candidate: Library,
+    expectedRevision: number,
+    intent?: "import",
+    source?: ImportProvenance,
+  ) {
+    return this.prepare(candidate, intent, source).save(expectedRevision);
+  }
+  async verifyImported(acknowledged: Library, imported: Library) {
+    const view = await this.request<LibraryView>("/api/library").catch(
+      (cause: unknown) => {
+        throw new Error(
+          "The import was acknowledged, but its current authorized readback is unavailable. The original source is kept. Reload and compare before importing again.",
+          { cause },
+        );
+      },
+    );
+    this.assertViewPermissions(view);
+    const actual = validateLibrary(view.library);
+    for (const song of imported.songs) {
+      const expected = acknowledged.songs.find((entry) => entry.id === song.id);
+      if (
+        !expected ||
+        view.capabilities[song.id] !== "owner" ||
+        !sameData(
+          actual.songs.find((entry) => entry.id === song.id),
+          expected,
+        )
+      )
+        throw new Error(
+          "The import was acknowledged, but its current authorized readback could not be confirmed. The original source is kept. Reload and compare before importing again.",
+        );
+    }
+    for (const repertoire of imported.repertoires)
+      if (
+        !sameData(
+          actual.repertoires.find((entry) => entry.id === repertoire.id),
+          repertoire,
+        )
+      )
+        throw new Error(
+          "The imported repertoire readback could not be confirmed. Keep the original source and compare before trying again.",
+        );
   }
   private async pendingRecord() {
     const key = this.selected ?? this.ownKey;
@@ -388,6 +444,7 @@ export class PrivateLibraryStore implements LibraryStore {
       expectedRevision: number;
       versions: Record<string, number>;
       import: boolean;
+      source?: ImportProvenance;
     };
     this.assertAccess(generation);
     const library = validateLibrary(record.library);

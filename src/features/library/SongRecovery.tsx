@@ -24,6 +24,14 @@ type Version = {
     | null;
   baseRevision: number | null;
   sourceRevision: number | null;
+  source?: {
+    kind: "backup" | "anonymous";
+    schemaVersion: number;
+    revision: number;
+    songCount: number;
+    repertoireCount: number;
+    copied: boolean;
+  } | null;
   commandId: string | null;
 };
 type RecoveryProps = {
@@ -111,8 +119,21 @@ export function SongHistory({
               ` · Based on version ${version.baseRevision}`}
             {version.sourceRevision !== null &&
               version.sourceRevision !== undefined &&
-              ` · Restored from version ${version.sourceRevision}`}
+              ` · ${version.operation === "import" ? "Source library revision" : "Restored from version"} ${version.sourceRevision}`}
           </p>
+          {version.source && (
+            <p>
+              {version.source.kind === "anonymous"
+                ? "Browser library"
+                : "Backup"}{" "}
+              · schema {version.source.schemaVersion} ·{" "}
+              {version.source.songCount} selected songs ·{" "}
+              {version.source.copied
+                ? "independent copies"
+                : "preserved identities"}
+              .
+            </p>
+          )}
           <h3>{version.content.title}</h3>
           {version.content.artist && <p>{version.content.artist}</p>}
           <p>{version.content.notes}</p>
