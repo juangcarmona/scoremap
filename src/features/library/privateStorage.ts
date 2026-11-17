@@ -4,6 +4,10 @@ import { validateLibrary, type Library } from "./domain";
 import type { LibraryStore } from "./storage";
 
 import type { SessionInfo } from "../../shared/auth/session";
+import type {
+  NotationStore,
+  NotationSettings,
+} from "../../shared/music/notation";
 
 interface LibraryView {
   library: Library;
@@ -31,6 +35,14 @@ const pendingDb = () =>
   });
 export class PrivateLibraryStore implements LibraryStore {
   readonly scope = "private";
+  readonly notation: NotationStore = {
+    read: () => this.request<NotationSettings>("/api/preferences/notation"),
+    save: (request) =>
+      this.request<NotationSettings>("/api/preferences/notation", {
+        method: "PUT",
+        body: JSON.stringify(request),
+      }),
+  };
   private versions: Record<string, number> = {};
   capabilities: LibraryView["capabilities"] = {};
   private key: CryptoKey | null = null;

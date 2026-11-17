@@ -1,4 +1,8 @@
 import { SongAccess } from "../features/library/SongAccess";
+import {
+  NotationProvider,
+  NotationControl,
+} from "../features/notation/NotationPreference";
 import { SongHistory, DeletedSongs } from "../features/library/SongRecovery";
 import { PwaStatus } from "./PwaStatus";
 import { useCallback, useRef, useState } from "react";
@@ -17,7 +21,21 @@ import { PrivateLibraryStore } from "../features/library/privateStorage";
 import type { SessionInfo } from "../shared/auth/session";
 import type { Command } from "../features/library/domain";
 
-export function App({
+export function App(
+  props: { store?: LibraryStore; identity?: SessionInfo } = {},
+) {
+  const { store } = props;
+  return (
+    <NotationProvider
+      {...(store instanceof PrivateLibraryStore
+        ? { store: store.notation, principal: store.identity.principal }
+        : {})}
+    >
+      <LibraryApp {...props} />
+    </NotationProvider>
+  );
+}
+function LibraryApp({
   store,
   identity,
 }: { store?: LibraryStore; identity?: SessionInfo } = {}) {
@@ -170,6 +188,7 @@ export function App({
           </p>
         </div>
         <div className="top-actions">
+          <NotationControl />
           {identity && (
             <button
               type="button"

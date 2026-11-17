@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { Song } from "./domain";
 import type { PrivateLibraryStore } from "./privateStorage";
+import { useNotation } from "../../shared/music/NotationContext";
+import { formatChordSymbol } from "../../shared/music/notation";
 
 type RetainedSong = { id: string; title: string; revision: number };
 type Version = {
@@ -26,6 +28,7 @@ export function SongHistory({
   song: RetainedSong;
   deleted?: boolean;
 }) {
+  const { preference } = useNotation();
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState("");
   const history = useQuery({
@@ -74,10 +77,7 @@ export function SongHistory({
               </h4>
               <p>
                 {section.chords
-                  .map(
-                    (chord) =>
-                      `${chord.root}${chord.quality === "minor" ? "m" : ""}`,
-                  )
+                  .map((chord) => formatChordSymbol(chord, preference))
                   .join(" · ")}
               </p>
               <p>{section.notes}</p>

@@ -1,4 +1,5 @@
 import { assertChord, type Chord } from "../../shared/music/chord";
+import { formatChordSymbol, type Notation } from "../../shared/music/notation";
 const naturals: Record<string, number> = {
   C: 0,
   D: 2,
@@ -23,12 +24,28 @@ export function chordNotes(chord: Chord): number[] {
   const root = pitchClass(chord.root);
   return [0, chord.quality === "major" ? 4 : 3, 7].map((n) => (root + n) % 12);
 }
-export function chordLabel(chord: Chord): string {
+export function chordLabel(chord: Chord, notation?: Notation): string {
   assertChord(chord);
-  return (
-    chord.root.replace("b", "♭").replace("#", "♯") +
-    (chord.quality === "minor" ? "m" : "")
-  );
+  return formatChordSymbol(chord, notation);
+}
+export function spelledChordNotes(chord: Chord): string[] {
+  assertChord(chord);
+  const letters = ["C", "D", "E", "F", "G", "A", "B"];
+  const index = letters.indexOf(chord.root[0]!);
+  const root =
+    naturals[chord.root[0]!]! +
+    (chord.root[1] === "#" ? 1 : chord.root[1] === "b" ? -1 : 0);
+  return [0, 2, 4].map((step, i) => {
+    const position = index + step;
+    const letter = letters[position % 7]!;
+    const expected = root + [0, chord.quality === "minor" ? 3 : 4, 7][i]!;
+    const accidental =
+      expected - (naturals[letter]! + (position >= 7 ? 12 : 0));
+    return (
+      letter +
+      (accidental < 0 ? "b".repeat(-accidental) : "#".repeat(accidental))
+    );
+  });
 }
 export type PianoKey = {
   midi: number;

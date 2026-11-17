@@ -25,6 +25,8 @@ internal sealed partial class LibraryRepository(NpgsqlDataSource dataSource) : I
             CREATE TABLE IF NOT EXISTS sm_history(song text NOT NULL REFERENCES sm_songs(id), revision bigint NOT NULL, content jsonb NOT NULL, deleted boolean NOT NULL, created_at timestamptz NOT NULL DEFAULT now(), PRIMARY KEY(song,revision));
             CREATE TABLE IF NOT EXISTS sm_receipts(principal text NOT NULL, command uuid NOT NULL, hash text NOT NULL, response jsonb NOT NULL, PRIMARY KEY(principal,command));
             CREATE TABLE IF NOT EXISTS sm_sessions(id text PRIMARY KEY, ticket bytea NOT NULL, expires timestamptz NOT NULL);
+            CREATE TABLE IF NOT EXISTS sm_notation(principal text PRIMARY KEY,revision bigint NOT NULL,mode text NOT NULL CHECK(mode IN ('anglo','latin','dual')),primary_notation text NOT NULL CHECK(primary_notation IN ('anglo','latin')),CHECK(mode='dual' OR mode=primary_notation));
+            CREATE TABLE IF NOT EXISTS sm_notation_receipts(principal text NOT NULL,command uuid NOT NULL,hash text NOT NULL,response jsonb NOT NULL,PRIMARY KEY(principal,command));
             UPDATE sm_receipts SET response=jsonb_build_object('Revision',response#>'{Library,revision}','Versions',response->'Versions','Capabilities',response->'Capabilities') WHERE response ? 'Library';
             COMMIT;
             """);

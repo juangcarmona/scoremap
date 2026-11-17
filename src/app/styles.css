@@ -134,8 +134,28 @@ p {
 }
 .top-actions {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 1rem;
+}
+.notation-control {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  max-width: 100%;
+  gap: 0.25rem;
+}
+.notation-control select {
+  width: 100%;
+  max-width: 22rem;
+  min-width: 0;
+}
+.notation-control [role="status"] {
+  font-size: 0.75rem;
+  color: var(--lh-text-muted);
+}
+.piano .dual-label {
+  font-size: 30px;
 }
 .save-state {
   font-size: 0.8rem;

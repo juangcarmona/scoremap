@@ -37,10 +37,17 @@ No mediator, generic repository, distributed cache, message bus, outbox or separ
 
 ## Candidate admission and persistence mechanisms
 
-The current private adapter derives the stable principal from validated OIDC issuer/subject claims, protects provider tokens in server-side session tickets and checks the provider session online. Current database song grants remain independent of the session cookie. Origin/anti-forgery admission precedes mutation; typed application handlers enforce edit mode and domain validation. A transaction advisory lock serializes grant changes, expected-revision checks, complete song updates/history and retry receipts. An acknowledged response is produced only after commit. Receipt reads recheck current resource access.
+The current private adapter derives the stable principal from validated OIDC issuer/subject claims, protects provider tokens in server-side session tickets and checks the provider session online. Current database song grants remain independent of the session cookie. Origin/anti-forgery admission precedes mutation; typed application handlers enforce edit mode and domain validation for musical content. A transaction advisory lock serializes grant changes, expected-revision checks, complete song updates/history and retry receipts. An acknowledged response is produced only after commit. Receipt reads recheck current resource access.
 
 Principal-bound recovery keys are protected on the server; browser pending records contain AES-GCM ciphertext and opaque references. Successful commits bind the covered song identities into the retained key scope. Unlock requires the same principal and fresh resource checks, with explicit export/comparison and no automatic replay. Persistent private offline editing stays disabled. These mechanisms belong to the [candidate module](../../../src/modules/ScoreMap.Modules.Library/LibraryModule.cs); their tested behavior and remaining qualification are recorded in delivery evidence.
 
 <!-- pdac:cite id="BR-DURABILITY" digest="sha256:6b075527861da086b9571e8d117c7844348a437e363423bca46f60cc83b02e0b" -->
 <!-- pdac:cite id="BR-ACCESS" digest="sha256:fcc173c80ae4a5903dbeb2e11c141cb6ee8d03382c812ebc527d5065347b72c9" -->
 <!-- pdac:cite id="BR-SESSION" digest="sha256:a8c63526b6fe52375791a737ed14280609d00938808928153d49fd2627416326" -->
+
+
+## Notation and preference acknowledgement
+
+The [shared formatter](../../../src/shared/music/notation.ts) preserves spelled notes, octaves and complete chord symbols while presenting Anglo-American, fixed-name Latin or dual names. A shared context keeps Library and Sketch rendering consistent without introducing feature cycles. The [preference feature](../../../src/features/notation/NotationPreference.tsx) handles display/pending/error states; localized labels are never parsed back into musical data.
+
+Anonymous preference uses an independent device key. Signed-in preference reads ignore that key and use only the current stable principal's [typed settings handlers](../../../src/modules/ScoreMap.Modules.Library/Application/SaveNotationHandler.cs). A separate PostgreSQL preference revision and metadata command receipt commit together; stale changes refuse and lost acknowledgements reconcile without duplicating revisions. Preference selection is presentation configuration, allowed during performance without bypassing the musical edit guard or changing a song/library revision. Account switch/lock removes principal query state. Rich event/arrangement notation fixtures remain a separate pending acceptance boundary.

@@ -10,7 +10,8 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0.103 AS backend
 WORKDIR /build
 COPY . .
 RUN dotnet restore ScoreMap.slnx --locked-mode
-RUN dotnet publish src/root/ScoreMap.Api -c Release --no-restore -o /out
+ARG SOURCE_REVISION
+RUN dotnet publish src/root/ScoreMap.Api -c Release --no-restore -p:SourceRevisionId=$SOURCE_REVISION -o /out
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0.15
 WORKDIR /app

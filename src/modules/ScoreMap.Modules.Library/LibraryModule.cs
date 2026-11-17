@@ -20,6 +20,7 @@ public static class LibraryModule
     services.AddHealthChecks().AddCheck<DatabaseHealth>("postgresql");
     services.AddSingleton<ILibraryRepository>(s => s.GetRequiredService<LibraryRepository>());
     services.AddSingleton<HistoryQueryHandler>(); services.AddSingleton<RecoverSongHandler>();
+    services.AddSingleton<ReadNotationHandler>(); services.AddSingleton<SaveNotationHandler>();
     services.AddSingleton<ReadLibraryHandler>(); services.AddSingleton<SaveLibraryHandler>(); services.AddSingleton<GrantSongHandler>(); services.AddSingleton<SessionVault>(); services.AddSingleton<RecoveryVault>(); services.AddSingleton<IRecoveryKeyRepository>(s => s.GetRequiredService<RecoveryVault>()); services.AddSingleton<RecoveryKeyHandler>();
     services.AddOptions<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme).Configure<SessionVault>((options, vault) => options.SessionStore = vault);
     return services;
@@ -32,10 +33,14 @@ public static class LibraryModule
       try { await next(context).ConfigureAwait(false); }
       catch (AccessDeniedException) { context.Response.StatusCode = 403; await Fault(context, 403, "This operation is unavailable for your current permissions.").ConfigureAwait(false); }
       catch (RevisionConflictException error) { context.Response.StatusCode = 409; await Fault(context, 409, error.Message).ConfigureAwait(false); }
+      catch (BadHttpRequestException error) when (error.StatusCode is >= 400 and < 500)
+      { context.Response.StatusCode = error.StatusCode; await Fault(context, error.StatusCode, "Invalid or unsupported request data. Existing content has not been replaced.").ConfigureAwait(false); }
       catch (Exception error) when (error is ArgumentException or InvalidOperationException or JsonException or FormatException or KeyNotFoundException)
       { context.Response.StatusCode = 400; await Fault(context, 400, "Invalid or unsupported ScoreMap data. Existing content has not been replaced.").ConfigureAwait(false); }
     });
     var api = app.MapGroup("/api").RequireAuthorization().RequireRateLimiting("private-api");
+    api.MapGet("/preferences/notation", async (ClaimsPrincipal user, ReadNotationHandler handler, CancellationToken ct) => Results.Json(await handler.Handle(new ReadNotation(Principal(user)), ct).ConfigureAwait(false)));
+    api.MapPut("/preferences/notation", async (ClaimsPrincipal user, NotationRequest request, SaveNotationHandler handler, CancellationToken ct) => Results.Json(await handler.Handle(new SaveNotation(Principal(user), request), ct).ConfigureAwait(false)));
     api.MapGet("/library", async (ClaimsPrincipal user, ReadLibraryHandler handler, CancellationToken ct) => Results.Json(await handler.Handle(new ReadLibrary(Principal(user)), ct).ConfigureAwait(false)));
     api.MapPut("/library", async (ClaimsPrincipal user, CommitLibrary request, SaveLibraryHandler handler, CancellationToken ct) => Results.Json(await handler.Handle(new SaveLibrary(Principal(user), request), ct).ConfigureAwait(false)));
     api.MapPut("/songs/{id}/grants", async (ClaimsPrincipal user, string id, GrantRequest request, GrantSongHandler handler, CancellationToken ct) => { await handler.Handle(new GrantSong(Principal(user), id, request), ct).ConfigureAwait(false); return Results.NoContent(); });

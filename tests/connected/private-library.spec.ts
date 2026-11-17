@@ -851,3 +851,208 @@ test("restore/purge serialize and a failed multi-song transaction rolls back ear
   ).toBe(403);
   await owner.context.close();
 });
+
+test("account notation persists independently, ignores anonymous settings and reconciles failed/lost acknowledgements", async ({
+  browser,
+}) => {
+  const owner = await login(browser, "owner-a", {
+    viewport: { width: 1024, height: 768 },
+    hasTouch: true,
+  });
+  const other = await login(browser, "owner-b");
+  const initialPreference = await (
+    await api(owner.page, "/api/preferences/notation")
+  ).json();
+  const otherPreference = await (
+    await api(other.page, "/api/preferences/notation")
+  ).json();
+  const song = syntheticSong();
+  song.sections[0]!.chords = [
+    { root: "C#", quality: "minor" },
+    { root: "Db", quality: "major" },
+  ];
+  await saveView(owner.page, (library) => {
+    library.songs.push(song);
+  });
+  await owner.page.evaluate(() =>
+    localStorage.setItem(
+      "scoremap-notation",
+      JSON.stringify({ mode: "latin", primary: "latin" }),
+    ),
+  );
+  await owner.page.reload();
+  await openSong(owner.page, song.title);
+  const beforeMusic = await (await api(owner.page, "/api/library")).json();
+  const choice = owner.page.getByLabel("Note names", { exact: true });
+  const originalChoice =
+    initialPreference.mode === "dual"
+      ? `dual-${initialPreference.primary}`
+      : initialPreference.mode;
+  await expect(choice).toHaveValue(originalChoice);
+  async function acknowledged() {
+    await expect(
+      owner.page.getByText("Note names saved to your account", { exact: true }),
+    ).toBeVisible();
+  }
+  try {
+    await choice.selectOption("latin");
+    await acknowledged();
+    await expect(
+      owner.page.getByRole("button", {
+        name: "Bridge chord 1: Do♯m",
+        exact: true,
+      }),
+    ).toBeVisible();
+    await expect(
+      owner.page.getByRole("option", { name: "Re♭", exact: true }),
+    ).toHaveAttribute("value", "Db");
+    await owner.page
+      .getByRole("button", { name: "Bridge chord 2: Re♭", exact: true })
+      .click();
+    await expect(
+      owner.page.getByText("Theoretical notes: Re♭ · Fa · La♭", {
+        exact: true,
+      }),
+    ).toBeVisible();
+    await owner.page
+      .getByRole("button", { name: "Enter performance", exact: true })
+      .click();
+    const latin = await (
+      await api(owner.page, "/api/preferences/notation")
+    ).json();
+    const commands: string[] = [];
+    await owner.page.route("**/api/preferences/notation", async (route) => {
+      if (route.request().method() === "PUT") {
+        commands.push(route.request().postDataJSON().commandId);
+        await route.abort("failed");
+      } else await route.continue();
+    });
+    await choice.selectOption("dual-latin");
+    await expect(
+      owner.page.getByText("Note-name choice not saved", { exact: true }),
+    ).toBeVisible();
+    expect(
+      await (await api(owner.page, "/api/preferences/notation")).json(),
+    ).toEqual(latin);
+    await owner.page.unroute("**/api/preferences/notation");
+    const retryRequest = owner.page.waitForRequest(
+      (request) =>
+        request.url().includes("/preferences/notation") &&
+        request.method() === "PUT",
+    );
+    await owner.page
+      .getByRole("button", { name: "Retry note names", exact: true })
+      .click();
+    expect((await retryRequest).postDataJSON().commandId).toBe(commands[0]);
+    await acknowledged();
+    await expect(
+      owner.page.getByRole("button", {
+        name: "Bridge chord 1: Do♯m (C♯m)",
+        exact: true,
+      }),
+    ).toBeVisible();
+    await owner.page.route("**/api/preferences/notation", async (route) => {
+      if (route.request().method() === "PUT") {
+        commands.push(route.request().postDataJSON().commandId);
+        expect((await route.fetch()).status()).toBe(200);
+        await route.abort("failed");
+      } else await route.continue();
+    });
+    await choice.selectOption("dual-anglo");
+    await expect(
+      owner.page.getByText("Note-name choice not saved", { exact: true }),
+    ).toBeVisible();
+    const lostAcknowledgement = await (
+      await api(owner.page, "/api/preferences/notation")
+    ).json();
+    expect(lostAcknowledgement).toMatchObject({
+      mode: "dual",
+      primary: "anglo",
+      revision: latin.revision + 2,
+    });
+    await owner.page.unroute("**/api/preferences/notation");
+    const lostRetry = owner.page.waitForRequest(
+      (request) =>
+        request.url().includes("/preferences/notation") &&
+        request.method() === "PUT",
+    );
+    await owner.page
+      .getByRole("button", { name: "Retry note names", exact: true })
+      .click();
+    expect((await lostRetry).postDataJSON().commandId).toBe(commands[1]);
+    await acknowledged();
+    expect(
+      await (await api(owner.page, "/api/preferences/notation")).json(),
+    ).toEqual(lostAcknowledgement);
+    expect(await (await api(owner.page, "/api/library")).json()).toEqual(
+      beforeMusic,
+    );
+    expect(
+      await (await api(other.page, "/api/preferences/notation")).json(),
+    ).toEqual(otherPreference);
+    expect(
+      (
+        await api(owner.page, "/api/preferences/notation", "PUT", {
+          expectedRevision: 0,
+          commandId: crypto.randomUUID(),
+          mode: "latin",
+          primary: "latin",
+        })
+      ).status(),
+    ).toBe(409);
+    expect(
+      (
+        await api(owner.page, "/api/preferences/notation", "PUT", {
+          expectedRevision: lostAcknowledgement.revision,
+          commandId: crypto.randomUUID(),
+          mode: "invalid",
+          primary: "latin",
+        })
+      ).status(),
+    ).toBe(400);
+    expect(
+      (
+        await api(owner.page, "/api/preferences/notation", "PUT", {
+          expectedRevision: lostAcknowledgement.revision,
+          commandId: crypto.randomUUID(),
+          mode: "latin",
+          primary: "latin",
+          principal: "forged",
+        })
+      ).status(),
+    ).toBe(400);
+    const second = await login(browser, "owner-a");
+    await expect(
+      second.page.getByLabel("Note names", { exact: true }),
+    ).toHaveValue("dual-anglo");
+    await second.context.close();
+    await owner.page.setViewportSize({ width: 390, height: 844 });
+    await owner.page.evaluate(() => {
+      document.documentElement.style.fontSize = "200%";
+    });
+    expect(
+      await owner.page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+    expect(
+      (await new AxeBuilder({ page: owner.page }).analyze()).violations,
+    ).toEqual([]);
+  } finally {
+    await owner.page.unroute("**/api/preferences/notation");
+    const current = await (
+      await api(owner.page, "/api/preferences/notation")
+    ).json();
+    expect(
+      (
+        await api(owner.page, "/api/preferences/notation", "PUT", {
+          expectedRevision: current.revision,
+          commandId: crypto.randomUUID(),
+          mode: initialPreference.mode,
+          primary: initialPreference.primary,
+        })
+      ).status(),
+    ).toBe(200);
+    await Promise.all([owner.context.close(), other.context.close()]);
+  }
+});

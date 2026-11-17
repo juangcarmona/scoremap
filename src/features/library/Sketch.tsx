@@ -1,5 +1,7 @@
 import { useState } from "react";
 import type { Chord, Command, Mode, Section, Song } from "./domain";
+import { useNotation } from "../../shared/music/NotationContext";
+import { formatNote } from "../../shared/music/notation";
 import { Piano } from "../sketch/Piano";
 import { chordLabel } from "../sketch/chords";
 const roots = [
@@ -44,6 +46,7 @@ function ChordEditor({
   execute: Props["execute"];
   report: Props["report"];
 }) {
+  const { preference } = useNotation();
   const [editing, setEditing] = useState<number | null>(null);
   const current = editing === null ? undefined : section.chords[editing];
   return (
@@ -83,7 +86,7 @@ function ChordEditor({
           <option value="new">Add at end</option>
           {section.chords.map((c, i) => (
             <option key={i} value={i}>
-              {i + 1}. {chordLabel(c)}
+              {i + 1}. {chordLabel(c, preference)}
             </option>
           ))}
         </select>
@@ -96,7 +99,9 @@ function ChordEditor({
           defaultValue={current?.root ?? "C"}
         >
           {roots.map((r) => (
-            <option key={r}>{r}</option>
+            <option key={r} value={r}>
+              {formatNote(r, preference)}
+            </option>
           ))}
         </select>
       </label>
@@ -143,6 +148,7 @@ export function Sketch({
   execute,
   report,
 }: Props) {
+  const { preference } = useNotation();
   const [selection, setSelection] = useState<{
     sectionId: string;
     index: number;
@@ -298,7 +304,7 @@ export function Sketch({
                   <button
                     type="button"
                     key={i}
-                    aria-label={`${section.name} chord ${i + 1}: ${chordLabel(chord)}`}
+                    aria-label={`${section.name} chord ${i + 1}: ${chordLabel(chord, preference)}`}
                     aria-pressed={
                       selection?.sectionId === section.id &&
                       selection.index === i
@@ -307,7 +313,7 @@ export function Sketch({
                       setSelection({ sectionId: section.id, index: i })
                     }
                   >
-                    {chordLabel(chord)}
+                    {chordLabel(chord, preference)}
                   </button>
                 ))}
                 {!section.chords.length && (
