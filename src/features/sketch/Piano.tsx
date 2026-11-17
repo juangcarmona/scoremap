@@ -1,9 +1,9 @@
 import { chordLabel, chordNotes, pianoKeys, spelledChordNotes } from "./chords";
-import type { Chord } from "../../shared/music/chord";
+import type { HarmonyIdentity } from "../../shared/music/harmony";
 import { useNotation } from "../../shared/music/NotationContext";
 import { formatNote } from "../../shared/music/notation";
 const keys = pianoKeys();
-export function Piano({ chord }: { chord: Chord }) {
+export function Piano({ chord }: { chord: HarmonyIdentity }) {
   const { preference } = useNotation();
   const notes = new Set(chordNotes(chord));
   return (

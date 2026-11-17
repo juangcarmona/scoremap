@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "revision": 7,
+  "songs": [
+    {
+      "id": "song",
+      "title": "Synthetic form",
+      "artist": "",
+      "notes": "Original",
+      "sections": [
+        {
+          "id": "verse",
+          "name": "Verse",
+          "repeat": 3,
+          "notes": "cue",
+          "chords": [
+            {
+              "root": "C",
+              "quality": "major"
+            },
+            {
+              "root": "F#",
+              "quality": "minor"
+            },
+            {
+              "root": "Gb",
+              "quality": "major"
+            },
+            {
+              "root": "B#",
+              "quality": "minor"
+            },
+            {
+              "root": "Cb",
+              "quality": "major"
+            }
+          ]
+        }
+      ],
+      "references": [
+        {
+          "id": "ref",
+          "title": "Reference",
+          "url": "https://example.com"
+        }
+      ]
+    }
+  ],
+  "repertoires": [
+    {
+      "id": "set",
+      "title": "Set",
+      "songIds": [
+        "song"
+      ]
+    }
+  ]
+}

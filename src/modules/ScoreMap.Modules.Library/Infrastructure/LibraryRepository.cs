@@ -17,12 +17,13 @@ internal sealed partial class LibraryRepository(NpgsqlDataSource dataSource) : I
             SELECT pg_advisory_xact_lock(1458674261);
             CREATE TABLE IF NOT EXISTS sm_schema(id smallint PRIMARY KEY CHECK(id=1), version integer NOT NULL);
             INSERT INTO sm_schema(id,version) VALUES(1,1) ON CONFLICT DO NOTHING;
-            DO $$ BEGIN IF EXISTS(SELECT 1 FROM sm_schema WHERE version<>1) THEN RAISE EXCEPTION 'Unsupported ScoreMap storage schema; preserve the database and use a compatible build.'; END IF; END $$;
+            DO $$ BEGIN IF EXISTS(SELECT 1 FROM sm_schema WHERE version NOT IN (1,2)) THEN RAISE EXCEPTION 'Unsupported ScoreMap storage schema; preserve the database and use a compatible build.'; END IF; END $$;
             CREATE TABLE IF NOT EXISTS sm_libraries(principal text PRIMARY KEY, revision bigint NOT NULL DEFAULT 0, repertoires jsonb NOT NULL DEFAULT '[]');
             ALTER TABLE sm_libraries ADD COLUMN IF NOT EXISTS song_order text[] NOT NULL DEFAULT '{}';
             CREATE TABLE IF NOT EXISTS sm_songs(id text PRIMARY KEY, owner text NOT NULL, revision bigint NOT NULL, content jsonb, deleted boolean NOT NULL DEFAULT false, purged boolean NOT NULL DEFAULT false);
             CREATE TABLE IF NOT EXISTS sm_grants(song text NOT NULL REFERENCES sm_songs(id), principal text NOT NULL, role text NOT NULL CHECK(role IN ('editor','viewer')), PRIMARY KEY(song,principal));
             CREATE TABLE IF NOT EXISTS sm_history(song text NOT NULL REFERENCES sm_songs(id), revision bigint NOT NULL, content jsonb NOT NULL, deleted boolean NOT NULL, created_at timestamptz NOT NULL DEFAULT now(), PRIMARY KEY(song,revision));
+            CREATE TABLE IF NOT EXISTS sm_migrations(song text NOT NULL REFERENCES sm_songs(id),from_revision bigint NOT NULL,to_revision bigint NOT NULL,mapping jsonb NOT NULL,PRIMARY KEY(song,to_revision));
             CREATE TABLE IF NOT EXISTS sm_receipts(principal text NOT NULL, command uuid NOT NULL, hash text NOT NULL, response jsonb NOT NULL, PRIMARY KEY(principal,command));
             CREATE TABLE IF NOT EXISTS sm_sessions(id text PRIMARY KEY, ticket bytea NOT NULL, expires timestamptz NOT NULL);
             CREATE TABLE IF NOT EXISTS sm_notation(principal text PRIMARY KEY,revision bigint NOT NULL,mode text NOT NULL CHECK(mode IN ('anglo','latin','dual')),primary_notation text NOT NULL CHECK(primary_notation IN ('anglo','latin')),CHECK(mode='dual' OR mode=primary_notation));
@@ -101,7 +102,7 @@ internal sealed partial class LibraryRepository(NpgsqlDataSource dataSource) : I
     var visibleRepertoires = repertoires.EnumerateArray().Select(r => new { id = r.GetProperty("id").GetString(), title = r.GetProperty("title").GetString(), songIds = r.GetProperty("songIds").EnumerateArray().Select(i => i.GetString()!).Where(versions.ContainsKey).ToArray() });
     var positions = order.Select((id, index) => (id, index)).ToDictionary(p => p.id, p => p.index, StringComparer.Ordinal);
     var ordered = songs.OrderBy(song => positions.GetValueOrDefault(song.GetProperty("id").GetString()!, int.MaxValue)).ToArray();
-    return new LibraryView(JsonSerializer.SerializeToElement(new { schemaVersion = 1, revision, songs = ordered, repertoires = visibleRepertoires }), versions, capabilities);
+    return new LibraryView(JsonSerializer.SerializeToElement(new { schemaVersion = ordered.Any(LibraryDocument.IsRichSong) ? 2 : 1, revision, songs = ordered, repertoires = visibleRepertoires }), versions, capabilities);
   }
   public async Task<LibraryView> Commit(string principal, LibraryDocument document, CommitLibrary request, CancellationToken cancellationToken)
   {
@@ -124,7 +125,14 @@ internal sealed partial class LibraryRepository(NpgsqlDataSource dataSource) : I
       var previous = current.Library.GetProperty("songs").EnumerateArray().ToDictionary(s => s.GetProperty("id").GetString()!, StringComparer.Ordinal);
       var proposed = document.Songs.ToDictionary(s => s.GetProperty("id").GetString()!, StringComparer.Ordinal);
       if (request.Import && previous.Any(p => !proposed.TryGetValue(p.Key, out var retained) || !JsonElement.DeepEquals(p.Value, retained))) throw new RevisionConflictException("Import cannot replace existing private songs. Import explicitly confirmed new copies instead.");
-      await SaveSongs(connection, principal, current, request, previous, proposed, cancellationToken).ConfigureAwait(false);
+      var migrationSources = new Dictionary<string, JsonElement>(StringComparer.Ordinal);
+      if (request.Import)
+      {
+        var migrated = ScoreMigration.Import(document, previous); document = migrated.Document; migrationSources = migrated.Sources;
+        proposed = document.Songs.ToDictionary(s => s.GetProperty("id").GetString()!, StringComparer.Ordinal);
+      }
+      await SaveSongs(connection, principal, current, request, previous, proposed, migrationSources, cancellationToken).ConfigureAwait(false);
+      if (proposed.Values.Any(LibraryDocument.IsRichSong)) await Execute(connection, "UPDATE sm_schema SET version=2 WHERE id=1", cancellationToken).ConfigureAwait(false);
       foreach (var (id, song) in previous.Where(p => !proposed.ContainsKey(p.Key)))
         await DeleteSong(connection, principal, id, song, current, request, cancellationToken).ConfigureAwait(false);
       await Execute(connection, "UPDATE sm_libraries SET revision=revision+1,repertoires=$2::jsonb,song_order=$3 WHERE principal=$1", cancellationToken, principal, document.Value.GetProperty("repertoires").GetRawText(), document.Songs.Select(song => song.GetProperty("id").GetString()!).ToArray()).ConfigureAwait(false);
@@ -192,7 +200,7 @@ internal sealed partial class LibraryRepository(NpgsqlDataSource dataSource) : I
     return current;
   }
 
-  private static async Task SaveSongs(NpgsqlConnection connection, string principal, LibraryView current, CommitLibrary request, Dictionary<string, JsonElement> previous, IReadOnlyDictionary<string, JsonElement> proposed, CancellationToken cancellationToken)
+  private static async Task SaveSongs(NpgsqlConnection connection, string principal, LibraryView current, CommitLibrary request, Dictionary<string, JsonElement> previous, IReadOnlyDictionary<string, JsonElement> proposed, Dictionary<string, JsonElement> migrationSources, CancellationToken cancellationToken)
   {
     foreach (var (id, song) in proposed)
     {
@@ -212,6 +220,7 @@ internal sealed partial class LibraryRepository(NpgsqlDataSource dataSource) : I
         version = 1;
         await Execute(connection, "INSERT INTO sm_songs(id,owner,revision,content) VALUES($1,$2,1,$3::jsonb)", cancellationToken, id, principal, song.GetRawText()).ConfigureAwait(false);
       }
+      await RetainMigration(connection, id, version, song, previous.GetValueOrDefault(id), migrationSources.GetValueOrDefault(id), cancellationToken).ConfigureAwait(false);
       await Execute(connection, "INSERT INTO sm_history(song,revision,content,deleted) VALUES($1,$2,$3::jsonb,false)", cancellationToken, id, version, song.GetRawText()).ConfigureAwait(false);
     }
   }

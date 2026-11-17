@@ -1,3 +1,5 @@
+import { harmonyCatalogue, type ChordQuality } from "./catalogue";
+import { assertHarmony } from "./harmony";
 export type Notation = {
   mode: "anglo" | "latin" | "dual";
   primary: "anglo" | "latin";
@@ -41,40 +43,7 @@ const latin: Record<string, string> = {
   A: "La",
   B: "Si",
 };
-const suffixes: Record<string, string> = {
-  major: "",
-  minor: "m",
-  diminished: "dim",
-  augmented: "aug",
-  "suspended-second": "sus2",
-  "suspended-fourth": "sus4",
-  fifth: "5",
-  "major-sixth": "6",
-  "minor-sixth": "m6",
-  "major-sixth-ninth": "6/9",
-  "minor-sixth-ninth": "m6/9",
-  "dominant-seventh": "7",
-  "major-seventh": "maj7",
-  "minor-seventh": "m7",
-  "half-diminished-seventh": "m7b5",
-  "diminished-seventh": "dim7",
-  "minor-major-seventh": "mMaj7",
-  "augmented-seventh": "aug7",
-  "augmented-major-seventh": "augMaj7",
-  "suspended-second-seventh": "7sus2",
-  "suspended-fourth-seventh": "7sus4",
-  "dominant-ninth": "9",
-  "major-ninth": "maj9",
-  "minor-ninth": "m9",
-  "dominant-eleventh": "11",
-  "major-eleventh": "maj11",
-  "minor-eleventh": "m11",
-  "dominant-thirteenth": "13",
-  "major-thirteenth": "maj13",
-  "minor-thirteenth": "m13",
-  "major-added-ninth": "add9",
-  "minor-added-ninth": "madd9",
-};
+
 function note(value: string, mode: "anglo" | "latin", ascii: boolean) {
   const parsed = /^([A-G])((?:#+|b+)?)(-?\d+)?$/u.exec(value);
   if (!parsed) throw new Error("Unsupported spelled note.");
@@ -105,15 +74,40 @@ export function formatNote(
   return representations((mode) => note(value, mode, ascii), preference);
 }
 export function formatChordSymbol(
-  chord: { root: string; quality: string; bass?: string },
+  chord: {
+    root: string;
+    quality: string;
+    bass?: string;
+    alterations?: string[];
+  },
   preference: Notation = defaultNotation,
 ) {
-  if (!Object.hasOwn(suffixes, chord.quality))
+  if (!Object.hasOwn(harmonyCatalogue, chord.quality))
     throw new Error("Unsupported chord quality.");
+  const identity = {
+    root: chord.root,
+    quality: chord.quality,
+    ...(chord.bass !== undefined ? { bass: chord.bass } : {}),
+    ...(chord.alterations !== undefined
+      ? { alterations: chord.alterations }
+      : {}),
+  };
+  assertHarmony(identity);
+  const suffix =
+    harmonyCatalogue[chord.quality as ChordQuality].symbol +
+    ((chord.alterations?.length ?? 0) > 0
+      ? "(" +
+        chord
+          .alterations!.map((alteration) =>
+            alteration.replace("b", "♭").replace("#", "♯"),
+          )
+          .join(",") +
+        ")"
+      : "");
   return representations(
     (mode) =>
       note(chord.root, mode, false) +
-      suffixes[chord.quality] +
+      suffix +
       (chord.bass ? "/" + note(chord.bass, mode, false) : ""),
     preference,
   );

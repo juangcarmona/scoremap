@@ -1,51 +1,26 @@
-import { assertChord, type Chord } from "../../shared/music/chord";
+import type { HarmonyIdentity } from "../../shared/music/harmony";
+import { harmonyIdentity } from "../../shared/music/harmony";
+import { theoreticalHarmony } from "../../shared/music/theory";
 import { formatChordSymbol, type Notation } from "../../shared/music/notation";
-const naturals: Record<string, number> = {
-  C: 0,
-  D: 2,
-  E: 4,
-  F: 5,
-  G: 7,
-  A: 9,
-  B: 11,
-};
 const names = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 export function pitchClass(root: string): number {
-  assertChord({ root, quality: "major" });
-  return (
-    (naturals[root[0]!]! +
-      (root[1] === "#" ? 1 : root[1] === "b" ? -1 : 0) +
-      12) %
-    12
+  return theoreticalHarmony({ root, quality: "major" }).tones[0]!.pitchClass;
+}
+export function chordNotes(chord: HarmonyIdentity): number[] {
+  return theoreticalHarmony(harmonyIdentity(chord)).tones.map(
+    (tone) => tone.pitchClass,
   );
 }
-export function chordNotes(chord: Chord): number[] {
-  assertChord(chord);
-  const root = pitchClass(chord.root);
-  return [0, chord.quality === "major" ? 4 : 3, 7].map((n) => (root + n) % 12);
+export function chordLabel(
+  chord: HarmonyIdentity,
+  notation?: Notation,
+): string {
+  return formatChordSymbol(harmonyIdentity(chord), notation);
 }
-export function chordLabel(chord: Chord, notation?: Notation): string {
-  assertChord(chord);
-  return formatChordSymbol(chord, notation);
-}
-export function spelledChordNotes(chord: Chord): string[] {
-  assertChord(chord);
-  const letters = ["C", "D", "E", "F", "G", "A", "B"];
-  const index = letters.indexOf(chord.root[0]!);
-  const root =
-    naturals[chord.root[0]!]! +
-    (chord.root[1] === "#" ? 1 : chord.root[1] === "b" ? -1 : 0);
-  return [0, 2, 4].map((step, i) => {
-    const position = index + step;
-    const letter = letters[position % 7]!;
-    const expected = root + [0, chord.quality === "minor" ? 3 : 4, 7][i]!;
-    const accidental =
-      expected - (naturals[letter]! + (position >= 7 ? 12 : 0));
-    return (
-      letter +
-      (accidental < 0 ? "b".repeat(-accidental) : "#".repeat(accidental))
-    );
-  });
+export function spelledChordNotes(chord: HarmonyIdentity): string[] {
+  return theoreticalHarmony(harmonyIdentity(chord)).tones.map(
+    (tone) => tone.spelling,
+  );
 }
 export type PianoKey = {
   midi: number;

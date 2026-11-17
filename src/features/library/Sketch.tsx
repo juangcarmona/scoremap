@@ -1,5 +1,16 @@
+import { isRichSection, isRichSong } from "./score";
+import { RichHarmonyEditor } from "./RichHarmonyEditor";
+import { sectionRemovalImpact } from "./scoreCommands";
+import type { HarmonyIdentity } from "../../shared/music/harmony";
 import { useState } from "react";
-import type { Chord, Command, Mode, Section, Song } from "./domain";
+import type {
+  Chord,
+  Command,
+  Mode,
+  Section,
+  LegacySection,
+  Song,
+} from "./domain";
 import { useNotation } from "../../shared/music/NotationContext";
 import { formatNote } from "../../shared/music/notation";
 import { Piano } from "../sketch/Piano";
@@ -35,13 +46,41 @@ type Props = {
   execute: (command: Command) => Promise<void>;
   report: (error: unknown) => void;
 };
-function ChordEditor({
+function ChordEditor(props: {
+  section: Section;
+  song: Song;
+  songId: string;
+  execute: Props["execute"];
+  report: Props["report"];
+}) {
+  if (isRichSection(props.section)) {
+    if (!isRichSong(props.song))
+      throw new Error("Identified harmony requires its upgraded song.");
+    return (
+      <RichHarmonyEditor
+        section={props.section}
+        song={props.song}
+        execute={props.execute}
+        report={props.report}
+      />
+    );
+  }
+  return (
+    <LegacyChordEditor
+      section={props.section}
+      songId={props.songId}
+      execute={props.execute}
+      report={props.report}
+    />
+  );
+}
+function LegacyChordEditor({
   section,
   songId,
   execute,
   report,
 }: {
-  section: Section;
+  section: LegacySection;
   songId: string;
   execute: Props["execute"];
   report: Props["report"];
@@ -152,12 +191,17 @@ export function Sketch({
   const [selection, setSelection] = useState<{
     sectionId: string;
     index: number;
+    eventId?: string;
   } | null>(null);
   const [notesOpen, setNotesOpen] = useState(false);
+  const selectedSection = song.sections.find(
+    (s) => s.id === selection?.sectionId,
+  );
   const chosen =
-    song.sections.find((s) => s.id === selection?.sectionId)?.chords[
-      selection?.index ?? -1
-    ] ?? song.sections.flatMap((s) => s.chords)[0];
+    (selectedSection && isRichSection(selectedSection)
+      ? selectedSection.chords.find((event) => event.id === selection?.eventId)
+      : selectedSection?.chords[selection?.index ?? -1]) ??
+    song.sections.flatMap<HarmonyIdentity>((s) => s.chords)[0];
   const edit = mode === "edit";
   function move(sectionId: string, direction: number) {
     const order = song.sections.map((s) => s.id);
@@ -279,15 +323,19 @@ export function Sketch({
                       type="button"
                       aria-label={`Remove ${section.name}`}
                       onClick={() => {
+                        const impact = isRichSong(song)
+                          ? sectionRemovalImpact(song, section.id)
+                          : undefined;
                         if (
                           window.confirm(
-                            `Remove ${section.name} and its chords and notes?`,
+                            `Remove ${section.name} and its chords and notes?${impact ? ` This also removes ${impact.notes.length} performed notes and ${impact.voicings.length} voicings across arrangements, reconciles ${impact.bindings.length} assignments and unlinks ${impact.ties.length} ties.` : ""}`,
                           )
                         )
                           void execute({
                             type: "removeSection",
                             songId: song.id,
                             sectionId: section.id,
+                            ...(impact ? { reconciliation: impact } : {}),
                           }).catch(report);
                       }}
                     >
@@ -303,14 +351,20 @@ export function Sketch({
                 {section.chords.map((chord, i) => (
                   <button
                     type="button"
-                    key={i}
+                    key={"id" in chord ? chord.id : i}
                     aria-label={`${section.name} chord ${i + 1}: ${chordLabel(chord, preference)}`}
                     aria-pressed={
                       selection?.sectionId === section.id &&
-                      selection.index === i
+                      ("id" in chord
+                        ? selection.eventId === chord.id
+                        : selection.index === i)
                     }
                     onClick={() =>
-                      setSelection({ sectionId: section.id, index: i })
+                      setSelection({
+                        sectionId: section.id,
+                        index: i,
+                        ...("id" in chord ? { eventId: chord.id } : {}),
+                      })
                     }
                   >
                     {chordLabel(chord, preference)}
@@ -366,6 +420,7 @@ export function Sketch({
                     <button type="submit">Save section</button>
                   </form>
                   <ChordEditor
+                    song={song}
                     section={section}
                     songId={song.id}
                     execute={execute}

@@ -1,0 +1,458 @@
+{
+  "version": 1,
+  "sourceId": "BR-CHORDS",
+  "sourceDigest": "sha256:543566a20181aa25eab6cc446d8ac467b1ca911632744dd957a0ab3388e9d55c",
+  "qualities": [
+    {
+      "id": "major",
+      "degrees": [
+        "1",
+        "3",
+        "5"
+      ],
+      "aliases": [
+        "",
+        "maj",
+        "M"
+      ],
+      "symbol": ""
+    },
+    {
+      "id": "minor",
+      "degrees": [
+        "1",
+        "b3",
+        "5"
+      ],
+      "aliases": [
+        "m",
+        "min",
+        "-"
+      ],
+      "symbol": "m"
+    },
+    {
+      "id": "diminished",
+      "degrees": [
+        "1",
+        "b3",
+        "b5"
+      ],
+      "aliases": [
+        "dim",
+        "°"
+      ],
+      "symbol": "dim"
+    },
+    {
+      "id": "augmented",
+      "degrees": [
+        "1",
+        "3",
+        "#5"
+      ],
+      "aliases": [
+        "aug",
+        "+"
+      ],
+      "symbol": "aug"
+    },
+    {
+      "id": "suspended-second",
+      "degrees": [
+        "1",
+        "2",
+        "5"
+      ],
+      "aliases": [
+        "sus2"
+      ],
+      "symbol": "sus2"
+    },
+    {
+      "id": "suspended-fourth",
+      "degrees": [
+        "1",
+        "4",
+        "5"
+      ],
+      "aliases": [
+        "sus4",
+        "sus"
+      ],
+      "symbol": "sus4"
+    },
+    {
+      "id": "fifth",
+      "degrees": [
+        "1",
+        "5"
+      ],
+      "aliases": [
+        "5"
+      ],
+      "symbol": "5"
+    },
+    {
+      "id": "major-sixth",
+      "degrees": [
+        "1",
+        "3",
+        "5",
+        "6"
+      ],
+      "aliases": [
+        "6",
+        "maj6"
+      ],
+      "symbol": "6"
+    },
+    {
+      "id": "minor-sixth",
+      "degrees": [
+        "1",
+        "b3",
+        "5",
+        "6"
+      ],
+      "aliases": [
+        "m6"
+      ],
+      "symbol": "m6"
+    },
+    {
+      "id": "major-sixth-ninth",
+      "degrees": [
+        "1",
+        "3",
+        "5",
+        "6",
+        "9"
+      ],
+      "aliases": [
+        "6/9",
+        "69"
+      ],
+      "symbol": "6/9"
+    },
+    {
+      "id": "minor-sixth-ninth",
+      "degrees": [
+        "1",
+        "b3",
+        "5",
+        "6",
+        "9"
+      ],
+      "aliases": [
+        "m6/9",
+        "m69"
+      ],
+      "symbol": "m6/9"
+    },
+    {
+      "id": "dominant-seventh",
+      "degrees": [
+        "1",
+        "3",
+        "5",
+        "b7"
+      ],
+      "aliases": [
+        "7"
+      ],
+      "symbol": "7"
+    },
+    {
+      "id": "major-seventh",
+      "degrees": [
+        "1",
+        "3",
+        "5",
+        "7"
+      ],
+      "aliases": [
+        "maj7",
+        "M7",
+        "Δ7"
+      ],
+      "symbol": "maj7"
+    },
+    {
+      "id": "minor-seventh",
+      "degrees": [
+        "1",
+        "b3",
+        "5",
+        "b7"
+      ],
+      "aliases": [
+        "m7",
+        "min7"
+      ],
+      "symbol": "m7"
+    },
+    {
+      "id": "half-diminished-seventh",
+      "degrees": [
+        "1",
+        "b3",
+        "b5",
+        "b7"
+      ],
+      "aliases": [
+        "m7b5",
+        "ø7"
+      ],
+      "symbol": "m7b5"
+    },
+    {
+      "id": "diminished-seventh",
+      "degrees": [
+        "1",
+        "b3",
+        "b5",
+        "bb7"
+      ],
+      "aliases": [
+        "dim7",
+        "°7"
+      ],
+      "symbol": "dim7"
+    },
+    {
+      "id": "minor-major-seventh",
+      "degrees": [
+        "1",
+        "b3",
+        "5",
+        "7"
+      ],
+      "aliases": [
+        "mMaj7",
+        "mM7"
+      ],
+      "symbol": "mMaj7"
+    },
+    {
+      "id": "augmented-seventh",
+      "degrees": [
+        "1",
+        "3",
+        "#5",
+        "b7"
+      ],
+      "aliases": [
+        "aug7",
+        "+7"
+      ],
+      "symbol": "aug7"
+    },
+    {
+      "id": "augmented-major-seventh",
+      "degrees": [
+        "1",
+        "3",
+        "#5",
+        "7"
+      ],
+      "aliases": [
+        "augMaj7",
+        "+maj7"
+      ],
+      "symbol": "augMaj7"
+    },
+    {
+      "id": "suspended-second-seventh",
+      "degrees": [
+        "1",
+        "2",
+        "5",
+        "b7"
+      ],
+      "aliases": [
+        "7sus2"
+      ],
+      "symbol": "7sus2"
+    },
+    {
+      "id": "suspended-fourth-seventh",
+      "degrees": [
+        "1",
+        "4",
+        "5",
+        "b7"
+      ],
+      "aliases": [
+        "7sus4",
+        "7sus"
+      ],
+      "symbol": "7sus4"
+    },
+    {
+      "id": "dominant-ninth",
+      "degrees": [
+        "1",
+        "3",
+        "5",
+        "b7",
+        "9"
+      ],
+      "aliases": [
+        "9"
+      ],
+      "symbol": "9"
+    },
+    {
+      "id": "major-ninth",
+      "degrees": [
+        "1",
+        "3",
+        "5",
+        "7",
+        "9"
+      ],
+      "aliases": [
+        "maj9",
+        "M9"
+      ],
+      "symbol": "maj9"
+    },
+    {
+      "id": "minor-ninth",
+      "degrees": [
+        "1",
+        "b3",
+        "5",
+        "b7",
+        "9"
+      ],
+      "aliases": [
+        "m9"
+      ],
+      "symbol": "m9"
+    },
+    {
+      "id": "dominant-eleventh",
+      "degrees": [
+        "1",
+        "3",
+        "5",
+        "b7",
+        "9",
+        "11"
+      ],
+      "aliases": [
+        "11"
+      ],
+      "symbol": "11"
+    },
+    {
+      "id": "major-eleventh",
+      "degrees": [
+        "1",
+        "3",
+        "5",
+        "7",
+        "9",
+        "11"
+      ],
+      "aliases": [
+        "maj11",
+        "M11"
+      ],
+      "symbol": "maj11"
+    },
+    {
+      "id": "minor-eleventh",
+      "degrees": [
+        "1",
+        "b3",
+        "5",
+        "b7",
+        "9",
+        "11"
+      ],
+      "aliases": [
+        "m11"
+      ],
+      "symbol": "m11"
+    },
+    {
+      "id": "dominant-thirteenth",
+      "degrees": [
+        "1",
+        "3",
+        "5",
+        "b7",
+        "9",
+        "11",
+        "13"
+      ],
+      "aliases": [
+        "13"
+      ],
+      "symbol": "13"
+    },
+    {
+      "id": "major-thirteenth",
+      "degrees": [
+        "1",
+        "3",
+        "5",
+        "7",
+        "9",
+        "11",
+        "13"
+      ],
+      "aliases": [
+        "maj13",
+        "M13"
+      ],
+      "symbol": "maj13"
+    },
+    {
+      "id": "minor-thirteenth",
+      "degrees": [
+        "1",
+        "b3",
+        "5",
+        "b7",
+        "9",
+        "11",
+        "13"
+      ],
+      "aliases": [
+        "m13"
+      ],
+      "symbol": "m13"
+    },
+    {
+      "id": "major-added-ninth",
+      "degrees": [
+        "1",
+        "3",
+        "5",
+        "9"
+      ],
+      "aliases": [
+        "add9"
+      ],
+      "symbol": "add9"
+    },
+    {
+      "id": "minor-added-ninth",
+      "degrees": [
+        "1",
+        "b3",
+        "5",
+        "9"
+      ],
+      "aliases": [
+        "madd9",
+        "m(add9)"
+      ],
+      "symbol": "madd9"
+    }
+  ]
+}

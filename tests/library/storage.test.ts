@@ -2,6 +2,9 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { openDB, deleteDB } from "idb";
 import { IndexedLibraryStore } from "../../src/features/library/storage";
 import { applyCommand, emptyLibrary } from "../../src/features/library/domain";
+import legacy from "../fixtures/library-v1.json";
+import expected from "../fixtures/library-v1-migrated.json";
+import { validateLibrary } from "../../src/features/library/domain";
 const stores: IndexedLibraryStore[] = [];
 const names: string[] = [];
 function store(name = crypto.randomUUID()) {
@@ -16,6 +19,52 @@ afterEach(async () => {
   await Promise.all(names.splice(0).map((n) => deleteDB(n)));
 });
 describe("Atomic local persistence", () => {
+  it("atomically retains the exact imported original and deterministic mapping through browser reconnection", async () => {
+    const name = crypto.randomUUID();
+    const a = store(name);
+    const saved = await a.commit(validateLibrary(legacy), 0, "import");
+    expect(saved).toEqual({ ...expected, revision: 1 });
+    const b = store(name);
+    expect(await b.load()).toEqual(saved);
+    expect(await b.migrationSources()).toEqual([
+      { key: "migration-import-source:0", library: legacy },
+    ]);
+    expect(await b.commit(saved, 1, "import")).toEqual({
+      ...saved,
+      revision: 2,
+    });
+    expect((await b.load()).songs).toEqual(saved.songs);
+  });
+  it("aborts both source-copy and activation when storage fails after the original was staged", async () => {
+    const s = store();
+    const durable = await s.commit(emptyLibrary(), 0);
+    const original = IDBObjectStore.prototype.put;
+    const mock = vi
+      .spyOn(IDBObjectStore.prototype, "put")
+      .mockImplementationOnce(function (
+        this: IDBObjectStore,
+        ...args: Parameters<IDBObjectStore["put"]>
+      ) {
+        if (this.name === "library")
+          throw new DOMException(
+            "Interrupted activation",
+            "QuotaExceededError",
+          );
+        return original.apply(this, args);
+      });
+    await expect(
+      s.commit(validateLibrary(legacy), 1, "import"),
+    ).rejects.toThrow(/Interrupted/);
+    mock.mockRestore();
+    expect(await s.load()).toEqual(durable);
+    expect(await s.migrationSources()).toEqual([]);
+    expect(
+      (await s.commit(validateLibrary(legacy), 1, "import")).songs,
+    ).toEqual(expected.songs);
+    expect(await s.migrationSources()).toEqual([
+      { key: "migration-import-source:1", library: legacy },
+    ]);
+  });
   it("SB-PERSIST-RECOVER: a new connection recovers acknowledged identities and content", async () => {
     const name = crypto.randomUUID();
     const a = store(name);

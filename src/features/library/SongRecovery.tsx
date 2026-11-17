@@ -4,6 +4,8 @@ import type { Song } from "./domain";
 import type { PrivateLibraryStore } from "./privateStorage";
 import { useNotation } from "../../shared/music/NotationContext";
 import { formatChordSymbol } from "../../shared/music/notation";
+import { downloadText, exportBackup } from "./backup";
+import { isRichSong } from "./score";
 
 type RetainedSong = { id: string; title: string; revision: number };
 type Version = {
@@ -70,6 +72,22 @@ export function SongHistory({
           <h3>{version.content.title}</h3>
           {version.content.artist && <p>{version.content.artist}</p>}
           <p>{version.content.notes}</p>
+          <button
+            type="button"
+            onClick={() =>
+              downloadText(
+                exportBackup({
+                  schemaVersion: isRichSong(version.content) ? 2 : 1,
+                  revision: 0,
+                  songs: [version.content],
+                  repertoires: [],
+                }),
+                `scoremap-song-version-${version.revision}.json`,
+              )
+            }
+          >
+            Export version {version.revision}
+          </button>
           {version.content.sections.map((section) => (
             <div key={section.id}>
               <h4>

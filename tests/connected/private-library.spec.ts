@@ -1,6 +1,7 @@
 import { test, expect, type Page, type Browser } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { readFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
 import type { Library, Song } from "../../src/features/library/domain";
 const fixture = JSON.parse(
   await readFile(
@@ -170,8 +171,53 @@ test("real OIDC, current JSON import, atomic save and a clean second session", a
   ).toBeVisible();
   const imported = await (await api(page, "/api/library")).json();
   expect(imported.library.songs).toHaveLength(before.library.songs.length + 1);
+  const migrated = imported.library.songs.find(
+    (s: { id: string }) => s.id === id,
+  );
+  const derived = (key: string) =>
+    "sm-" +
+    createHash("sha256")
+      .update(`scoremap-v1\0${id.length}:${id}\0${key}\0${0}`)
+      .digest("hex");
+  expect(migrated).toMatchObject({
+    ...backup.library.songs[0],
+    schemaVersion: 2,
+    sections: [
+      {
+        ...backup.library.songs[0]!.sections[0],
+        measures: [
+          {
+            id: derived(`section/${sectionId}/measure/0`),
+            meter: { numerator: 4, denominator: 4 },
+            length: { n: 4, d: 1 },
+          },
+        ],
+        chords: [
+          {
+            root: "C",
+            quality: "major",
+            id: derived(`section/${sectionId}/event/0`),
+            measureId: derived(`section/${sectionId}/measure/0`),
+            start: { n: 0, d: 1 },
+            duration: { n: 1, d: 1 },
+          },
+        ],
+      },
+    ],
+    arrangements: [
+      {
+        id: derived("arrangement"),
+        parts: [{ id: derived("part"), events: [] }],
+        bindings: [],
+        voicings: [],
+        devices: [],
+      },
+    ],
+  });
+  const retained = await (await api(page, `/api/songs/${id}/history`)).json();
   expect(
-    imported.library.songs.find((s: { id: string }) => s.id === id),
+    retained.find((version: { revision: number }) => version.revision === 0)
+      .content,
   ).toEqual(backup.library.songs[0]);
   await page
     .getByText("Song details & personal notes", { exact: true })
@@ -1055,4 +1101,120 @@ test("account notation persists independently, ignores anonymous settings and re
     ).toBe(200);
     await Promise.all([owner.context.close(), other.context.close()]);
   }
+});
+
+test("versioned musical graph commits and reopens with exact pitches, scoped references, retained prior content and atomic refusals", async ({
+  browser,
+}) => {
+  const owner = await login(browser, "owner-a");
+  const source = JSON.parse(
+    await readFile("tests/fixtures/library-v2.json", "utf8"),
+  ) as Library;
+  const ids = new Map<string, string>();
+  const collect = (value: unknown): void => {
+    if (Array.isArray(value)) value.forEach(collect);
+    else if (value && typeof value === "object")
+      for (const [key, child] of Object.entries(value)) {
+        if (key === "sourcePreset") continue;
+        if (key === "id" && typeof child === "string")
+          ids.set(child, crypto.randomUUID());
+        else collect(child);
+      }
+  };
+  collect(source);
+  const remap = (value: unknown, key = ""): unknown => {
+    if (key === "sourcePreset") return value;
+    if (Array.isArray(value)) return value.map((child) => remap(child, key));
+    if (value && typeof value === "object")
+      return Object.fromEntries(
+        Object.entries(value).map(([name, child]) => [
+          name,
+          remap(child, name),
+        ]),
+      );
+    return typeof value === "string" &&
+      [
+        "id",
+        "measureId",
+        "voicingId",
+        "harmonyId",
+        "partId",
+        "deviceId",
+        "tieNextId",
+        "songIds",
+        "eventIds",
+      ].includes(key)
+      ? (ids.get(value) ?? value)
+      : value;
+  };
+  const candidate = remap(source) as Library;
+  const rich = candidate.songs[0]!;
+  if (!("arrangements" in rich)) throw new Error("Expected rich fixture");
+  // Migration provenance is a historical map, not a live dependency. Keep its source descriptors.
+  for (const key of Object.keys(rich.migration!.identities))
+    rich.migration!.identities[key] = ids.get(
+      rich.migration!.identities[key]!,
+    )!;
+  rich.title = `Synthetic musical contract ${rich.id.slice(0, 8)}`;
+  const saved = await saveView(owner.page, (library) => {
+    library.schemaVersion = 2;
+    library.songs.push(rich);
+  });
+  const acknowledged = saved.library.songs.find((s: Song) => s.id === rich.id);
+  expect(acknowledged).toEqual(rich);
+  const before = structuredClone(saved);
+  const changed = structuredClone(rich);
+  changed.arrangements[0]!.parts[1]!.events[1]!.pitch = {
+    spelling: "B",
+    octave: 5,
+    midi: 83,
+  };
+  const committed = await saveView(owner.page, (library) => {
+    library.songs[library.songs.findIndex((s) => s.id === rich.id)] = changed;
+  });
+  expect(committed.library.songs.find((s: Song) => s.id === rich.id)).toEqual(
+    changed,
+  );
+  expect(changed.sections).toEqual(rich.sections);
+  expect(changed.arrangements[1]).toEqual(rich.arrangements[1]);
+  const history = await (
+    await api(owner.page, `/api/songs/${rich.id}/history`)
+  ).json();
+  expect(
+    history.map((version: { revision: number }) => version.revision),
+  ).toEqual([2, 1]);
+  expect(history[1].content).toEqual(rich);
+  const failed = structuredClone(committed.library) as Library;
+  const invalid = failed.songs.find((s) => s.id === rich.id)!;
+  if (!("arrangements" in invalid)) throw new Error("Expected rich fixture");
+  invalid.arrangements[0]!.bindings[1]!.range = [60, 71];
+  const response = await api(owner.page, "/api/library", "PUT", {
+    library: failed,
+    expectedRevision: committed.library.revision,
+    versions: committed.versions,
+    mode: "edit",
+    commandId: crypto.randomUUID(),
+  });
+  expect(response.status()).toBe(400);
+  expect(await (await api(owner.page, "/api/library")).json()).toEqual(
+    committed,
+  );
+  expect(before.library.songs.find((s: Song) => s.id === rich.id)).toEqual(
+    rich,
+  );
+  const clean = await login(browser, "owner-a");
+  expect(
+    (await (await api(clean.page, "/api/library")).json()).library.songs.find(
+      (s: Song) => s.id === rich.id,
+    ),
+  ).toEqual(changed);
+  const stranger = await login(browser, "owner-b");
+  expect(
+    (await api(stranger.page, `/api/songs/${rich.id}/history`)).status(),
+  ).toBe(403);
+  await Promise.all([
+    owner.context.close(),
+    clean.context.close(),
+    stranger.context.close(),
+  ]);
 });

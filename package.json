@@ -43,6 +43,9 @@
   },
   "dependencies": {
     "@tanstack/react-query": "5.107.2",
+    "@tonaljs/chord-detect": "4.9.4",
+    "@tonaljs/chord-type": "5.2.2",
+    "@tonaljs/note": "4.12.4",
     "idb": "8.0.4",
     "pdfjs-dist": "6.5.438",
     "react": "19.3.1",
@@ -54,7 +57,7 @@
     "verify:architecture": "arcshape validate --docs docs/architecture --links --citations",
     "verify:baseline": "lighthouse verify && node scripts/lighthouse-guard.mjs verify",
     "verify:specs": "openspec validate --all --strict --no-interactive",
-    "verify": "npm run verify:product && npm run verify:citations && npm run verify:architecture && npm run verify:baseline && npm run verify:specs && npm run verify:backend && npm run verify:security && npm run verify:frontend-boundaries && npm run verify:app",
+    "verify": "npm run verify:product && npm run verify:citations && npm run verify:architecture && npm run verify:baseline && npm run verify:specs && npm run verify:music-catalogue && npm run verify:backend && npm run verify:security && npm run verify:frontend-boundaries && npm run verify:app",
     "dev": "vite --host 0.0.0.0",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
@@ -74,6 +77,7 @@
     "verify:security": "node scripts/verify-security.mjs",
     "verify:dotnet": "node node_modules/@juangcarmona/lighthouse/src/verify-dotnet.mjs && node scripts/verify-backend-boundaries.mjs",
     "verify:frontend-boundaries": "node scripts/verify-frontend-boundaries.mjs",
-    "build:container": "node scripts/build-container.mjs"
+    "build:container": "node scripts/build-container.mjs",
+    "verify:music-catalogue": "node scripts/harmony-catalogue.mjs"
   }
 }

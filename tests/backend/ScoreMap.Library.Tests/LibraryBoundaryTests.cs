@@ -8,7 +8,7 @@ namespace JuanGCarmona.ScoreMap.Tests;
 public sealed class LibraryBoundaryTests
 {
   [Theory]
-  [InlineData("{\"schemaVersion\":2,\"revision\":0,\"songs\":[],\"repertoires\":[]}")]
+  [InlineData("{\"schemaVersion\":3,\"revision\":0,\"songs\":[],\"repertoires\":[]}")]
   [InlineData("{\"schemaVersion\":1,\"revision\":-1,\"songs\":[],\"repertoires\":[]}")]
   [InlineData("{\"schemaVersion\":1,\"revision\":0,\"songs\":[],\"repertoires\":[],\"owner\":\"forged\"}")]
   [InlineData("{\"schemaVersion\":1,\"schemaVersion\":1,\"revision\":0,\"songs\":[],\"repertoires\":[]}")]

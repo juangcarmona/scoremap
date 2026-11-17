@@ -1,7 +1,18 @@
+import {
+  applyScoreCommand,
+  isScoreCommand,
+  reconcileSharedRemoval,
+  sectionRemovalImpact,
+  type ScoreCommand,
+  type Reconciliation,
+} from "./scoreCommands";
+import { isRichSong, type RichSection, type RichSong } from "./score";
+import { validateRichScore } from "./scoreValidation";
+import { requireValue, object, text, name, array } from "./validation";
 export type Mode = "edit" | "performance";
 import { assertChord, type Chord } from "../../shared/music/chord";
 export { assertChord, type Chord };
-export type Section = {
+export type LegacySection = {
   id: string;
   name: string;
   repeat: number;
@@ -16,18 +27,20 @@ export type PdfAttachment = {
   pages: number;
   page: number;
 };
-export type Song = {
+export type LegacySong = {
   id: string;
   title: string;
   artist: string;
   notes: string;
-  sections: Section[];
+  sections: LegacySection[];
   references: Reference[];
   pdf?: PdfAttachment;
 };
+export type Section = LegacySection | RichSection;
+export type Song = LegacySong | RichSong;
 export type Repertoire = { id: string; title: string; songIds: string[] };
 export type Library = {
-  schemaVersion: 1;
+  schemaVersion: 1 | 2;
   revision: number;
   songs: Song[];
   repertoires: Repertoire[];
@@ -39,35 +52,6 @@ export const emptyLibrary = (): Library => ({
   repertoires: [],
 });
 
-function requireValue(condition: unknown, message: string): asserts condition {
-  if (!condition) throw new Error(message);
-}
-function object(
-  value: unknown,
-  keys: string[],
-  optional: string[] = [],
-): asserts value is Record<string, unknown> {
-  requireValue(
-    typeof value === "object" && value !== null && !Array.isArray(value),
-    "Expected an object.",
-  );
-  const actual = Object.keys(value);
-  requireValue(
-    keys.every((k) => actual.includes(k)) &&
-      actual.every((k) => keys.includes(k) || optional.includes(k)),
-    "Missing or unexpected data fields.",
-  );
-}
-function text(value: unknown): asserts value is string {
-  requireValue(typeof value === "string", "Expected text.");
-}
-function name(value: unknown): asserts value is string {
-  text(value);
-  requireValue(value.trim().length > 0, "A name or title is required.");
-}
-function array(value: unknown): asserts value is unknown[] {
-  requireValue(Array.isArray(value), "Expected a list.");
-}
 export function assertWebUrl(value: unknown): asserts value is string {
   text(value);
   let url: URL;
@@ -84,7 +68,7 @@ export function assertWebUrl(value: unknown): asserts value is string {
 export function validateLibrary(value: unknown): Library {
   object(value, ["schemaVersion", "revision", "songs", "repertoires"]);
   requireValue(
-    value.schemaVersion === 1,
+    value.schemaVersion === 1 || value.schemaVersion === 2,
     "This library version is unsupported. Keep the original data and use a compatible ScoreMap version.",
   );
   requireValue(
@@ -101,10 +85,27 @@ export function validateLibrary(value: unknown): Library {
   }
   const songIds = new Set<string>();
   for (const song of value.songs) {
+    const rich =
+      typeof song === "object" &&
+      song !== null &&
+      "schemaVersion" in song &&
+      song.schemaVersion === 2;
     object(
       song,
-      ["id", "title", "artist", "notes", "sections", "references"],
-      ["pdf"],
+      [
+        "id",
+        "title",
+        "artist",
+        "notes",
+        "sections",
+        "references",
+        ...(rich ? ["schemaVersion", "arrangements"] : []),
+      ],
+      ["pdf", ...(rich ? ["migration"] : [])],
+    );
+    requireValue(
+      !rich || value.schemaVersion === 2,
+      "An identified arrangement needs the version-2 library envelope.",
     );
     identity(song.id);
     songIds.add(song.id as string);
@@ -114,7 +115,14 @@ export function validateLibrary(value: unknown): Library {
     array(song.sections);
     array(song.references);
     for (const section of song.sections) {
-      object(section, ["id", "name", "repeat", "chords", "notes"]);
+      object(section, [
+        "id",
+        "name",
+        "repeat",
+        "chords",
+        "notes",
+        ...(rich ? ["measures"] : []),
+      ]);
       identity(section.id);
       name(section.name);
       text(section.notes);
@@ -125,8 +133,9 @@ export function validateLibrary(value: unknown): Library {
         "Repetitions must be a whole number from 1 to 99.",
       );
       array(section.chords);
-      section.chords.forEach(assertChord);
+      if (!rich) section.chords.forEach(assertChord);
     }
+    if (rich) validateRichScore(song, identity);
     for (const ref of song.references) {
       object(ref, ["id", "title", "url"]);
       identity(ref.id);
@@ -179,6 +188,7 @@ export function requireEdit(mode: Mode) {
   );
 }
 export type Command =
+  | ScoreCommand
   | { type: "createSong"; id: string; title: string }
   | {
       type: "updateSong";
@@ -199,9 +209,16 @@ export type Command =
       type: "updateSection";
       songId: string;
       sectionId: string;
-      patch: Partial<Pick<Section, "name" | "repeat" | "chords" | "notes">>;
+      patch: Partial<
+        Pick<LegacySection, "name" | "repeat" | "chords" | "notes">
+      >;
     }
-  | { type: "removeSection"; songId: string; sectionId: string }
+  | {
+      type: "removeSection";
+      songId: string;
+      sectionId: string;
+      reconciliation?: Reconciliation;
+    }
   | { type: "reorderSections"; songId: string; order: string[] }
   | { type: "addReference"; songId: string; reference: Reference }
   | { type: "removeReference"; songId: string; referenceId: string }
@@ -221,6 +238,11 @@ export function applyCommand(
       ? next.songs.find((s) => s.id === command.songId)
       : undefined;
   if ("songId" in command) requireValue(song, "The song no longer exists.");
+  if (isScoreCommand(command)) {
+    requireValue(song, "The song no longer exists.");
+    applyScoreCommand(next, song, command);
+    return validateLibrary(next);
+  }
   const rep =
     "repertoireId" in command
       ? next.repertoires.find((r) => r.id === command.repertoireId)
@@ -287,15 +309,20 @@ export function applyCommand(
       );
       rep!.songIds = rep!.songIds.filter((id) => id !== command.songId);
       break;
-    case "insertSection":
-      song!.sections.push({
+    case "insertSection": {
+      const target = song!;
+      const created = {
         id: command.id,
         name: command.name.trim(),
         repeat: 1,
         chords: [],
         notes: "",
-      });
+      };
+      if (isRichSong(target))
+        target.sections.push({ ...created, measures: [] });
+      else target.sections.push(created);
       break;
+    }
     case "updateSection":
       requireValue(
         Object.keys(command.patch).every((k) =>
@@ -303,13 +330,30 @@ export function applyCommand(
         ),
         "Invalid section update.",
       );
+      requireValue(
+        !isRichSong(song!) || command.patch.chords === undefined,
+        "Edit identified harmonic events through their own commands.",
+      );
       Object.assign(section!, command.patch);
       break;
     case "removeSection":
-      song!.sections = song!.sections.filter((s) => s.id !== command.sectionId);
+      if (isRichSong(song!)) {
+        const target = song! as RichSong;
+        reconcileSharedRemoval(
+          target,
+          sectionRemovalImpact(target, command.sectionId),
+          command.reconciliation,
+        );
+      }
+      song!.sections.splice(
+        song!.sections.findIndex((s) => s.id === command.sectionId),
+        1,
+      );
       break;
     case "reorderSections": {
-      const map = new Map(song!.sections.map((s) => [s.id, s]));
+      const map = new Map<string, Section>(
+        song!.sections.map((s) => [s.id, s]),
+      );
       requireValue(
         map.size >= 2,
         "At least two sections are needed to reorder a song.",
@@ -320,7 +364,15 @@ export function applyCommand(
           command.order.every((id) => map.has(id)),
         "The section order must contain every section exactly once.",
       );
-      song!.sections = command.order.map((id) => map.get(id)!);
+      const target = song!;
+      if (isRichSong(target))
+        target.sections = command.order.map(
+          (id) => map.get(id)! as RichSection,
+        );
+      else
+        target.sections = command.order.map(
+          (id) => map.get(id)! as LegacySection,
+        );
       break;
     }
     case "addReference":

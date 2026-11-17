@@ -16,6 +16,9 @@ export class LibrarySession {
   whenIdle() {
     return this.queue;
   }
+  migrationSources() {
+    return this.store.migrationSources?.() ?? Promise.resolve([]);
+  }
   private queue: Promise<unknown> = Promise.resolve();
   constructor(
     private store: LibraryStore,

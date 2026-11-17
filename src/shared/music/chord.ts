@@ -9,7 +9,11 @@ export function assertChord(value: unknown): asserts value is Chord {
     !Object.hasOwn(chord, "quality")
   )
     throw new Error("Missing or unexpected data fields.");
-  if (typeof chord.root !== "string" || !/^[A-G][#b]?$/.test(chord.root))
+  if (
+    typeof chord.root !== "string" ||
+    chord.root !== chord.root.trim() ||
+    !/^[A-G][#b]?$/.test(chord.root)
+  )
     throw new Error(
       "Choose a root from A to G with an optional sharp or flat.",
     );

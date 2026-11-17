@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
  <PropertyGroup><IsTestProject>true</IsTestProject></PropertyGroup>
  <ItemGroup>
+  <None Include="../../fixtures/library-*.json" Link="fixtures/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
   <PackageReference Include="Microsoft.NET.Test.Sdk" />
   <PackageReference Include="xunit" />
   <PackageReference Include="xunit.runner.visualstudio" PrivateAssets="all" />

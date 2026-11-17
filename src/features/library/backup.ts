@@ -1,9 +1,10 @@
 import { validateLibrary, type Library } from "./domain";
+import { isRichSong } from "./score";
 export const MAX_IMPORT_BYTES = 64 * 1024 * 1024;
 export function exportBackup(library: Library): string {
   validateLibrary(library);
   return JSON.stringify(
-    { format: "scoremap-backup", version: 1, library },
+    { format: "scoremap-backup", version: library.schemaVersion, library },
     null,
     2,
   );
@@ -27,12 +28,16 @@ export function importBackup(text: string): Library {
   if (
     Object.keys(envelope).sort().join(",") !== "format,library,version" ||
     envelope.format !== "scoremap-backup" ||
-    envelope.version !== 1
+    ![1, 2].includes(Number(envelope.version))
   )
     throw new Error(
       "This backup format or version is unsupported. Your current library is unchanged.",
     );
   const library = validateLibrary(envelope.library);
+  if (library.schemaVersion !== envelope.version)
+    throw new Error(
+      "The backup envelope and library versions disagree. Keep the original file.",
+    );
   if (library.songs.some((song) => song.pdf))
     throw new Error(
       "This backup contains PDF attachments, which this build cannot open yet. Keep the original backup; your current library is unchanged.",
@@ -66,6 +71,43 @@ export function copyBackupLibrary(library: Library): Library {
     for (const section of song.sections) section.id = remap(section.id);
     for (const ref of song.references) ref.id = remap(ref.id);
     if (song.pdf) song.pdf.id = remap(song.pdf.id);
+    if (isRichSong(song)) {
+      for (const section of song.sections) {
+        for (const measure of section.measures) measure.id = remap(measure.id);
+        for (const event of section.chords) {
+          event.id = remap(event.id);
+          event.measureId = remap(event.measureId);
+        }
+      }
+      for (const arrangement of song.arrangements) {
+        arrangement.id = remap(arrangement.id);
+        for (const part of arrangement.parts) {
+          part.id = remap(part.id);
+          for (const event of part.events) {
+            event.id = remap(event.id);
+            event.measureId = remap(event.measureId);
+            event.voicingId = remap(event.voicingId);
+            if (event.tieNextId) event.tieNextId = remap(event.tieNextId);
+          }
+        }
+        for (const device of arrangement.devices) device.id = remap(device.id);
+        for (const binding of arrangement.bindings) {
+          binding.id = remap(binding.id);
+          binding.partId = remap(binding.partId);
+          binding.deviceId = remap(binding.deviceId);
+          if (binding.eventIds) binding.eventIds = binding.eventIds.map(remap);
+        }
+        for (const voicing of arrangement.voicings) {
+          voicing.id = remap(voicing.id);
+          voicing.harmonyId = remap(voicing.harmonyId);
+        }
+      }
+      if (song.migration)
+        for (const key of Object.keys(song.migration.identities))
+          song.migration.identities[key] = remap(
+            song.migration.identities[key]!,
+          );
+    }
   }
   for (const repertoire of copy.repertoires) {
     repertoire.id = remap(repertoire.id);

@@ -1,3 +1,8 @@
+import { isRichSong } from "../features/library/score";
+import {
+  occupiedIdentities,
+  planSongMigration,
+} from "../features/library/migrationPlanning";
 import { SongAccess } from "../features/library/SongAccess";
 import {
   NotationProvider,
@@ -51,6 +56,13 @@ function LibraryApp({
   const [error, setError] = useState("");
   const [importEpoch, setImportEpoch] = useState(0);
   const [recovering, setRecovering] = useState(false);
+  const [migrationSources, setMigrationSources] = useState<
+    Awaited<
+      ReturnType<
+        import("../features/library/application").LibrarySession["migrationSources"]
+      >
+    >
+  >([]);
   // Interaction drafts survive sketch remounts while persistence remains queued.
   const [noteDrafts, setNoteDrafts] = useState<ReadonlyMap<string, string>>(
     () => new Map(),
@@ -457,6 +469,39 @@ function LibraryApp({
             >
               Export backup
             </button>
+            {!identity && (
+              <details
+                onToggle={(event) => {
+                  if (event.currentTarget.open)
+                    void session
+                      .migrationSources()
+                      .then(setMigrationSources)
+                      .catch(report);
+                }}
+              >
+                <summary>Originals before migration</summary>
+                {migrationSources.length === 0 && (
+                  <p>No migrated originals are retained in this browser.</p>
+                )}
+                {migrationSources.map((source) => (
+                  <button
+                    key={source.key}
+                    type="button"
+                    onClick={() =>
+                      downloadText(
+                        exportBackup(source.library),
+                        `scoremap-${source.key}.json`,
+                      )
+                    }
+                  >
+                    {source.key.startsWith("migration-import-")
+                      ? "Export imported original"
+                      : "Export previous library"}{" "}
+                    · before save {Number(source.key.split(":")[1]) + 1}
+                  </button>
+                ))}
+              </details>
+            )}
             {edit && (
               <>
                 <button
@@ -628,6 +673,47 @@ function LibraryApp({
                           <button type="submit">Add song</button>
                         </form>
                       )
+                    )}
+                    {!isRichSong(song) && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (
+                            !window.confirm(
+                              "Enable arrangements for this song? Existing song/section identities, chords, order and notes will be preserved. Legacy chords gain identified quarter-note positions in 4/4 measures. One unassigned part is created; no played notes are invented. The original remains recoverable.",
+                            )
+                          )
+                            return;
+                          void session
+                            .whenIdle()
+                            .then(async () => {
+                              if (session.error)
+                                throw new Error(
+                                  "Save or export your pending work before upgrading this song.",
+                                );
+                              const current = session.data!.songs.find(
+                                (entry) => entry.id === song.id,
+                              );
+                              if (!current || isRichSong(current))
+                                throw new Error(
+                                  "The song changed. Reload before upgrading it.",
+                                );
+                              const mapping = await planSongMigration(
+                                current,
+                                occupiedIdentities(session.data),
+                              );
+                              await execute({
+                                type: "enableArrangements",
+                                songId: current.id,
+                                mapping,
+                              });
+                              setImportEpoch((epoch) => epoch + 1);
+                            })
+                            .catch(report);
+                        }}
+                      >
+                        Enable arrangements
+                      </button>
                     )}
                     {canDeleteSong && (
                       <button

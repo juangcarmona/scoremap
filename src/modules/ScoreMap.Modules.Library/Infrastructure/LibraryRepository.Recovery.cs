@@ -68,7 +68,7 @@ internal sealed partial class LibraryRepository
     }
     var current = await ReadView(connection, principal, ct).ConfigureAwait(false);
     var songs = current.Library.GetProperty("songs").EnumerateArray().Where(s => !string.Equals(s.GetProperty("id").GetString(), song, StringComparison.Ordinal)).Append(content).ToArray();
-    var complete = JsonSerializer.SerializeToElement(new { schemaVersion = 1, revision = 0, songs, repertoires = current.Library.GetProperty("repertoires") });
+    var complete = JsonSerializer.SerializeToElement(new { schemaVersion = songs.Any(LibraryDocument.IsRichSong) ? 2 : 1, revision = 0, songs, repertoires = current.Library.GetProperty("repertoires") });
     _ = new LibraryDocument(complete);
     var next = state.GetProperty("revision").GetInt64() + 1;
     await Execute(connection, "UPDATE sm_songs SET deleted=false,revision=$2,content=$3::jsonb WHERE id=$1", ct, song, next, content.GetRawText()).ConfigureAwait(false);
@@ -80,6 +80,7 @@ internal sealed partial class LibraryRepository
   private static async Task PurgeSong(NpgsqlConnection connection, string song, JsonElement state, RestoreRequest request, CancellationToken ct)
   {
     LibraryDocument.Require(state.GetProperty("deleted").GetBoolean() && string.Equals(request.Confirmation, state.GetProperty("content").GetProperty("title").GetString(), StringComparison.Ordinal), "Confirm the exact deleted song title before permanent purge.");
+    await Execute(connection, "DELETE FROM sm_migrations WHERE song=$1", ct, song).ConfigureAwait(false);
     await Execute(connection, "DELETE FROM sm_history WHERE song=$1", ct, song).ConfigureAwait(false);
     await Execute(connection, "DELETE FROM sm_grants WHERE song=$1", ct, song).ConfigureAwait(false);
     await Execute(connection, "UPDATE sm_songs SET purged=true,deleted=true,content=NULL,revision=revision+1 WHERE id=$1", ct, song).ConfigureAwait(false);

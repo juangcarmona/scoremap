@@ -3,6 +3,9 @@ import {posix} from 'node:path';
 import assert from 'node:assert/strict';
 import ts from 'typescript';
 // Existing reviewed musical surface: library screens consume only these Sketch exports.
+const tonalBoundary=(source,name)=>!name.startsWith('@tonaljs/')||source==='src/shared/music/theory.ts';
+assert.equal(tonalBoundary('src/features/library/Sketch.tsx','@tonaljs/note'),false);
+assert.equal(tonalBoundary('src/shared/music/theory.ts','@tonaljs/note'),true);
 const musicalExports=new Set(['src/features/sketch/Piano.tsx','src/features/sketch/chords.ts']);
 function allowed(source,target){
  if(source.startsWith('src/shared/'))return target.startsWith('src/shared/');
@@ -25,6 +28,7 @@ async function walk(dir){for(const entry of await readdir(dir,{withFileTypes:tru
  const file=ts.createSourceFile(path,await readFile(path,'utf8'),ts.ScriptTarget.Latest,true);
  function check(node){
   const specifier=ts.isImportDeclaration(node)||ts.isExportDeclaration(node)?node.moduleSpecifier:undefined;
+  if(specifier&&ts.isStringLiteral(specifier)&&!tonalBoundary(path,specifier.text))throw new Error('Tonal imports must stay behind the product theory adapter: '+path);
   if(specifier&&ts.isStringLiteral(specifier)&&specifier.text.startsWith('.')){
    const base=posix.normalize(posix.join(posix.dirname(path),specifier.text));
    const candidates=[base,base+'.ts',base+'.tsx',base+'/index.ts'];
