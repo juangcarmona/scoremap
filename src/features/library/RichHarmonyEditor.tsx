@@ -1,3 +1,6 @@
+import { parseMusicalFraction as fraction } from "./musicalInput";
+import { MeasureEditor } from "./MeasureEditor";
+import { describeRemoval } from "./removalPreview";
 import { useState } from "react";
 import {
   harmonyCatalogue,
@@ -13,7 +16,7 @@ import { theoreticalHarmony } from "../../shared/music/theory";
 import { formatChordSymbol, formatNote } from "../../shared/music/notation";
 import { useNotation } from "../../shared/music/NotationContext";
 import type { Command } from "./domain";
-import type { Fraction, HarmonicEvent, RichSection, RichSong } from "./score";
+import type { HarmonicEvent, RichSection, RichSong } from "./score";
 import { incompatibleVoicings, sharedImpact } from "./scoreCommands";
 const roots = [
   "C",
@@ -38,20 +41,6 @@ const roots = [
   "Cb",
   "B#",
 ];
-function fraction(text: string): Fraction {
-  const parsed = /^(\d+)(?:\/(\d+))?$/u.exec(text.trim());
-  if (!parsed)
-    throw new Error(
-      "Use a whole quarter-note position or a fraction such as 1/2.",
-    );
-  const n = Number(parsed[1]);
-  const d = Number(parsed[2] ?? 1);
-  if (!Number.isSafeInteger(n) || !Number.isSafeInteger(d) || d < 1)
-    throw new Error(
-      "The musical fraction is outside supported exact precision.",
-    );
-  return { n, d };
-}
 function TimingEditor({
   event,
   section,
@@ -322,7 +311,7 @@ export function RichHarmonyEditor({
               if (
                 Object.values(impact).some((ids) => ids.length) &&
                 !window.confirm(
-                  `Remove this shared harmonic event, ${impact.voicings.length} voicings and ${impact.notes.length} performed notes? Related assignments/ties will be reconciled; other content remains.`,
+                  `Remove this shared harmonic event, ${impact.voicings.length} voicings and ${impact.notes.length} performed notes? Related assignments/ties will be reconciled; other content remains.\n${describeRemoval(song, impact, preference)}`,
                 )
               )
                 return;
@@ -340,6 +329,12 @@ export function RichHarmonyEditor({
           </button>
         )}
       </form>
+      <MeasureEditor
+        song={song}
+        section={section}
+        execute={execute}
+        report={report}
+      />
       {current && (
         <TimingEditor
           event={current}

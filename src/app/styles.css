@@ -928,3 +928,86 @@ dialog h2 {
   white-space: normal;
   overflow-wrap: anywhere;
 }
+
+.arrangement-workspace .configuration-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  align-items: end;
+  gap: 0.75rem;
+  margin: 1rem 0;
+  padding: 0.75rem;
+  border: 1px solid var(--lh-border);
+  min-width: 0;
+}
+.configuration-form > h4,
+.configuration-form > p,
+.configuration-form > fieldset {
+  grid-column: 1 / -1;
+}
+.configuration-form > *,
+.pitch-range {
+  min-width: 0;
+}
+.pitch-range {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  border: 1px solid var(--lh-border);
+}
+.pitch-range > label {
+  flex: 1 1 10rem;
+  min-width: 0;
+}
+.checkbox-field {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.checkbox-field input {
+  width: auto;
+  min-width: 24px;
+  height: 24px;
+}
+.keyboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: 1rem;
+}
+.keyboard-view {
+  min-width: 0;
+  border: 1px solid var(--lh-border);
+  background: var(--lh-canvas);
+  padding: 0.75rem;
+}
+.keyboard-view h3 {
+  margin: 0;
+}
+.keyboard-view p,
+.routing-list {
+  font-size: 0.875rem;
+}
+.routing-list {
+  padding-left: 1.25rem;
+}
+.routing-list li {
+  margin-bottom: 0.75rem;
+}
+.routing-list span {
+  display: block;
+}
+.arrangement-views {
+  margin: 1rem 0;
+  min-width: 0;
+}
+.musical-context {
+  font-weight: 700;
+}
+
+.performed-key[data-physical="false"] {
+  opacity: 0.45;
+}
+
+.sketch-layout > .arrangement-workspace {
+  grid-column: 1 / -1;
+}

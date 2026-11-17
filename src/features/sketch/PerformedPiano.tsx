@@ -15,6 +15,7 @@ export function PerformedPiano({
   editable,
   onToggle,
   label,
+  physicalRange,
 }: {
   harmony: HarmonyIdentity;
   pitches: readonly PianoPitch[];
@@ -23,6 +24,7 @@ export function PerformedPiano({
   editable: boolean;
   onToggle: (pitch: PianoPitch) => void;
   label: string;
+  physicalRange?: [number, number];
 }) {
   const { preference } = useNotation();
   const keys = pianoKeys(firstOctave, octaves);
@@ -39,6 +41,7 @@ export function PerformedPiano({
       <figcaption>○ Theoretical reference · ● Performed note</figcaption>
       <div
         className="keyboard-scroll"
+        role="region"
         tabIndex={0}
         aria-label={`${label} · scroll piano view`}
       >
@@ -56,6 +59,10 @@ export function PerformedPiano({
                   preference,
                 );
                 const theoretical = spellings.has(key.pitchClass);
+                const physical =
+                  !physicalRange ||
+                  (key.midi >= physicalRange[0] &&
+                    key.midi <= physicalRange[1]);
                 return (
                   <button
                     key={key.midi}
@@ -64,13 +71,14 @@ export function PerformedPiano({
                     data-midi={key.midi}
                     data-theoretical={theoretical}
                     data-performed={!!exact}
+                    data-physical={physical}
                     style={{
                       left: `${(key.x / whites) * 100}%`,
                       width: `${(key.width / whites) * 100}%`,
                     }}
-                    aria-label={`${name} · ${exact ? "performed" : "not performed"}${theoretical ? " · theoretical tone" : ""}`}
+                    aria-label={`${name} · ${exact ? "performed" : "not performed"}${theoretical ? " · theoretical tone" : ""}${physical ? "" : " · outside physical range"}`}
                     aria-pressed={!!exact}
-                    disabled={!editable}
+                    disabled={!editable || !physical}
                     onClick={() => onToggle(pitch)}
                   >
                     <span className="key-state" aria-hidden="true">

@@ -1,3 +1,4 @@
+import { copySongIdentities } from "./identityCopy";
 import {
   applyScoreCommand,
   isScoreCommand,
@@ -8,7 +9,14 @@ import {
 } from "./scoreCommands";
 import { isRichSong, type RichSection, type RichSong } from "./score";
 import { validateRichScore } from "./scoreValidation";
-import { requireValue, object, text, name, array } from "./validation";
+import {
+  sameData,
+  requireValue,
+  object,
+  text,
+  name,
+  array,
+} from "./validation";
 export type Mode = "edit" | "performance";
 import { assertChord, type Chord } from "../../shared/music/chord";
 export { assertChord, type Chord };
@@ -196,6 +204,12 @@ export type Command =
       patch: Partial<Pick<Song, "title" | "artist" | "notes">>;
     }
   | { type: "deleteSong"; songId: string }
+  | {
+      type: "duplicateSong";
+      songId: string;
+      expected: Song;
+      identities: Record<string, string>;
+    }
   | { type: "createRepertoire"; id: string; title: string }
   | { type: "renameRepertoire"; repertoireId: string; title: string }
   | { type: "deleteRepertoire"; repertoireId: string }
@@ -275,6 +289,30 @@ export function applyCommand(
       );
       Object.assign(song!, command.patch);
       break;
+    case "duplicateSong": {
+      requireValue(
+        sameData(song, command.expected),
+        "The song changed while its copy was prepared. Reload before making a new independent form.",
+      );
+      const values = Object.values(command.identities);
+      requireValue(
+        new Set(values).size === values.length,
+        "Copied identities must be unique.",
+      );
+      next.songs.push(
+        copySongIdentities(song!, (id) => {
+          const copy = command.identities[id];
+          requireValue(
+            Object.hasOwn(command.identities, id) &&
+              typeof copy === "string" &&
+              copy.trim(),
+            "Supply every copied song identity.",
+          );
+          return copy;
+        }),
+      );
+      break;
+    }
     case "deleteSong":
       next.songs = next.songs.filter((s) => s.id !== command.songId);
       for (const r of next.repertoires)

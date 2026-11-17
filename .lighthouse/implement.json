@@ -261,5 +261,51 @@
       ],
       "corrections": {}
     }
+  },
+  "24": {
+    "scope": "Implement the accepted multi-keyboard arrangement workspace, shared identified measure controls, arbitrary independent parts/devices, valid split/layer bindings and synchronized read-only repeat/event consultation. Preserve complete identity/timing/ownership graphs, current edit/private capabilities, all checks and independent review. No canonical product edits, audio/MIDI/fretboards or production deployment.",
+    "paths": [
+      "src/",
+      "tests/",
+      "docs/architecture/",
+      "docs/evidence/music/",
+      "openspec/changes/issue-24-arrangement-workspace/"
+    ],
+    "checks": [
+      [
+        "npm",
+        "ci",
+        "--ignore-scripts"
+      ],
+      [
+        "npm",
+        "run",
+        "verify"
+      ],
+      [
+        "npm",
+        "run",
+        "test:e2e"
+      ]
+    ],
+    "reviewRequired": true,
+    "verification": {
+      "paths": [
+        "tests/",
+        "vitest.config.ts",
+        "playwright.config.ts",
+        "package.json",
+        "package-lock.json",
+        "tests/backend/",
+        "tests/connected/",
+        "playwright.connected.config.ts",
+        "scripts/verify-backend-boundaries.mjs",
+        "scripts/verify-security.mjs",
+        "scripts/verify-frontend-boundaries.mjs",
+        "tests/fixtures/",
+        "scripts/harmony-catalogue.mjs"
+      ],
+      "corrections": {}
+    }
   }
 }

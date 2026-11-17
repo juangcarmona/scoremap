@@ -11,12 +11,14 @@ import {
   type Device,
   type Fraction,
   type MigrationMapping,
+  type Measure,
   type NoteEvent,
   type Part,
   type RichSong,
   type Voicing,
 } from "./score";
 import { migrateSong } from "./scoreMigration";
+import { copyArrangementIdentities } from "./identityCopy";
 import { compareFraction, fractionEndWithin } from "./scoreValidation";
 import { requireValue, sameData } from "./validation";
 export type Reconciliation = {
@@ -49,6 +51,28 @@ export type ScoreCommand = { songId: string } & (
       duration: Fraction;
     }
   | { type: "addArrangement"; arrangement: Arrangement }
+  | {
+      type: "copyArrangement";
+      arrangementId: string;
+      expected: Arrangement;
+      name: string;
+      identities: Record<string, string>;
+    }
+  | { type: "renameArrangement"; arrangementId: string; name: string }
+  | { type: "addMeasure"; sectionId: string; measure: Measure }
+  | {
+      type: "updateMeasure";
+      sectionId: string;
+      measureId: string;
+      patch: Pick<Measure, "meter" | "length">;
+    }
+  | { type: "reorderMeasures"; sectionId: string; order: string[] }
+  | {
+      type: "removeMeasure";
+      sectionId: string;
+      measureId: string;
+      reconciliation?: Reconciliation;
+    }
   | { type: "removeArrangement"; arrangementId: string; confirmed: boolean }
   | {
       type: "replaceArrangement";
@@ -56,14 +80,37 @@ export type ScoreCommand = { songId: string } & (
       expected: Arrangement;
       arrangement: Arrangement;
     }
-  | { type: "addPart"; arrangementId: string; part: Part; binding?: Binding }
+  | {
+      type: "addPart";
+      arrangementId: string;
+      part: Part;
+      binding?: Binding;
+      voicing?: Voicing;
+    }
   | {
       type: "updatePart";
       arrangementId: string;
       partId: string;
       patch: Partial<Pick<Part, "name" | "role" | "hand">>;
+      clearHand?: true;
+    }
+  | {
+      type: "removePart";
+      arrangementId: string;
+      partId: string;
+      expected: Part;
+      bindings: Binding[];
+      confirmed: boolean;
     }
   | { type: "addDevice"; arrangementId: string; device: Device }
+  | {
+      type: "removeDevice";
+      arrangementId: string;
+      deviceId: string;
+      expected: Device;
+      bindings: Binding[];
+      confirmed: boolean;
+    }
   | {
       type: "updateDevice";
       arrangementId: string;
@@ -105,11 +152,19 @@ const kinds = new Set([
   "removeHarmony",
   "setHarmonyTiming",
   "addArrangement",
+  "copyArrangement",
+  "renameArrangement",
+  "addMeasure",
+  "updateMeasure",
+  "reorderMeasures",
+  "removeMeasure",
   "removeArrangement",
   "replaceArrangement",
   "addPart",
   "updatePart",
+  "removePart",
   "addDevice",
+  "removeDevice",
   "updateDevice",
   "setBinding",
   "removeBinding",
@@ -185,6 +240,32 @@ export function sectionRemovalImpact(
   return sharedImpact(
     song,
     section.chords.map((event) => event.id),
+    notes,
+  );
+}
+export function measureRemovalImpact(
+  song: RichSong,
+  sectionId: string,
+  measureId: string,
+): Reconciliation {
+  const section = song.sections.find((entry) => entry.id === sectionId);
+  requireValue(section, "The section no longer exists.");
+  requireValue(
+    section.measures.some((measure) => measure.id === measureId),
+    "The measure no longer exists.",
+  );
+  const notes = song.arrangements.flatMap((arrangement) =>
+    arrangement.parts.flatMap((part) =>
+      part.events
+        .filter((event) => event.measureId === measureId)
+        .map((event) => event.id),
+    ),
+  );
+  return sharedImpact(
+    song,
+    section.chords
+      .filter((event) => event.measureId === measureId)
+      .map((event) => event.id),
     notes,
   );
 }
@@ -305,6 +386,67 @@ export function applyScoreCommand(
   if ("eventId" in command && command.type !== "appendHarmony")
     requireValue(event, "The harmonic event no longer exists.");
   switch (command.type) {
+    case "addMeasure": {
+      const section = song.sections.find(
+        (entry) => entry.id === command.sectionId,
+      );
+      requireValue(section, "The section no longer exists.");
+      section.measures.push(structuredClone(command.measure));
+      break;
+    }
+    case "updateMeasure": {
+      const section = song.sections.find(
+        (entry) => entry.id === command.sectionId,
+      );
+      const measure = section?.measures.find(
+        (entry) => entry.id === command.measureId,
+      );
+      requireValue(measure, "The measure no longer exists.");
+      requireValue(
+        Object.keys(command.patch).every((key) =>
+          ["meter", "length"].includes(key),
+        ),
+        "Only explicit meter and length may change.",
+      );
+      Object.assign(measure, structuredClone(command.patch));
+      break;
+    }
+    case "reorderMeasures": {
+      const section = song.sections.find(
+        (entry) => entry.id === command.sectionId,
+      );
+      requireValue(section, "The section no longer exists.");
+      requireValue(
+        command.order.length === section.measures.length &&
+          new Set(command.order).size === command.order.length &&
+          command.order.every((id) =>
+            section.measures.some((measure) => measure.id === id),
+          ),
+        "Measure order must be an exact permutation of existing identities.",
+      );
+      section.measures = command.order.map((id) =>
+        section.measures.find((measure) => measure.id === id)!,
+      );
+      break;
+    }
+    case "removeMeasure": {
+      const impact = measureRemovalImpact(
+        song,
+        command.sectionId,
+        command.measureId,
+      );
+      reconcileSharedRemoval(song, impact, command.reconciliation);
+      const section = song.sections.find(
+        (entry) => entry.id === command.sectionId,
+      )!;
+      section.chords = section.chords.filter(
+        (event) => event.measureId !== command.measureId,
+      );
+      section.measures = section.measures.filter(
+        (measure) => measure.id !== command.measureId,
+      );
+      break;
+    }
     case "appendHarmony": {
       const section = song.sections.find(
         (entry) => entry.id === command.sectionId,
@@ -380,6 +522,33 @@ export function applyScoreCommand(
     case "addArrangement":
       song.arrangements.push(structuredClone(command.arrangement));
       break;
+    case "copyArrangement": {
+      requireValue(
+        sameData(arrangement, command.expected),
+        "The arrangement changed while its copy was prepared.",
+      );
+      const values = Object.values(command.identities);
+      requireValue(
+        new Set(values).size === values.length,
+        "Copied identities must be unique.",
+      );
+      const copy = copyArrangementIdentities(arrangement!, (id) => {
+        const mapped = command.identities[id];
+        requireValue(
+          Object.hasOwn(command.identities, id) &&
+            typeof mapped === "string" &&
+            mapped.trim(),
+          "Supply every copied arrangement identity.",
+        );
+        return mapped;
+      });
+      copy.name = command.name;
+      song.arrangements.push(copy);
+      break;
+    }
+    case "renameArrangement":
+      arrangement!.name = command.name;
+      break;
     case "removeArrangement":
       requireValue(
         command.confirmed,
@@ -405,6 +574,15 @@ export function applyScoreCommand(
       ] = structuredClone(command.arrangement);
       break;
     case "addPart":
+      if (command.voicing) {
+        requireValue(
+          command.part.events.every(
+            (event) => event.voicingId === command.voicing!.id,
+          ),
+          "Initial performed occurrences must refer to their supplied voicing.",
+        );
+        arrangement!.voicings.push(structuredClone(command.voicing));
+      }
       arrangement!.parts.push(structuredClone(command.part));
       if (command.binding) {
         requireValue(
@@ -422,10 +600,55 @@ export function applyScoreCommand(
         "Unsupported part update.",
       );
       Object.assign(part!, command.patch);
+      requireValue(
+        !command.clearHand || !Object.hasOwn(command.patch, "hand"),
+        "Choose a contextual hand or explicitly clear it.",
+      );
+      if (command.clearHand) delete part!.hand;
       break;
+    case "removePart": {
+      const bindings = arrangement!.bindings.filter(
+        (binding) => binding.partId === command.partId,
+      );
+      requireValue(
+        command.confirmed &&
+          sameData(part, command.expected) &&
+          sameData(bindings, command.bindings),
+        "Confirm the complete current part, performed notes and assignments before removing it.",
+      );
+      arrangement!.parts = arrangement!.parts.filter(
+        (entry) => entry.id !== command.partId,
+      );
+      arrangement!.bindings = arrangement!.bindings.filter(
+        (binding) => binding.partId !== command.partId,
+      );
+      break;
+    }
     case "addDevice":
       arrangement!.devices.push(structuredClone(command.device));
       break;
+    case "removeDevice": {
+      const device = arrangement!.devices.find(
+        (entry) => entry.id === command.deviceId,
+      );
+      const bindings = arrangement!.bindings.filter(
+        (binding) => binding.deviceId === command.deviceId,
+      );
+      requireValue(
+        device &&
+          command.confirmed &&
+          sameData(device, command.expected) &&
+          sameData(bindings, command.bindings),
+        "Confirm the complete current keyboard and its assignments before removing it. Performed parts are retained.",
+      );
+      arrangement!.devices = arrangement!.devices.filter(
+        (entry) => entry.id !== command.deviceId,
+      );
+      arrangement!.bindings = arrangement!.bindings.filter(
+        (binding) => binding.deviceId !== command.deviceId,
+      );
+      break;
+    }
     case "updateDevice": {
       const device = arrangement!.devices.find(
         (entry) => entry.id === command.deviceId,

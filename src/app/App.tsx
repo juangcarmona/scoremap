@@ -1,3 +1,4 @@
+import { copySongIdentities } from "../features/library/identityCopy";
 import { VoicingPresets } from "../features/library/VoicingPresets";
 import { PresetProvider } from "../features/library/PresetContext";
 import { isRichSong } from "../features/library/score";
@@ -757,6 +758,34 @@ function LibraryApp({
                         Enable arrangements
                       </button>
                     )}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!leavePreview()) return;
+                        if (
+                          !window.confirm(
+                            `Make an independent copy of “${song.title}”? All music and arrangements receive new identities; this original and its memberships stay unchanged.`,
+                          )
+                        )
+                          return;
+                        const identities: Record<string, string> =
+                          Object.create(null);
+                        copySongIdentities(
+                          song,
+                          (id) => (identities[id] ??= crypto.randomUUID()),
+                        );
+                        void execute({
+                          type: "duplicateSong",
+                          songId: song.id,
+                          expected: structuredClone(song),
+                          identities,
+                        })
+                          .then(() => setSelected(identities[song.id]!))
+                          .catch(report);
+                      }}
+                    >
+                      Make independent song copy
+                    </button>
                     {canDeleteSong && (
                       <button
                         type="button"

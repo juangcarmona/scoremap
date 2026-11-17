@@ -25,3 +25,11 @@ The following interaction is required by ADR-0003/0004 and #25/#26, not an exist
 5. Invalid or unauthorized commands do not mutate. A stale revision returns a predictable conflict and retains pending work. An ambiguous timeout is reconciled with the commit/retry identity before another write; it is not treated as proof of rollback. Session expiry/revocation stops replay under the accepted private-cache policy.
 
 Real HTTP/PostgreSQL tests must exercise these paths and failure timing; analyzer success cannot prove this runtime sequence. Production qualification uses the production artifact contract from [section 07](../07-deployment-view/README.md), separately from development execution and actual operator deployment.
+
+## Shared context and independently routed performance
+
+The arrangement workspace keeps section, repeat occurrence, identified measure and harmonic event as read-only selection. Each device view derives active notes at the same exact rational position from its assigned parts and bindings; durations can hold notes into later harmonic contexts in the same measure. Equal-pitch events in different parts retain distinct identities. Multiple sound layers routing the same event do not fabricate extra musical events. Empty results clear performed highlights immediately. Each device's local octave span is independent of physical range and musical content.
+
+Unrouted occurrences have explicit part views, including when a keyboard or binding is removed. Those operations retain performed music unless the user explicitly removes the owning part or confirms shared-form reconciliation. Destructive previews identify affected arrangements, voicings, numbered part occurrences and assignments before the complete guarded command executes. Reordering changes positions while preserving identifiers and valid references; invalid timing or physical range changes refuse without clipping notes.
+
+Copying an arrangement remaps its owned graph and keeps shared form references. Explicit independent song copying remaps the full song-owned graph without copying repertoire membership or live personal-resource authority. Copied preset provenance remains a value snapshot. Identifier maps and repeat navigation treat opaque strings as data, including prototype-like names.

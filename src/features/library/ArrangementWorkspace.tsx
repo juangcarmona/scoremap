@@ -1,3 +1,5 @@
+import { ArrangementConfiguration } from "./ArrangementConfiguration";
+import { ArrangementViews } from "./ArrangementViews";
 import type { SavedPreset } from "./voicingPresets";
 import { useState } from "react";
 import type { Command } from "./domain";
@@ -32,6 +34,19 @@ export function ArrangementWorkspace({
   const [voicingId, setVoicingId] = useState("");
   const [epoch, setEpoch] = useState(0);
   const [seedPreset, setSeedPreset] = useState<SavedPreset | null>(null);
+  const [occurrences, setOccurrences] = useState<Record<string, number>>({});
+  const section = song.sections.find((section) =>
+    section.chords.some((event) => event.id === harmonic?.id),
+  );
+  const occurrence = section
+    ? Math.max(
+        1,
+        Math.min(
+          section.repeat,
+          Object.hasOwn(occurrences, section.id) ? occurrences[section.id]! : 1,
+        ),
+      )
+    : 1;
   const [undo, setUndo] = useState<{
     before: Arrangement;
     after: Arrangement;
@@ -47,7 +62,11 @@ export function ArrangementWorkspace({
     [];
   const voicing =
     choices.find((entry) => entry.id === voicingId) ??
-    (voicingId === "new" ? null : (choices[0] ?? null));
+    (voicingId === "new"
+      ? null
+      : (choices.find((voicing) =>
+          part?.events.some((event) => event.voicingId === voicing.id),
+        ) ?? null));
   function select(action: () => void) {
     if (
       dirty &&
@@ -60,8 +79,22 @@ export function ArrangementWorkspace({
     setSeedPreset(null);
     action();
   }
+  function beforeConfiguration() {
+    if (
+      dirty &&
+      !window.confirm(
+        "Discard the uncommitted played-note preview before changing arrangement configuration? Export it first to keep it.",
+      )
+    )
+      return false;
+    if (dirty) setEpoch((value) => value + 1);
+    setDirty(false);
+    setSeedPreset(null);
+    return true;
+  }
   return (
     <section
+      data-song-id={song.id}
       className="arrangement-workspace"
       aria-label="Arrangement workspace"
     >
@@ -87,25 +120,27 @@ export function ArrangementWorkspace({
             ))}
           </select>
         </label>
-        <label>
-          Part
-          <select
-            aria-label="Active performed part"
-            value={part?.id ?? ""}
-            onChange={(event) =>
-              select(() => {
-                setPartId(event.target.value);
-                setVoicingId("");
-              })
-            }
-          >
-            {arrangement?.parts.map((entry) => (
-              <option key={entry.id} value={entry.id}>
-                {entry.name} · {entry.role || "unassigned role"}
-              </option>
-            ))}
-          </select>
-        </label>
+        {editable && (
+          <label>
+            Part
+            <select
+              aria-label="Active performed part"
+              value={part?.id ?? ""}
+              onChange={(event) =>
+                select(() => {
+                  setPartId(event.target.value);
+                  setVoicingId("");
+                })
+              }
+            >
+              {arrangement?.parts.map((entry) => (
+                <option key={entry.id} value={entry.id}>
+                  {entry.name} · {entry.role || "unassigned role"}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
         <label>
           Harmonic event
           <select
@@ -128,23 +163,75 @@ export function ArrangementWorkspace({
             )}
           </select>
         </label>
-        <label>
-          Voicing
-          <select
-            aria-label="Active performed voicing"
-            value={voicing?.id ?? "new"}
-            onChange={(event) => select(() => setVoicingId(event.target.value))}
-          >
-            <option value="new">New independent voicing</option>
-            {choices.map((entry) => (
-              <option key={entry.id} value={entry.id}>
-                {entry.name}
-              </option>
-            ))}
-          </select>
-        </label>
+        {section && (
+          <label>
+            Repeat occurrence
+            <select
+              aria-label={`Occurrence of ${section.name}`}
+              value={occurrence}
+              onChange={(event) =>
+                setOccurrences((values) => ({
+                  ...values,
+                  [section.id]: Number(event.target.value),
+                }))
+              }
+            >
+              {Array.from(
+                { length: section.repeat },
+                (_, index) => index + 1,
+              ).map((value) => (
+                <option key={value} value={value}>
+                  {value} of {section.repeat}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
+        {editable && (
+          <label>
+            Voicing
+            <select
+              aria-label="Active performed voicing"
+              value={voicing?.id ?? "new"}
+              onChange={(event) =>
+                select(() => setVoicingId(event.target.value))
+              }
+            >
+              <option value="new">New independent voicing</option>
+              {choices.map((entry) => (
+                <option key={entry.id} value={entry.id}>
+                  {entry.name}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
       </div>
-      {arrangement && part && harmonic ? (
+      {editable && (
+        <ArrangementConfiguration
+          song={song}
+          arrangement={arrangement}
+          harmonic={harmonic}
+          execute={execute}
+          report={report}
+          beforeChange={beforeConfiguration}
+          onCreated={(id) => {
+            setArrangementId(id);
+            setPartId("");
+            setVoicingId("");
+            setUndo(null);
+          }}
+        />
+      )}
+      {arrangement && (
+        <ArrangementViews
+          arrangement={arrangement}
+          harmonic={harmonic}
+          section={section}
+          occurrence={occurrence}
+        />
+      )}
+      {editable && arrangement && part && harmonic ? (
         <VoicingBuilder
           key={`${arrangement.id}-${part.id}-${harmonic.id}-${voicing?.id ?? "new"}-${epoch}`}
           song={song}
@@ -177,12 +264,12 @@ export function ArrangementWorkspace({
             if (created) setVoicingId(created.id);
           }}
         />
-      ) : (
+      ) : editable ? (
         <p>
           Add a harmonic event and an arrangement with a part to prepare played
           notes.
         </p>
-      )}
+      ) : null}
       {editable && undo && (
         <button
           type="button"

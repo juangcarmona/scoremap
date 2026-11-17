@@ -1,5 +1,5 @@
 import { validateLibrary, type Library } from "./domain";
-import { isRichSong } from "./score";
+import { copySongIdentities } from "./identityCopy";
 export const MAX_IMPORT_BYTES = 64 * 1024 * 1024;
 export function exportBackup(library: Library): string {
   validateLibrary(library);
@@ -66,49 +66,7 @@ export function copyBackupLibrary(library: Library): Library {
     }
     return mapped;
   };
-  for (const song of copy.songs) {
-    song.id = remap(song.id);
-    for (const section of song.sections) section.id = remap(section.id);
-    for (const ref of song.references) ref.id = remap(ref.id);
-    if (song.pdf) song.pdf.id = remap(song.pdf.id);
-    if (isRichSong(song)) {
-      for (const section of song.sections) {
-        for (const measure of section.measures) measure.id = remap(measure.id);
-        for (const event of section.chords) {
-          event.id = remap(event.id);
-          event.measureId = remap(event.measureId);
-        }
-      }
-      for (const arrangement of song.arrangements) {
-        arrangement.id = remap(arrangement.id);
-        for (const part of arrangement.parts) {
-          part.id = remap(part.id);
-          for (const event of part.events) {
-            event.id = remap(event.id);
-            event.measureId = remap(event.measureId);
-            event.voicingId = remap(event.voicingId);
-            if (event.tieNextId) event.tieNextId = remap(event.tieNextId);
-          }
-        }
-        for (const device of arrangement.devices) device.id = remap(device.id);
-        for (const binding of arrangement.bindings) {
-          binding.id = remap(binding.id);
-          binding.partId = remap(binding.partId);
-          binding.deviceId = remap(binding.deviceId);
-          if (binding.eventIds) binding.eventIds = binding.eventIds.map(remap);
-        }
-        for (const voicing of arrangement.voicings) {
-          voicing.id = remap(voicing.id);
-          voicing.harmonyId = remap(voicing.harmonyId);
-        }
-      }
-      if (song.migration)
-        for (const key of Object.keys(song.migration.identities))
-          song.migration.identities[key] = remap(
-            song.migration.identities[key]!,
-          );
-    }
-  }
+  copy.songs = copy.songs.map((song) => copySongIdentities(song, remap));
   for (const repertoire of copy.repertoires) {
     repertoire.id = remap(repertoire.id);
     repertoire.songIds = repertoire.songIds.map(remap);

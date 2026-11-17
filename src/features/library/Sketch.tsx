@@ -1,3 +1,4 @@
+import { describeRemoval } from "./removalPreview";
 import { isRichSection, isRichSong } from "./score";
 import { ArrangementWorkspace } from "./ArrangementWorkspace";
 import { RichHarmonyEditor } from "./RichHarmonyEditor";
@@ -238,6 +239,16 @@ export function Sketch({
   return (
     <div className="sketch-layout">
       <div className="structure">
+        {selection?.eventId &&
+          isRichSong(song) &&
+          !song.sections.some((section) =>
+            section.chords.some((event) => event.id === selection.eventId),
+          ) && (
+            <p role="status">
+              The selected harmonic event is no longer available. Showing the
+              first available event; choose another context to continue.
+            </p>
+          )}
         <div className="sketch-caption">
           <h2>Song sketch</h2>
           <span>
@@ -350,7 +361,7 @@ export function Sketch({
                           : undefined;
                         if (
                           window.confirm(
-                            `Remove ${section.name} and its chords and notes?${impact ? ` This also removes ${impact.notes.length} performed notes and ${impact.voicings.length} voicings across arrangements, reconciles ${impact.bindings.length} assignments and unlinks ${impact.ties.length} ties.` : ""}`,
+                            `Remove ${section.name} and its chords and notes?${impact ? ` This also removes ${impact.notes.length} performed notes and ${impact.voicings.length} voicings across arrangements, reconciles ${impact.bindings.length} assignments and unlinks ${impact.ties.length} ties.\n${isRichSong(song) ? describeRemoval(song, impact, preference) : ""}` : ""}`,
                           )
                         )
                           void execute({
@@ -515,28 +526,6 @@ export function Sketch({
             </button>
           </form>
         )}
-        {isRichSong(song) && (
-          <ArrangementWorkspace
-            song={song}
-            harmonic={performedEvent}
-            editable={edit}
-            execute={execute}
-            report={report}
-            dirty={previewDirty}
-            setDirty={onPreviewDirty}
-            onSelectHarmony={(id) => {
-              const section = song.sections.find((section) =>
-                section.chords.some((event) => event.id === id),
-              );
-              if (section)
-                setSelection({
-                  sectionId: section.id,
-                  index: section.chords.findIndex((event) => event.id === id),
-                  eventId: id,
-                });
-            }}
-          />
-        )}
         {!edit && song.notes && (
           <button
             type="button"
@@ -563,6 +552,28 @@ export function Sketch({
           Tap any chord in the sketch to see its keys.
         </p>
       </aside>
+      {isRichSong(song) && (
+        <ArrangementWorkspace
+          song={song}
+          harmonic={performedEvent}
+          editable={edit}
+          execute={execute}
+          report={report}
+          dirty={previewDirty}
+          setDirty={onPreviewDirty}
+          onSelectHarmony={(id) => {
+            const section = song.sections.find((section) =>
+              section.chords.some((event) => event.id === id),
+            );
+            if (section)
+              setSelection({
+                sectionId: section.id,
+                index: section.chords.findIndex((event) => event.id === id),
+                eventId: id,
+              });
+          }}
+        />
+      )}
     </div>
   );
 }
