@@ -390,6 +390,7 @@ function LibraryApp({
           current={library}
           editing={session.mode === "edit"}
           retry={() => recover(() => store.retryPending())}
+          copy={(songId) => recover(() => store.copyPendingSong(songId))}
           removed={() => setImportEpoch((epoch) => epoch + 1)}
           report={report}
         />

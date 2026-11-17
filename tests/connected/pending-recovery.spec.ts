@@ -1,7 +1,14 @@
 import { test, expect, type Page, type Dialog } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import AxeBuilder from "@axe-core/playwright";
-import { api, login, openSong, saveView, signIn } from "./helpers";
+import {
+  api,
+  login,
+  openSong,
+  saveView,
+  signIn,
+  syntheticSong,
+} from "./helpers";
 import { uniqueRichFixture } from "./rich-fixtures";
 import type { Library } from "../../src/features/library/domain";
 import type { RichSong } from "../../src/features/library/score";
@@ -405,4 +412,291 @@ test("SB-PRIVATE-REFUSE: the same reauthenticated editor cannot open a protected
   });
   expect(untouched).toEqual(anonymous);
   await Promise.all([owner.context.close(), editor.context.close()]);
+});
+
+function ownedIds(value: unknown, result = new Set<string>()) {
+  if (Array.isArray(value)) value.forEach((child) => ownedIds(child, result));
+  else if (value && typeof value === "object")
+    for (const [key, child] of Object.entries(value)) {
+      if (key === "sourcePreset") continue;
+      if (key === "id" && typeof child === "string") result.add(child);
+      else ownedIds(child, result);
+    }
+  return result;
+}
+function normalizedMusic(value: unknown) {
+  const ids = new Map<string, string>();
+  function collect(value: unknown) {
+    if (Array.isArray(value)) value.forEach(collect);
+    else if (value && typeof value === "object")
+      for (const key of Object.keys(value).sort()) {
+        if (key === "sourcePreset") continue;
+        const child = (value as Record<string, unknown>)[key];
+        if (key === "id" && typeof child === "string")
+          ids.set(child, `owned-${ids.size}`);
+        else collect(child);
+      }
+  }
+  collect(value);
+  function replace(value: unknown, key = ""): unknown {
+    if (key === "sourcePreset") return value;
+    if (Array.isArray(value)) return value.map((child) => replace(child));
+    if (value && typeof value === "object")
+      return Object.fromEntries(
+        Object.entries(value).map(([name, child]) => [
+          name,
+          replace(child, name),
+        ]),
+      );
+    return typeof value === "string" ? (ids.get(value) ?? value) : value;
+  }
+  return replace(value);
+}
+
+test("stale protected work refuses overwrite and saves one complete independent recovery copy despite a lost copy acknowledgement and reload", async ({
+  browser,
+}) => {
+  const owner = await login(browser, "owner-a");
+  const song = await prepare(owner.page);
+  await owner.page.route("**/api/library", (route) =>
+    route.request().method() === "PUT"
+      ? route.abort("failed")
+      : route.continue(),
+  );
+  await edit(owner.page, song);
+  await owner.page.unroute("**/api/library");
+  const retained = await protectedRecord(owner.page);
+  const second = await login(browser, "owner-a");
+  const newer = await saveView(second.page, (library) => {
+    library.songs.find((candidate) => candidate.id === song.id)!.notes =
+      "Newer acknowledged device change";
+  });
+  const history = await (
+    await api(second.page, `/api/songs/${song.id}/history`)
+  ).json();
+  await owner.page.reload();
+  let recovery = owner.page.getByRole("region", {
+    name: "Protected pending work",
+    exact: true,
+  });
+  await recovery
+    .getByRole("button", { name: "Review pending work", exact: true })
+    .click();
+  const refused = owner.page.waitForResponse(
+    (response) =>
+      response.url().endsWith("/api/library") &&
+      response.request().method() === "PUT",
+  );
+  await recovery
+    .getByRole("button", { name: "Retry original save", exact: true })
+    .click();
+  expect((await refused).status()).toBe(409);
+  expect(await protectedRecord(owner.page)).toEqual(retained);
+  expect(await (await api(second.page, "/api/library")).json()).toEqual(newer);
+  expect(
+    await (await api(second.page, `/api/songs/${song.id}/history`)).json(),
+  ).toEqual(history);
+  let lost = false;
+  await owner.page.route("**/api/library", async (route) => {
+    if (route.request().method() !== "PUT" || lost) return route.continue();
+    lost = true;
+    const response = await route.fetch();
+    expect(response.status()).toBe(200);
+    await route.abort("failed");
+  });
+  owner.page.once("dialog", (dialog) => dialog.accept());
+  await recovery
+    .getByRole("button", {
+      name: `Save as a new song: ${song.title}`,
+      exact: true,
+    })
+    .click();
+  await expect(owner.page.getByRole("alert")).toContainText("Failed to fetch");
+  const copied = await (await api(second.page, "/api/library")).json();
+  const copies = copied.library.songs.filter(
+    (candidate: RichSong) =>
+      candidate.title === `${song.title} (Recovered copy)`,
+  );
+  expect(copies).toHaveLength(1);
+  const expected = structuredClone(song);
+  expected.title += " (Recovered copy)";
+  expected.arrangements[0]!.parts[1]!.events[1]!.pitch = {
+    spelling: "B",
+    octave: 5,
+    midi: 83,
+  };
+  expect(normalizedMusic(copies[0])).toEqual(normalizedMusic(expected));
+  expect(ownedIds(copies[0]).size).toBe(ownedIds(song).size);
+  expect(
+    [...ownedIds(copies[0])].filter((id) => ownedIds(song).has(id)),
+  ).toEqual([]);
+  expect(
+    copied.library.songs.find(
+      (candidate: RichSong) => candidate.id === song.id,
+    ),
+  ).toEqual(
+    newer.library.songs.find((candidate: RichSong) => candidate.id === song.id),
+  );
+  expect(copied.library.repertoires).toEqual(newer.library.repertoires);
+  const originalAfterCopy = await protectedRecord(owner.page);
+  expect(originalAfterCopy[0]!.digest).toBe(retained[0]!.digest);
+  expect(originalAfterCopy[0]!.commandId).toBe(retained[0]!.commandId);
+  expect(originalAfterCopy[0]!.fields).toEqual([
+    "cipher",
+    "commandId",
+    "copies",
+    "iv",
+    "keyId",
+  ]);
+  await owner.page.unroute("**/api/library");
+  await owner.page.reload();
+  recovery = owner.page.getByRole("region", {
+    name: "Protected pending work",
+    exact: true,
+  });
+  await recovery
+    .getByRole("button", { name: "Review pending work", exact: true })
+    .click();
+  let writes = 0;
+  owner.page.on("request", (request) => {
+    if (request.url().endsWith("/api/library") && request.method() === "PUT")
+      writes++;
+  });
+  owner.page.once("dialog", (dialog) => dialog.accept());
+  await recovery
+    .getByRole("button", {
+      name: `Save as a new song: ${song.title}`,
+      exact: true,
+    })
+    .click();
+  await expect(recovery.getByRole("status")).toContainText(
+    "Recovery copy saved to your private library",
+  );
+  expect(writes).toBe(0);
+  expect(await (await api(second.page, "/api/library")).json()).toEqual(copied);
+  expect(
+    await (await api(second.page, `/api/songs/${song.id}/history`)).json(),
+  ).toEqual(history);
+  expect(
+    (
+      await (
+        await api(second.page, `/api/songs/${copies[0].id}/history`)
+      ).json()
+    ).map((entry: { revision: number }) => entry.revision),
+  ).toEqual([1]);
+  expect((await protectedRecord(owner.page))[0]!.digest).toBe(
+    retained[0]!.digest,
+  );
+  expect(
+    (await new AxeBuilder({ page: owner.page }).analyze()).violations,
+  ).toEqual([]);
+  await Promise.all([owner.context.close(), second.context.close()]);
+});
+
+test("a retained legacy draft copies once through atomic v1 migration and reconciles the same rich copy after a lost acknowledgement", async ({
+  browser,
+}) => {
+  const owner = await login(browser, "owner-a");
+  const source = syntheticSong();
+  await saveView(owner.page, (library) => {
+    library.songs.push(source);
+  });
+  await owner.page.reload();
+  await openSong(owner.page, source.title);
+  await owner.page
+    .getByText("Song details & personal notes", { exact: true })
+    .click();
+  await owner.page.route("**/api/library", (route) =>
+    route.request().method() === "PUT"
+      ? route.abort("failed")
+      : route.continue(),
+  );
+  await owner.page
+    .getByLabel("Song notes", { exact: true })
+    .fill("Retained legacy draft reminder");
+  await expect(owner.page.locator(".save-state")).toHaveText("Unsaved changes");
+  await owner.page.unroute("**/api/library");
+  const retained = await protectedRecord(owner.page);
+  const second = await login(browser, "owner-a");
+  await saveView(second.page, (library) => {
+    library.songs.find((song) => song.id === source.id)!.notes =
+      "Newer original reminder";
+  });
+  await owner.page.reload();
+  let recovery = owner.page.getByRole("region", {
+    name: "Protected pending work",
+    exact: true,
+  });
+  await recovery
+    .getByRole("button", { name: "Review pending work", exact: true })
+    .click();
+  await owner.page.route("**/api/library", async (route) => {
+    if (route.request().method() !== "PUT") return route.continue();
+    expect((await route.fetch()).status()).toBe(200);
+    await route.abort("failed");
+  });
+  owner.page.once("dialog", (dialog) => dialog.accept());
+  await recovery
+    .getByRole("button", {
+      name: `Save as a new song: ${source.title}`,
+      exact: true,
+    })
+    .click();
+  await expect(owner.page.getByRole("alert")).toContainText("Failed to fetch");
+  const saved = await (await api(second.page, "/api/library")).json();
+  const copies = saved.library.songs.filter(
+    (song: RichSong) => song.title === `${source.title} (Recovered copy)`,
+  );
+  expect(copies).toHaveLength(1);
+  const copy = copies[0] as RichSong;
+  expect(copy.notes).toBe("Retained legacy draft reminder");
+  expect(copy.migration?.sourceVersion).toBe(1);
+  expect(copy.sections[0]!.chords[0]).toMatchObject({
+    root: "Db",
+    quality: "minor",
+    start: { n: 0, d: 1 },
+    duration: { n: 1, d: 1 },
+  });
+  expect(copy.arrangements).toHaveLength(1);
+  expect(copy.arrangements[0]!.parts.flatMap((part) => part.events)).toEqual(
+    [],
+  );
+  const history = await (
+    await api(second.page, `/api/songs/${copy.id}/history`)
+  ).json();
+  expect(history.map((entry: { revision: number }) => entry.revision)).toEqual([
+    1, 0,
+  ]);
+  expect(history[0].content).toEqual(copy);
+  expect(history[1].content.notes).toBe("Retained legacy draft reminder");
+  expect(history[1].content.sections[0].chords).toEqual([
+    { root: "Db", quality: "minor" },
+  ]);
+  expect(
+    saved.library.songs.find((song: RichSong) => song.id === source.id).notes,
+  ).toBe("Newer original reminder");
+  await owner.page.unroute("**/api/library");
+  await owner.page.reload();
+  recovery = owner.page.getByRole("region", {
+    name: "Protected pending work",
+    exact: true,
+  });
+  await recovery
+    .getByRole("button", { name: "Review pending work", exact: true })
+    .click();
+  owner.page.once("dialog", (dialog) => dialog.accept());
+  await recovery
+    .getByRole("button", {
+      name: `Save as a new song: ${source.title}`,
+      exact: true,
+    })
+    .click();
+  await expect(recovery.getByRole("status")).toContainText(
+    "Recovery copy saved to your private library",
+  );
+  expect(await (await api(second.page, "/api/library")).json()).toEqual(saved);
+  expect((await protectedRecord(owner.page))[0]!.digest).toBe(
+    retained[0]!.digest,
+  );
+  await Promise.all([owner.context.close(), second.context.close()]);
 });

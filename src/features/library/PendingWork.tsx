@@ -17,6 +17,7 @@ export function PendingWork({
   current,
   editing,
   retry,
+  copy,
   removed,
   report,
 }: {
@@ -24,11 +25,13 @@ export function PendingWork({
   current: Library;
   editing: boolean;
   retry: () => Promise<unknown>;
+  copy: (songId: string) => Promise<unknown>;
   removed: () => void;
   report: (error: unknown) => void;
 }) {
   const [pending, setPending] = useState<Library | null>(null);
   const [busy, setBusy] = useState(false);
+  const [status, setStatus] = useState("");
   async function run(work: () => Promise<unknown>) {
     setBusy(true);
     try {
@@ -116,6 +119,26 @@ export function PendingWork({
                     </p>
                   ))}
                 </details>
+                <button
+                  type="button"
+                  disabled={busy || !editing}
+                  aria-label={`Save as a new song: ${song.title}`}
+                  onClick={() => {
+                    if (
+                      window.confirm(
+                        `Save “${song.title}” as a separate private song named “${song.title} (Recovered copy)”? The current saved song, its history and the original protected draft will be kept. The copy starts outside repertoires.`,
+                      )
+                    )
+                      void run(async () => {
+                        await copy(song.id);
+                        setStatus(
+                          "Recovery copy saved to your private library. The original protected draft is kept until you explicitly remove it.",
+                        );
+                      });
+                  }}
+                >
+                  Save as a new song
+                </button>
               </li>
             ))}
           </ul>
@@ -128,9 +151,8 @@ export function PendingWork({
           )}
           <p>
             Retry checks the original revision and your current permissions. If
-            newer changes exist, keep the export and use “Import as new copies”
-            after explicitly removing this pending record. Your saved songs will
-            be kept.
+            newer changes exist, save a changed song as a separate copy or keep
+            its export for comparison. Your current saved songs will be kept.
           </p>
           <button
             type="button"
@@ -146,6 +168,7 @@ export function PendingWork({
           </button>
         </div>
       )}
+      {status && <p role="status">{status}</p>}
       <button
         type="button"
         disabled={busy}

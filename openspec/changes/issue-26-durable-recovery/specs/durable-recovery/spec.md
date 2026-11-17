@@ -20,3 +20,21 @@ A reopened private library MUST retain its prior encrypted command and prevent s
 - **GIVEN** a complete original command whose server transaction committed but whose acknowledgement was lost
 - **WHEN** the same principal explicitly retries that protected command after reopening and current authorization
 - **THEN** its original receipt acknowledges the existing revision without duplicating events/history, and only that pending record is removed.
+
+<!-- pdac:cite id="BR-BACKUP" digest="sha256:0ca300361becac0a9858d098ab1e029b5bc1dfe41a06a58ecc40408fee32ed3b" -->
+
+### Requirement: Explicit independent recovery copies
+The musician MUST be able to explicitly save one authorized pending song as a separate private copy under current permission and edit admission. The complete owned identity graph MUST be remapped consistently while external personal-resource provenance remains descriptive. Existing music/history and the original protected ciphertext MUST be preserved; copying MUST NOT silently merge or overwrite them.
+
+#### Scenario: Legacy recovery copy
+- **GIVEN** a supported legacy pending song and current permission
+- **WHEN** the musician explicitly saves its independent recovery copy
+- **THEN** atomic import migration retains that new copy's legacy source/history and deterministic mapping without inventing performed notes, and an ambiguous retry recognizes the same migrated copy.
+
+### Requirement: Stable recovery-copy receipts
+Opaque destination identities and a command identifier MUST be retained atomically before dispatch without musical names or keys in that metadata. Repeating an ambiguous copy MUST reconcile the same currently authorized complete destination or refuse changed content; it MUST NOT silently allocate another copy.
+
+#### Scenario: Copy acknowledgement lost before reload
+- **GIVEN** a protected complete pending song whose original retry is stale and a separately acknowledged newer original
+- **WHEN** the musician confirms a recovery copy and its actual commit response is lost
+- **THEN** reloading and confirming that same copy reconciles its retained identity without another write/revision, preserves the complete pending music and leaves the original's content/history plus protected ciphertext unchanged.

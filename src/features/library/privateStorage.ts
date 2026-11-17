@@ -1,5 +1,9 @@
 import { openDB } from "idb";
-import { validateLibrary, type Library } from "./domain";
+import { validateLibrary, type Library, type Song } from "./domain";
+import { copySongIdentities } from "./identityCopy";
+import { isRichSong } from "./score";
+import { migrateSong } from "./scoreMigration";
+import { sameData } from "./validation";
 import type { LibraryStore } from "./storage";
 
 import type { SessionInfo } from "../../shared/auth/session";
@@ -22,6 +26,10 @@ interface PendingRecord {
   iv: Uint8Array;
   cipher: ArrayBuffer;
   commandId: string;
+  copies?: Record<
+    string,
+    { commandId: string; identities: Record<string, string> }
+  >;
 }
 const pendingDb = () =>
   openDB("scoremap-protected-pending", 1, {
@@ -277,6 +285,103 @@ export class PrivateLibraryStore implements LibraryStore {
     this.versions = saved.versions;
     this.capabilities = saved.capabilities;
     await this.removePending(pending.commandId);
+    return validateLibrary(saved.library);
+  }
+  private async copyPlan(pending: PendingRecord, song: Song) {
+    const identities: Record<string, string> = Object.create(null) as Record<
+      string,
+      string
+    >;
+    copySongIdentities(song, (id) => (identities[id] ??= crypto.randomUUID()));
+    const plan = { commandId: crypto.randomUUID(), identities };
+    const db = await pendingDb();
+    const tx = db.transaction("pending", "readwrite");
+    void tx.done.catch(() => undefined);
+    try {
+      const current = (await tx.store.get(this.identity.principal)) as
+        PendingRecord | undefined;
+      if (!current || current.commandId !== pending.commandId)
+        throw new Error(
+          "The pending record changed. Reopen its review before copying.",
+        );
+      const existing =
+        current.copies && Object.hasOwn(current.copies, song.id)
+          ? current.copies[song.id]
+          : undefined;
+      if (!existing) {
+        current.copies = Object.fromEntries([
+          ...Object.entries(current.copies ?? {}),
+          [song.id, plan],
+        ]);
+        await tx.store.put(current, this.identity.principal);
+      }
+      await tx.done;
+      return existing ?? plan;
+    } catch (error) {
+      try {
+        tx.abort();
+      } catch {
+        /* An already completed transaction stays unchanged. */
+      }
+      await tx.done.catch(() => undefined);
+      throw error;
+    } finally {
+      db.close();
+    }
+  }
+  async copyPendingSong(songId: string) {
+    const { record, pending } = await this.unlockPending();
+    const source = record.library.songs.find((song) => song.id === songId);
+    if (!source) throw new Error("This song is not in the protected draft.");
+    const view = await this.request<LibraryView>("/api/library");
+    if (
+      Object.hasOwn(record.versions, songId) &&
+      !Object.hasOwn(view.capabilities, songId)
+    ) {
+      // Deleted content needs a fresh owner-only read; a revoked grantee fails here.
+      await this.request(`/api/songs/${encodeURIComponent(songId)}/history`);
+    }
+    const plan = await this.copyPlan(pending, source);
+    const ids = new Map(Object.entries(plan.identities));
+    let copy = copySongIdentities(source, (id) => {
+      const mapped = ids.get(id);
+      if (!mapped)
+        throw new Error(
+          "The retained copy mapping is incomplete. Keep the protected draft.",
+        );
+      return mapped;
+    });
+    copy.title += " (Recovered copy)";
+    const existing = view.library.songs.find((song) => song.id === copy.id);
+    if (existing) {
+      if (!isRichSong(copy) && isRichSong(existing) && existing.migration)
+        copy = migrateSong(copy, existing.migration);
+      if (view.capabilities[copy.id] !== "owner" || !sameData(existing, copy))
+        throw new Error(
+          "The saved recovery copy has newer changes. Review it before continuing; your original pending work is kept.",
+        );
+      return validateLibrary(view.library);
+    }
+    const library = validateLibrary({
+      ...view.library,
+      schemaVersion:
+        isRichSong(copy) || view.library.schemaVersion === 2 ? 2 : 1,
+      songs: [...view.library.songs, copy],
+    });
+    const saved = await this.request<LibraryView>("/api/library", {
+      method: "PUT",
+      body: JSON.stringify({
+        library,
+        expectedRevision: view.library.revision,
+        versions: view.versions,
+        commandId: plan.commandId,
+        mode: "edit",
+        import: true,
+        recoveryKeyId: pending.keyId,
+      }),
+    });
+    // Keep the original encrypted draft. Only its opaque copy mapping is added;
+    // an unknown response can be reconciled by the same destination identity.
     return validateLibrary(saved.library);
   }
   recoverSong(
