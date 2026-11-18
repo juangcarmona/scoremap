@@ -16,8 +16,8 @@ tags:
 
 The owner requires an installable Android tablet PWA with no backend, accounts or cloud synchronization.
 
-<!-- pdac:cite id="CON-LOCAL-FIRST" digest="sha256:c7143c6945173116bb26101e9f1918b6d628d271d01b058eeb6d7f64d99b1f1a" -->
-<!-- pdac:cite id="CON-PLATFORM" digest="sha256:ed4f4900b26c706198a0448376f26d57d0665462c5e77ac4dbadc04bb75e6bf5" -->
+<!-- pdac:cite id="CON-LOCAL-FIRST" digest="sha256:a2cd6293106ac4e7a464b7ded96b8670d1de7480624260ba8c49a1400dbc824d" -->
+<!-- pdac:cite id="CON-PLATFORM" digest="sha256:635e50e18ab13a558ff7fb34323fb9c54c651858935b841272e22ce860067fbb" -->
 
 ## Decision
 

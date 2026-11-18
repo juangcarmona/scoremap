@@ -1,0 +1,14 @@
+.git
+.runtime
+node_modules
+dist
+**/bin
+**/obj
+test-results
+playwright-report
+docs/evidence
+*.local
+.env*
+config/*.private.json
+
+dist-private/

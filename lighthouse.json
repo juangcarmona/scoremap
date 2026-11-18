@@ -4,16 +4,19 @@
   "baseline": "0.1.0",
   "product": "ScoreMap",
   "application": {
-    "shape": "frontend",
+    "shape": "full-stack",
     "stacks": [
       "react",
-      "typescript"
+      "typescript",
+      "dotnet"
     ]
   },
   "profiles": [
     "react-web-platform",
     "pwa-capability",
-    "visual-theme"
+    "visual-theme",
+    "dotnet-backend",
+    "web-bff"
   ],
   "integrations": {
     "productShape": "0.26.1",
@@ -54,7 +57,20 @@
     "docs/profiles/pwa-capability/testing.md",
     ".agents/skills/lighthouse-pwa/SKILL.md",
     "docs/design/DESIGN.md",
-    ".agents/skills/lighthouse-ui/SKILL.md"
+    ".agents/skills/lighthouse-ui/SKILL.md",
+    "docs/profiles/dotnet/README.md",
+    "docs/profiles/dotnet/adoption.md",
+    "docs/profiles/dotnet/architecture.md",
+    "docs/profiles/dotnet/guardrails.md",
+    "docs/profiles/dotnet/practices.md",
+    "docs/profiles/dotnet/testing-and-development.md",
+    "docs/profiles/dotnet/use-cases.md",
+    ".agents/skills/lighthouse-dotnet/SKILL.md",
+    "docs/profiles/web-bff/README.md",
+    "docs/profiles/web-bff/adoption.md",
+    "docs/profiles/web-bff/security.md",
+    "docs/profiles/web-bff/testing.md",
+    ".agents/skills/lighthouse-web-bff/SKILL.md"
   ],
   "repository": {
     "layout": [

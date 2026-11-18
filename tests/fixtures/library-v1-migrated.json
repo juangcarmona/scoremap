@@ -1,0 +1,164 @@
+{
+  "schemaVersion": 2,
+  "revision": 7,
+  "songs": [
+    {
+      "id": "song",
+      "title": "Synthetic form",
+      "artist": "",
+      "notes": "Original",
+      "sections": [
+        {
+          "id": "verse",
+          "name": "Verse",
+          "repeat": 3,
+          "notes": "cue",
+          "chords": [
+            {
+              "root": "C",
+              "quality": "major",
+              "id": "sm-ecbc2b098ab5a4e37b2567365cddd6e01c7adb9166e787aaad4f101711aaaeff",
+              "measureId": "sm-f5c5f120e1a3dcaaa6dff1096dd4800217a01512f82ea85188453568becd2cd4",
+              "start": {
+                "n": 0,
+                "d": 1
+              },
+              "duration": {
+                "n": 1,
+                "d": 1
+              }
+            },
+            {
+              "root": "F#",
+              "quality": "minor",
+              "id": "sm-4343322b79ec249d0d57a32eccc55ed85c6f048f09de847a81ccb6a4f8144126",
+              "measureId": "sm-f5c5f120e1a3dcaaa6dff1096dd4800217a01512f82ea85188453568becd2cd4",
+              "start": {
+                "n": 1,
+                "d": 1
+              },
+              "duration": {
+                "n": 1,
+                "d": 1
+              }
+            },
+            {
+              "root": "Gb",
+              "quality": "major",
+              "id": "sm-95c0d94c8cf4381a38bcff72ba6f9ccc4dee02081378a5f7d11e65f879fde0a2",
+              "measureId": "sm-f5c5f120e1a3dcaaa6dff1096dd4800217a01512f82ea85188453568becd2cd4",
+              "start": {
+                "n": 2,
+                "d": 1
+              },
+              "duration": {
+                "n": 1,
+                "d": 1
+              }
+            },
+            {
+              "root": "B#",
+              "quality": "minor",
+              "id": "sm-22f0ef92b9efcc4240bfbd39a0dd1cf40f6655eb581a4c8e9f661ef392d45e6d",
+              "measureId": "sm-f5c5f120e1a3dcaaa6dff1096dd4800217a01512f82ea85188453568becd2cd4",
+              "start": {
+                "n": 3,
+                "d": 1
+              },
+              "duration": {
+                "n": 1,
+                "d": 1
+              }
+            },
+            {
+              "root": "Cb",
+              "quality": "major",
+              "id": "sm-e2b79169b75eddc6dbd7341613f7ec59ba0207b969a88f6e0f6ca2eb460e4c03",
+              "measureId": "sm-1adfa719cb868d43d6598cf5796cb2efcdd19d48f1b5d83c8dcbf6fc263edcc6",
+              "start": {
+                "n": 0,
+                "d": 1
+              },
+              "duration": {
+                "n": 1,
+                "d": 1
+              }
+            }
+          ],
+          "measures": [
+            {
+              "id": "sm-f5c5f120e1a3dcaaa6dff1096dd4800217a01512f82ea85188453568becd2cd4",
+              "meter": {
+                "numerator": 4,
+                "denominator": 4
+              },
+              "length": {
+                "n": 4,
+                "d": 1
+              }
+            },
+            {
+              "id": "sm-1adfa719cb868d43d6598cf5796cb2efcdd19d48f1b5d83c8dcbf6fc263edcc6",
+              "meter": {
+                "numerator": 4,
+                "denominator": 4
+              },
+              "length": {
+                "n": 4,
+                "d": 1
+              }
+            }
+          ]
+        }
+      ],
+      "references": [
+        {
+          "id": "ref",
+          "title": "Reference",
+          "url": "https://example.com"
+        }
+      ],
+      "schemaVersion": 2,
+      "migration": {
+        "sourceVersion": 1,
+        "identities": {
+          "arrangement": "sm-7a36225a5ab2b22b22f5dc3ce0559371893d0a920f7e3f50b902db84764150d4",
+          "part": "sm-ec2dd253928b3418a2c34ee3a25a00265d5bdcb4b7a966015a5549e5aed616c0",
+          "section/verse/measure/0": "sm-f5c5f120e1a3dcaaa6dff1096dd4800217a01512f82ea85188453568becd2cd4",
+          "section/verse/measure/1": "sm-1adfa719cb868d43d6598cf5796cb2efcdd19d48f1b5d83c8dcbf6fc263edcc6",
+          "section/verse/event/0": "sm-ecbc2b098ab5a4e37b2567365cddd6e01c7adb9166e787aaad4f101711aaaeff",
+          "section/verse/event/1": "sm-4343322b79ec249d0d57a32eccc55ed85c6f048f09de847a81ccb6a4f8144126",
+          "section/verse/event/2": "sm-95c0d94c8cf4381a38bcff72ba6f9ccc4dee02081378a5f7d11e65f879fde0a2",
+          "section/verse/event/3": "sm-22f0ef92b9efcc4240bfbd39a0dd1cf40f6655eb581a4c8e9f661ef392d45e6d",
+          "section/verse/event/4": "sm-e2b79169b75eddc6dbd7341613f7ec59ba0207b969a88f6e0f6ca2eb460e4c03"
+        }
+      },
+      "arrangements": [
+        {
+          "id": "sm-7a36225a5ab2b22b22f5dc3ce0559371893d0a920f7e3f50b902db84764150d4",
+          "name": "Default arrangement",
+          "parts": [
+            {
+              "id": "sm-ec2dd253928b3418a2c34ee3a25a00265d5bdcb4b7a966015a5549e5aed616c0",
+              "name": "Unassigned part",
+              "role": "",
+              "events": []
+            }
+          ],
+          "devices": [],
+          "bindings": [],
+          "voicings": []
+        }
+      ]
+    }
+  ],
+  "repertoires": [
+    {
+      "id": "set",
+      "title": "Set",
+      "songIds": [
+        "song"
+      ]
+    }
+  ]
+}

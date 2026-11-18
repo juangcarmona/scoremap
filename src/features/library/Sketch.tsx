@@ -1,5 +1,20 @@
+import { describeRemoval } from "./removalPreview";
+import { isRichSection, isRichSong } from "./score";
+import { ArrangementWorkspace } from "./ArrangementWorkspace";
+import { RichHarmonyEditor } from "./RichHarmonyEditor";
+import { sectionRemovalImpact } from "./scoreCommands";
+import type { HarmonyIdentity } from "../../shared/music/harmony";
 import { useState } from "react";
-import type { Chord, Command, Mode, Section, Song } from "./domain";
+import type {
+  Chord,
+  Command,
+  Mode,
+  Section,
+  LegacySection,
+  Song,
+} from "./domain";
+import { useNotation } from "../../shared/music/NotationContext";
+import { formatNote } from "../../shared/music/notation";
 import { Piano } from "../sketch/Piano";
 import { chordLabel } from "../sketch/chords";
 const roots = [
@@ -32,18 +47,49 @@ type Props = {
   mode: Mode;
   execute: (command: Command) => Promise<void>;
   report: (error: unknown) => void;
+  previewDirty: boolean;
+  onPreviewDirty: (dirty: boolean) => void;
 };
-function ChordEditor({
+function ChordEditor(props: {
+  section: Section;
+  song: Song;
+  songId: string;
+  execute: Props["execute"];
+  report: Props["report"];
+}) {
+  if (isRichSection(props.section)) {
+    if (!isRichSong(props.song))
+      throw new Error("Identified harmony requires its upgraded song.");
+    return (
+      <RichHarmonyEditor
+        section={props.section}
+        song={props.song}
+        execute={props.execute}
+        report={props.report}
+      />
+    );
+  }
+  return (
+    <LegacyChordEditor
+      section={props.section}
+      songId={props.songId}
+      execute={props.execute}
+      report={props.report}
+    />
+  );
+}
+function LegacyChordEditor({
   section,
   songId,
   execute,
   report,
 }: {
-  section: Section;
+  section: LegacySection;
   songId: string;
   execute: Props["execute"];
   report: Props["report"];
 }) {
+  const { preference } = useNotation();
   const [editing, setEditing] = useState<number | null>(null);
   const current = editing === null ? undefined : section.chords[editing];
   return (
@@ -83,7 +129,7 @@ function ChordEditor({
           <option value="new">Add at end</option>
           {section.chords.map((c, i) => (
             <option key={i} value={i}>
-              {i + 1}. {chordLabel(c)}
+              {i + 1}. {chordLabel(c, preference)}
             </option>
           ))}
         </select>
@@ -96,7 +142,9 @@ function ChordEditor({
           defaultValue={current?.root ?? "C"}
         >
           {roots.map((r) => (
-            <option key={r}>{r}</option>
+            <option key={r} value={r}>
+              {formatNote(r, preference)}
+            </option>
           ))}
         </select>
       </label>
@@ -142,17 +190,42 @@ export function Sketch({
   mode,
   execute,
   report,
+  previewDirty,
+  onPreviewDirty,
 }: Props) {
+  const { preference } = useNotation();
   const [selection, setSelection] = useState<{
     sectionId: string;
     index: number;
+    eventId?: string;
   } | null>(null);
   const [notesOpen, setNotesOpen] = useState(false);
+  const selectedSection = song.sections.find(
+    (s) => s.id === selection?.sectionId,
+  );
   const chosen =
-    song.sections.find((s) => s.id === selection?.sectionId)?.chords[
-      selection?.index ?? -1
-    ] ?? song.sections.flatMap((s) => s.chords)[0];
+    (selectedSection && isRichSection(selectedSection)
+      ? selectedSection.chords.find((event) => event.id === selection?.eventId)
+      : selectedSection?.chords[selection?.index ?? -1]) ??
+    song.sections.flatMap<HarmonyIdentity>((s) => s.chords)[0];
   const edit = mode === "edit";
+  const performedEvent = isRichSong(song)
+    ? (song.sections
+        .flatMap((section) => section.chords)
+        .find((event) => event.id === selection?.eventId) ??
+      song.sections.flatMap((section) => section.chords)[0])
+    : undefined;
+  function selectChord(sectionId: string, index: number, eventId?: string) {
+    if (
+      previewDirty &&
+      !window.confirm(
+        "Discard this uncommitted played-note preview before changing the event? Export it first to keep it.",
+      )
+    )
+      return;
+    onPreviewDirty(false);
+    setSelection({ sectionId, index, ...(eventId ? { eventId } : {}) });
+  }
   function move(sectionId: string, direction: number) {
     const order = song.sections.map((s) => s.id);
     const i = order.indexOf(sectionId),
@@ -166,6 +239,16 @@ export function Sketch({
   return (
     <div className="sketch-layout">
       <div className="structure">
+        {selection?.eventId &&
+          isRichSong(song) &&
+          !song.sections.some((section) =>
+            section.chords.some((event) => event.id === selection.eventId),
+          ) && (
+            <p role="status">
+              The selected harmonic event is no longer available. Showing the
+              first available event; choose another context to continue.
+            </p>
+          )}
         <div className="sketch-caption">
           <h2>Song sketch</h2>
           <span>
@@ -273,15 +356,19 @@ export function Sketch({
                       type="button"
                       aria-label={`Remove ${section.name}`}
                       onClick={() => {
+                        const impact = isRichSong(song)
+                          ? sectionRemovalImpact(song, section.id)
+                          : undefined;
                         if (
                           window.confirm(
-                            `Remove ${section.name} and its chords and notes?`,
+                            `Remove ${section.name} and its chords and notes?${impact ? ` This also removes ${impact.notes.length} performed notes and ${impact.voicings.length} voicings across arrangements, reconciles ${impact.bindings.length} assignments and unlinks ${impact.ties.length} ties.\n${isRichSong(song) ? describeRemoval(song, impact, preference) : ""}` : ""}`,
                           )
                         )
                           void execute({
                             type: "removeSection",
                             songId: song.id,
                             sectionId: section.id,
+                            ...(impact ? { reconciliation: impact } : {}),
                           }).catch(report);
                       }}
                     >
@@ -297,17 +384,23 @@ export function Sketch({
                 {section.chords.map((chord, i) => (
                   <button
                     type="button"
-                    key={i}
-                    aria-label={`${section.name} chord ${i + 1}: ${chordLabel(chord)}`}
+                    key={"id" in chord ? chord.id : i}
+                    aria-label={`${section.name} chord ${i + 1}: ${chordLabel(chord, preference)}`}
                     aria-pressed={
                       selection?.sectionId === section.id &&
-                      selection.index === i
+                      ("id" in chord
+                        ? selection.eventId === chord.id
+                        : selection.index === i)
                     }
                     onClick={() =>
-                      setSelection({ sectionId: section.id, index: i })
+                      selectChord(
+                        section.id,
+                        i,
+                        "id" in chord ? chord.id : undefined,
+                      )
                     }
                   >
-                    {chordLabel(chord)}
+                    {chordLabel(chord, preference)}
                   </button>
                 ))}
                 {!section.chords.length && (
@@ -360,6 +453,7 @@ export function Sketch({
                     <button type="submit">Save section</button>
                   </form>
                   <ChordEditor
+                    song={song}
                     section={section}
                     songId={song.id}
                     execute={execute}
@@ -458,6 +552,28 @@ export function Sketch({
           Tap any chord in the sketch to see its keys.
         </p>
       </aside>
+      {isRichSong(song) && (
+        <ArrangementWorkspace
+          song={song}
+          harmonic={performedEvent}
+          editable={edit}
+          execute={execute}
+          report={report}
+          dirty={previewDirty}
+          setDirty={onPreviewDirty}
+          onSelectHarmony={(id) => {
+            const section = song.sections.find((section) =>
+              section.chords.some((event) => event.id === id),
+            );
+            if (section)
+              setSelection({
+                sectionId: section.id,
+                index: section.chords.findIndex((event) => event.id === id),
+                eventId: id,
+              });
+          }}
+        />
+      )}
     </div>
   );
 }

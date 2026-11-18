@@ -1,22 +1,22 @@
 ---
 id: BC-RECOVERY
 type: bounded-context
-title: Local continuity
-status: active
+title: Acknowledged continuity and recovery
+status: draft
 ---
 
 ## Responsibility
 
-Retain, recover and transfer the personal library.
+Retain, reconstruct and transfer complete personal work at explicit anonymous-local and authenticated-server commit boundaries, including protected pending work and recoverable history.
 
 ## Language
 
-Local library, backup and attachment.
+Library, backup, schema version, content revision, pending work, acknowledgement, expected revision, retry receipt, claim, conflict and restore.
 
 ## Boundaries
 
-No cloud synchronization.
+No silent conflict merge, cross-account recovery, imported authority or promise of instant offline revocation. Persistence status is not a song lifecycle.
 
 ## External Relationships
 
-The musician supplies content. The library owns song identity; sketches and local attachments retain that identity.
+Library supplies identity/capability/retention rules; Sketch supplies complete musical invariants. Acknowledged private recovery is service-authoritative while approved device work remains explicitly pending. Operator backups have a separate documented restore/retention contract.

@@ -1,9 +1,20 @@
 {
   "format": "pdac-verification-evidence/v1alpha1",
   "provider": "ScoreMap Vitest and Playwright completed reports",
-  "run-id": "local-530b9a98da3fd13cf7be9bdc8f840020dc93c112",
-  "revision": "530b9a98da3fd13cf7be9bdc8f840020dc93c112",
+  "run-id": "local-eedb70df4e1f75c1eda4e3d428a4844c1ddbcd76",
+  "revision": "eedb70df4e1f75c1eda4e3d428a4844c1ddbcd76",
   "results": [
+    {
+      "test-id": "vitest:tests/offlineLease.test.ts:1:SB-LEASE-EXPIRY domain deadline witness: locks at the exact eight-hour bound and repeated offline reads or edits never renew it",
+      "level": "domain",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-LEASE-EXPIRY",
+          "digest": "sha256:66183f5ad7f2bfc1eece9fd3912db48e31a28ef81f1bffba8d9e80669214f785"
+        }
+      ]
+    },
     {
       "test-id": "vitest:tests/library/application.test.ts:0:Serialized application commands SB-PERSIST-RECOVER: rapid commands serialize against the latest candidate",
       "level": "integration",
@@ -11,7 +22,7 @@
       "citations": [
         {
           "id": "SB-PERSIST-RECOVER",
-          "digest": "sha256:bdcc4abc19436e6b008b9d88047efe937f948e71d6c817e0c06209b3b498cd26"
+          "digest": "sha256:3bb4bec701cf460455382daec1bd17f1e87e0a7f2f5cddc33e244a5b6287d9af"
         }
       ]
     },
@@ -260,11 +271,11 @@
       "citations": [
         {
           "id": "SB-SONG-DELETE",
-          "digest": "sha256:f876d4fa7184eeae5904d228229273eef9984a965c2477204204744d8262a280"
+          "digest": "sha256:bbd38eb21cb613007349d8e8a1ecedaf120174f33d7caca81a0f0acdcaf2d060"
         },
         {
           "id": "SB-SONG-DELETE-LAST",
-          "digest": "sha256:1724d18f797def4fe5ef173c474d969c94270aefbc67eb6574e415cbb95b5ac7"
+          "digest": "sha256:6d28d410277829ac14537809d400174250ebf8c7ad66ba5d7fe33b4d8cab5451"
         }
       ]
     },
@@ -460,7 +471,7 @@
       "citations": [
         {
           "id": "SB-CHORD-INVALID",
-          "digest": "sha256:cece725b540bd03418e078c052573403e8d91a0dec719a841cb8812b0128c51f"
+          "digest": "sha256:fa5826a9a93f7a9bc10e9ad1e72754e764bb2df8f23ed7ac3cbf164fa793c6cf"
         }
       ]
     },
@@ -480,18 +491,18 @@
       ]
     },
     {
-      "test-id": "vitest:tests/library/storage.test.ts:0:Atomic local persistence SB-PERSIST-RECOVER: a new connection recovers acknowledged identities and content",
+      "test-id": "vitest:tests/library/storage.test.ts:2:Atomic local persistence SB-PERSIST-RECOVER: a new connection recovers acknowledged identities and content",
       "level": "integration",
       "outcome": "passed",
       "citations": [
         {
           "id": "SB-PERSIST-RECOVER",
-          "digest": "sha256:bdcc4abc19436e6b008b9d88047efe937f948e71d6c817e0c06209b3b498cd26"
+          "digest": "sha256:3bb4bec701cf460455382daec1bd17f1e87e0a7f2f5cddc33e244a5b6287d9af"
         }
       ]
     },
     {
-      "test-id": "vitest:tests/library/storage.test.ts:1:Atomic local persistence SB-PERSIST-CONFLICT: stale concurrent writes never replace the newer durable revision",
+      "test-id": "vitest:tests/library/storage.test.ts:3:Atomic local persistence SB-PERSIST-CONFLICT: stale concurrent writes never replace the newer durable revision",
       "level": "integration",
       "outcome": "passed",
       "citations": [
@@ -502,7 +513,7 @@
       ]
     },
     {
-      "test-id": "vitest:tests/library/storage.test.ts:2:Atomic local persistence SB-PERSIST-FAILURE: quota failure preserves the previous acknowledged library",
+      "test-id": "vitest:tests/library/storage.test.ts:4:Atomic local persistence SB-PERSIST-FAILURE: quota failure preserves the previous acknowledged library",
       "level": "integration",
       "outcome": "passed",
       "citations": [
@@ -513,7 +524,7 @@
       ]
     },
     {
-      "test-id": "vitest:tests/library/storage.test.ts:3:Atomic local persistence SB-RECOVERY-INVALID: unsupported stored versions are preserved rather than reset",
+      "test-id": "vitest:tests/library/storage.test.ts:5:Atomic local persistence SB-RECOVERY-INVALID: unsupported stored versions are preserved rather than reset",
       "level": "integration",
       "outcome": "passed",
       "citations": [
@@ -524,7 +535,7 @@
       ]
     },
     {
-      "test-id": "vitest:tests/library/storage.test.ts:4:Atomic local persistence SB-BACKUP-REJECT: invalid candidates cannot enter storage",
+      "test-id": "vitest:tests/library/storage.test.ts:6:Atomic local persistence SB-BACKUP-REJECT: invalid candidates cannot enter storage",
       "level": "integration",
       "outcome": "passed",
       "citations": [
@@ -541,7 +552,7 @@
       "citations": [
         {
           "id": "SB-KEYBOARD",
-          "digest": "sha256:da02de8f23d9eb7f43c0fb46ab22fd8ab4fab67d61dc38a453a6ba6894e0c8b8"
+          "digest": "sha256:cda070d024497257667b098a1cdd8841ea33ef5c1483ae5094a2370e6ea751a7"
         },
         {
           "id": "SB-CHORD-MODIFY",
@@ -871,7 +882,7 @@
       "citations": [
         {
           "id": "SB-CHORD-INVALID",
-          "digest": "sha256:cece725b540bd03418e078c052573403e8d91a0dec719a841cb8812b0128c51f"
+          "digest": "sha256:fa5826a9a93f7a9bc10e9ad1e72754e764bb2df8f23ed7ac3cbf164fa793c6cf"
         }
       ]
     },
@@ -882,7 +893,7 @@
       "citations": [
         {
           "id": "SB-CHORD-INVALID",
-          "digest": "sha256:cece725b540bd03418e078c052573403e8d91a0dec719a841cb8812b0128c51f"
+          "digest": "sha256:fa5826a9a93f7a9bc10e9ad1e72754e764bb2df8f23ed7ac3cbf164fa793c6cf"
         }
       ]
     },
@@ -893,7 +904,7 @@
       "citations": [
         {
           "id": "SB-CHORD-INVALID",
-          "digest": "sha256:cece725b540bd03418e078c052573403e8d91a0dec719a841cb8812b0128c51f"
+          "digest": "sha256:fa5826a9a93f7a9bc10e9ad1e72754e764bb2df8f23ed7ac3cbf164fa793c6cf"
         }
       ]
     },
@@ -904,7 +915,7 @@
       "citations": [
         {
           "id": "SB-CHORD-INVALID",
-          "digest": "sha256:cece725b540bd03418e078c052573403e8d91a0dec719a841cb8812b0128c51f"
+          "digest": "sha256:fa5826a9a93f7a9bc10e9ad1e72754e764bb2df8f23ed7ac3cbf164fa793c6cf"
         }
       ]
     },
@@ -915,7 +926,7 @@
       "citations": [
         {
           "id": "SB-CHORD-INVALID",
-          "digest": "sha256:cece725b540bd03418e078c052573403e8d91a0dec719a841cb8812b0128c51f"
+          "digest": "sha256:fa5826a9a93f7a9bc10e9ad1e72754e764bb2df8f23ed7ac3cbf164fa793c6cf"
         }
       ]
     },
@@ -926,7 +937,7 @@
       "citations": [
         {
           "id": "SB-CHORD-INVALID",
-          "digest": "sha256:cece725b540bd03418e078c052573403e8d91a0dec719a841cb8812b0128c51f"
+          "digest": "sha256:fa5826a9a93f7a9bc10e9ad1e72754e764bb2df8f23ed7ac3cbf164fa793c6cf"
         }
       ]
     },
@@ -937,7 +948,7 @@
       "citations": [
         {
           "id": "SB-KEYBOARD",
-          "digest": "sha256:da02de8f23d9eb7f43c0fb46ab22fd8ab4fab67d61dc38a453a6ba6894e0c8b8"
+          "digest": "sha256:cda070d024497257667b098a1cdd8841ea33ef5c1483ae5094a2370e6ea751a7"
         }
       ]
     },
@@ -948,7 +959,7 @@
       "citations": [
         {
           "id": "SB-KEYBOARD",
-          "digest": "sha256:da02de8f23d9eb7f43c0fb46ab22fd8ab4fab67d61dc38a453a6ba6894e0c8b8"
+          "digest": "sha256:cda070d024497257667b098a1cdd8841ea33ef5c1483ae5094a2370e6ea751a7"
         }
       ]
     },
@@ -971,7 +982,7 @@
         },
         {
           "id": "SB-PERSIST-RECOVER",
-          "digest": "sha256:bdcc4abc19436e6b008b9d88047efe937f948e71d6c817e0c06209b3b498cd26"
+          "digest": "sha256:3bb4bec701cf460455382daec1bd17f1e87e0a7f2f5cddc33e244a5b6287d9af"
         }
       ]
     },
@@ -1038,7 +1049,7 @@
       "citations": [
         {
           "id": "SB-OFFLINE",
-          "digest": "sha256:40eef81b2f397f73f52df9d8a0892f678edfdbaeea5a485d6a16003086a24a26"
+          "digest": "sha256:c8e62d06222a082c057240a58f14633bda2e04f4655a6a0beb6c1f54af7e7955"
         }
       ]
     },
@@ -1065,7 +1076,7 @@
         },
         {
           "id": "SB-KEYBOARD",
-          "digest": "sha256:da02de8f23d9eb7f43c0fb46ab22fd8ab4fab67d61dc38a453a6ba6894e0c8b8"
+          "digest": "sha256:cda070d024497257667b098a1cdd8841ea33ef5c1483ae5094a2370e6ea751a7"
         }
       ]
     },
@@ -1077,6 +1088,36 @@
         {
           "id": "SB-CHORD-MODIFY",
           "digest": "sha256:22362c97fc63f3f2c09e70daf1b916611f624e2a27d7304ad1df7e35ee729d91"
+        }
+      ]
+    },
+    {
+      "test-id": "playwright:tablet-chromium:SB-PERSIST-CONFLICT SB-PERSIST-RECOVER: a stale browser tab cannot overwrite an acknowledged revision and can export its draft",
+      "level": "end-to-end",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-PERSIST-CONFLICT",
+          "digest": "sha256:3a7fdc4b47da270a63bc50bf681af96793fb46a8283af9093b01d9959f026b37"
+        },
+        {
+          "id": "SB-PERSIST-RECOVER",
+          "digest": "sha256:3bb4bec701cf460455382daec1bd17f1e87e0a7f2f5cddc33e244a5b6287d9af"
+        }
+      ]
+    },
+    {
+      "test-id": "playwright:tablet-chromium:SB-PERSIST-FAILURE SB-PERSIST-RECOVER: a failed browser write preserves durable data and an exportable draft until explicit retry",
+      "level": "end-to-end",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-PERSIST-FAILURE",
+          "digest": "sha256:31db2bb51e3c0495ac05dc1b53938c2de756eef9176e3ba747f6b877ee014357"
+        },
+        {
+          "id": "SB-PERSIST-RECOVER",
+          "digest": "sha256:3bb4bec701cf460455382daec1bd17f1e87e0a7f2f5cddc33e244a5b6287d9af"
         }
       ]
     },
@@ -1102,11 +1143,11 @@
       "citations": [
         {
           "id": "SB-OFFLINE",
-          "digest": "sha256:40eef81b2f397f73f52df9d8a0892f678edfdbaeea5a485d6a16003086a24a26"
+          "digest": "sha256:c8e62d06222a082c057240a58f14633bda2e04f4655a6a0beb6c1f54af7e7955"
         },
         {
           "id": "SB-PERSIST-RECOVER",
-          "digest": "sha256:bdcc4abc19436e6b008b9d88047efe937f948e71d6c817e0c06209b3b498cd26"
+          "digest": "sha256:3bb4bec701cf460455382daec1bd17f1e87e0a7f2f5cddc33e244a5b6287d9af"
         }
       ]
     },
@@ -1117,11 +1158,158 @@
       "citations": [
         {
           "id": "SB-OFFLINE",
-          "digest": "sha256:40eef81b2f397f73f52df9d8a0892f678edfdbaeea5a485d6a16003086a24a26"
+          "digest": "sha256:c8e62d06222a082c057240a58f14633bda2e04f4655a6a0beb6c1f54af7e7955"
         },
         {
           "id": "SB-PERFORMANCE",
           "digest": "sha256:c004c86080428dd85d0c3b42ce24be640955fc52f3d9245f05db6e90e6344355"
+        }
+      ]
+    },
+    {
+      "test-id": "playwright:connected-chromium:SB-NAVIGATION: one private performance context synchronizes three independently ranged keyboards and clears the silent part",
+      "level": "end-to-end",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-NAVIGATION",
+          "digest": "sha256:e4e00cff984f6fb87df0263902aa1b4c04883ead9b0e4aed14a2e24aef75eff4"
+        }
+      ]
+    },
+    {
+      "test-id": "playwright:connected-chromium:SB-PART-ISOLATION: one private editor command adds P4 and K4 binding while preserving three prior parts, independent Q and shared form",
+      "level": "end-to-end",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-PART-ISOLATION",
+          "digest": "sha256:85cf4dedece8f20f84edc68e86ac37c4b105e99145da4e57a830453758d1ef31"
+        }
+      ]
+    },
+    {
+      "test-id": "playwright:connected-chromium:SB-ISOLATION: an independent actual owner cannot read a guessed nested arrangement; both owners' complete resources remain unchanged",
+      "level": "end-to-end",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-ISOLATION",
+          "digest": "sha256:c7260a9a28f7e15ed8636dbacee4e4ab3d2a160dcb5f63da5bdb77ef66957616"
+        }
+      ]
+    },
+    {
+      "test-id": "playwright:connected-chromium:SB-ROLE-REVOKE: a protected performed-note write based on actual revision 21 refuses after an acknowledged editor-to-viewer downgrade",
+      "level": "end-to-end",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-ROLE-REVOKE",
+          "digest": "sha256:5d99fcf4a7f445424b499f791cd8fdcba987accd64320bf82ca6c1eee9f41936"
+        }
+      ]
+    },
+    {
+      "test-id": "playwright:connected-chromium:SB-NOTATION: real dual Latin-primary preference changes D-flat3 F3 A-flat3 across editor, theory, saved voicing and consultation without a musical revision",
+      "level": "end-to-end",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-NOTATION",
+          "digest": "sha256:e94c0c4a2fdd7d36c09351652fd3fac846ebf5915b86ddf2bb56b3d97f9bad32"
+        }
+      ]
+    },
+    {
+      "test-id": "playwright:connected-chromium:SB-REMOTE-COMMIT: actual Song 12→13 atomically saves performed pitches and bindings; application acknowledgement preserves a newer draft and original retry preserves history",
+      "level": "integration",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-REMOTE-COMMIT",
+          "digest": "sha256:a1ea1989597914fb6e6274f53bedb39be6ddfcaa4d620a9e3b5d30c4ab72de2c"
+        }
+      ]
+    },
+    {
+      "test-id": "playwright:connected-chromium:SB-PRIVATE-RECOVER: a clean independently authenticated browser reconstructs Song 13, both independent arrangements and separately acknowledged notation without replay",
+      "level": "end-to-end",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-PRIVATE-RECOVER",
+          "digest": "sha256:c7bad250d5d7012accdd7852a0ae3a6f17a26cf19382cb888479746e765c15e1"
+        }
+      ]
+    },
+    {
+      "test-id": "playwright:connected-chromium:SB-SONG-RETAIN SB-SONG-RESTORE: complete independent rich arrangements delete 17→18 and restore 18→19 into an empty real owner's library without reviving grants or memberships",
+      "level": "end-to-end",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-SONG-RETAIN",
+          "digest": "sha256:cfd69ba6b4801ce20df6499716e35080c2793a9a78a2f3cd7880f765ff982c5d"
+        },
+        {
+          "id": "SB-SONG-RESTORE",
+          "digest": "sha256:bc8195c3e26f9999e9bc357c4c26463f4d75b33d0cfeb8959262634b10b0f857"
+        }
+      ]
+    },
+    {
+      "test-id": "playwright:connected-chromium:SB-LIBRARY-RESTORE: a full rich Song restores 18→19 into a populated private library without changing its surviving song, history, memberships or personal resources",
+      "level": "end-to-end",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-LIBRARY-RESTORE",
+          "digest": "sha256:421376c1f89c4e7042848c358bc37845549f3f021f3cd77d7fc3b3176fe5d56d"
+        }
+      ]
+    },
+    {
+      "test-id": "playwright:connected-chromium:SB-SONG-PURGE: separately named irreversible confirmation purges complete retained revision 18 while preserving an active song and independent personal resources",
+      "level": "end-to-end",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-SONG-PURGE",
+          "digest": "sha256:133809f84408d5503c4bd2772f4dd2d435458e28d64d20d19554e6a4ccfb625c"
+        }
+      ]
+    },
+    {
+      "test-id": "playwright:connected-chromium:SB-SESSION-LOCK: a real principal's known deadline locks complete performed-note pending work, rejects late responses and retains only protected recovery across account switch",
+      "level": "end-to-end",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-SESSION-LOCK",
+          "digest": "sha256:a5e1891191daf4e685982b11b403e5d7cafb94146788ab10dc1614faccbef239"
+        }
+      ]
+    },
+    {
+      "test-id": "playwright:connected-chromium:SB-PRIVATE-REFUSE: the same reauthenticated editor cannot open a protected complete draft after owner revocation, but can explicitly remove its ciphertext",
+      "level": "end-to-end",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-PRIVATE-REFUSE",
+          "digest": "sha256:22d47656277b4ac1c3cfc10ff9b8314cee5c33c492c10e1ad0c90ef6fc292fa3"
+        }
+      ]
+    },
+    {
+      "test-id": "playwright:connected-chromium:SB-VOICING: actual private builder acknowledges one exact octave edit, preserving shared form, independent parts, history and personal resources",
+      "level": "end-to-end",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "SB-VOICING",
+          "digest": "sha256:777bafd99676a675c0bf9252fdfd22d85fc9338f8343336a64c4733d92a2e429"
         }
       ]
     },

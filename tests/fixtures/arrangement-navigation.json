@@ -1,0 +1,352 @@
+{
+  "schemaVersion": 2,
+  "id": "navigation-song",
+  "title": "Synthetic synchronized consultation",
+  "artist": "Fixture",
+  "notes": "Retained navigation cue",
+  "sections": [
+    {
+      "id": "v",
+      "name": "Verse",
+      "repeat": 2,
+      "notes": "Section cue",
+      "measures": [
+        {
+          "id": "m1",
+          "meter": {
+            "numerator": 4,
+            "denominator": 4
+          },
+          "length": {
+            "n": 4,
+            "d": 1
+          }
+        },
+        {
+          "id": "m2",
+          "meter": {
+            "numerator": 4,
+            "denominator": 4
+          },
+          "length": {
+            "n": 4,
+            "d": 1
+          }
+        }
+      ],
+      "chords": [
+        {
+          "id": "h1",
+          "measureId": "m1",
+          "start": {
+            "n": 0,
+            "d": 1
+          },
+          "duration": {
+            "n": 1,
+            "d": 1
+          },
+          "root": "C",
+          "quality": "major-seventh"
+        },
+        {
+          "id": "held",
+          "measureId": "m1",
+          "start": {
+            "n": 1,
+            "d": 1
+          },
+          "duration": {
+            "n": 1,
+            "d": 1
+          },
+          "root": "C",
+          "quality": "major-seventh"
+        },
+        {
+          "id": "h2",
+          "measureId": "m2",
+          "start": {
+            "n": 0,
+            "d": 1
+          },
+          "duration": {
+            "n": 4,
+            "d": 1
+          },
+          "root": "C",
+          "quality": "major-seventh"
+        }
+      ]
+    }
+  ],
+  "references": [],
+  "arrangements": [
+    {
+      "id": "r",
+      "name": "Three independent keyboards",
+      "parts": [
+        {
+          "id": "p1",
+          "name": "Low part",
+          "role": "bass",
+          "events": [
+            {
+              "id": "n-0-m1-0",
+              "measureId": "m1",
+              "start": {
+                "n": 0,
+                "d": 1
+              },
+              "duration": {
+                "n": 2,
+                "d": 1
+              },
+              "pitch": {
+                "spelling": "C",
+                "octave": 2,
+                "midi": 36
+              },
+              "voicingId": "v1"
+            },
+            {
+              "id": "n-0-m1-1",
+              "measureId": "m1",
+              "start": {
+                "n": 0,
+                "d": 1
+              },
+              "duration": {
+                "n": 2,
+                "d": 1
+              },
+              "pitch": {
+                "spelling": "G",
+                "octave": 2,
+                "midi": 43
+              },
+              "voicingId": "v1"
+            },
+            {
+              "id": "n-0-m2-0",
+              "measureId": "m2",
+              "start": {
+                "n": 0,
+                "d": 1
+              },
+              "duration": {
+                "n": 4,
+                "d": 1
+              },
+              "pitch": {
+                "spelling": "C",
+                "octave": 2,
+                "midi": 36
+              },
+              "voicingId": "v2"
+            },
+            {
+              "id": "n-0-m2-1",
+              "measureId": "m2",
+              "start": {
+                "n": 0,
+                "d": 1
+              },
+              "duration": {
+                "n": 4,
+                "d": 1
+              },
+              "pitch": {
+                "spelling": "G",
+                "octave": 2,
+                "midi": 43
+              },
+              "voicingId": "v2"
+            }
+          ],
+          "hand": "left"
+        },
+        {
+          "id": "p2",
+          "name": "High part",
+          "role": "harmony",
+          "events": [
+            {
+              "id": "n-1-m1-0",
+              "measureId": "m1",
+              "start": {
+                "n": 0,
+                "d": 1
+              },
+              "duration": {
+                "n": 2,
+                "d": 1
+              },
+              "pitch": {
+                "spelling": "E",
+                "octave": 4,
+                "midi": 64
+              },
+              "voicingId": "v1"
+            },
+            {
+              "id": "n-1-m1-1",
+              "measureId": "m1",
+              "start": {
+                "n": 0,
+                "d": 1
+              },
+              "duration": {
+                "n": 2,
+                "d": 1
+              },
+              "pitch": {
+                "spelling": "B",
+                "octave": 4,
+                "midi": 71
+              },
+              "voicingId": "v1"
+            },
+            {
+              "id": "n-1-m2-0",
+              "measureId": "m2",
+              "start": {
+                "n": 0,
+                "d": 1
+              },
+              "duration": {
+                "n": 4,
+                "d": 1
+              },
+              "pitch": {
+                "spelling": "E",
+                "octave": 4,
+                "midi": 64
+              },
+              "voicingId": "v2"
+            },
+            {
+              "id": "n-1-m2-1",
+              "measureId": "m2",
+              "start": {
+                "n": 0,
+                "d": 1
+              },
+              "duration": {
+                "n": 4,
+                "d": 1
+              },
+              "pitch": {
+                "spelling": "B",
+                "octave": 4,
+                "midi": 71
+              },
+              "voicingId": "v2"
+            }
+          ],
+          "hand": "right"
+        },
+        {
+          "id": "p3",
+          "name": "Pad part",
+          "role": "pad",
+          "events": [
+            {
+              "id": "n-2-m1-0",
+              "measureId": "m1",
+              "start": {
+                "n": 0,
+                "d": 1
+              },
+              "duration": {
+                "n": 1,
+                "d": 1
+              },
+              "pitch": {
+                "spelling": "C",
+                "octave": 4,
+                "midi": 60
+              },
+              "voicingId": "v1"
+            }
+          ]
+        }
+      ],
+      "devices": [
+        {
+          "id": "k1",
+          "name": "Low keyboard",
+          "instrument": "keyboard",
+          "range": [
+            24,
+            59
+          ]
+        },
+        {
+          "id": "k2",
+          "name": "High keyboard",
+          "instrument": "keyboard",
+          "range": [
+            48,
+            95
+          ]
+        },
+        {
+          "id": "k3",
+          "name": "Pad keyboard",
+          "instrument": "keyboard",
+          "range": [
+            36,
+            83
+          ]
+        }
+      ],
+      "bindings": [
+        {
+          "id": "b1",
+          "partId": "p1",
+          "deviceId": "k1",
+          "range": [
+            24,
+            59
+          ],
+          "sound": "Bass"
+        },
+        {
+          "id": "b2",
+          "partId": "p2",
+          "deviceId": "k2",
+          "range": [
+            48,
+            95
+          ],
+          "sound": "Piano"
+        },
+        {
+          "id": "b3",
+          "partId": "p3",
+          "deviceId": "k3",
+          "range": [
+            36,
+            83
+          ],
+          "sound": "Pad"
+        }
+      ],
+      "voicings": [
+        {
+          "id": "v1",
+          "name": "First voicing",
+          "harmonyId": "h1",
+          "custom": false
+        },
+        {
+          "id": "v2",
+          "name": "Second voicing",
+          "harmonyId": "h2",
+          "custom": false
+        }
+      ]
+    }
+  ]
+}

@@ -10,15 +10,32 @@ jobs:
   verify:
     name: Verify ScoreMap
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 24
           cache: npm
-      - run: npm ci --ignore-scripts
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - run: npx --yes --package=npm@10.9.4 -- npm ci --ignore-scripts
       - run: npx --no-install playwright install --with-deps chromium
+      - name: Connected private-library qualification
+        shell: bash
+        run: |
+          npm run build:private
+          node --input-type=module -e 'import fs from "node:fs"; const c=JSON.parse(fs.readFileSync("config/application.example.json","utf8")); c.Application.PrivateOfflineMinutes=1; fs.writeFileSync(process.env.RUNNER_TEMP+"/scoremap-application.private.json",JSON.stringify(c),{mode:0o600});'
+          setsid npm run dev:private -- "$RUNNER_TEMP/scoremap-application.private.json" config/development-users.example.json > "$RUNNER_TEMP/scoremap-connected.log" 2>&1 &
+          scoremap_bootstrap_group=$!
+          trap 'kill -- -"$scoremap_bootstrap_group" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 90); do
+            if curl --fail --silent http://localhost:5280/health/ready >/dev/null; then break; fi
+            sleep 2
+          done
+          curl --fail --silent http://localhost:5280/health/ready >/dev/null
+          npm run verify:connected
       - run: npm run verify:delivery
       - uses: actions/upload-artifact@v4
         if: always()

@@ -1,0 +1,53 @@
+{
+  "packageVersions": {
+    "note": "4.12.4",
+    "chord": "6.2.2",
+    "chordType": "5.2.2",
+    "detect": "4.9.4"
+  },
+  "license": "MIT",
+  "auditedPackages": 14,
+  "reportedVulnerabilities": 0,
+  "qualityCount": 32,
+  "acceptedDefinitionsIncludingCompatibleAlterations": 172,
+  "independentExpectedFixtures": 6,
+  "allAcceptedDefinitionsCheckedAgainstIndependentDegreeSemitones": true,
+  "providerDefaultThirteenth": [
+    "C",
+    "E",
+    "G",
+    "Bb",
+    "D",
+    "A"
+  ],
+  "requiredThirteenth": [
+    "C",
+    "E",
+    "G",
+    "Bb",
+    "D",
+    "F",
+    "A"
+  ],
+  "applicationDefinedDictionaryDetectsRequiredThirteenth": true,
+  "ambiguous": [
+    {
+      "root": "C",
+      "quality": "major-sixth",
+      "alterations": []
+    },
+    {
+      "root": "A",
+      "quality": "minor-seventh",
+      "alterations": [],
+      "detectedBass": "C"
+    }
+  ],
+  "unknownHonest": true,
+  "select": [
+    "@tonaljs/note@4.12.4",
+    "@tonaljs/chord-type@5.2.2",
+    "@tonaljs/chord-detect@4.9.4"
+  ],
+  "rejectDirectDefaultChordDictionary": true
+}

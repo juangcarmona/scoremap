@@ -6,7 +6,9 @@ interface InstallPrompt extends Event {
 export function PwaStatus({
   beforeUpdate,
   report,
+  privateLibrary = false,
 }: {
+  privateLibrary?: boolean;
   beforeUpdate: () => Promise<unknown>;
   report: (error: unknown) => void;
 }) {
@@ -99,7 +101,11 @@ export function PwaStatus({
   return (
     <>
       {offline && (
-        <span className="offline-label">Offline · local library</span>
+        <span className="offline-label">
+          {privateLibrary
+            ? "Offline · protected private copy"
+            : "Offline · local library"}
+        </span>
       )}
       {install && (
         <button

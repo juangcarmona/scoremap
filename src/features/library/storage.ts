@@ -1,11 +1,32 @@
+import type { ImportProvenance } from "./importSelection";
+import { isRichSong } from "./score";
+import { planImportedMigration } from "./migrationPlanning";
 import { openDB, type DBSchema, type IDBPDatabase } from "idb";
 import { emptyLibrary, validateLibrary, type Library } from "./domain";
 interface ScoreMapDatabase extends DBSchema {
   library: { key: string; value: Library };
 }
+export interface PreparedLibrarySave {
+  retained: Promise<void>;
+  save(expectedRevision: number): Promise<Library>;
+}
 export interface LibraryStore {
+  readonly scope?: "private";
+  close?(): Promise<void>;
   load(): Promise<Library>;
-  commit(candidate: Library, expectedRevision: number): Promise<Library>;
+  migrationSources?(): Promise<{ key: string; library: Library }[]>;
+  prepare?(
+    candidate: Library,
+    intent?: "import",
+    source?: ImportProvenance,
+  ): PreparedLibrarySave;
+  whenProtected?(): Promise<void>;
+  commit(
+    candidate: Library,
+    expectedRevision: number,
+    intent?: "import",
+    source?: ImportProvenance,
+  ): Promise<Library>;
 }
 export class IndexedLibraryStore implements LibraryStore {
   private connection: Promise<IDBPDatabase<ScoreMapDatabase>>;
@@ -25,8 +46,31 @@ export class IndexedLibraryStore implements LibraryStore {
     const value = await db.get("library", "current");
     return value === undefined ? emptyLibrary() : validateLibrary(value);
   }
-  async commit(candidate: Library, expectedRevision: number): Promise<Library> {
+  async migrationSources(): Promise<{ key: string; library: Library }[]> {
+    const db = await this.connection;
+    const tx = db.transaction("library", "readonly");
+    const sources: { key: string; library: Library }[] = [];
+    let cursor = await tx.store.openCursor();
+    while (cursor) {
+      if (cursor.key.startsWith("migration-"))
+        sources.push({
+          key: cursor.key,
+          library: validateLibrary(cursor.value),
+        });
+      cursor = await cursor.continue();
+    }
+    await tx.done;
+    return sources;
+  }
+  async commit(
+    candidate: Library,
+    expectedRevision: number,
+    intent?: "import",
+  ): Promise<Library> {
     validateLibrary(candidate);
+    const source = intent === "import" ? structuredClone(candidate) : null;
+    if (intent === "import")
+      candidate = validateLibrary(await planImportedMigration(candidate));
     const db = await this.connection;
     const tx = db.transaction("library", "readwrite");
     void tx.done.catch(() => undefined);
@@ -37,6 +81,22 @@ export class IndexedLibraryStore implements LibraryStore {
       if (actualRevision !== expectedRevision)
         throw new Error(
           "Another ScoreMap tab saved newer data. Export your unsaved work, then reload before continuing.",
+        );
+      if (source)
+        await tx.store.add(source, `migration-import-source:${actualRevision}`);
+      if (
+        stored &&
+        candidate.songs.some(
+          (song) =>
+            isRichSong(song) &&
+            stored.songs.some(
+              (before) => before.id === song.id && !isRichSong(before),
+            ),
+        )
+      )
+        await tx.store.add(
+          structuredClone(stored),
+          `migration-source:${actualRevision}`,
         );
       const next = validateLibrary({
         ...structuredClone(candidate),

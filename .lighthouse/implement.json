@@ -44,5 +44,427 @@
       ],
       "corrections": {}
     }
+  },
+  "25": {
+    "scope": "Implement the owner-authorized first connected private-library MVP from applied CHG-ARRANGEMENT-EVOLUTION. Retain current v1 imports and anonymous data, principal-derived ownership, real OIDC/Keycloak, server-held sessions, edit/domain guards, current resource grants, conditional atomic PostgreSQL commits, protected pending records and explicit failures. Preserve all existing checks and independent review. Add only necessary .NET/Aspire/Compose/configuration and verification surfaces; no production deployment, credential publication, managed control-plane edits or direct canonical-model changes. Full musical/offline/retention scope remains tracked.",
+    "paths": [
+      "src/",
+      "tests/",
+      "public/",
+      "index.html",
+      "vite.config.ts",
+      "vitest.config.ts",
+      "playwright.config.ts",
+      "tsconfig.json",
+      "tsconfig.app.json",
+      "eslint.config.js",
+      "package.json",
+      "package-lock.json",
+      "scripts/verify-traceability.mjs",
+      "config/",
+      "deployment/",
+      "global.json",
+      "Directory.Build.props",
+      "Directory.Packages.props",
+      "ScoreMap.slnx",
+      ".config/dotnet-tools.json",
+      ".editorconfig",
+      ".gitignore",
+      ".dockerignore",
+      "playwright.connected.config.ts",
+      "scripts/dev-private.mjs",
+      "scripts/verify-backend-boundaries.mjs",
+      "scripts/verify-security.mjs",
+      "scripts/verify-delivery.mjs",
+      "docs/architecture/",
+      "openspec/changes/issue-25-proposal/",
+      "scripts/verify-frontend-boundaries.mjs",
+      "scripts/build-container.mjs"
+    ],
+    "checks": [
+      [
+        "npm",
+        "ci",
+        "--ignore-scripts"
+      ],
+      [
+        "npm",
+        "run",
+        "verify"
+      ],
+      [
+        "npm",
+        "run",
+        "test:e2e"
+      ]
+    ],
+    "reviewRequired": true,
+    "verification": {
+      "paths": [
+        "tests/",
+        "vitest.config.ts",
+        "playwright.config.ts",
+        "package.json",
+        "package-lock.json",
+        "tests/backend/",
+        "tests/connected/",
+        "playwright.connected.config.ts",
+        "scripts/verify-backend-boundaries.mjs",
+        "scripts/verify-security.mjs",
+        "scripts/verify-frontend-boundaries.mjs"
+      ],
+      "corrections": {}
+    }
+  },
+  "21": {
+    "scope": "Implement the authorized principal/anonymous musical notation presentation boundary, separate acknowledged preferences, and actual connected/browser verification. Preserve all product, security, review and delivery gates.",
+    "paths": [
+      "src/",
+      "tests/",
+      "docs/architecture/",
+      "openspec/changes/",
+      "package.json",
+      "package-lock.json"
+    ],
+    "checks": [
+      [
+        "npm",
+        "ci",
+        "--ignore-scripts"
+      ],
+      [
+        "npm",
+        "run",
+        "verify"
+      ],
+      [
+        "npm",
+        "run",
+        "test:e2e"
+      ]
+    ],
+    "reviewRequired": true,
+    "verification": {
+      "paths": [
+        "tests/",
+        "vitest.config.ts",
+        "playwright.config.ts",
+        "package.json",
+        "package-lock.json",
+        "tests/backend/",
+        "tests/connected/",
+        "playwright.connected.config.ts",
+        "scripts/verify-backend-boundaries.mjs",
+        "scripts/verify-security.mjs",
+        "scripts/verify-frontend-boundaries.mjs",
+        "tests/fixtures/",
+        "scripts/harmony-catalogue.mjs"
+      ],
+      "corrections": {}
+    }
+  },
+  "22": {
+    "scope": "Implement accepted identified shared form, finite harmony catalogue and evaluated Tonal boundary, exact performed pitches, independent arrangements, guarded compatibility editing and atomic versioned v1 migration with retained originals/mappings. Preserve current capability/edit guards, checks, independent review and unsupported-version refusal. No production deployment or canonical product-model edits.",
+    "paths": [
+      "src/",
+      "tests/",
+      "scripts/harmony-catalogue.mjs",
+      "scripts/verify-frontend-boundaries.mjs",
+      "docs/architecture/",
+      "docs/evidence/music/",
+      "openspec/changes/issue-22-musical-model/",
+      "package.json",
+      "package-lock.json"
+    ],
+    "checks": [
+      [
+        "npm",
+        "ci",
+        "--ignore-scripts"
+      ],
+      [
+        "npm",
+        "run",
+        "verify"
+      ],
+      [
+        "npm",
+        "run",
+        "test:e2e"
+      ]
+    ],
+    "reviewRequired": true,
+    "verification": {
+      "paths": [
+        "tests/",
+        "vitest.config.ts",
+        "playwright.config.ts",
+        "package.json",
+        "package-lock.json",
+        "tests/backend/",
+        "tests/connected/",
+        "playwright.connected.config.ts",
+        "scripts/verify-backend-boundaries.mjs",
+        "scripts/verify-security.mjs",
+        "scripts/verify-frontend-boundaries.mjs",
+        "tests/fixtures/",
+        "scripts/harmony-catalogue.mjs"
+      ],
+      "corrections": {}
+    }
+  },
+  "23": {
+    "scope": "Implement the accepted interactive song builder, exact performed-pitch piano, guarded previews/apply/cancel/undo, explicit identification and independently owned versioned reusable presets. Preserve complete song invariants, private authorization, all existing checks and independent review. No canonical product edits, hardware/audio engine or production deployment.",
+    "paths": [
+      "src/",
+      "tests/",
+      "package.json",
+      "package-lock.json",
+      "scripts/verify-frontend-boundaries.mjs",
+      "docs/architecture/",
+      "docs/evidence/music/",
+      "openspec/changes/issue-23-interactive-builder/"
+    ],
+    "checks": [
+      [
+        "npm",
+        "ci",
+        "--ignore-scripts"
+      ],
+      [
+        "npm",
+        "run",
+        "verify"
+      ],
+      [
+        "npm",
+        "run",
+        "test:e2e"
+      ]
+    ],
+    "reviewRequired": true,
+    "verification": {
+      "paths": [
+        "tests/",
+        "vitest.config.ts",
+        "playwright.config.ts",
+        "package.json",
+        "package-lock.json",
+        "tests/backend/",
+        "tests/connected/",
+        "playwright.connected.config.ts",
+        "scripts/verify-backend-boundaries.mjs",
+        "scripts/verify-security.mjs",
+        "scripts/verify-frontend-boundaries.mjs",
+        "tests/fixtures/",
+        "scripts/harmony-catalogue.mjs"
+      ],
+      "corrections": {}
+    }
+  },
+  "24": {
+    "scope": "Implement the accepted multi-keyboard arrangement workspace, shared identified measure controls, arbitrary independent parts/devices, valid split/layer bindings and synchronized read-only repeat/event consultation. Preserve complete identity/timing/ownership graphs, current edit/private capabilities, all checks and independent review. No canonical product edits, audio/MIDI/fretboards or production deployment.",
+    "paths": [
+      "src/",
+      "tests/",
+      "docs/architecture/",
+      "docs/evidence/music/",
+      "openspec/changes/issue-24-arrangement-workspace/"
+    ],
+    "checks": [
+      [
+        "npm",
+        "ci",
+        "--ignore-scripts"
+      ],
+      [
+        "npm",
+        "run",
+        "verify"
+      ],
+      [
+        "npm",
+        "run",
+        "test:e2e"
+      ]
+    ],
+    "reviewRequired": true,
+    "verification": {
+      "paths": [
+        "tests/",
+        "vitest.config.ts",
+        "playwright.config.ts",
+        "package.json",
+        "package-lock.json",
+        "tests/backend/",
+        "tests/connected/",
+        "playwright.connected.config.ts",
+        "scripts/verify-backend-boundaries.mjs",
+        "scripts/verify-security.mjs",
+        "scripts/verify-frontend-boundaries.mjs",
+        "tests/fixtures/",
+        "scripts/harmony-catalogue.mjs"
+      ],
+      "corrections": {}
+    }
+  },
+  "26": {
+    "scope": "Implement accepted complete arrangement durability, protected pending recovery, stable import/claim receipts, explicit conflicts/history and scoped session/offline boundaries under issue #26. Preserve existing admission, atomic commits, current resource authorization and all checks; qualify each new private offline/key capability before enabling it. No canonical product changes, production deployment or integration-gate bypass.",
+    "paths": [
+      "src/",
+      "tests/",
+      "public/",
+      "index.html",
+      "vite.config.ts",
+      "vitest.config.ts",
+      "playwright.config.ts",
+      "tsconfig.json",
+      "tsconfig.app.json",
+      "eslint.config.js",
+      "package.json",
+      "package-lock.json",
+      "scripts/verify-traceability.mjs",
+      "config/",
+      "deployment/",
+      "global.json",
+      "Directory.Build.props",
+      "Directory.Packages.props",
+      "ScoreMap.slnx",
+      ".config/dotnet-tools.json",
+      ".editorconfig",
+      ".gitignore",
+      ".dockerignore",
+      "playwright.connected.config.ts",
+      "scripts/dev-private.mjs",
+      "scripts/verify-backend-boundaries.mjs",
+      "scripts/verify-security.mjs",
+      "scripts/verify-delivery.mjs",
+      "docs/architecture/",
+      "openspec/changes/issue-25-proposal/",
+      "scripts/verify-frontend-boundaries.mjs",
+      "scripts/build-container.mjs",
+      "openspec/changes/issue-26-durable-recovery/",
+      "docs/evidence/music/",
+      "scripts/qualify-session-vault.py"
+    ],
+    "checks": [
+      [
+        "npm",
+        "ci",
+        "--ignore-scripts"
+      ],
+      [
+        "npm",
+        "run",
+        "verify"
+      ],
+      [
+        "npm",
+        "run",
+        "test:e2e"
+      ]
+    ],
+    "reviewRequired": true,
+    "verification": {
+      "paths": [
+        "tests/",
+        "vitest.config.ts",
+        "playwright.config.ts",
+        "package.json",
+        "package-lock.json",
+        "tests/backend/",
+        "tests/connected/",
+        "playwright.connected.config.ts",
+        "scripts/verify-backend-boundaries.mjs",
+        "scripts/verify-security.mjs",
+        "scripts/verify-frontend-boundaries.mjs",
+        "scripts/qualify-session-vault.py"
+      ],
+      "corrections": {}
+    }
+  },
+  "28": {
+    "scope": "Implement the accepted issue #28 production publication baseline: a separate guarded Aspire-to-Compose entrypoint, locked typed dependencies, parameterized protected artifacts and executed passing/refusing publication checks. Preserve all existing module/security/product gates. No actual operator deployment, credentials, product-model changes or review-gate bypass.",
+    "paths": [
+      "src/",
+      "tests/",
+      "public/",
+      "index.html",
+      "vite.config.ts",
+      "vitest.config.ts",
+      "playwright.config.ts",
+      "tsconfig.json",
+      "tsconfig.app.json",
+      "eslint.config.js",
+      "package.json",
+      "package-lock.json",
+      "scripts/verify-traceability.mjs",
+      "config/",
+      "deployment/",
+      "global.json",
+      "Directory.Build.props",
+      "Directory.Packages.props",
+      "ScoreMap.slnx",
+      ".config/dotnet-tools.json",
+      ".editorconfig",
+      ".gitignore",
+      ".dockerignore",
+      "playwright.connected.config.ts",
+      "scripts/dev-private.mjs",
+      "scripts/verify-backend-boundaries.mjs",
+      "scripts/verify-security.mjs",
+      "scripts/verify-delivery.mjs",
+      "docs/architecture/",
+      "openspec/changes/issue-25-proposal/",
+      "scripts/verify-frontend-boundaries.mjs",
+      "scripts/build-container.mjs",
+      "openspec/changes/issue-26-durable-recovery/",
+      "docs/evidence/music/",
+      "scripts/publish-production.mjs",
+      "openspec/changes/issue-28-production-publication/",
+      "docs/evidence/deployment/",
+      "scripts/qualify-production.py",
+      "playwright.deployment.config.ts"
+    ],
+    "checks": [
+      [
+        "npm",
+        "ci",
+        "--ignore-scripts"
+      ],
+      [
+        "npm",
+        "run",
+        "verify"
+      ],
+      [
+        "npm",
+        "run",
+        "test:e2e"
+      ]
+    ],
+    "reviewRequired": true,
+    "verification": {
+      "paths": [
+        "tests/",
+        "vitest.config.ts",
+        "playwright.config.ts",
+        "package.json",
+        "package-lock.json",
+        "tests/backend/",
+        "tests/connected/",
+        "playwright.connected.config.ts",
+        "scripts/verify-backend-boundaries.mjs",
+        "scripts/verify-security.mjs",
+        "scripts/verify-frontend-boundaries.mjs",
+        "scripts/publish-production.mjs",
+        "src/root/ScoreMap.Deployment/",
+        "deployment/compose.yaml",
+        "scripts/qualify-production.py",
+        "playwright.deployment.config.ts",
+        "tests/deployment/"
+      ],
+      "corrections": {}
+    }
   }
 }

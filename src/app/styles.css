@@ -134,8 +134,28 @@ p {
 }
 .top-actions {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 1rem;
+}
+.notation-control {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  max-width: 100%;
+  gap: 0.25rem;
+}
+.notation-control select {
+  width: 100%;
+  max-width: 22rem;
+  min-width: 0;
+}
+.notation-control [role="status"] {
+  font-size: 0.75rem;
+  color: var(--lh-text-muted);
+}
+.piano .dual-label {
+  font-size: 30px;
 }
 .save-state {
   font-size: 0.8rem;
@@ -676,6 +696,9 @@ dialog h2 {
   .save-state {
     display: none;
   }
+  .private-library .save-state {
+    display: inline;
+  }
   .section {
     padding: 0.8rem;
   }
@@ -780,4 +803,217 @@ dialog h2 {
   label {
     overflow-wrap: anywhere;
   }
+}
+
+@media (max-width: 620px) {
+  .private-brand p {
+    display: block;
+  }
+}
+
+.arrangement-workspace {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  border: 1px solid var(--lh-border);
+  background: var(--lh-surface);
+  min-width: 0;
+}
+.arrangement-workspace h2 {
+  font-size: 1.125rem;
+  margin-top: 0;
+}
+.builder-controls {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  align-items: end;
+  margin: 1rem 0;
+}
+.builder-controls > label {
+  flex: 1 1 10rem;
+  min-width: 0;
+}
+.performed-piano {
+  margin: 1rem 0;
+  min-width: 0;
+}
+.performed-piano figcaption {
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+.keyboard-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 0.5rem;
+  border: 1px solid var(--lh-border);
+}
+.keyboard-keys {
+  position: relative;
+  height: 14.125rem;
+}
+.performed-key {
+  position: absolute;
+  top: 0;
+  border-radius: 0 0 3px 3px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  flex-direction: column;
+  gap: 0.5rem;
+  overflow: hidden;
+}
+.performed-key.played-white {
+  height: 14rem;
+  z-index: 1;
+  background: var(--lh-key-white);
+  color: var(--lh-key-ink);
+  border: 1px solid var(--lh-key-ink);
+}
+.performed-key.played-black {
+  height: 9rem;
+  z-index: 2;
+  background: var(--lh-key-black);
+  color: var(--lh-key-white);
+  border: 1px solid var(--lh-key-white);
+}
+.performed-key:disabled {
+  opacity: 1;
+  cursor: default;
+}
+.performed-key[data-performed="true"] {
+  background: var(--lh-key-mark);
+  color: var(--lh-key-mark-text);
+}
+.performed-key:focus-visible {
+  z-index: 3;
+  outline-offset: -4px;
+}
+.key-state {
+  font-size: 1.125rem;
+  line-height: 1;
+}
+.key-pitch {
+  font-size: 0.75rem;
+  line-height: 1.2;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  padding: 0 0.125rem 0.5rem;
+}
+.played-note-list {
+  overflow-wrap: anywhere;
+}
+.note-occurrences {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0;
+  list-style: none;
+}
+.note-occurrences > li {
+  border: 1px solid var(--lh-border);
+  padding: 0.75rem;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.note-occurrences > li > strong {
+  margin-right: auto;
+}
+.arrangement-workspace {
+  overflow-wrap: anywhere;
+}
+.arrangement-workspace button {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.arrangement-workspace .configuration-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  align-items: end;
+  gap: 0.75rem;
+  margin: 1rem 0;
+  padding: 0.75rem;
+  border: 1px solid var(--lh-border);
+  min-width: 0;
+}
+.configuration-form > h3,
+.configuration-form > p,
+.configuration-form > fieldset {
+  grid-column: 1 / -1;
+}
+.configuration-form > *,
+.pitch-range {
+  min-width: 0;
+}
+.pitch-range {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  border: 1px solid var(--lh-border);
+}
+.pitch-range > label {
+  flex: 1 1 10rem;
+  min-width: 0;
+}
+.checkbox-field {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.checkbox-field input {
+  width: auto;
+  min-width: 24px;
+  height: 24px;
+}
+.keyboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: 1rem;
+}
+.keyboard-view {
+  min-width: 0;
+  border: 1px solid var(--lh-border);
+  background: var(--lh-canvas);
+  padding: 0.75rem;
+}
+.keyboard-view h3 {
+  margin: 0;
+}
+.keyboard-view p,
+.routing-list {
+  font-size: 0.875rem;
+}
+.routing-list {
+  padding-left: 1.25rem;
+}
+.routing-list li {
+  margin-bottom: 0.75rem;
+}
+.routing-list span {
+  display: block;
+}
+.arrangement-views {
+  margin: 1rem 0;
+  min-width: 0;
+}
+.musical-context {
+  font-weight: 700;
+}
+
+.performed-key[data-physical="false"] {
+  opacity: 0.45;
+}
+
+.sketch-layout > .arrangement-workspace {
+  grid-column: 1 / -1;
+}
+
+.personal-recovery pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-width: 100%;
 }

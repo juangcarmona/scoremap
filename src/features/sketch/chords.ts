@@ -1,33 +1,25 @@
-import { assertChord, type Chord } from "../library/domain";
-const naturals: Record<string, number> = {
-  C: 0,
-  D: 2,
-  E: 4,
-  F: 5,
-  G: 7,
-  A: 9,
-  B: 11,
-};
+import type { HarmonyIdentity } from "../../shared/music/harmony";
+import { harmonyIdentity } from "../../shared/music/harmony";
+import { theoreticalHarmony } from "../../shared/music/theory";
+import { formatChordSymbol, type Notation } from "../../shared/music/notation";
 const names = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 export function pitchClass(root: string): number {
-  assertChord({ root, quality: "major" });
-  return (
-    (naturals[root[0]!]! +
-      (root[1] === "#" ? 1 : root[1] === "b" ? -1 : 0) +
-      12) %
-    12
+  return theoreticalHarmony({ root, quality: "major" }).tones[0]!.pitchClass;
+}
+export function chordNotes(chord: HarmonyIdentity): number[] {
+  return theoreticalHarmony(harmonyIdentity(chord)).tones.map(
+    (tone) => tone.pitchClass,
   );
 }
-export function chordNotes(chord: Chord): number[] {
-  assertChord(chord);
-  const root = pitchClass(chord.root);
-  return [0, chord.quality === "major" ? 4 : 3, 7].map((n) => (root + n) % 12);
+export function chordLabel(
+  chord: HarmonyIdentity,
+  notation?: Notation,
+): string {
+  return formatChordSymbol(harmonyIdentity(chord), notation);
 }
-export function chordLabel(chord: Chord): string {
-  assertChord(chord);
-  return (
-    chord.root.replace("b", "♭").replace("#", "♯") +
-    (chord.quality === "minor" ? "m" : "")
+export function spelledChordNotes(chord: HarmonyIdentity): string[] {
+  return theoreticalHarmony(harmonyIdentity(chord)).tones.map(
+    (tone) => tone.spelling,
   );
 }
 export type PianoKey = {
@@ -41,8 +33,8 @@ export type PianoKey = {
 export function pianoKeys(firstOctave = 3, octaves = 2): PianoKey[] {
   if (
     !Number.isInteger(firstOctave) ||
-    firstOctave < 0 ||
-    firstOctave > 7 ||
+    firstOctave < -1 ||
+    firstOctave > 9 ||
     !Number.isInteger(octaves) ||
     octaves < 1 ||
     octaves > 3 ||
@@ -50,17 +42,20 @@ export function pianoKeys(firstOctave = 3, octaves = 2): PianoKey[] {
   )
     throw new Error("Unsupported keyboard octave range.");
   let whites = 0;
-  return Array.from({ length: 12 * octaves }, (_, i) => {
-    const pc = i % 12;
-    const black = [1, 3, 6, 8, 10].includes(pc);
-    const x = black ? whites - 0.31 : whites++;
-    return {
-      midi: (firstOctave + 1) * 12 + i,
-      pitchClass: pc,
-      name: `${names[pc]}${firstOctave + Math.floor(i / 12)}`,
-      black,
-      x,
-      width: black ? 0.62 : 1,
-    };
-  });
+  return Array.from(
+    { length: Math.min(12 * octaves, 128 - (firstOctave + 1) * 12) },
+    (_, i) => {
+      const pc = i % 12;
+      const black = [1, 3, 6, 8, 10].includes(pc);
+      const x = black ? whites - 0.31 : whites++;
+      return {
+        midi: (firstOctave + 1) * 12 + i,
+        pitchClass: pc,
+        name: `${names[pc]}${firstOctave + Math.floor(i / 12)}`,
+        black,
+        x,
+        width: black ? 0.62 : 1,
+      };
+    },
+  );
 }

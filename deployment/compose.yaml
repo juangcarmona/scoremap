@@ -1,0 +1,65 @@
+# Generated from src/root/ScoreMap.Deployment/Program.cs. Verify with npm run verify:deployment.
+name: "scoremap"
+services:
+  database:
+    image: "postgres:18.3"
+    environment:
+      POSTGRES_USER: "scoremap"
+      POSTGRES_DB: "scoremap"
+      POSTGRES_PASSWORD_FILE: "/run/secrets/database_password"
+    volumes:
+      - type: "volume"
+        target: "/var/lib/postgresql"
+        source: "scoremap-database"
+        read_only: false
+    networks:
+      - "aspire"
+    restart: "unless-stopped"
+    healthcheck:
+      test:
+        - "CMD-SHELL"
+        - "pg_isready -U scoremap -d scoremap"
+      interval: "10s"
+      timeout: "5s"
+      retries: 10
+      start_period: "5s"
+    secrets:
+      - source: "database_password"
+  application:
+    image: "${SCOREMAP_IMAGE:?Select a built reviewed ScoreMap image by digest}"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Production"
+      SCOREMAP_APPLICATION_FILE: "/run/scoremap/application.json"
+    ports:
+      - "127.0.0.1:${SCOREMAP_HTTP_PORT:-5280}:8080"
+    volumes:
+      - type: "volume"
+        target: "/var/lib/scoremap/keys"
+        source: "scoremap-session-keys"
+        read_only: false
+      - type: "bind"
+        target: "/run/scoremap/application.json"
+        source: "${SCOREMAP_APPLICATION_FILE:?Select private Production configuration}"
+        read_only: true
+    depends_on:
+      database:
+        condition: "service_healthy"
+    networks:
+      - "aspire"
+    restart: "unless-stopped"
+    read_only: true
+    security_opt:
+      - "no-new-privileges:true"
+    tmpfs:
+      - "/tmp"
+networks:
+  aspire:
+    driver: "bridge"
+volumes:
+  scoremap-database:
+    driver: "local"
+  scoremap-session-keys:
+    driver: "local"
+secrets:
+  database_password:
+    file: "${SCOREMAP_DATABASE_PASSWORD_FILE:?Select private database-password file}"

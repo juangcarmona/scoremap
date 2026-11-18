@@ -72,6 +72,19 @@ describe("Deterministic musical relationships", () => {
   it("SB-KEYBOARD: notes wrap pitch class, never octave labels", () => {
     expect(chordNotes({ root: "B", quality: "major" })).toEqual([11, 3, 6]);
     expect(pianoKeys(2, 1)[0]).toMatchObject({ midi: 36, name: "C2" });
-    expect(() => pianoKeys(-1)).toThrow();
+    expect(pianoKeys(-1, 2)[0]).toMatchObject({ midi: 0, name: "C-1" });
+    expect(pianoKeys(7, 3).at(-1)).toMatchObject({ midi: 127, name: "G9" });
+    expect(() => pianoKeys(-2)).toThrow();
   });
+});
+
+it("Chord boundaries reject inherited or unexpected fields", async () => {
+  const { assertChord } = await import("../../src/shared/music/chord");
+  const inherited = Object.assign(Object.create({ root: "C" }), {
+    quality: "major",
+    unexpected: "field",
+  });
+  expect(() => assertChord(inherited)).toThrow(
+    "Missing or unexpected data fields.",
+  );
 });

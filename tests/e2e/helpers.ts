@@ -33,9 +33,9 @@ export async function chord(
     .locator(".section")
     .filter({ has: page.getByRole("heading", { name: section, exact: true }) });
   const summary = details.getByText(`Edit ${section}`, { exact: true });
-  if (!(await details.locator("details").getAttribute("open"))) {
+  if (!(await details.locator("details.section-edit").getAttribute("open"))) {
     const open = await details
-      .locator("details")
+      .locator("details.section-edit")
       .evaluate((e) => (e as HTMLDetailsElement).open);
     if (!open) await summary.click();
   }

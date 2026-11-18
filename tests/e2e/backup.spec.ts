@@ -43,7 +43,44 @@ test("SB-BACKUP-EXPORT SB-BACKUP-IMPORT SB-BACKUP-CANCEL SB-PERSIST-RECOVER: act
     }),
   ).toBeVisible();
   const restored = await readLibrary(page);
-  expect({ ...restored, revision: original.revision }).toEqual(original);
+  expect(restored.schemaVersion).toBe(2);
+  for (const song of restored.songs) {
+    expect("schemaVersion" in song && song.schemaVersion).toBe(2);
+    if (!("arrangements" in song))
+      throw new Error("Expected migrated arrangements");
+    expect(song.arrangements[0]!.parts[0]!.events).toEqual([]);
+    const legacy = original.songs.find((before) => before.id === song.id)!;
+    expect({
+      ...song,
+      schemaVersion: undefined,
+      arrangements: undefined,
+      migration: undefined,
+      sections: song.sections.map((section) => ({
+        ...section,
+        measures: undefined,
+        chords: section.chords.map((chord) => ({
+          root: chord.root,
+          quality: chord.quality,
+        })),
+      })),
+    }).toEqual({
+      ...legacy,
+      schemaVersion: undefined,
+      arrangements: undefined,
+      migration: undefined,
+      sections: legacy.sections.map((section) => ({
+        ...section,
+        measures: undefined,
+      })),
+    });
+  }
+  await page.getByText("Originals before migration", { exact: true }).click();
+  const originalFile = page.waitForEvent("download");
+  await page.getByRole("button", { name: /Export imported original/ }).click();
+  expect(
+    JSON.parse(await fs.readFile((await (await originalFile).path())!, "utf8"))
+      .library,
+  ).toEqual(original);
   expect(restored.revision).toBeGreaterThan(before.revision);
 });
 test("SB-BACKUP-REJECT: invalid import preserves acknowledged local data", async ({

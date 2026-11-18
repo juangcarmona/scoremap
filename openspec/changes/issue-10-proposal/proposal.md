@@ -22,10 +22,10 @@ None.
 
 ## Impact
 
-<!-- pdac:cite id="SB-OFFLINE" digest="sha256:40eef81b2f397f73f52df9d8a0892f678edfdbaeea5a485d6a16003086a24a26" -->
-<!-- pdac:cite id="BR-DURABILITY" digest="sha256:f6e8a52fdb28d495f07304870d8d2bfa6c6e5adce7722d919ce64efca735c57e" -->
-<!-- pdac:cite id="CON-PLATFORM" digest="sha256:ed4f4900b26c706198a0448376f26d57d0665462c5e77ac4dbadc04bb75e6bf5" -->
-<!-- pdac:cite id="FR-OFFLINE" digest="sha256:68f558e306eea39e0a533194ce6429c4c97180f94aabca6bbb6ca6a174f9cb0f" -->
-<!-- pdac:cite id="UC-OFFLINE" digest="sha256:7ad9b33e0b6a86443b7536a7436832cf916d2951d055a608d76fee0dabf2cee1" -->
+<!-- pdac:cite id="SB-OFFLINE" digest="sha256:c8e62d06222a082c057240a58f14633bda2e04f4655a6a0beb6c1f54af7e7955" -->
+<!-- pdac:cite id="BR-DURABILITY" digest="sha256:6b075527861da086b9571e8d117c7844348a437e363423bca46f60cc83b02e0b" -->
+<!-- pdac:cite id="CON-PLATFORM" digest="sha256:635e50e18ab13a558ff7fb34323fb9c54c651858935b841272e22ce860067fbb" -->
+<!-- pdac:cite id="FR-OFFLINE" digest="sha256:f39bedc59d2b0506bd49854b84996662f18997159a708d204b54ddecc3c910c1" -->
+<!-- pdac:cite id="UC-OFFLINE" digest="sha256:1106de43fb4ae8be6f0841e7e806c92c3ee15b2050cfc56b74b3d35292aa1922" -->
 
 The complete model was examined for shared identity, mode and durability rules. MIDI, accounts and cloud features were excluded because they are outside CON-SCOPE. Read applicable lifecycle transitions and refusal behaviours before authoring tests.

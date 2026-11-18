@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
+import type { LibraryStore } from "./storage";
 import { IndexedLibraryStore } from "./storage";
 import { LibrarySession } from "./application";
-export function useLibrary() {
+export function useLibrary(providedStore?: LibraryStore) {
   const [session, setSession] = useState<LibrarySession | null>(null);
   const [loadError, setLoadError] = useState("");
   const [, changed] = useState(0);
   useEffect(() => {
     let disposed = false;
-    const store = new IndexedLibraryStore();
+    const store = providedStore ?? new IndexedLibraryStore();
     const current = new LibrarySession(store, () => {
       if (!disposed) changed((v) => v + 1);
     });
@@ -34,8 +35,8 @@ export function useLibrary() {
       });
     return () => {
       disposed = true;
-      void store.close();
+      void store.close?.();
     };
-  }, []);
+  }, [providedStore]);
   return { session, loadError };
 }
