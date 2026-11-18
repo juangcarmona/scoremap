@@ -108,3 +108,8 @@ Session ticket creation inserts a new random identity. Renewal updates only an e
 ## Bounded protected offline preparation
 
 [ADR-0008](../09-architecture-decisions/ADR-0008-prepare-bounded-private-offline-copies.md) records explicit scoped authorization and acknowledged encrypted-cache admission before in-memory offline authority. A server transaction anchors the configured maximum to the current principal/session and actual resources; the earliest known bound wins. Independent wall and elapsed clocks fail closed on expiry or rollback. Pending commands remain protected without service acknowledgement. Reconnect discards active authority before fresh sign-in and explicit reconciliation. Restart cannot reconstruct usable keys from public caches. See [execution evidence](../../evidence/music/private-offline.md) for actual browser coverage and the separate exact eight-hour domain witness.
+
+
+## Direct nested reads and exact retention examples
+
+The private arrangement endpoint selects a child from the current principal-authorized library query. Resource knowledge and ownership of a different song grant no access; absent and inaccessible children share a non-content refusal. [Canonical execution evidence](../../evidence/music/canonical-private-boundaries.md) separates real nested reads, a revision-21 editor downgrade, exact revision-17/18/19 retention and dual notation from attachment delivery and integration approval.

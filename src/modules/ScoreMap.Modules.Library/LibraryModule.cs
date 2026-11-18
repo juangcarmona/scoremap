@@ -44,7 +44,7 @@ public static class LibraryModule
       { context.Response.StatusCode = 400; await Fault(context, 400, "Invalid or unsupported ScoreMap data. Existing content has not been replaced.").ConfigureAwait(false); }
     });
     var api = app.MapGroup("/api").RequireAuthorization().RequireRateLimiting("private-api");
-    MapOffline(api, privateOfflineMinutes);
+    MapScopedResources(api, privateOfflineMinutes);
     api.MapGet("/device-configurations", async (ClaimsPrincipal user, DeviceConfigurationQueryHandler handler, CancellationToken ct) => Results.Json(await handler.Handle(new DeviceConfigurationQuery(Principal(user)), ct).ConfigureAwait(false)));
     api.MapPost("/device-configurations", async (ClaimsPrincipal user, DeviceConfigurationRequest request, DeviceConfigurationCommandHandler handler, CancellationToken ct) => Results.Json(await handler.Handle(new DeviceConfigurationCommand(Principal(user), request), ct).ConfigureAwait(false)));
     api.MapGet("/voicing-presets", async (ClaimsPrincipal user, PresetQueryHandler handler, CancellationToken ct) => Results.Json(await handler.Handle(new PresetQuery(Principal(user)), ct).ConfigureAwait(false)));
@@ -67,8 +67,9 @@ public static class LibraryModule
     api.Map("/{**path}", () => Results.Problem(statusCode: 404, title: "Not found", detail: "The private resource is unavailable."));
     return app;
   }
-  private static void MapOffline(Microsoft.AspNetCore.Routing.RouteGroupBuilder api, int privateOfflineMinutes)
+  private static void MapScopedResources(Microsoft.AspNetCore.Routing.RouteGroupBuilder api, int privateOfflineMinutes)
   {
+    api.MapGet("/songs/{songId}/arrangements/{arrangementId}", ReadArrangement);
     api.MapPost("/offline-lease", async (HttpContext context, OfflineLeaseRequest request, AuthorizeOfflineHandler handler, CancellationToken ct) =>
     {
       var ticket = await context.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme).ConfigureAwait(false);
@@ -76,6 +77,17 @@ public static class LibraryModule
       var expiresAt = sessionExpiry < tokenExpiry ? sessionExpiry : tokenExpiry;
       return Results.Json(await handler.Handle(new AuthorizeOffline(Principal(context.User), sessionId, expiresAt, privateOfflineMinutes, request), ct).ConfigureAwait(false));
     });
+  }
+  private static async Task<IResult> ReadArrangement(ClaimsPrincipal user, string songId, string arrangementId, ReadLibraryHandler handler, CancellationToken ct)
+  {
+    var view = await handler.Handle(new ReadLibrary(Principal(user)), ct).ConfigureAwait(false);
+    foreach (var song in view.Library.GetProperty("songs").EnumerateArray())
+    {
+      if (!string.Equals(song.GetProperty("id").GetString(), songId, StringComparison.Ordinal) || !song.TryGetProperty("arrangements", out var arrangements)) continue;
+      foreach (var arrangement in arrangements.EnumerateArray())
+        if (string.Equals(arrangement.GetProperty("id").GetString(), arrangementId, StringComparison.Ordinal)) return Results.Json(arrangement.Clone());
+    }
+    return Results.NotFound();
   }
   public static string Principal(ClaimsPrincipal user) => user.FindFirstValue("scoremap:principal") ?? throw new AccessDeniedException("A stable authenticated principal is required.");
   private static Task Fault(HttpContext context, int status, string detail) => Results.Problem(statusCode: status, title: status switch { 403 => "Forbidden", 409 => "Revision conflict", _ => "Invalid request" }, detail: detail, extensions: new Dictionary<string, object?>(StringComparer.Ordinal) { ["traceId"] = context.TraceIdentifier }).ExecuteAsync(context);
