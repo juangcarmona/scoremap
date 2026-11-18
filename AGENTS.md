@@ -5,6 +5,8 @@ current OpenSpec change. Product changes enter through ProductShape's validated
 Product Change apply route. Architecture decisions live in ArcShape section 09.
 
 Use the installed Lighthouse profile guides when touching React, PWA or styling.
+For interface design and redesign, also use .agents/skills/impeccable/SKILL.md
+and docs/design/scoremap-design-process.md; product requirements remain authoritative.
 Consult docs/evidence/bootstrap/infrastructure.md before native workflow dispatch.
 Enforced checks and current-head owner decisions remain integration gates.
 

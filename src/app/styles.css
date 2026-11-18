@@ -1,21 +1,22 @@
 :root {
-  --lh-canvas: #121822;
-  --lh-surface: #1a2330;
-  --lh-surface-raised: #222e3d;
-  --lh-text: #f3f0e8;
-  --lh-text-muted: #b2bdca;
-  --lh-border: #405069;
-  --lh-action: #aac3ff;
-  --lh-focus: #ffdd8b;
+  --lh-canvas: #f4f5f3;
+  --lh-surface: #ffffff;
+  --lh-surface-raised: #e8eef1;
+  --lh-text: #182b35;
+  --lh-text-muted: #4f626c;
+  --lh-border: #a8b8be;
+  --lh-action: #205577;
+  --lh-focus: #9a4c00;
   --lh-key-white: #f3f0e8;
   --lh-key-black: #151d28;
   --lh-key-ink: #121822;
   --lh-key-mark: #244f9c;
   --lh-key-mark-text: #ffffff;
-  --lh-danger-text: #ffb5b5;
-  --lh-error-surface: #40252b;
+  --lh-on-action: #ffffff;
+  --lh-danger-text: #9e2424;
+  --lh-error-surface: #fce9e7;
   --lh-control-radius: 3px;
-  color-scheme: dark;
+  color-scheme: light;
   font-size: 16px;
 }
 * {
@@ -98,7 +99,7 @@ p {
 .primary {
   background: var(--lh-action);
   border-color: var(--lh-action);
-  color: var(--lh-key-ink);
+  color: var(--lh-on-action);
   font-weight: 700;
 }
 .primary:hover {
@@ -167,14 +168,14 @@ p {
 }
 .performing .mode-button {
   background: var(--lh-action);
-  color: var(--lh-key-ink);
+  color: var(--lh-on-action);
 }
 .library-toggle {
   display: none;
 }
 .workspace {
   display: grid;
-  grid-template-columns: 270px minmax(0, 1fr);
+  grid-template-columns: 230px minmax(0, 1fr);
   min-height: calc(100vh - 92px);
 }
 .library {
@@ -372,7 +373,6 @@ p {
 .section {
   background: var(--lh-surface);
   border: 1px solid var(--lh-border);
-  border-left: 3px solid var(--lh-action);
   padding: 1rem;
 }
 .section header {
@@ -432,7 +432,7 @@ p {
   background: var(--lh-canvas);
 }
 .chord-sequence button[aria-pressed="true"] {
-  color: var(--lh-key-ink);
+  color: var(--lh-on-action);
   background: var(--lh-action);
   border-color: var(--lh-action);
 }
@@ -503,7 +503,7 @@ summary {
 .full-notes {
   white-space: pre-wrap;
   padding: 1rem;
-  border-left: 3px solid var(--lh-border);
+  border-left: 1px solid var(--lh-border);
   background: var(--lh-surface);
   overflow-wrap: anywhere;
 }
@@ -654,7 +654,10 @@ summary {
   padding: 0.5rem;
 }
 .performing .section {
-  padding: 0.75rem;
+  padding: 1rem 0;
+  border: 0;
+  border-top: 1px solid var(--lh-border);
+  background: transparent;
 }
 .performing .section h3 {
   font-size: 1.25rem;
@@ -691,12 +694,12 @@ summary {
 .performing .chord-tile {
   position: relative;
   width: min(100%, 7.5rem);
-  border: 1px solid var(--lh-border);
-  background: var(--lh-canvas);
+  border: 1px solid transparent;
+  background: var(--lh-surface);
 }
 .performing .chord-tile:has(button[aria-pressed="true"]) {
-  color: var(--lh-key-ink);
-  background: var(--lh-action);
+  color: var(--lh-text);
+  background: var(--lh-surface-raised);
   border-color: var(--lh-action);
 }
 .chord-diagram-guide {
