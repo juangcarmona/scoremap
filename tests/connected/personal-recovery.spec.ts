@@ -123,6 +123,8 @@ test("an encrypted personal preference survives lost acknowledgement and account
   const owner = await login(browser, "owner-a", {
     viewport: { width: 390, height: 844 },
     hasTouch: true,
+    // A worker must not hide the deliberately lost real response from page.route.
+    serviceWorkers: "block",
   });
   const original = await (
     await api(owner.page, "/api/preferences/notation")
@@ -143,6 +145,10 @@ test("an encrypted personal preference survives lost acknowledgement and account
   const initial = await (
     await api(owner.page, "/api/preferences/notation")
   ).json();
+  await expect(
+    owner.page.getByLabel("Note names", { exact: true }),
+  ).toHaveValue("anglo");
+  expect(initial.mode).toBe("anglo");
   let originalCommand = "";
   await owner.page.route("**/api/preferences/notation", async (route) => {
     if (route.request().method() !== "PUT") return route.continue();
@@ -154,6 +160,7 @@ test("an encrypted personal preference survives lost acknowledgement and account
   await owner.page
     .getByLabel("Note names", { exact: true })
     .selectOption("latin");
+  await expect.poll(() => originalCommand).not.toBe("");
   await expect(
     owner.page.getByText("Note-name choice not saved", { exact: true }),
   ).toBeVisible();

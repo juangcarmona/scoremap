@@ -1,4 +1,10 @@
-import { test, expect, type Page, type Dialog } from "@playwright/test";
+import {
+  test,
+  expect,
+  type Page,
+  type Dialog,
+  type Route,
+} from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import AxeBuilder from "@axe-core/playwright";
 import {
@@ -154,6 +160,8 @@ test("SB-SESSION-LOCK: a real principal's known deadline locks complete performe
   const owner = await login(browser, "owner-a", {
     viewport: { width: 390, height: 844 },
     hasTouch: true,
+    // Keep held-request fault injection observable; PWA worker coverage uses separate enabled contexts.
+    serviceWorkers: "block",
   });
   const song = await prepare(owner.page);
   await owner.page.clock.install();
@@ -203,14 +211,22 @@ test("SB-SESSION-LOCK: a real principal's known deadline locks complete performe
   const held = new Promise<void>((resolve) => {
     release = resolve;
   });
-  await owner.page.route("**/auth/session", async (route) => {
-    await held;
-    await route.continue().catch(() => undefined);
-  });
-  await owner.page.route("**/api/library", async (route) => {
-    await held;
-    await route.continue().catch(() => undefined);
-  });
+  const delayed: Promise<unknown>[] = [];
+  const hold = (route: Route) => {
+    const done = (async () => {
+      await held;
+      await route.continue().catch(() => undefined);
+      const response = await route
+        .request()
+        .response()
+        .catch(() => null);
+      await response?.finished().catch(() => undefined);
+    })();
+    delayed.push(done);
+    return done;
+  };
+  await owner.page.route("**/auth/session", hold);
+  await owner.page.route("**/api/library", hold);
   await owner.page.clock.fastForward(
     Date.parse(metadata.expiresAt) - Date.parse(metadata.checkedAt) + 1000,
   );
@@ -227,6 +243,10 @@ test("SB-SESSION-LOCK: a real principal's known deadline locks complete performe
   release();
   await owner.page.unroute("**/auth/session");
   await owner.page.unroute("**/api/library");
+  await Promise.allSettled(delayed);
+  await expect(
+    owner.page.getByRole("link", { name: "Sign in", exact: true }),
+  ).toBeVisible();
   expect(await (await api(owner.page, "/api/library")).json()).toEqual(before);
   await owner.context.clearCookies();
   await owner.page.clock.setSystemTime(new Date());
