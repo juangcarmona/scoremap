@@ -220,7 +220,14 @@ export function NotationControl() {
         <option value="dual-anglo">C (Do) · Both, Anglo-American first</option>
         <option value="dual-latin">Do (C) · Both, Latin first</option>
       </select>
-      <span role="status">
+      <span
+        role="status"
+        className={
+          !state.loading && !state.error && !state.pending
+            ? "notation-saved"
+            : undefined
+        }
+      >
         {state.loading
           ? "Saving or loading note names…"
           : state.error || state.pending

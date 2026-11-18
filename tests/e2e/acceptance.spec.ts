@@ -63,3 +63,51 @@ test("Edit surfaces, dialogs and empty states have accessible names and contrast
     fullPage: true,
   });
 });
+
+test("An empty library offers a direct import path on a narrow screen", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  await expect(
+    page.getByRole("heading", { name: "Your music starts here" }),
+  ).toBeVisible();
+  const chooser = page.waitForEvent("filechooser");
+  await page
+    .getByRole("button", { name: "Import a backup", exact: true })
+    .click();
+  const file = await chooser;
+  page.once("dialog", (dialog) => dialog.accept());
+  await file.setFiles({
+    name: "synthetic-scoremap.json",
+    mimeType: "application/json",
+    buffer: Buffer.from(
+      JSON.stringify({
+        format: "scoremap-backup",
+        version: 1,
+        library: {
+          schemaVersion: 1,
+          revision: 0,
+          repertoires: [],
+          songs: [
+            {
+              id: "synthetic-song",
+              title: "Imported song",
+              artist: "",
+              notes: "",
+              sections: [],
+              references: [],
+            },
+          ],
+        },
+      }),
+    ),
+  });
+  await expect(
+    page.getByRole("heading", { name: "Imported song", exact: true }),
+  ).toBeVisible();
+  await page.reload();
+  await expect(
+    page.getByRole("heading", { name: "Imported song", exact: true }),
+  ).toBeVisible();
+});
