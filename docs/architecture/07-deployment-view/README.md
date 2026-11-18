@@ -1,7 +1,7 @@
 ---
 title: Deployment view
 arc42-section: "07"
-description: Current static delivery and the accepted private development and production deployment contracts
+description: Anonymous static delivery and integrated private development and production deployment contracts
 ---
 
 # 7. Deployment view
@@ -14,9 +14,9 @@ The alpha deployment contract is a static HTTPS origin with Vite-built assets, a
 
 The origin is part of data ownership: moving domains does not migrate IndexedDB. Export/import provides explicit transfer. Android-compatible browser testing can verify the web runtime; physical tablet installation remains a separate acceptance step.
 
-## Accepted target: development is not production
+## Private development and production
 
-[ADR-0003](../09-architecture-decisions/ADR-0003-self-host-the-private-application-with-aspire.md) selects self-hosting with Aspire. The candidate now implements the API/BFF, Development graph and a separate production publication entrypoint. Its source, publication, runtime qualification and actual deployment remain separately evidenced. The physical destination does not define the environment: an operator-managed machine can host a production deployment regardless of its location or name.
+[ADR-0003](../09-architecture-decisions/ADR-0003-self-host-the-private-application-with-aspire.md) selects self-hosting with Aspire. The merged private application implements the API/BFF, Development graph and a separate production publication entrypoint. Its source, publication, runtime qualification and actual deployment remain separately evidenced. The physical destination does not define the environment: an operator-managed machine can host a production deployment regardless of its location or name.
 
 | Environment | Building blocks and operating contract |
 | --- | --- |
@@ -40,11 +40,11 @@ The production contract requires persistent database storage and session data-pr
 Production qualification runs against a disposable deployment of the production artifacts/configuration contract, not only the development AppHost. Actual operator deployment and live/device acceptance remain separately authorized gates. See [section 10](../10-quality-requirements/README.md) for required evidence.
 
 
-## Portable candidate composition
+## Portable application composition
 
 The [Development AppHost](../../../src/root/ScoreMap.AppHost/Program.cs) starts isolated provider and PostgreSQL resources before the API is ready. A pinned local Aspire CLI matches the AppHost SDK. The [two-file bootstrap and deployment runbook](../../../deployment/README.md) owns selection, private generated files, restart behavior and operator procedures; those values are not an infrastructure inventory here.
 
-The candidate has separate anonymous and private web build outputs so browser verification cannot replace a running private application with the anonymous shell. Production artifacts use the private output, the BFF and a separately configured established OIDC provider. [Compose](../../../deployment/compose.yaml) keeps the database private and binds application ingress to loopback for an operator TLS proxy. A local execution is not a production build, restore rehearsal or Internet deployment.
+The application has separate anonymous and private web build outputs so browser verification cannot replace a running private application with the anonymous shell. Production artifacts use the private output, the BFF and a separately configured established OIDC provider. [Compose](../../../deployment/compose.yaml) keeps the database private and binds application ingress to loopback for an operator TLS proxy. A local execution is not a production build, restore rehearsal or Internet deployment.
 
 <!-- pdac:cite id="BR-SESSION" digest="sha256:a8c63526b6fe52375791a737ed14280609d00938808928153d49fd2627416326" -->
 

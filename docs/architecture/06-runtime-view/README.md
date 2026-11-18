@@ -10,13 +10,13 @@ A mutation is admitted only in edit mode, produces a valid candidate and is seri
 
 <!-- pdac:cite id="BR-DURABILITY" digest="sha256:6b075527861da086b9571e8d117c7844348a437e363423bca46f60cc83b02e0b" -->
 
-Opening the application reads and validates the stored envelope. A first use with no record produces a valid empty library. Performance mode permits navigation and PDF page memory, while all musical content commands remain guarded.
+Opening the application reads and validates the stored envelope. A first use with no record produces a valid empty library. Performance mode permits musical navigation while all musical content commands remain guarded. PDF page memory belongs to the deferred PDF capability.
 
 <!-- pdac:cite id="BR-EDIT-GUARD" digest="sha256:20e678c4743404c64a51c01e4446026ac95811827d2f5e1c641839291ad32718" -->
 
-## Accepted server target: one authorized commit
+## Private application: one authorized commit
 
-The following interaction is required by ADR-0003/0004 and #25/#26, not an existing server path. [Section 08](../08-crosscutting-concepts/README.md) owns the shared admission/authority rules; #20 must accept the commit aggregate before implementation.
+The API host and Library module implement the following interaction under ADR-0003/0004. [Section 08](../08-crosscutting-concepts/README.md) owns the shared admission/authority rules; the applied arrangement Product Change defines the commit aggregate.
 
 1. The editor retains a recoverable local candidate and sends a command with its expected server revision and retry identity, using the protected BFF session. UI state distinguishes local durability from server acknowledgement.
 2. The HTTP boundary validates the request/session/CSRF context and invokes the module use case, not a DbContext. The use case enforces resource capability, edit admission and domain invariants independently of the rendered UI.

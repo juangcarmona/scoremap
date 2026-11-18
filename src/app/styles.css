@@ -337,6 +337,7 @@ p {
   padding-top: 1.25rem;
 }
 .structure,
+.chord-reference-track,
 .chord-reference {
   min-width: 0;
 }
@@ -902,6 +903,32 @@ dialog h2 {
 }
 .played-note-list {
   overflow-wrap: anywhere;
+}
+.performed-piano[data-editable="false"] .key-pitch {
+  display: none;
+}
+.performed-piano[data-editable="false"] .key-state {
+  font-size: 0;
+  width: 75%;
+  max-width: 0.75rem;
+  aspect-ratio: 1;
+  margin-bottom: 0.5rem;
+}
+.performed-piano[data-editable="false"] [data-theoretical="true"] .key-state,
+.performed-piano[data-editable="false"] [data-performed="true"] .key-state {
+  border: 1px solid currentColor;
+  border-radius: 50%;
+}
+.performed-piano[data-editable="false"] [data-performed="true"] .key-state {
+  background: currentColor;
+}
+.piano-octave-labels {
+  display: flex;
+  padding: 0 0.5rem;
+}
+.piano-octave-labels > span {
+  flex: 1;
+  min-width: 0;
 }
 .note-occurrences {
   display: grid;

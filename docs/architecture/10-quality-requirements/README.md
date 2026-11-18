@@ -14,9 +14,9 @@ Acceptance requires behaviour evidence and independent review. Test counts, sche
 
 <!-- pdac:cite id="QR-OFFLINE" digest="sha256:a3c8b14e8eb2c0b1a419ec1a266cf50ff4d0b739936b2f6cf0c0cdfc7db38827" -->
 
-## Required executable architecture gates for the evolution
+## Required executable architecture gates
 
-These gates implement [ADR-0004](../09-architecture-decisions/ADR-0004-enforce-feature-and-layer-boundaries-with-executable-checks.md); they are **specified, not activated in ScoreMap**. The repository has no .NET solution yet. Accepting documentation or creating tests is not proof that an analyzer ran, a merge check is required or a production deployment passed.
+These gates implement [ADR-0004](../09-architecture-decisions/ADR-0004-enforce-feature-and-layer-boundaries-with-executable-checks.md); the integrated .NET solution activates the installed analyzers and the product-specific checks described below. Documentation, executed rejection tests, required merge status and actual operator deployment remain separate proofs.
 
 | Boundary | Required enforcement and independent rejection evidence |
 | --- | --- |
@@ -35,15 +35,15 @@ New semantic rules need stable diagnostic identifiers, useful remediation, posit
 
 Suppressions/exceptions name the diagnostic/rule, narrow path/symbol scope, reason, owner, expiry/review date and compensating test. No global disable, broad namespace allowlist, generated-code label or check filter may conceal architectural violations. Any exception to an approved layer boundary needs an owner-reviewed decision and updated negative fixtures.
 
-Later implementation must declare backend restore/build/test/format, architecture/analyzer rejection, frontend contract and security commands in `package.json`, CI and `.lighthouse/implement.json`; `npm run verify` must invoke the appropriate gates without removing existing product/citation/OpenSpec/app checks. Use the installed Lighthouse verifier where compatible. Required branch statuses and current-head independent review need observed configuration/receipts; merely adding a workflow is not enforcement. #27 owns integrated qualification, not all tests deferred until the end.
+Implementation must retain backend restore/build/test/format, architecture/analyzer rejection, frontend contract and security commands in `package.json`, CI and `.lighthouse/implement.json`; `npm run verify` must invoke the appropriate gates without removing existing product/citation/OpenSpec/app checks. Use the installed Lighthouse verifier where compatible. Required branch statuses and current-head independent review need observed configuration/receipts; merely adding a workflow is not enforcement. #27 owns integrated qualification, not all tests deferred until the end.
 
 
-## Candidate executable checks
+## Integrated executable checks
 
-The candidate invokes the [installed backend verifier and bounded additional probes](../../../scripts/verify-backend-boundaries.mjs) through package commands. LH1001/LH1002 retain their supplied semantic implementation. Separate SM1001–SM1004 rules check pure dependencies, recursive public payloads, inherited controllers and actual ASP.NET endpoint-to-infrastructure references; compiler tests include aliases, fully qualified types, nested collections/arrays and allowed DTO/BCL cases. Real invalid builds are required independently of the unit-test assertions.
+The application invokes the [installed backend verifier and bounded additional probes](../../../scripts/verify-backend-boundaries.mjs) through package commands. LH1001/LH1002 retain their supplied semantic implementation. Separate SM1001–SM1004 rules check pure dependencies, recursive public payloads, inherited controllers and actual ASP.NET endpoint-to-infrastructure references; compiler tests include aliases, fully qualified types, nested collections/arrays and allowed DTO/BCL cases. Real invalid builds are required independently of the unit-test assertions.
 
-[Frontend direction checks](../../../scripts/verify-frontend-boundaries.mjs) preserve the explicit Library-to-Sketch musical surface and reject upward/shared dependency violations. [Security checks](../../../scripts/verify-security.mjs) retain credential-pattern refusal, a zero-advisory runtime dependency gate, a high/critical tooling gate and a generated browser SBOM; lower-severity development advisories remain visible. These checks do not attest all issue28 controls or actual deployment.
+[Frontend direction checks](../../../scripts/verify-frontend-boundaries.mjs) preserve the explicit Library-to-Sketch musical surface and reject upward/shared dependency violations. [Security checks](../../../scripts/verify-security.mjs) retain credential-pattern refusal, a zero-advisory runtime dependency gate, a high/critical tooling gate and a generated browser SBOM; lower-severity development advisories remain visible. Their execution receipts establish only the checks actually run; they do not establish operator deployment.
 
-[Connected browser tests](../../../tests/connected/private-library.spec.ts) exercise real OIDC, PostgreSQL, import/edit/reopen, independent owners, roles, revocation, stale writes and retry receipts. Authored cases, terminal execution, current-head required statuses and independent source review are separate evidence. Full new musical/retention/offline behaviour coverage remains a delivery obligation; the first connected checkpoint cannot be relabelled as complete epic acceptance.
+[Connected browser tests](../../../tests/connected/private-library.spec.ts) exercise real OIDC, PostgreSQL, import/edit/reopen, independent owners, roles, revocation, stale writes and retry receipts. Authored cases, terminal execution, current-head required statuses and independent source review are separate evidence. PR #37 integrates the full 44-case connected suite alongside the musical/retention/offline fixtures. The current source-bound run receipt identifies actual execution. Physical musician/tablet acceptance and operator deployment remain open; passing automation does not close the epic.
 
 <!-- pdac:cite id="FR-PERSIST" digest="sha256:5f901e669e39923921cd1d28302b3f308460a72bda3bce53d83ffa7255934cd4" -->

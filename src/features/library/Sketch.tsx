@@ -537,21 +537,23 @@ export function Sketch({
         )}
         {notesOpen && !edit && <pre className="full-notes">{song.notes}</pre>}
       </div>
-      <aside className="chord-reference" aria-label="Visual chord reference">
-        <h2>Chord reference</h2>
-        {chosen ? (
-          <Piano chord={chosen} />
-        ) : (
-          <p className="muted">
-            {edit
-              ? "Add a chord to a section to see its notes."
-              : "This sketch has no chord references."}
+      <div className="chord-reference-track">
+        <aside className="chord-reference" aria-label="Visual chord reference">
+          <h2>Chord reference</h2>
+          {chosen ? (
+            <Piano chord={chosen} />
+          ) : (
+            <p className="muted">
+              {edit
+                ? "Add a chord to a section to see its notes."
+                : "This sketch has no chord references."}
+            </p>
+          )}
+          <p className="reference-hint">
+            Tap any chord in the sketch to see its keys.
           </p>
-        )}
-        <p className="reference-hint">
-          Tap any chord in the sketch to see its keys.
-        </p>
-      </aside>
+        </aside>
+      </div>
       {isRichSong(song) && (
         <ArrangementWorkspace
           song={song}

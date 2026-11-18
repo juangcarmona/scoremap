@@ -2,48 +2,83 @@
 
 Your sheet music, mapped out.
 
-ScoreMap is a local-first, installable web companion for musicians preparing,
-practising, rehearsing and performing songs. Its primary surface is an immediately
-readable song sketch: ordered sections, chord sequences, visual chord references
-and personal notes.
+ScoreMap is a React PWA for preparing and consulting songs: shared sections and
+measures, a finite chord catalogue, exact performed notes, independent arrangements,
+multiple keyboards, splits/layers and reusable voicings. The main device target is
+an Android tablet in landscape; phone and desktop consultation are also supported.
 
-Primary target: Android tablet in landscape; secondary target: Android phone.
-Initial MVP deadline: Friday, November 20, 2026.
+## Choose the right application
 
-This repository is public. No public license has been selected.
+- **Private library:** the ASP.NET Core BFF/API authenticates through Keycloak/OIDC
+  and saves principal-owned songs, permissions, atomic revisions and history in
+  PostgreSQL. Acknowledged server saves can be reconstructed on another device.
+- **Anonymous local library:** the static PWA saves to origin-scoped IndexedDB.
+  It has no private-account authority. Its JSON can be explicitly imported into a
+  private library without clearing the original.
 
-The owner configures and publishes Cloudflare Pages at https://scoremap.jgcarmona.com.
-This is the intended target; no deployment is claimed.
+Supported ScoreMap v1/v2 JSON exports remain the import/export format. Private
+import previews select complete songs and explicit independent copies; an ordinary
+JSON file is not a substitute for server ownership, authentication or backups.
+PDF attachment/viewing remains separate under [#13](https://github.com/juangcarmona/scoremap/issues/13).
 
-ProductShape owns accepted product intent; ArcShape owns architecture;
-OpenSpec owns temporary delivery specifications; Lighthouse owns delivery guardrails.
+## Run the private Development application
 
-## Run and verify
-
-Use Node 24 and the committed package lock.
+Use Node 24, the .NET SDK in `global.json` and Docker. The two committed files below
+contain synthetic configuration and users, never an operator's identity or music.
 
 ```sh
-npm ci --ignore-scripts
-npm run dev
+npx --yes --package=npm@10.9.4 -- npm ci --ignore-scripts
+npm run build:private
+npm run dev:private -- config/application.example.json config/development-users.example.json
 ```
+
+Open `http://localhost:5280`, sign in with an enabled account from the selected
+synthetic users file, import a supported ScoreMap export, edit and wait for
+**Saved to your private library**. Reopen in a clean browser session to check the
+server acknowledgement. **Saved on this device** belongs to the anonymous mode.
+Use execution-owned instances for automated tests; never reset an operator's data.
+
+The private Development graph is loopback-only. A tablet needs an explicitly
+configured reachable application/provider origin and matching OIDC callbacks;
+forwarding a static Vite preview does not supply a private library.
+See [private operation and production publication](deployment/README.md).
+
+For anonymous local development only, use `npm run dev`. `npm run build` produces
+static `dist/`; it does not deploy the private API, PostgreSQL or identity provider.
+
+## Verify
 
 ```sh
 npm run verify
 npx --no-install playwright install chromium
 npm run test:e2e
-npm run evidence:record
 ```
 
-`npm run build` creates `dist/` for the owner's Cloudflare Pages integration.
-No Wrangler deployment step is required. App assets are precached; personal music
-is stored in IndexedDB on the current origin. Export a backup before clearing site
-data or moving to another domain.
+An execution-owned real provider/database graph is additionally required for
+`npm run verify:connected`. `npm run verify:delivery` binds the full local and
+connected reports to committed inputs. Native CI performs those stages for the
+current revision. Physical tablet installation and actual operator deployment are
+separate acceptance checks.
 
-The first usable scope includes repertoire/song editing, stable section ordering,
-major/minor chord sequences, accurate piano references, personal notes, web
-references, performance consultation, atomic local recovery and validated JSON
-backup replacement. PDF viewing remains tracked in [#13](https://github.com/juangcarmona/scoremap/issues/13).
-Physical Android installation is a separate device acceptance step.
+## Production delivery
 
-See [the product model](docs/product/model/), [architecture](docs/architecture/),
-[delivery plans](openspec/changes/), and [verification evidence](docs/evidence/).
+`npm run build:container` builds committed private-application source.
+`npm run publish:production -- <empty-output-directory>` publishes the separate
+Aspire-to-Compose application/private-database composition and source receipt.
+The [production procedure](deployment/README.md#production-preparation) requires
+private operator JSON, an established production OIDC client, stable HTTPS ingress,
+persistent database/session keys and an observed protected backup/restore.
+Secrets and personal arrangements stay outside Git and public artifacts.
+
+Optional private offline preparation defaults to disabled. A configured maximum
+of 480 minutes is shortened by known provider/session expiry; it never promises an
+eight-hour session. Restart while disconnected remains locked; reconnect requires
+authentication and explicit recovery of protected pending work.
+
+The operator chooses the destination machine and origins. A merged PR, a static
+hosting build and a generated Compose file are separate from a running private
+Production deployment. See [current delivery evidence](docs/evidence/mvp/).
+
+ProductShape owns accepted intent; [ArcShape](docs/architecture/) describes its
+realization; [OpenSpec](openspec/changes/) owns delivery specifications; Lighthouse
+owns delivery guardrails. This repository is public; no public license is selected.
