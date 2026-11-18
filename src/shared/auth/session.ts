@@ -6,4 +6,5 @@ export interface SessionInfo {
   sessionId: string;
   checkedAt: string;
   expiresAt: string;
+  privateOfflineMinutes?: number;
 }

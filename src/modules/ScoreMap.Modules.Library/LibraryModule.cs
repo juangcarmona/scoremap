@@ -1,3 +1,5 @@
+using System.Globalization;
+using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
 using System.Text.Json;
 using JuanGCarmona.ScoreMap.Modules.Library.Application;
@@ -20,6 +22,7 @@ public static class LibraryModule
     services.AddHealthChecks().AddCheck<DatabaseHealth>("postgresql");
     services.AddSingleton<ILibraryRepository>(s => s.GetRequiredService<LibraryRepository>());
     services.AddSingleton<HistoryQueryHandler>(); services.AddSingleton<RecoverSongHandler>();
+    services.AddSingleton<AuthorizeOfflineHandler>();
     services.AddSingleton<DeviceConfigurationCommandHandler>(); services.AddSingleton<DeviceConfigurationQueryHandler>();
     services.AddSingleton<PresetCommandHandler>(); services.AddSingleton<PresetQueryHandler>();
     services.AddSingleton<ReadNotationHandler>(); services.AddSingleton<SaveNotationHandler>();
@@ -28,7 +31,7 @@ public static class LibraryModule
     return services;
   }
   public static async Task InitializePrivateLibrary(this IServiceProvider services, CancellationToken ct = default) { await services.GetRequiredService<LibraryRepository>().Initialize(ct).ConfigureAwait(false); await services.GetRequiredService<RecoveryVault>().Initialize(ct).ConfigureAwait(false); }
-  public static WebApplication MapPrivateLibrary(this WebApplication app)
+  public static WebApplication MapPrivateLibrary(this WebApplication app, int privateOfflineMinutes = 0)
   {
     app.Use(async (context, next) =>
     {
@@ -41,6 +44,7 @@ public static class LibraryModule
       { context.Response.StatusCode = 400; await Fault(context, 400, "Invalid or unsupported ScoreMap data. Existing content has not been replaced.").ConfigureAwait(false); }
     });
     var api = app.MapGroup("/api").RequireAuthorization().RequireRateLimiting("private-api");
+    MapOffline(api, privateOfflineMinutes);
     api.MapGet("/device-configurations", async (ClaimsPrincipal user, DeviceConfigurationQueryHandler handler, CancellationToken ct) => Results.Json(await handler.Handle(new DeviceConfigurationQuery(Principal(user)), ct).ConfigureAwait(false)));
     api.MapPost("/device-configurations", async (ClaimsPrincipal user, DeviceConfigurationRequest request, DeviceConfigurationCommandHandler handler, CancellationToken ct) => Results.Json(await handler.Handle(new DeviceConfigurationCommand(Principal(user), request), ct).ConfigureAwait(false)));
     api.MapGet("/voicing-presets", async (ClaimsPrincipal user, PresetQueryHandler handler, CancellationToken ct) => Results.Json(await handler.Handle(new PresetQuery(Principal(user)), ct).ConfigureAwait(false)));
@@ -62,6 +66,16 @@ public static class LibraryModule
     api.MapPost("/songs/{id}/purge", async (ClaimsPrincipal user, string id, RestoreRequest request, RecoverSongHandler handler, CancellationToken ct) => Results.Json(await handler.Handle(new RecoverSong(Principal(user), id, "purge", request), ct).ConfigureAwait(false)));
     api.Map("/{**path}", () => Results.Problem(statusCode: 404, title: "Not found", detail: "The private resource is unavailable."));
     return app;
+  }
+  private static void MapOffline(Microsoft.AspNetCore.Routing.RouteGroupBuilder api, int privateOfflineMinutes)
+  {
+    api.MapPost("/offline-lease", async (HttpContext context, OfflineLeaseRequest request, AuthorizeOfflineHandler handler, CancellationToken ct) =>
+    {
+      var ticket = await context.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme).ConfigureAwait(false);
+      if (!ticket.Succeeded || ticket.Properties?.ExpiresUtc is not DateTimeOffset sessionExpiry || context.User.FindFirstValue("scoremap:session") is not { Length: > 0 } sessionId || !DateTimeOffset.TryParse(ticket.Properties.GetTokenValue("expires_at"), CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out var tokenExpiry)) throw new AccessDeniedException("A fresh current provider session is required.");
+      var expiresAt = sessionExpiry < tokenExpiry ? sessionExpiry : tokenExpiry;
+      return Results.Json(await handler.Handle(new AuthorizeOffline(Principal(context.User), sessionId, expiresAt, privateOfflineMinutes, request), ct).ConfigureAwait(false));
+    });
   }
   public static string Principal(ClaimsPrincipal user) => user.FindFirstValue("scoremap:principal") ?? throw new AccessDeniedException("A stable authenticated principal is required.");
   private static Task Fault(HttpContext context, int status, string detail) => Results.Problem(statusCode: status, title: status switch { 403 => "Forbidden", 409 => "Revision conflict", _ => "Invalid request" }, detail: detail, extensions: new Dictionary<string, object?>(StringComparer.Ordinal) { ["traceId"] = context.TraceIdentifier }).ExecuteAsync(context);

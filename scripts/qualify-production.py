@@ -39,6 +39,21 @@ def write(path, value):
     path.write_text(json.dumps(value, indent=2) + '\n' if not isinstance(value, str) else value)
     path.chmod(0o600)
 
+def qualify_offline_configuration(state, image, configuration, operation):
+    refused = []
+    for index, value in enumerate([-1, 481, "60", None, 1.5]):
+        candidate = json.loads(json.dumps(configuration))
+        candidate['Application']['PrivateOfflineMinutes'] = value
+        path = state / ('invalid-offline-' + str(index) + '.private.json')
+        write(path, candidate)
+        result = subprocess.run(['docker', 'run', '--rm', '--network', 'none', '--read-only', '--tmpfs', '/tmp', '--user', str(os.getuid()) + ':' + str(os.getgid()), '--label', 'scoremap.qualification=' + operation, '--ulimit', 'core=0', '--env', 'ASPNETCORE_ENVIRONMENT=Production', '--mount', 'type=bind,source=' + str(path) + ',target=/run/scoremap/application.json,readonly', image], cwd=ROOT, capture_output=True, text=True, timeout=30)
+        output = result.stdout + result.stderr
+        write(state / ('invalid-offline-' + str(index) + '.private.txt'), output)
+        if result.returncode == 0 or 'Application.PrivateOfflineMinutes must be an integer from 0 (disabled) through 480' not in output:
+            raise RuntimeError('The actual application image did not refuse invalid offline configuration before database admission')
+        refused.append({'value': value, 'refusedBeforeDatabaseAdmission': True, 'exitCode': result.returncode})
+    write(state / 'offline-configuration-refusals.private.json', refused)
+
 def setup(settings):
     verification = verification_source()
     required = {'SchemaVersion', 'ApplicationImage', 'ApplicationRevision', 'PublicationDirectory'}
@@ -163,8 +178,9 @@ def setup(settings):
     trusted = proxy['NetworkSettings']['Networks'][network]['IPAddress']
     if not trusted:
         raise RuntimeError('Qualification safety check failed: trusted')
-    configuration = {'SchemaVersion': 1, 'Environment': 'Production', 'InstanceId': 'qualification-' + operation, 'Application': {'PublicOrigin': origin, 'WebRoot': '/app/wwwroot', 'ProductionQualified': True}, 'Identity': {'Authority': authority, 'ClientId': client_id, 'ClientSecret': client_secret, 'DevelopmentFixture': False}, 'Storage': {'ConnectionString': f'Host=database;Port=5432;Database=scoremap;Username=scoremap;Password={database_password}', 'KeysPath': '/var/lib/scoremap/keys'}, 'Ingress': {'TrustedProxy': trusted}}
+    configuration = {'SchemaVersion': 1, 'Environment': 'Production', 'InstanceId': 'qualification-' + operation, 'Application': {'PublicOrigin': origin, 'WebRoot': '/app/wwwroot', 'ProductionQualified': True, 'PrivateOfflineMinutes': 1}, 'Identity': {'Authority': authority, 'ClientId': client_id, 'ClientSecret': client_secret, 'DevelopmentFixture': False}, 'Storage': {'ConnectionString': f'Host=database;Port=5432;Database=scoremap;Username=scoremap;Password={database_password}', 'KeysPath': '/var/lib/scoremap/keys'}, 'Ingress': {'TrustedProxy': trusted}}
     write(state / 'application.private.json', configuration)
+    qualify_offline_configuration(state, image, configuration, operation)
     readable_copy(state / 'application.private.json', state / 'application.mount.json', image)
     curl = ['curl', '--noproxy', 'localhost,identity.scoremap.test', '--silent', '--show-error', '--fail', '--max-time', '3', '--cacert', str(state / 'ca.crt')]
     for attempt in range(180):
@@ -218,7 +234,7 @@ def execute_browser(state, phase, config, grep=None):
     if result.returncode:
         raise RuntimeError('Disposable ' + phase + ' browser qualification failed; inspect its private log')
     completed = json.loads((report / 'results.json').read_text())
-    expected = 25 if config == 'playwright.connected.config.ts' and (not grep) else 3 if phase == 'tls-targeted' else 1
+    expected = 38 if config == 'playwright.connected.config.ts' and (not grep) else 3 if phase == 'tls-targeted' else 1
     if not (completed['stats']['expected'] == expected and completed['stats']['unexpected'] == 0 and (completed['stats']['skipped'] == 0)):
         raise RuntimeError("Qualification safety check failed: completed['stats']['expected'] == expected and completed['stats']['unexpected'] == 0 and (completed['stats']['skipped'] == 0)")
 
@@ -412,8 +428,8 @@ def smoke(state):
     if not previous['exitCode'] == 0:
         raise RuntimeError("Qualification safety check failed: previous['exitCode'] == 0")
     report = json.loads((Path(previous['directory']) / 'results.json').read_text())
-    if not (report['stats']['expected'] == 25 and report['stats']['unexpected'] == 0):
-        raise RuntimeError("Qualification safety check failed: report['stats']['expected'] == 25 and report['stats']['unexpected'] == 0")
+    if not (report['stats']['expected'] == 38 and report['stats']['unexpected'] == 0):
+        raise RuntimeError("Qualification safety check failed: report['stats']['expected'] == 38 and report['stats']['unexpected'] == 0")
     execute_browser(state, 'before', 'playwright.deployment.config.ts', 'before:')
     database = DisposableDatabase(state)
     database.dc('restart', 'application')
@@ -495,7 +511,7 @@ def evidence(state):
         if stats['unexpected'] or stats['skipped']:
             raise RuntimeError('A required phase failed or was skipped')
         phases[phase] = {'passed': stats['expected'], 'reportSha256': hashlib.sha256(report.read_bytes()).hexdigest()}
-    result = {'verificationSource': data['verificationSource'], 'applicationRevision': data['applicationRevision'], 'applicationImage': data['image'], 'publicationRevision': data['publicationRevision'], 'environment': 'Production', 'syntheticOnly': True, 'phases': phases, 'allRestoredTableFieldsAndKeysMatchBeforeOpening': True, 'actualOutdatedBackupRefusedBeforeOpening': True, 'secureHttpOnlySessionSurvivedApplicationRestartAndRestore': True, 'purgedIdentityNotRevived': True, 'browserTestCertificate': 'explicit synthetic leaf SPKI only; Node/curl/BFF trust the test CA', 'securityAndIndependentReview': 'separate required gates', 'actualOperatorDeployment': False, 'physicalDeviceAcceptance': False}
+    result = {'verificationSource': data['verificationSource'], 'applicationRevision': data['applicationRevision'], 'applicationImage': data['image'], 'publicationRevision': data['publicationRevision'], 'environment': 'Production', 'syntheticOnly': True, 'offlineConfigurationRefusals': json.loads((state / 'offline-configuration-refusals.private.json').read_text()), 'phases': phases, 'allRestoredTableFieldsAndKeysMatchBeforeOpening': True, 'actualOutdatedBackupRefusedBeforeOpening': True, 'secureHttpOnlySessionSurvivedApplicationRestartAndRestore': True, 'purgedIdentityNotRevived': True, 'browserTestCertificate': 'explicit synthetic leaf SPKI only; Node/curl/BFF trust the test CA', 'securityAndIndependentReview': 'separate required gates', 'actualOperatorDeployment': False, 'physicalDeviceAcceptance': False}
     write(state / 'qualification-receipt.private.json', result)
     print(json.dumps({'environment': 'Production', 'connectedPassed': phases['connected']['passed'], 'restartAndRestorePassed': True, 'outdatedBackupRefused': True, 'actualOperatorDeployment': False}), flush=True)
 

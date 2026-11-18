@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.DataProtection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -8,7 +9,7 @@ using Npgsql;
 
 namespace JuanGCarmona.ScoreMap.Modules.Library.Infrastructure;
 
-internal sealed partial class LibraryRepository(NpgsqlDataSource dataSource) : ILibraryRepository
+internal sealed partial class LibraryRepository(NpgsqlDataSource dataSource, IDataProtectionProvider protection) : ILibraryRepository
 {
   internal async Task Initialize(CancellationToken cancellationToken)
   {
@@ -36,6 +37,7 @@ internal sealed partial class LibraryRepository(NpgsqlDataSource dataSource) : I
             CREATE TABLE IF NOT EXISTS sm_preset_receipts(principal text NOT NULL,command uuid NOT NULL,hash text NOT NULL,preset text NOT NULL,revision bigint NOT NULL,PRIMARY KEY(principal,command));
             CREATE TABLE IF NOT EXISTS sm_device_configurations(principal text NOT NULL,id text NOT NULL,revision bigint NOT NULL,content jsonb,deleted boolean NOT NULL DEFAULT false,PRIMARY KEY(principal,id));
             CREATE TABLE IF NOT EXISTS sm_device_receipts(principal text NOT NULL,command uuid NOT NULL,hash text NOT NULL,configuration text NOT NULL,revision bigint NOT NULL,PRIMARY KEY(principal,command));
+            CREATE TABLE IF NOT EXISTS sm_offline_leases(id uuid PRIMARY KEY,principal text NOT NULL,session_id text NOT NULL,checked_at timestamptz NOT NULL,expires_at timestamptz NOT NULL,authorization_expires_at timestamptz NOT NULL,configured_minutes integer NOT NULL CHECK(configured_minutes BETWEEN 1 AND 480),scope jsonb NOT NULL,music_key uuid NOT NULL,personal_key uuid NOT NULL);
             CREATE TABLE IF NOT EXISTS sm_notation(principal text PRIMARY KEY,revision bigint NOT NULL,mode text NOT NULL CHECK(mode IN ('anglo','latin','dual')),primary_notation text NOT NULL CHECK(primary_notation IN ('anglo','latin')),CHECK(mode='dual' OR mode=primary_notation));
             CREATE TABLE IF NOT EXISTS sm_notation_receipts(principal text NOT NULL,command uuid NOT NULL,hash text NOT NULL,response jsonb NOT NULL,PRIMARY KEY(principal,command));
             UPDATE sm_receipts SET response=jsonb_build_object('Revision',response#>'{Library,revision}','Versions',response->'Versions','Capabilities',response->'Capabilities') WHERE response ? 'Library';

@@ -6,6 +6,7 @@ namespace JuanGCarmona.ScoreMap.Modules.Library.Application;
 
 internal interface ILibraryRepository
 {
+  Task<System.Text.Json.JsonElement> AuthorizeOffline(AuthorizeOffline command, CancellationToken cancellationToken);
   Task<System.Text.Json.JsonElement> ReadDeviceConfigurations(string principal, CancellationToken cancellationToken);
   Task<System.Text.Json.JsonElement> MutateDeviceConfiguration(string principal, DeviceConfigurationRequest request, CancellationToken cancellationToken);
   Task<System.Text.Json.JsonElement> ReadPresets(string principal, CancellationToken cancellationToken);

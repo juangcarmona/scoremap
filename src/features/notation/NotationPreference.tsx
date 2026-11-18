@@ -96,11 +96,20 @@ function AccountNotation({
     },
     retry: false,
   });
+  useEffect(
+    () =>
+      store.subscribe?.((settings) => {
+        client.setQueryData(["notation", principal], settings);
+      }),
+    [store, client, principal],
+  );
   const [draft, setDraft] = useState<Notation | null>(null);
   const [recoveryError, setRecoveryError] = useState("");
   const retry = useRef<NotationRequest | null>(null);
   const active = useRef(true);
   const mutation = useMutation({
+    networkMode: "always",
+    retry: false,
     mutationFn: (request: NotationRequest) => store.save(request),
     onSuccess: (acknowledged) => {
       if (!active.current) return;

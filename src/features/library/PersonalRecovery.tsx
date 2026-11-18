@@ -6,13 +6,17 @@ import { downloadText } from "./backup";
 export function PersonalRecovery({
   store,
   reopen,
+  editing,
 }: {
+  editing: boolean;
   store: PersonalPending;
   reopen: () => Promise<void>;
 }) {
   const client = useQueryClient();
   const key = ["personal-pending", store.principal];
   const records = useQuery({
+    networkMode: "always",
+    refetchOnReconnect: false,
     queryKey: key,
     queryFn: () => store.list(),
     retry: false,
@@ -114,10 +118,13 @@ export function PersonalRecovery({
           </pre>
           <button
             type="button"
-            disabled={busy}
+            disabled={
+              busy ||
+              (!editing && (preview as { kind?: string }).kind !== "notation")
+            }
             onClick={() => {
               void act(async () => {
-                await store.retry(selected);
+                await store.retry(selected, editing ? "edit" : "performance");
                 await reopen();
               });
             }}

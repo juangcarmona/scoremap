@@ -1,3 +1,10 @@
+import { OfflineAuthority } from "../../shared/auth/offlineLease";
+import { sessionRequestAnchor } from "../../shared/auth/sessionDeadline";
+import {
+  ProtectedOfflineCache,
+  removeOfflineCopies,
+  type OfflineEnvelope,
+} from "./protectedOffline";
 import {
   pendingDatabase as pendingDb,
   retainedDrafts,
@@ -14,6 +21,7 @@ import { notationSettings } from "../../shared/music/notation";
 export async function discardProtectedPending(principal: string) {
   await discardSongPending(principal);
   await discardPersonalPending(principal);
+  await removeOfflineCopies(principal);
 }
 import type { ImportProvenance } from "./importSelection";
 import { validateLibrary, type Library, type Song } from "./domain";
@@ -41,13 +49,31 @@ interface RecoveryKey {
 export class PrivateLibraryStore implements LibraryStore {
   readonly scope = "private";
   readonly notation: NotationStore = {
+    subscribe: (listener) => {
+      this.notationListeners.add(listener);
+      return () => {
+        this.notationListeners.delete(listener);
+      };
+    },
     read: () => this.request<NotationSettings>("/api/preferences/notation"),
     save: (request) =>
       this.personal.mutate("notation", request, notationSettings),
     discard: (request) =>
       this.personal.discardOwn("notation", "notation", request.commandId),
   };
+  private notationListeners = new Set<(settings: NotationSettings) => void>();
   readonly personal: PersonalPending;
+  readonly offline: OfflineAuthority;
+  private currentIdentity: SessionInfo;
+  private offlineCache: ProtectedOfflineCache;
+  private unsubscribeOffline: () => void;
+  get offlineReady() {
+    return (
+      !this.terminated &&
+      this.authorized() &&
+      this.offline.matches(this.currentIdentity)
+    );
+  }
   private versions: Record<string, number> = {};
   capabilities: LibraryView["capabilities"] = {};
   private key: CryptoKey | null = null;
@@ -114,7 +140,15 @@ export class PrivateLibraryStore implements LibraryStore {
     readonly identity: SessionInfo,
     private lock: () => void,
     private authorized: () => boolean,
+    offline = new OfflineAuthority(),
   ) {
+    this.offline = offline;
+    this.currentIdentity = identity;
+    this.offlineCache = new ProtectedOfflineCache(identity.principal);
+    this.unsubscribeOffline = offline.subscribe(() => {
+      this.offlineCache.clearMemory();
+      if (navigator.onLine === false) this.lockAccess();
+    });
     this.personal = new PersonalPending(
       identity.principal,
       (path, init) => this.request(path, init),
@@ -124,8 +158,88 @@ export class PrivateLibraryStore implements LibraryStore {
   version(songId: string) {
     return Object.hasOwn(this.versions, songId) ? this.versions[songId]! : 0;
   }
-  updateAuthorization(authorized: () => boolean) {
+  updateAuthorization(
+    authorized: () => boolean,
+    identity = this.currentIdentity,
+  ) {
+    if (
+      identity.principal !== this.identity.principal ||
+      identity.sessionId !== this.identity.sessionId
+    ) {
+      this.lockAccess();
+      return;
+    }
+    this.currentIdentity = identity;
     this.authorized = authorized;
+  }
+  async prepareOffline(candidate: Library) {
+    this.assertAccess();
+    if (navigator.onLine === false)
+      throw new Error("Prepare offline access while connected to the service.");
+    if (!this.currentIdentity.privateOfflineMinutes)
+      throw new Error("Private offline access is disabled on this server.");
+    await this.whenProtected();
+    if (this.pendingRecovery || (await this.personal.list()).length)
+      throw new Error(
+        "Recover your existing protected changes before preparing offline access.",
+      );
+    const generation = this.generation,
+      sequence = this.sequence,
+      personalVersion = this.personal.version;
+    const anchor = sessionRequestAnchor();
+    const unchanged = () =>
+      this.sequence === sequence &&
+      this.personal.version === personalVersion &&
+      this.acknowledgedRevision === candidate.revision;
+    try {
+      const envelope = await this.request<OfflineEnvelope>(
+        "/api/offline-lease",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            songIds: candidate.songs.map((song) => song.id),
+          }),
+        },
+      );
+      this.assertAccess(generation);
+      this.assertViewPermissions(envelope.view, candidate);
+      if (
+        !unchanged() ||
+        !sameData(validateLibrary(envelope.view.library), candidate)
+      )
+        throw new Error(
+          "Saved music changed while preparing. Wait for confirmation and reload before trying again.",
+        );
+      await this.offlineCache.protect(envelope);
+      const key = await this.importKey(envelope.keys.songs.key);
+      await this.personal.installPreparedKey(envelope.keys.personal);
+      this.assertAccess(generation);
+      if (!unchanged() || (await this.personal.list()).length)
+        throw new Error(
+          "Personal or musical changes began while preparing. Finish or recover them before trying again.",
+        );
+      this.key = key;
+      this.keyId = envelope.keys.songs.id;
+      this.offline.activate(envelope, this.currentIdentity, anchor);
+      for (const listener of this.notationListeners)
+        listener(envelope.personal.notation);
+      return this.offline.info!;
+    } catch (error) {
+      this.offlineCache.clearMemory();
+      this.offline.stop();
+      throw error;
+    }
+  }
+  preparedPersonal() {
+    this.assertAccess();
+    if (!this.offlineReady)
+      throw new Error("Offline preparation is no longer active.");
+    return {
+      presets: this.offlineCache.read("/api/voicing-presets"),
+      deviceConfigurations: this.offlineCache.read(
+        "/api/device-configurations",
+      ),
+    };
   }
   lockAccess() {
     if (this.terminated) return;
@@ -142,6 +256,19 @@ export class PrivateLibraryStore implements LibraryStore {
   }
   async request<T>(path: string, init: RequestInit = {}): Promise<T> {
     this.assertAccess();
+    if (navigator.onLine === false) {
+      if (!this.offlineReady) {
+        this.lockAccess();
+        this.assertAccess();
+      }
+      if ((init.method ?? "GET") !== "GET")
+        throw new Error(
+          "Your change is protected on this device but has no service acknowledgement. Reconnect and review it explicitly.",
+        );
+      if (path !== "/api/library" && !this.offline.info?.scope.personal)
+        throw new Error("This personal resource has no offline authorization.");
+      return this.offlineCache.read(path) as T;
+    }
     const generation = this.generation;
     const response = await fetch(path, {
       ...init,
@@ -154,7 +281,7 @@ export class PrivateLibraryStore implements LibraryStore {
       cache: "no-store",
       headers: {
         "Content-Type": "application/json",
-        "X-ScoreMap-CSRF": this.identity.csrf,
+        "X-ScoreMap-CSRF": this.currentIdentity.csrf,
         ...init.headers,
       },
     });
@@ -271,6 +398,13 @@ export class PrivateLibraryStore implements LibraryStore {
   ): PreparedLibrarySave {
     this.assertAccess();
     validateLibrary(candidate);
+    if (navigator.onLine === false) {
+      if (!this.offlineReady) {
+        this.lockAccess();
+        this.assertAccess();
+      }
+      this.offlineCache.admit(candidate, this.offline);
+    }
     if (this.pendingRecovery)
       throw new Error(
         "Review and retry, copy, export, or explicitly remove your previous pending work before saving new changes.",
@@ -342,6 +476,15 @@ export class PrivateLibraryStore implements LibraryStore {
         await this.whenSongProtected();
         this.assertAccess(generation);
         if (acknowledged) return structuredClone(acknowledged);
+        if (navigator.onLine === false) {
+          if (intent === "import" && sequence === this.sequence) {
+            this.reviewOwnDraft = true;
+            await this.refreshDrafts();
+          }
+          throw new Error(
+            "Your latest music is protected on this device but has no service acknowledgement. Reconnect and review it explicitly.",
+          );
+        }
         if (!sent && intent !== "import") {
           await new Promise((resolve) => setTimeout(resolve, 500));
           this.assertAccess(generation);
@@ -661,7 +804,11 @@ export class PrivateLibraryStore implements LibraryStore {
     });
   }
   close() {
+    this.unsubscribeOffline();
+    this.offline.stop();
+    this.offlineCache.clearMemory();
     this.personal.close();
+    this.notationListeners.clear();
     this.key = null;
     this.keyId = "";
     this.lastPrepared = null;

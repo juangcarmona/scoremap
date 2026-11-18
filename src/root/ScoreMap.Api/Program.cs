@@ -122,11 +122,11 @@ app.MapGet("/auth/session", async (HttpContext context, IAntiforgery antiforgery
     return Results.Json(new { authenticated = false });
   var expiresAt = sessionExpiry < tokenExpiry ? sessionExpiry : tokenExpiry;
   if (expiresAt <= checkedAt) return Results.Json(new { authenticated = false });
-  return Results.Json(new { authenticated = true, principal = LibraryModule.Principal(context.User), name = context.User.FindFirstValue("preferred_username") ?? "Musician", csrf = antiforgery.GetAndStoreTokens(context).RequestToken, sessionId, checkedAt, expiresAt });
+  return Results.Json(new { authenticated = true, principal = LibraryModule.Principal(context.User), name = context.User.FindFirstValue("preferred_username") ?? "Musician", csrf = antiforgery.GetAndStoreTokens(context).RequestToken, sessionId, checkedAt, expiresAt, privateOfflineMinutes = config.GetValue<int>("Application:PrivateOfflineMinutes") });
 });
 app.MapPost("/auth/logout", () => Results.SignOut(new AuthenticationProperties { RedirectUri = "/" }, [CookieAuthenticationDefaults.AuthenticationScheme, OpenIdConnectDefaults.AuthenticationScheme])).RequireAuthorization();
 app.MapHealthChecks("/health/ready");
-app.MapPrivateLibrary();
+app.MapPrivateLibrary(config.GetValue<int>("Application:PrivateOfflineMinutes"));
 app.UseDefaultFiles(); app.UseStaticFiles();
 app.MapFallbackToFile("index.html");
 await app.RunAsync();

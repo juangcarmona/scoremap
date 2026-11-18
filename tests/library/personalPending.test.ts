@@ -130,3 +130,49 @@ it("locks a late personal acknowledgement after termination and preserves its al
   await reopened.remove(records[0]!.key);
   reopened.close();
 });
+
+it("does not replay a retained reusable resource in performance mode and keeps the exact command for an explicit edit-mode retry", async () => {
+  const principal = crypto.randomUUID();
+  const key = Buffer.from(crypto.getRandomValues(new Uint8Array(32))).toString(
+    "base64",
+  );
+  const content = {
+    id: crypto.randomUUID(),
+    name: "Synthetic range",
+    instrument: "keyboard",
+    range: [21, 108],
+  };
+  const request = {
+    operation: "save",
+    id: content.id,
+    content,
+    expectedRevision: 0,
+    mode: "edit",
+    commandId: crypto.randomUUID(),
+  };
+  let sends = 0,
+    lose = true;
+  const transport = async <T>(path: string, init?: RequestInit): Promise<T> => {
+    if (path.startsWith("/api/personal-recovery-keys"))
+      return { id: "synthetic-key", key } as T;
+    expect(JSON.parse(String(init?.body))).toEqual(request);
+    sends++;
+    if (lose) throw new Error("Lost resource response");
+    return { id: content.id, revision: 1, configuration: content } as T;
+  };
+  const store = new PersonalPending(principal, transport, () => true);
+  await expect(
+    store.mutate("device", request, (value) => value),
+  ).rejects.toThrow("Lost resource response");
+  const retained = await store.list();
+  await expect(store.retry(retained[0]!.key, "performance")).rejects.toThrow(
+    "Switch to Edit",
+  );
+  expect(sends).toBe(1);
+  expect(await store.list()).toEqual(retained);
+  lose = false;
+  await store.retry(retained[0]!.key, "edit");
+  expect(sends).toBe(2);
+  expect(await store.list()).toEqual([]);
+  store.close();
+});

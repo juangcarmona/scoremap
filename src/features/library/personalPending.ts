@@ -86,6 +86,10 @@ export class PersonalPending {
   private readonly context = crypto.randomUUID();
   private generation = 0;
   private active = true;
+  private epoch = 0;
+  get version() {
+    return this.epoch;
+  }
   private protectionFailures = new Map<string, unknown>();
   private protection: Promise<void> = Promise.resolve();
   private key: Promise<{ id: string; key: CryptoKey }> | null = null;
@@ -133,6 +137,13 @@ export class PersonalPending {
         throw error;
       }));
   }
+  async installPreparedKey(material: { id: string; key: string }) {
+    this.check();
+    const generation = this.generation;
+    const key = await this.importKey(material.key);
+    this.check(generation);
+    this.key = Promise.resolve({ id: material.id, key });
+  }
   async whenProtected() {
     await this.protection;
     if (this.protectionFailures.size)
@@ -179,6 +190,7 @@ export class PersonalPending {
       typeof id === "string" && id.length > 0,
       "A personal resource identity is required.",
     );
+    this.epoch++;
     const slot: PersonalKey = [
       this.principal,
       this.context,
@@ -260,6 +272,7 @@ export class PersonalPending {
     );
     this.check(generation);
     validateAcknowledgement(kind, body, acknowledged);
+    this.epoch++;
     await this.remove(slot, commandId);
     return acknowledged;
   }
@@ -313,10 +326,15 @@ export class PersonalPending {
     );
     return draft as unknown as Draft;
   }
-  async retry(slot: PersonalKey) {
+  async retry(slot: PersonalKey, mode: "edit" | "performance" = "performance") {
     const generation = this.generation;
     const draft = await this.review(slot);
+    requireValue(
+      draft.kind === "notation" || mode === "edit",
+      "Switch to Edit before applying a reusable personal resource.",
+    );
     const route = routes[draft.kind];
+    this.epoch++;
     const acknowledged = validateAcknowledgement(
       draft.kind,
       draft.request,
@@ -326,6 +344,7 @@ export class PersonalPending {
       }),
     );
     this.check(generation);
+    this.epoch++;
     await this.remove(slot, String(draft.request.commandId));
     return acknowledged;
   }

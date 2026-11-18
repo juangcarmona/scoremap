@@ -10,6 +10,7 @@ export type NotationRequest = Notation & {
   commandId: string;
 };
 export interface NotationStore {
+  subscribe?(listener: (settings: NotationSettings) => void): () => void;
   read(): Promise<NotationSettings>;
   save(request: NotationRequest): Promise<NotationSettings>;
   discard?(request: NotationRequest): Promise<void>;

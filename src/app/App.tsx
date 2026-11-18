@@ -1,3 +1,4 @@
+import { OfflinePreparation } from "../features/library/OfflinePreparation";
 import { DeviceProvider } from "../features/library/DeviceContext";
 import { DeviceConfigurations } from "../features/library/DeviceConfigurations";
 import { PersonalRecovery } from "../features/library/PersonalRecovery";
@@ -305,6 +306,7 @@ function LibraryApp({
             </button>
           )}
           <PwaStatus
+            privateLibrary={!!identity}
             beforeUpdate={async () => {
               await session.whenIdle();
               if (previewDirty)
@@ -328,14 +330,17 @@ function LibraryApp({
                     ? "Saving to your private library…"
                     : "Saving on this device…"
                   : identity
-                    ? "Saved to your private library"
+                    ? store instanceof PrivateLibraryStore &&
+                      navigator.onLine === false &&
+                      store.offlineReady
+                      ? "Offline copy · last service save"
+                      : "Saved to your private library"
                     : "Saved on this device"}
           </span>
           <button
             type="button"
             className="mode-button"
             aria-pressed={session.mode !== "edit"}
-            disabled={protectedPending}
             onClick={() => {
               if (!leavePreview()) return;
               void session.whenIdle().then(() => {
@@ -366,8 +371,12 @@ function LibraryApp({
         </div>
       </header>
       {store instanceof PrivateLibraryStore && (
+        <OfflinePreparation store={store} session={session} />
+      )}
+      {store instanceof PrivateLibraryStore && (
         <PersonalRecovery
           store={store.personal}
+          editing={session.mode === "edit"}
           reopen={async () => {
             await session.whenProtected();
             window.location.reload();

@@ -11,7 +11,7 @@
 - [x] Retain trusted actor/base/source/command metadata on new history rows while preserving older records.
 - [x] Coalesce private typing into bounded complete commits, reconcile ambiguous original receipts before newer transport, and preserve per-interaction protection.
 - [x] Complete independently owned personal-resource protected recovery and reusable device configurations.
-- [ ] Qualify the separately gated protected private offline lease and key lifecycle.
+- [x] Qualify the separately gated protected private offline lease and key lifecycle.
 - [ ] Retain source-bound evidence, service restore drill and independent integration/deployment boundaries.
 
 
@@ -20,3 +20,5 @@ Executed initial checkpoint: 137 unit/component tests, 29 backend tests, six del
 Autosave transport extension: all 150 application checks and 27 anonymous browser journeys passed. The real connected typing journey produced exactly one service revision/history row for its typing burst, preserved the complete arrangement and reconstructed the reminder after reload. The existing lost-acknowledgement journey also passed. All 26 real Keycloak/PostgreSQL connected journeys subsequently passed, including prior protection, recovery, permissions and selected-import cases.
 
 Independent personal resources: all 156 application checks, 34 backend tests, six compiler refusals, 29 real connected journeys and 27 local-mode browser journeys passed. The actual PostgreSQL ticket-store probe also passed live renewal, post-removal and expired-session refusal. See [checkpoint evidence](../../../docs/evidence/music/personal-resources.md). Source-bound image qualification and protected-offline delivery remain separate.
+
+Bounded private offline implementation and seven real connected journeys passed; exact eight-hour clock evidence is a separate domain witness, composed with real earlier-deadline key-lifecycle qualification. Canonical revision-12/13 and clean-browser reconstruction cases passed. See [offline checkpoint](../../../docs/evidence/music/private-offline.md). Final immutable source and Production restore execution remain separate from security, independent review and integration.

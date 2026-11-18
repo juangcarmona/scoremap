@@ -9,7 +9,8 @@ internal static class ApplicationSettings
     var document = JsonDocument.Parse(File.ReadAllText(path));
     var root = document.RootElement;
     Check(root, ["SchemaVersion", "Environment", "InstanceId", "Application", "Identity", "Storage"], ["Development", "Ingress"]);
-    Check(root.GetProperty("Application"), ["PublicOrigin", "WebRoot", "ProductionQualified"]);
+    Check(root.GetProperty("Application"), ["PublicOrigin", "WebRoot", "ProductionQualified"], ["PrivateOfflineMinutes"]);
+    if (root.GetProperty("Application").TryGetProperty("PrivateOfflineMinutes", out var offline) && (offline.ValueKind != JsonValueKind.Number || !offline.TryGetInt32(out var minutes) || minutes is < 0 or > 480)) throw new InvalidOperationException("Application.PrivateOfflineMinutes must be an integer from 0 (disabled) through 480 (eight hours).");
     Check(root.GetProperty("Identity"), ["Authority", "ClientId", "ClientSecret", "DevelopmentFixture"]);
     Check(root.GetProperty("Storage"), ["ConnectionString", "KeysPath"]);
     if (root.TryGetProperty("Development", out var development)) Check(development, ["IdentityPort", "DatabasePort"], ["DatabasePassword"]);

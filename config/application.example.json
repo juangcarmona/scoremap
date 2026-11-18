@@ -5,7 +5,8 @@
   "Application": {
     "PublicOrigin": "http://localhost:5280",
     "WebRoot": "dist-private",
-    "ProductionQualified": false
+    "ProductionQualified": false,
+    "PrivateOfflineMinutes": 0
   },
   "Identity": {
     "Authority": "http://localhost:8180/realms/scoremap-development",

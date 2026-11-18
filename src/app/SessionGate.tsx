@@ -1,3 +1,4 @@
+import { OfflineAuthority } from "../shared/auth/offlineLease";
 import type { SessionInfo } from "../shared/auth/session";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -17,10 +18,13 @@ import {
 } from "../shared/auth/sessionDeadline";
 const client = new QueryClient();
 function PrivateSession() {
+  const [offline] = useState(() => new OfflineAuthority());
+  const [disconnected, setDisconnected] = useState(false);
   const [locked, setLocked] = useState(false);
   const [removal, setRemoval] = useState("");
   const [lockedPrincipal, setLockedPrincipal] = useState("");
   const lock = useCallback(() => {
+    offline.stop();
     const previous = client.getQueryData<{ identity: SessionInfo }>([
       "session",
     ]);
@@ -29,15 +33,36 @@ function PrivateSession() {
     void client.cancelQueries({ queryKey: ["session"] });
     client.removeQueries({ queryKey: ["session"] });
     setLocked(true);
-  }, []);
+  }, [offline]);
   useEffect(() => {
-    window.addEventListener("offline", lock);
-    return () => window.removeEventListener("offline", lock);
-  }, [lock]);
+    const disconnect = () => {
+      const current = client.getQueryData<{ identity: SessionInfo }>([
+        "session",
+      ]);
+      if (current && offline.matches(current.identity)) {
+        setDisconnected(true);
+        void client.cancelQueries({ queryKey: ["session"] });
+      } else lock();
+    };
+    const reconnect = () => {
+      if (disconnected || offline.info) {
+        setDisconnected(false);
+        lock();
+      }
+    };
+    window.addEventListener("offline", disconnect);
+    window.addEventListener("online", reconnect);
+    if (navigator.onLine === false) disconnect();
+    return () => {
+      window.removeEventListener("offline", disconnect);
+      window.removeEventListener("online", reconnect);
+    };
+  }, [lock, offline, disconnected]);
   const session = useQuery({
     queryKey: ["session"],
-    enabled: !locked,
+    enabled: !locked && !disconnected,
     queryFn: async ({ signal }) => {
+      let received = false;
       try {
         const anchor = sessionRequestAnchor();
         const response = await fetch("/auth/session", {
@@ -45,6 +70,7 @@ function PrivateSession() {
           credentials: "same-origin",
           signal,
         });
+        received = true;
         if (!response.ok)
           throw new Error(
             "The server cannot confirm your session. Your private music is locked.",
@@ -63,6 +89,14 @@ function PrivateSession() {
           deadline: SessionDeadline;
         } | null>(["session"]);
         if (
+          previous &&
+          (previous.identity.principal !== identity.principal ||
+            previous.identity.sessionId !== identity.sessionId)
+        )
+          throw new Error(
+            "The account context changed. Reauthenticate before opening private work.",
+          );
+        if (
           previous?.identity.sessionId === identity.sessionId &&
           (!previous.deadline.remaining() ||
             Date.parse(identity.checkedAt) <
@@ -73,13 +107,24 @@ function PrivateSession() {
           );
         return { identity, deadline };
       } catch (error) {
-        if (!signal.aborted) lock();
+        const previous = client.getQueryData<{
+          identity: SessionInfo;
+          deadline: SessionDeadline;
+        }>(["session"]);
+        if (
+          !received &&
+          navigator.onLine === false &&
+          previous &&
+          offline.matches(previous.identity)
+        )
+          return previous;
+        if (!signal.aborted || received) lock();
         throw error;
       }
     },
     retry: false,
-    refetchInterval: 10000,
-    refetchOnWindowFocus: true,
+    refetchInterval: disconnected ? false : 10000,
+    refetchOnWindowFocus: !disconnected,
   });
   const identity = session.data?.identity ?? null;
   if (session.isPending && !locked)
@@ -138,6 +183,7 @@ function PrivateSession() {
       identity={identity}
       deadline={session.data!.deadline}
       onLock={lock}
+      offline={offline}
     />
   );
 }
@@ -145,18 +191,25 @@ function OpenLibrary({
   identity,
   onLock,
   deadline,
+  offline,
 }: {
+  offline: OfflineAuthority;
   identity: SessionInfo;
   onLock: () => void;
   deadline: SessionDeadline;
 }) {
   const [store] = useState(
     () =>
-      new PrivateLibraryStore(identity, onLock, () => deadline.remaining() > 0),
+      new PrivateLibraryStore(
+        identity,
+        onLock,
+        () => deadline.remaining() > 0,
+        offline,
+      ),
   );
   const queryClient = useQueryClient();
   useEffect(() => {
-    store.updateAuthorization(() => deadline.remaining() > 0);
+    store.updateAuthorization(() => deadline.remaining() > 0, identity);
     const checkDeadline = () => {
       if (!deadline.remaining()) store.lockAccess();
     };
@@ -165,18 +218,20 @@ function OpenLibrary({
       deadline.remaining(),
     );
     const inspect = window.setInterval(checkDeadline, 1000);
-    const offline = () => store.lockAccess();
+    const disconnect = () => {
+      if (!store.offlineReady) store.lockAccess();
+    };
     window.addEventListener("focus", checkDeadline);
     document.addEventListener("visibilitychange", checkDeadline);
-    window.addEventListener("offline", offline);
+    window.addEventListener("offline", disconnect);
     return () => {
       clearInterval(inspect);
       clearTimeout(expire);
       window.removeEventListener("focus", checkDeadline);
       document.removeEventListener("visibilitychange", checkDeadline);
-      window.removeEventListener("offline", offline);
+      window.removeEventListener("offline", disconnect);
     };
-  }, [store, deadline]);
+  }, [store, deadline, identity]);
   useEffect(() => {
     const timer = window.setInterval(() => {
       void store.checkAccess().catch(() => store.lockAccess());
