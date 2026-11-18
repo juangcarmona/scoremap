@@ -9,7 +9,7 @@ description: Architecture terminology
 | Term | Meaning in this architecture |
 | --- | --- |
 | Domain command | Pure transformation of validated library data |
-| Storage adapter | IndexedDB transaction and revision boundary |
+| Storage adapter | Anonymous IndexedDB or authorized private PostgreSQL commit boundary |
 | App shell | Cacheable assets sufficient to start offline |
 | Candidate | In-memory result awaiting durable acknowledgement |
 | Origin | Scheme, hostname and port owning browser storage |

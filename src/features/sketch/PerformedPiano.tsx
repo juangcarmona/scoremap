@@ -16,6 +16,7 @@ export function PerformedPiano({
   onToggle,
   label,
   physicalRange,
+  showLegend = true,
 }: {
   harmony: HarmonyIdentity;
   pitches: readonly PianoPitch[];
@@ -25,6 +26,7 @@ export function PerformedPiano({
   onToggle: (pitch: PianoPitch) => void;
   label: string;
   physicalRange?: [number, number];
+  showLegend?: boolean;
 }) {
   const { preference } = useNotation();
   const keys = pianoKeys(firstOctave, octaves);
@@ -37,15 +39,27 @@ export function PerformedPiano({
   const outside = pitches.filter((pitch) => !visible.has(pitch.midi));
   const whites = keys.filter((key) => !key.black).length;
   return (
-    <figure className="performed-piano" aria-label={label}>
-      <figcaption>○ Theoretical reference · ● Performed note</figcaption>
+    <figure
+      className="performed-piano"
+      aria-label={label}
+      data-editable={editable}
+      data-notation={preference.mode}
+    >
+      {showLegend && (
+        <figcaption>○ Theoretical reference · ● Performed note</figcaption>
+      )}
       <div
         className="keyboard-scroll"
         role="region"
         tabIndex={0}
         aria-label={`${label} · scroll piano view`}
       >
-        <div className="keyboard-keys" style={{ width: `${whites * 80}px` }}>
+        <div
+          className="keyboard-keys"
+          style={{
+            width: editable ? `${whites * 80}px` : `${whites * 3.5}rem`,
+          }}
+        >
           {[false, true].flatMap((black) =>
             keys
               .filter((key) => key.black === black)
@@ -91,9 +105,20 @@ export function PerformedPiano({
           )}
         </div>
       </div>
-      <p>
-        Scroll sideways for more keys. All performed notes are listed below.
-      </p>
+      {!editable && (
+        <div className="piano-octave-labels" aria-label="Visible octave starts">
+          {Array.from({ length: octaves }, (_, index) => (
+            <span key={index}>
+              {formatNote(`C${firstOctave + index}`, preference)}
+            </span>
+          ))}
+        </div>
+      )}
+      {editable && (
+        <p>
+          Scroll sideways for more keys. All performed notes are listed below.
+        </p>
+      )}
       <p className="played-note-list" aria-live="polite">
         Performed:{" "}
         {pitches.length

@@ -12,9 +12,9 @@ Browser data can be evicted or removed by the device owner; export is the initia
 
 GitHub branch-rule availability, repository App installation, runner authorization, provider access and the selected HTTPS deployment target are operational prerequisites, tracked in delivery evidence. Enforced-check unavailability must not be treated as authorization to weaken completion gates. Physical Android installation and tablet-distance readability need owner/device evidence.
 
-## Accepted evolution gaps
+## Remaining delivery risks
 
-- ADR-0003/0004 describe the target, while the accepted product model and implementation remain browser-only. #20 must resolve this explicitly before backend work; documentation is not a Product Change apply receipt.
-- No backend compiler, Roslyn analyzer activation, layer gate, PostgreSQL authorization test or production composition exists in ScoreMap yet. Imported source examples and passing frontend CI cannot establish those properties. The [section 10 matrix](../10-quality-requirements/README.md) remains a delivery obligation until actual runs and negative-build evidence exist.
+- The private musical implementation and validated Product Change are integrated through PR37. The existing Development trial, a current release image and the actual operator Production deployment have independent revisions and receipts.
+- Backend builds, semantic analyzers, negative compiler rehearsals, real PostgreSQL authorization journeys and separate Aspire production composition execute in the declared verification commands. Their passing results do not prove physical-device readability or a successful restore on the operator destination.
 - Raccord and DomusMind are references, not templates to copy indiscriminately. DomusMind documents shared-DbContext ownership limitations; Raccord's bespoke analyzers have a different handler/assembly contract from Lighthouse. Feature-module naming, exported payload checks and evaluated build activation need deliberate compatibility tests.
 - Self-hosting transfers patching, backup, restore and availability responsibility to the operator. Development AppHost success is not production qualification; persistent volumes alone are not recoverable backups. Required production configuration must fail closed without publishing private values.

@@ -6,19 +6,19 @@ description: Small feature slices with a pure domain boundary
 
 # 4. Solution strategy
 
-The planned source boundary is `src/features/library/`: pure domain types and commands, a local persistence adapter and feature UI. `src/app/` composes the application shell; `src/features/sketch/` owns the chord geometry and piano presentation. Domain functions import no React or browser persistence. Application mutation entrypoints enforce interaction mode before any content change.
+The browser source boundary is `src/features/library/`: pure domain types and commands, a local persistence adapter and feature UI. `src/app/` composes the application shell; `src/features/sketch/` owns the chord geometry and piano presentation. Domain functions import no React or browser persistence. Application mutation entrypoints enforce interaction mode before any content change.
 
 <!-- pdac:cite id="BR-EDIT-GUARD" digest="sha256:20e678c4743404c64a51c01e4446026ac95811827d2f5e1c641839291ad32718" -->
 
-The anonymous application retains local persistence under [ADR-0001](../09-architecture-decisions/ADR-0001-use-a-local-first-browser-runtime.md). The connected candidate uses TanStack Query for session-scoped server reads and explicit application mutation operations. Transient musical selection and interaction drafts remain local React state.
+The anonymous application retains local persistence under [ADR-0001](../09-architecture-decisions/ADR-0001-use-a-local-first-browser-runtime.md). The private application uses TanStack Query for session-scoped server reads and explicit application mutation operations. Transient musical selection and interaction drafts remain local React state.
 
-## Accepted evolution strategy
+## Private application strategy
 
-Keep the React PWA and deliver useful musical editing slices before requiring server integration. Add one self-hosted ASP.NET Core BFF/API, PostgreSQL and Aspire composition under [ADR-0003](../09-architecture-decisions/ADR-0003-self-host-the-private-application-with-aspire.md). Use a domain-centric modular monolith with feature-oriented use cases and explicit logical layers under [ADR-0004](../09-architecture-decisions/ADR-0004-enforce-feature-and-layer-boundaries-with-executable-checks.md), not a service or project for every musical noun.
+The private application retains the React PWA and uses one self-hosted ASP.NET Core BFF/API, PostgreSQL and Aspire composition under [ADR-0003](../09-architecture-decisions/ADR-0003-self-host-the-private-application-with-aspire.md). Use a domain-centric modular monolith with feature-oriented use cases and explicit logical layers under [ADR-0004](../09-architecture-decisions/ADR-0004-enforce-feature-and-layer-boundaries-with-executable-checks.md), not a service or project for every musical noun.
 
-Reuse the installed Lighthouse .NET profile and analyzer/verifier contract. Adapt Raccord's executable dependency checks and DomusMind's pure-domain and development/deployment separation, without importing their financial/household models or optional infrastructure. [Section 05](../05-building-block-view/README.md) owns the target dependency graph; [section 10](../10-quality-requirements/README.md) owns required enforcement evidence. The connected candidate activates and executes these checks. CHG-ARRANGEMENT-EVOLUTION has been applied through the validated Product Change route; full native integration and acceptance remain separate gates.
+Reuse the installed Lighthouse .NET profile and analyzer/verifier contract. Adapt Raccord's executable dependency checks and DomusMind's pure-domain and development/deployment separation, without importing their financial/household models or optional infrastructure. [Section 05](../05-building-block-view/README.md) owns the target dependency graph; [section 10](../10-quality-requirements/README.md) owns required enforcement evidence. The private application activates and executes these checks. CHG-ARRANGEMENT-EVOLUTION has been applied through the validated Product Change route; the implementation is integrated through PR #37, while current artifact qualification and operator/device acceptance remain separate.
 
-## Identified musical content candidate
+## Identified musical content
 
 Version-2 songs retain the shared section sequence and add identified measures and timed harmonic events, independent arrangements and their owned parts, performed occurrences, voicings and physical bindings. Exact rational quarter-note positions use integer arithmetic; performed spelling, octave and absolute pitch must agree. The finite ProductShape catalogue generates matching TypeScript and C# definitions; the browser theory adapter uses evaluated pinned Tonal primitives under [ADR-0005](../09-architecture-decisions/ADR-0005-use-tonal-primitives-with-the-accepted-harmony-catalogue.md). That proposed library decision does not itself establish builder or arrangement acceptance.
 

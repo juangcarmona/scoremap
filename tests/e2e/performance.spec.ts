@@ -48,12 +48,44 @@ test("SB-SECTION-REORDER SB-ANNOTATIONS SB-PERFORMANCE SB-PERFORMANCE-REJECT SB-
   await expect(
     page.getByText("Synthetic cue: leave room for the melody", { exact: true }),
   ).toBeVisible();
+  await expect(
+    page
+      .getByRole("button", { name: "Intro chord 1: C", exact: true })
+      .locator(".chord-diagram"),
+  ).toBeVisible();
+  await expect(
+    page
+      .getByRole("button", { name: "Verse chord 1: D♭m", exact: true })
+      .locator(".chord-diagram"),
+  ).toBeVisible();
   await page
     .getByRole("button", { name: "Intro chord 1: C", exact: true })
     .click();
   await expect(
-    page.getByRole("img", { name: "C major piano keyboard" }),
-  ).toBeVisible();
+    page
+      .getByRole("button", { name: "Intro chord 1: C", exact: true })
+      .locator("..")
+      .locator(".chord-diagram-notes"),
+  ).toHaveText("C · E · G");
+  await expect(
+    page.getByRole("button", { name: "Intro chord 1: C", exact: true }),
+  ).toHaveAccessibleDescription("Chord tones: C, E, G");
+  await expect(
+    page
+      .getByRole("button", { name: "Verse chord 1: D♭m", exact: true })
+      .locator("..")
+      .locator(".chord-diagram-notes"),
+  ).toHaveText("D♭ · F♭ · A♭");
+  expect(
+    await page
+      .getByRole("button", { name: "Intro chord 1: C", exact: true })
+      .locator('[data-chord-tone="true"]')
+      .evaluateAll((keys) =>
+        keys
+          .map((key) => Number(key.getAttribute("data-pitch-class")))
+          .sort((a, b) => a - b),
+      ),
+  ).toEqual([0, 4, 7]);
   expect(await readLibrary(page)).toEqual(next);
   const axe = await new AxeBuilder({ page }).analyze();
   expect(axe.violations).toEqual([]);

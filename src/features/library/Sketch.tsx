@@ -15,8 +15,8 @@ import type {
 } from "./domain";
 import { useNotation } from "../../shared/music/NotationContext";
 import { formatNote } from "../../shared/music/notation";
-import { Piano } from "../sketch/Piano";
-import { chordLabel } from "../sketch/chords";
+import { ChordDiagram, Piano } from "../sketch/Piano";
+import { chordLabel, spelledChordNotes } from "../sketch/chords";
 const roots = [
   "C",
   "C#",
@@ -237,7 +237,7 @@ export function Sketch({
     );
   }
   return (
-    <div className="sketch-layout">
+    <div className={`sketch-layout${edit ? "" : " sketch-performance"}`}>
       <div className="structure">
         {selection?.eventId &&
           isRichSong(song) &&
@@ -256,6 +256,12 @@ export function Sketch({
             {song.sections.length === 1 ? "section" : "sections"}
           </span>
         </div>
+        {!edit && (
+          <p className="chord-diagram-guide">
+            Chord tones are shown below each chord. Select one to see the notes
+            played in the arrangement.
+          </p>
+        )}
         {song.notes && !edit && <p className="song-note">{song.notes}</p>}
         {edit && (
           <details className="song-details">
@@ -382,26 +388,40 @@ export function Sketch({
                 aria-label={`Chord sequence for ${section.name}`}
               >
                 {section.chords.map((chord, i) => (
-                  <button
-                    type="button"
+                  <div
+                    className="chord-tile"
                     key={"id" in chord ? chord.id : i}
-                    aria-label={`${section.name} chord ${i + 1}: ${chordLabel(chord, preference)}`}
-                    aria-pressed={
-                      selection?.sectionId === section.id &&
-                      ("id" in chord
-                        ? selection.eventId === chord.id
-                        : selection.index === i)
-                    }
-                    onClick={() =>
-                      selectChord(
-                        section.id,
-                        i,
-                        "id" in chord ? chord.id : undefined,
-                      )
-                    }
                   >
-                    {chordLabel(chord, preference)}
-                  </button>
+                    <button
+                      type="button"
+                      aria-label={`${section.name} chord ${i + 1}: ${chordLabel(chord, preference)}`}
+                      aria-description={
+                        edit
+                          ? undefined
+                          : `Chord tones: ${spelledChordNotes(chord)
+                              .map((note) => formatNote(note, preference))
+                              .join(", ")}`
+                      }
+                      aria-pressed={chosen === chord}
+                      onClick={() =>
+                        selectChord(
+                          section.id,
+                          i,
+                          "id" in chord ? chord.id : undefined,
+                        )
+                      }
+                    >
+                      <span>{chordLabel(chord, preference)}</span>
+                      {!edit && <ChordDiagram chord={chord} />}
+                    </button>
+                    {!edit && (
+                      <span className="chord-diagram-notes" aria-hidden="true">
+                        {spelledChordNotes(chord)
+                          .map((note) => formatNote(note, preference))
+                          .join(" · ")}
+                      </span>
+                    )}
+                  </div>
                 ))}
                 {!section.chords.length && (
                   <span className="muted">
@@ -537,21 +557,28 @@ export function Sketch({
         )}
         {notesOpen && !edit && <pre className="full-notes">{song.notes}</pre>}
       </div>
-      <aside className="chord-reference" aria-label="Visual chord reference">
-        <h2>Chord reference</h2>
-        {chosen ? (
-          <Piano chord={chosen} />
-        ) : (
-          <p className="muted">
-            {edit
-              ? "Add a chord to a section to see its notes."
-              : "This sketch has no chord references."}
-          </p>
-        )}
-        <p className="reference-hint">
-          Tap any chord in the sketch to see its keys.
-        </p>
-      </aside>
+      {edit && (
+        <div className="chord-reference-track">
+          <aside
+            className="chord-reference"
+            aria-label="Visual chord reference"
+          >
+            <h2>Chord reference</h2>
+            {chosen ? (
+              <Piano chord={chosen} />
+            ) : (
+              <p className="muted">
+                {edit
+                  ? "Add a chord to a section to see its notes."
+                  : "This sketch has no chord references."}
+              </p>
+            )}
+            <p className="reference-hint">
+              Tap any chord in the sketch to see its keys.
+            </p>
+          </aside>
+        </div>
+      )}
       {isRichSong(song) && (
         <ArrangementWorkspace
           song={song}

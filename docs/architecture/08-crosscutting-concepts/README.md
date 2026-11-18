@@ -6,7 +6,7 @@ description: Storage, backup, update and trust mechanisms
 
 # 8. Cross-cutting concepts
 
-The anonymous envelope initially used schema version 1; the current candidate accepts versions 1 and 2 with a monotonic revision and explicit legacy migration. Load and import validate complete content and associations; future migrations must be explicit and atomic. Unknown versions stop without writes. Anonymous import is confirmed replacement; private import preserves existing songs and uses explicit independently owned copies. IDs are opaque stable browser-generated UUIDs.
+The anonymous envelope initially used schema version 1; the application accepts versions 1 and 2 with a monotonic revision and explicit legacy migration. Load and import validate complete content and associations; future migrations must be explicit and atomic. Unknown versions stop without writes. Anonymous import is confirmed replacement; private import preserves existing songs and uses explicit independently owned copies. IDs are opaque stable browser-generated UUIDs.
 
 <!-- pdac:cite id="BR-BACKUP" digest="sha256:0ca300361becac0a9858d098ab1e029b5bc1dfe41a06a58ecc40408fee32ed3b" -->
 
@@ -14,9 +14,9 @@ External URLs accept only HTTP(S), text uses React escaping, and no application 
 
 <!-- pdac:cite id="BR-REFERENCES" digest="sha256:f6c63aa91b8cd5dc754520d4015424c3c56811d90a886f62a895c9db99ce9ce3" -->
 
-## Accepted server target: admission, authority and transactions
+## Server admission, authority and transactions
 
-The following mechanisms apply to the accepted architecture in ADR-0003/0004 and its implemented private-library candidate after the validated arrangement Product Change. Integration, independent review and production qualification remain separate gates.
+The following mechanisms apply to the accepted architecture in ADR-0003/0004 and the private-library implementation integrated in PR #37 after the validated arrangement Product Change. Execution receipts, independent review and actual operator deployment remain separate facts.
 
 Content admission combines authenticated resource capability, edit-mode admission, domain validation and expected-revision checks; none substitutes for another. Direct/non-HTTP use-case calls cannot bypass validation or capability checks. Reads, nested resource references, history, export, restore and role changes require the same explicit ownership policy. The server derives identity/ownership from trusted session context, never a submitted owner ID.
 
@@ -35,11 +35,11 @@ The BFF retains provider tokens server-side and uses protected HttpOnly session 
 No mediator, generic repository, distributed cache, message bus, outbox or separate identity platform is mandatory. Add one only for an accepted behavior and demonstrable delivery/operating need, with its own failure tests. Prefer explicit typed handlers, mapping and DI; contracts and generated OpenAPI clients prevent database entities and provider vocabulary leaking into the UI.
 
 
-## Candidate admission and persistence mechanisms
+## Private admission and persistence mechanisms
 
 The current private adapter derives the stable principal from validated OIDC issuer/subject claims, protects provider tokens in server-side session tickets and checks the provider session online. Current database song grants remain independent of the session cookie. Origin/anti-forgery admission precedes mutation; typed application handlers enforce edit mode and domain validation for musical content. A transaction advisory lock serializes grant changes, expected-revision checks, complete song updates/history and retry receipts. An acknowledged response is produced only after commit. Receipt reads recheck current resource access.
 
-Principal-bound recovery keys are protected on the server; browser pending records contain AES-GCM ciphertext and opaque references. Successful commits bind the covered song identities into the retained key scope. Unlock requires the same principal and fresh resource checks, with explicit export/comparison and no automatic replay. Persistent private offline editing stays disabled. These mechanisms belong to the [candidate module](../../../src/modules/ScoreMap.Modules.Library/LibraryModule.cs); their tested behavior and remaining qualification are recorded in delivery evidence.
+Principal-bound recovery keys are protected on the server; browser pending records contain AES-GCM ciphertext and opaque references. Successful commits bind the covered song identities into the retained key scope. Unlock requires the same principal and fresh resource checks, with explicit export/comparison and no automatic replay. Private offline preparation defaults to disabled; explicit configuration and protected scoped admission can enable it for a bounded interval. The earlier provider/session deadline still wins, and restart requires fresh authenticated unlock. These mechanisms belong to the [library module](../../../src/modules/ScoreMap.Modules.Library/LibraryModule.cs); their tested behavior and remaining qualification are recorded in delivery evidence.
 
 <!-- pdac:cite id="BR-DURABILITY" digest="sha256:6b075527861da086b9571e8d117c7844348a437e363423bca46f60cc83b02e0b" -->
 <!-- pdac:cite id="BR-ACCESS" digest="sha256:fcc173c80ae4a5903dbeb2e11c141cb6ee8d03382c812ebc527d5065347b72c9" -->
@@ -50,13 +50,13 @@ Principal-bound recovery keys are protected on the server; browser pending recor
 
 The [shared formatter](../../../src/shared/music/notation.ts) preserves spelled notes, octaves and complete chord symbols while presenting Anglo-American, fixed-name Latin or dual names. A shared context keeps Library and Sketch rendering consistent without introducing feature cycles. The [preference feature](../../../src/features/notation/NotationPreference.tsx) handles display/pending/error states; localized labels are never parsed back into musical data.
 
-Anonymous preference uses an independent device key. Signed-in preference reads ignore that key and use only the current stable principal's [typed settings handlers](../../../src/modules/ScoreMap.Modules.Library/Application/SaveNotationHandler.cs). A separate PostgreSQL preference revision and metadata command receipt commit together; stale changes refuse and lost acknowledgements reconcile without duplicating revisions. Preference selection is presentation configuration, allowed during performance without bypassing the musical edit guard or changing a song/library revision. Account switch/lock removes principal query state. Rich event/arrangement notation fixtures remain a separate pending acceptance boundary.
+Anonymous preference uses an independent device key. Signed-in preference reads ignore that key and use only the current stable principal's [typed settings handlers](../../../src/modules/ScoreMap.Modules.Library/Application/SaveNotationHandler.cs). A separate PostgreSQL preference revision and metadata command receipt commit together; stale changes refuse and lost acknowledgements reconcile without duplicating revisions. Preference selection is presentation configuration, allowed during performance without bypassing the musical edit guard or changing a song/library revision. Account switch/lock removes principal query state. Rich event/arrangement notation fixtures are included in the source-bound connected qualification; physical readability acceptance remains separate.
 
 ## Exact performed editing and independent reusable resources
 
-The interactive candidate keeps played-note previews separate from acknowledged library content. Its apply command compares the selected voicing and part occurrences to their opening snapshot, validates the complete graph and preserves occurrence identity/timing. Undo replaces the prior complete arrangement only when its current value still matches the acknowledged post-edit arrangement. Unrelated or conflicting updates cannot be overwritten by an old undo. Cancel and view changes produce no content command. Before leaving an unapplied preview the UI offers a deliberate discard decision; applied-but-unacknowledged private content uses the existing encrypted pending-work boundary.
+The interactive application keeps played-note previews separate from acknowledged library content. Its apply command compares the selected voicing and part occurrences to their opening snapshot, validates the complete graph and preserves occurrence identity/timing. Undo replaces the prior complete arrangement only when its current value still matches the acknowledged post-edit arrangement. Unrelated or conflicting updates cannot be overwritten by an old undo. Cancel and view changes produce no content command. Before leaving an unapplied preview the UI offers a deliberate discard decision; applied-but-unacknowledged private content uses the existing encrypted pending-work boundary.
 
-The piano reuses chromatic geometry while marking theoretical classes and exact performed occurrences separately. Individual native key targets remain at least 48 CSS pixels; bounded horizontal scrolling preserves geometry on small or enlarged-text views. Pitches outside the selected octave span remain named. Spelling plus written octave determines absolute pitch; the absolute 0..127 bound does not impose an additional unsupported written-octave restriction on enharmonic spelling. Identification orders octave-bearing pitches by actual register and proposes identities without changing their source notes.
+The piano reuses chromatic geometry while marking theoretical classes and exact performed occurrences separately. Individual editable native key targets remain at least 48 CSS pixels; bounded horizontal scrolling preserves geometry on small or enlarged-text views. Pitches outside the selected octave span remain named. Spelling plus written octave determines absolute pitch; the absolute 0..127 bound does not impose an additional unsupported written-octave restriction on enharmonic spelling. Identification orders octave-bearing pitches by actual register and proposes identities without changing their source notes.
 
 Reusable voicings have independently scoped content and conditional revisions. Anonymous presets use a separate IndexedDB database; private presets use principal-keyed PostgreSQL records and metadata-only retry receipts through typed application handlers. Applying a named version creates a new independent arrangement voicing and note occurrences with copied provenance. Updating or deleting the personal resource leaves every song copy unchanged. The song grant confers no personal-resource access.
 
@@ -65,7 +65,7 @@ Resource backups declare their separate scope. Confirmed preset import records o
 
 ## Known session deadlines and protected pending review
 
-The candidate session response carries a non-secret fresh-login session identifier, authoritative check time and the earliest known cookie/provider-token expiry. Browser authority charges the full request duration, checks monotonic and wall-clock elapsed time, and expires independently of background polling. Clock rollback, elapsed-clock reset and overlong/invalid metadata fail closed. A late poll cannot revive an expired context. These values describe session lifetime; they confer no song permission or private offline lease.
+The private session response carries a non-secret fresh-login session identifier, authoritative check time and the earliest known cookie/provider-token expiry. Browser authority charges the full request duration, checks monotonic and wall-clock elapsed time, and expires independently of background polling. Clock rollback, elapsed-clock reset and overlong/invalid metadata fail closed. A late poll cannot revive an expired context. These values describe session lifetime; they confer no song permission or private offline lease.
 
 Every private adapter request is bound to a cancellable context generation and checks that generation and its deadline before and after asynchronous responses. Lock aborts requests, releases the working encryption key, retry plaintext and capability/version caches, cancels session queries and unmounts private views. Normal effect cleanup can reopen a store only through a new authorized load; explicit termination cannot. Original anonymous storage is independent. Protected ciphertext admitted before termination may finish retention, while its subsequent write request is refused.
 
@@ -94,7 +94,7 @@ Private file import and same-origin anonymous claim share an explicit complete-s
 
 Declared source kind, schema version, revision, selected counts and copy choice travel inside the protected command and its stable retry body. The service validates the new destination scope, derives ownership from the session and retains source provenance in history independently of its destination revision/actor. These source declarations are descriptive, never authority. After acknowledgement, a separate fresh authorized read compares the complete admitted songs and limited repertoires. A failed readback reports acknowledged-but-unverified reconstruction and retains the source; it does not claim rollback or create another copy. Independent personal resources keep their separate acknowledgement/import boundaries.
 
-## Candidate personal-resource recovery
+## Personal-resource recovery
 
 The [personal journal](../../../src/features/library/personalPending.ts) encrypts a complete original personal command before its service request. Opaque principal/editing-context/resource keys isolate records; AES-GCM binds ciphertext to that slot. A matched service acknowledgement removes only the confirmed command. Lost replies retain the original command for explicit authenticated review/retry/export/removal. Other principals cannot list or unlock its usable content. Personal protection and song protection are separately acknowledged; a failed setting does not prevent an independent valid song commit. Voluntary termination checks both retention boundaries.
 

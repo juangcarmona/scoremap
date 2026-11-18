@@ -20,9 +20,9 @@ flowchart TD
   UI --> PDF[Planned optional PDF renderer]
 ```
 
-## Accepted target: feature modules with enforced logical layers
+## Feature modules with enforced logical layers
 
-This refinement describes the next architecture, not existing backend projects. See [ADR-0004](../09-architecture-decisions/ADR-0004-enforce-feature-and-layer-boundaries-with-executable-checks.md). Product Change #20 determines actual domain boundaries before physical projects are created. Start with the smallest useful module set; neither a keyboard, hand, layer nor candidate domain concept automatically warrants a module.
+The Library module and API composition implement these logical boundaries. See [ADR-0004](../09-architecture-decisions/ADR-0004-enforce-feature-and-layer-boundaries-with-executable-checks.md). The applied Product Change #20 defines the domain boundaries used by these projects. Start with the smallest useful module set; neither a keyboard, hand, layer nor candidate domain concept automatically warrants a module.
 
 | Block / layer | Responsibility and permitted dependencies |
 | --- | --- |
@@ -54,9 +54,9 @@ Modules follow the installed Lighthouse naming/activation contract: implementati
 The API host may compose all modules, but one module may reference another only through its explicit contracts. Approved base dependencies and public exports form an allowlist, not a broad wildcard. Shared code is small and demonstrably shared, not a back door around module ownership. Cross-module changes use explicit application operations within the accepted commit aggregate; no direct foreign-table writes. Separate DbContexts/schemas are justified by actual ownership, not mandated per noun. [Section 10](../10-quality-requirements/README.md) requires source, evaluated project and compiled-boundary checks because none alone proves all these rules.
 
 
-## Connected implementation candidate
+## Private application implementation
 
-The candidate adds an API/BFF host and one Library implementation module alongside the anonymous PWA. The host composes framework identity/session/CSRF policy; HTTP mappings invoke typed application handlers. Domain validation is independent of web and database frameworks. The Library infrastructure owns PostgreSQL records, immutable song snapshots, conditional transactions and principal-scoped grants. The same module supplies the protected BFF session/recovery adapters through application ports.
+The private application has an API/BFF host and one Library implementation module alongside the anonymous PWA. The host composes framework identity/session/CSRF policy; HTTP mappings invoke typed application handlers. Domain validation is independent of web and database frameworks. The Library infrastructure owns PostgreSQL records, immutable song snapshots, conditional transactions and principal-scoped grants. The same module supplies the protected BFF session/recovery adapters through application ports.
 
 ```mermaid
 flowchart LR
@@ -69,6 +69,6 @@ flowchart LR
   Infrastructure --> DB[(Private PostgreSQL)]
 ```
 
-Source: [API host](../../../src/root/ScoreMap.Api/Program.cs), [module composition](../../../src/modules/ScoreMap.Modules.Library/LibraryModule.cs), [domain validation](../../../src/modules/ScoreMap.Modules.Library/Domain/LibraryDocument.cs), [transaction adapter](../../../src/modules/ScoreMap.Modules.Library/Infrastructure/LibraryRepository.cs). These are authored candidate components; integration and production qualification remain separate.
+Source: [API host](../../../src/root/ScoreMap.Api/Program.cs), [module composition](../../../src/modules/ScoreMap.Modules.Library/LibraryModule.cs), [domain validation](../../../src/modules/ScoreMap.Modules.Library/Domain/LibraryDocument.cs), [transaction adapter](../../../src/modules/ScoreMap.Modules.Library/Infrastructure/LibraryRepository.cs). These components are integrated through PR37. The environment-specific deployment and current artifact qualification remain separate facts.
 
 <!-- pdac:cite id="FR-PERSIST" digest="sha256:5f901e669e39923921cd1d28302b3f308460a72bda3bce53d83ffa7255934cd4" -->

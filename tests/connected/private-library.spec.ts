@@ -1,5 +1,6 @@
 import {
   fixture,
+  applicationOrigin,
   login,
   signIn,
   api,
@@ -793,15 +794,16 @@ test("disabled credentials, unauthenticated routes, callback state and server-on
       exact: true,
     }),
   ).toBeVisible();
-  expect(
-    (await page.request.get("http://localhost:5280/api/library")).status(),
-  ).toBe(401);
+  const refused = await page.request.get(`${applicationOrigin}/api/library`);
+  expect(new URL(refused.url()).origin).toBe(applicationOrigin);
+  expect(refused.status()).toBe(401);
   await anonymous.close();
   const owner = await login(browser, "owner-a");
-  const cookies = await owner.context.cookies("http://localhost:5280");
+  const cookies = await owner.context.cookies(applicationOrigin);
   const session = cookies.find((cookie) => cookie.name === "scoremap.session")!;
   expect(session.httpOnly).toBe(true);
   expect(session.sameSite).toBe("Lax");
+  expect(session.secure).toBe(new URL(applicationOrigin).protocol === "https:");
   expect(await owner.page.evaluate(() => document.cookie)).not.toContain(
     "scoremap.session",
   );

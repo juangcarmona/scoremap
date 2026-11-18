@@ -37,8 +37,11 @@ test("SB-OFFLINE SB-PERFORMANCE: Android phone touch editing and offline consult
     .getByRole("button", { name: "Verse chord 1: C", exact: true })
     .tap();
   await expect(
-    page.getByRole("img", { name: "C major piano keyboard" }),
-  ).toBeVisible();
+    page
+      .getByRole("button", { name: "Verse chord 1: C", exact: true })
+      .locator("..")
+      .locator(".chord-diagram-notes"),
+  ).toHaveText("C · E · G");
   await page.evaluate(() => navigator.serviceWorker.ready);
   await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller));
   await context.setOffline(true);

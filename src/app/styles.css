@@ -336,7 +336,11 @@ p {
   gap: 1.5rem;
   padding-top: 1.25rem;
 }
+.sketch-performance {
+  grid-template-columns: minmax(0, 1fr);
+}
 .structure,
+.chord-reference-track,
 .chord-reference {
   min-width: 0;
 }
@@ -627,16 +631,94 @@ summary {
 .empty-sketch p {
   color: var(--lh-text-muted);
 }
+.performing .song-workspace {
+  padding-top: 1rem;
+}
+.performing .song-header {
+  padding-bottom: 0.5rem;
+}
+.performing .song-header h2 {
+  font-size: clamp(1.5rem, 2.5vw, 2.2rem);
+  margin-bottom: 0.25rem;
+}
+.performing .eyebrow {
+  margin-bottom: 0.25rem;
+}
+.performing .sketch-layout {
+  padding-top: 0.75rem;
+}
+.performing .sketch-caption {
+  padding-bottom: 0.5rem;
+}
+.performing .song-note {
+  padding: 0.5rem;
+}
 .performing .section {
-  padding: 1.25rem;
+  padding: 0.75rem;
 }
 .performing .section h3 {
-  font-size: 1.6rem;
+  font-size: 1.25rem;
+}
+.performing .chord-sequence {
+  padding-top: 0.5rem;
+}
+.performing .section-note {
+  margin-top: 0.5rem;
 }
 .performing .chord-sequence button {
-  font-size: 1.8rem;
-  min-height: 76px;
-  min-width: 88px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.45rem;
+  text-align: left;
+  font-size: 1.1rem;
+  width: 100%;
+  min-width: 0;
+  padding: 0.65rem 0.65rem 0;
+  border: 0;
+  color: inherit;
+  background: transparent;
+}
+.performing .chord-sequence button[aria-pressed="true"] {
+  color: inherit;
+  background: transparent;
+}
+.performing .chord-tile button::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+.performing .chord-tile {
+  position: relative;
+  width: min(100%, 7.5rem);
+  border: 1px solid var(--lh-border);
+  background: var(--lh-canvas);
+}
+.performing .chord-tile:has(button[aria-pressed="true"]) {
+  color: var(--lh-key-ink);
+  background: var(--lh-action);
+  border-color: var(--lh-action);
+}
+.chord-diagram-guide {
+  margin: 0 0 0.5rem;
+  color: var(--lh-text-muted);
+  font-size: 0.875rem;
+}
+.chord-diagram {
+  display: block;
+  min-width: 0;
+}
+.chord-diagram svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.chord-diagram-notes {
+  display: block;
+  padding: 0.35rem 0.65rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  overflow-wrap: anywhere;
 }
 .performing .structure {
   font-size: 1.1rem;
@@ -903,6 +985,54 @@ dialog h2 {
 .played-note-list {
   overflow-wrap: anywhere;
 }
+.performed-piano[data-editable="false"]
+  .performed-key:not([data-performed="true"])
+  .key-pitch {
+  display: none;
+}
+.performed-piano[data-editable="false"] .keyboard-keys {
+  height: clamp(5rem, 9vw, 8rem);
+}
+.performed-piano[data-editable="false"] .keyboard-scroll {
+  width: fit-content;
+}
+.performed-piano[data-editable="false"] .played-white {
+  height: 100%;
+}
+.performed-piano[data-editable="false"] .played-black {
+  height: 63%;
+}
+.performed-piano[data-editable="false"] .key-pitch {
+  padding: 0 0 0.3rem;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+.performed-piano[data-editable="false"][data-notation="dual"] .key-pitch {
+  font-size: 0.625rem;
+}
+.performed-piano[data-editable="false"] .key-state {
+  font-size: 0;
+  width: 75%;
+  max-width: 0.75rem;
+  aspect-ratio: 1;
+  margin-bottom: 0.5rem;
+}
+.performed-piano[data-editable="false"] [data-theoretical="true"] .key-state,
+.performed-piano[data-editable="false"] [data-performed="true"] .key-state {
+  border: 1px solid currentColor;
+  border-radius: 50%;
+}
+.performed-piano[data-editable="false"] [data-performed="true"] .key-state {
+  background: currentColor;
+}
+.piano-octave-labels {
+  display: flex;
+  padding: 0 0.5rem;
+}
+.piano-octave-labels > span {
+  flex: 1;
+  min-width: 0;
+}
 .note-occurrences {
   display: grid;
   gap: 0.75rem;
@@ -971,7 +1101,7 @@ dialog h2 {
 }
 .keyboard-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: 1rem;
 }
 .keyboard-view {
@@ -983,15 +1113,27 @@ dialog h2 {
 .keyboard-view h3 {
   margin: 0;
 }
+.keyboard-view-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.keyboard-view .performed-piano {
+  margin: 0.5rem 0;
+}
 .keyboard-view p,
 .routing-list {
   font-size: 0.875rem;
 }
 .routing-list {
-  padding-left: 1.25rem;
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0;
 }
 .routing-list li {
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.35rem;
 }
 .routing-list span {
   display: block;
@@ -1002,6 +1144,15 @@ dialog h2 {
 }
 .musical-context {
   font-weight: 700;
+}
+.keyboard-legend {
+  font-size: 0.875rem;
+}
+.keyboard-options {
+  max-width: 100%;
+}
+.keyboard-options summary {
+  font-size: 0.875rem;
 }
 
 .performed-key[data-physical="false"] {

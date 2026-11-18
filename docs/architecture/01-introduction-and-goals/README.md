@@ -1,14 +1,14 @@
 ---
 title: Introduction and goals
 arc42-section: "01"
-description: Initial architecture for the tablet musician tool
+description: Musical preparation and private durable library architecture
 ---
 
 # 1. Introduction and goals
 
 ## Requirements overview
 
-The initial architecture uses a browser application and local library to serve the song sketch directly. The scope is fixed by the owner request; this document describes its technical realization.
+The React PWA presents shared musical form and independently performed arrangements. Anonymous work commits to IndexedDB; the private application uses the same-origin BFF/API, trusted OIDC identity and PostgreSQL for principal-owned durable revisions. [Section 05](../05-building-block-view/README.md) owns the components; [section 07](../07-deployment-view/README.md) owns environment mapping.
 
 <!-- pdac:cite id="CON-SCOPE" digest="sha256:2934fbcf8f42cd477a77c5f9fb3fecc17beca485b243c2031279056347655216" -->
 

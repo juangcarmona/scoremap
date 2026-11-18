@@ -54,10 +54,15 @@ test("SB-NAVIGATION: one private performance context synchronizes three independ
     ["Low keyboard", 2],
     ["High keyboard", 4],
     ["Pad keyboard", 3],
-  ] as const)
+  ] as const) {
+    await owner.page
+      .getByRole("article", { name: `Keyboard ${name}`, exact: true })
+      .getByText("Adjust visible range", { exact: true })
+      .click();
     await owner.page
       .getByLabel(`First visible octave for keyboard ${name}`, { exact: true })
       .selectOption(String(octave));
+  }
   const before = await (await api(owner.page, "/api/library")).json();
   await expect(pitches(owner.page, "Low keyboard")).toHaveCount(2);
   await expect(pitches(owner.page, "High keyboard")).toHaveCount(2);
