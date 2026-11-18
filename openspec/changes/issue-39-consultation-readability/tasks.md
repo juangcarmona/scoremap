@@ -15,6 +15,8 @@
 - [x] Run declared installation, complete verification and browser checks; retain fresh synthetic screenshots.
 - [x] Prepare the reviewable implementation and portable committed-source deployment commands.
 
+- [x] Correct the fixed Development-origin request/cookie check found by the fresh disposable Production run.
+
 The PR, current-head native CI and disposable Production qualification receipts are recorded separately after committing these inputs.
 
 Independent review, integration, actual operator deployment and physical-device acceptance remain separate facts.

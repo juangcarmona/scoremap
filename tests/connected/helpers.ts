@@ -8,6 +8,7 @@ if (["5380", "5381"].includes(target.port))
   throw new Error(
     "Synthetic connected fixtures must not target the real manual-trial ports.",
   );
+export const applicationOrigin = target.origin;
 export const fixture = JSON.parse(
   await readFile(
     process.env.SCOREMAP_TEST_USERS ?? "config/development-users.example.json",
