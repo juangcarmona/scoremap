@@ -173,8 +173,12 @@ test("SB-SESSION-LOCK: a real principal's known deadline locks complete performe
     "expiresAt",
     "name",
     "principal",
+    "privateOfflineMinutes",
     "sessionId",
   ]);
+  expect(Number.isInteger(metadata.privateOfflineMinutes)).toBe(true);
+  expect(metadata.privateOfflineMinutes).toBeGreaterThanOrEqual(0);
+  expect(metadata.privateOfflineMinutes).toBeLessThanOrEqual(480);
   await openSong(owner.page, song.title);
   const before = await (await api(owner.page, "/api/library")).json();
   await owner.page.route("**/api/library", (route) =>
