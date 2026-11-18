@@ -86,6 +86,26 @@ test("SB-SECTION-REORDER SB-ANNOTATIONS SB-PERFORMANCE SB-PERFORMANCE-REJECT SB-
           .sort((a, b) => a - b),
       ),
   ).toEqual([0, 4, 7]);
+  const flatDiagram = page.getByRole("button", {
+    name: "Verse chord 1: D♭m",
+    exact: true,
+  });
+  const fill = (selector: string) =>
+    flatDiagram
+      .locator(selector)
+      .first()
+      .evaluate((key) => getComputedStyle(key).fill);
+  expect(await flatDiagram.locator(".black-key.highlighted").count()).toBe(2);
+  expect(await flatDiagram.locator(".white-key.highlighted").count()).toBe(1);
+  expect(await fill(".black-key.highlighted")).not.toBe(
+    await fill(".black-key:not(.highlighted)"),
+  );
+  expect(await fill(".white-key.highlighted")).not.toBe(
+    await fill(".white-key:not(.highlighted)"),
+  );
+  expect(await fill(".black-key.highlighted")).not.toBe(
+    await fill(".white-key.highlighted"),
+  );
   expect(await readLibrary(page)).toEqual(next);
   const axe = await new AxeBuilder({ page }).analyze();
   expect(axe.violations).toEqual([]);

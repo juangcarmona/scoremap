@@ -10,7 +10,8 @@
   --lh-key-white: #f3f0e8;
   --lh-key-black: #151d28;
   --lh-key-ink: #121822;
-  --lh-key-mark: #c77520;
+  --lh-key-mark: #edbd69;
+  --lh-key-black-mark: #1d708a;
   --lh-key-mark-text: #151d28;
   --lh-on-action: #ffffff;
   --lh-danger-text: #9e2424;
@@ -549,8 +550,13 @@ summary {
   stroke: var(--lh-key-white);
   stroke-width: 1px;
 }
-.highlighted {
+.white-key.highlighted {
   fill: var(--lh-key-mark);
+}
+.black-key.highlighted {
+  fill: var(--lh-key-black-mark);
+  stroke: var(--lh-key-white);
+  stroke-width: 8px;
 }
 .white-label {
   fill: var(--lh-key-ink);
@@ -981,9 +987,14 @@ dialog h2 {
   opacity: 1;
   cursor: default;
 }
-.performed-key[data-performed="true"] {
+.performed-key.played-white[data-performed="true"] {
   background: var(--lh-key-mark);
   color: var(--lh-key-mark-text);
+}
+.performed-key.played-black[data-performed="true"] {
+  background: var(--lh-key-black-mark);
+  color: var(--lh-key-white);
+  border: 2px solid var(--lh-key-white);
 }
 .performed-key:focus-visible {
   z-index: 3;
