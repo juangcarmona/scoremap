@@ -1,0 +1,88 @@
+{
+  "sourceRevision": "eedb70df4e1f75c1eda4e3d428a4844c1ddbcd76",
+  "applicationImageId": "sha256:f380adac643394671845afc26ae0ae5106d4f3d75240c44312489f0265d2effd",
+  "publicationSourceRevision": "eedb70df4e1f75c1eda4e3d428a4844c1ddbcd76",
+  "execution": {
+    "applicationTests": 164,
+    "backendTests": 39,
+    "compilerRefusals": 6,
+    "localBrowserJourneys": 27,
+    "realPrivateBrowserJourneys": 44,
+    "productionPhases": {
+      "connected": {
+        "passed": 44,
+        "reportSha256": "b1e2e4544ef86e4fc8113fa83662227af495daa5096babc59162a3302627f960"
+      },
+      "before": {
+        "passed": 1,
+        "reportSha256": "cc9b297caaffe9a6c4a202ecc6ae679eb00595ccbf566ca59c5b4f627281cb02"
+      },
+      "after-restart": {
+        "passed": 1,
+        "reportSha256": "69241264645d17ec77f8ee35944e82117a6043cd40b349a52bb7c978ef0b9e1b"
+      },
+      "after-restore": {
+        "passed": 1,
+        "reportSha256": "25f2ef57b9a0a16dec67c67e5b5be80fe8fc10434adb2d47420480451f5321d6"
+      }
+    },
+    "realNativeHttpsIdentity": true,
+    "allRestoredTableFieldsAndKeysMatchBeforeOpening": true,
+    "actualOutdatedBackupRefusedBeforeOpening": true,
+    "existingSessionSurvivedRestartAndRestore": true,
+    "invalidOfflineConfigurationRefusals": [
+      {
+        "value": -1,
+        "refusedBeforeDatabaseAdmission": true,
+        "exitCode": 139
+      },
+      {
+        "value": 481,
+        "refusedBeforeDatabaseAdmission": true,
+        "exitCode": 139
+      },
+      {
+        "value": "60",
+        "refusedBeforeDatabaseAdmission": true,
+        "exitCode": 139
+      },
+      {
+        "value": null,
+        "refusedBeforeDatabaseAdmission": true,
+        "exitCode": 139
+      },
+      {
+        "value": 1.5,
+        "refusedBeforeDatabaseAdmission": true,
+        "exitCode": 139
+      }
+    ]
+  },
+  "behaviourReferences": {
+    "behaviours": 59,
+    "executed": 56,
+    "deferred": 3
+  },
+  "qualificationLimits": {
+    "retentionAttachments": "Complete currently supported musical graphs qualified; PDF attachment delivery remains separately deferred under issue 13 and is not claimed",
+    "eightHourDeadline": "Domain exact-clock witness composed with native configured-earlier-deadline key lifecycle; no native eight-hour session claimed",
+    "remoteCommit": "Actual application/service integration with held transport gates; separately authenticated clean-browser reconstruction"
+  },
+  "manualTrial": {
+    "sourceRevision": "eedb70df4e1f75c1eda4e3d428a4844c1ddbcd76",
+    "imageId": "sha256:f380adac643394671845afc26ae0ae5106d4f3d75240c44312489f0265d2effd",
+    "allExistingMusicalFieldsAndHistoryPreserved": true,
+    "identityAndKeysPreserved": true,
+    "privateOfflineConfiguredMinutes": 480,
+    "earlierKnownExpiryStillApplies": true,
+    "deploymentEnvironment": "Development",
+    "userCredentialsAndMusicExcludedFromEvidence": true
+  },
+  "deliveryGate": "failed mandatory tooling dependency audit; not waived",
+  "runtimeAudit": "0 vulnerabilities",
+  "independentFinalReview": "pending",
+  "nativeIntegration": "separate enforced check and current-head decision",
+  "physicalDeviceAcceptance": "not executed; browser emulation is separate",
+  "actualOperatorInternetDeployment": false,
+  "recordedAt": "2026-11-18T01:51:12.166450+00:00"
+}
