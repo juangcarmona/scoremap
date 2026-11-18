@@ -7,10 +7,10 @@
 <!-- pdac:cite id="BR-EDIT-GUARD" digest="sha256:20e678c4743404c64a51c01e4446026ac95811827d2f5e1c641839291ad32718" -->
 
 ## Why
-The integrated performance view lets the sticky chord reference obscure arrangement selectors, while read-only multi-keyboard pianos use editing-width keys and hide played notes behind independent horizontal scrolling. Correct the existing readability contract without changing musical semantics.
+The performance view required selecting chords one at a time to see a separate reference, and its multi-keyboard consultation distorted proportions and buried the music in configuration. The owner requested small chord diagrams directly in the song, alongside a readable view of what each instrument plays.
 
 ## What Changes
-Bound the sticky reference to its own sketch grid row. Fit disabled consultation keyboards to their cards while retaining large scrollable keys for actual editing. Preserve event selection, notation, chromatic geometry and all musical data. Refresh stale anonymous-only delivery instructions and prepare source-bound portable artifacts without claiming an operator deployment.
+Show each chord's theoretical keyboard and spelled tones directly in the performance sketch. Present performed keyboards as horizontal, proportionate rows with individual played-pitch labels and optional range controls; retain large editable targets and bounded narrow-screen scrolling. Preserve event selection, parts, notation, chromatic geometry and all musical data. Refresh stale delivery instructions without claiming an operator deployment.
 
 ## Capabilities
 ### New Capabilities

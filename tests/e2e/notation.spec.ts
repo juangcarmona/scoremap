@@ -38,10 +38,11 @@ test("current song notation switches labels, preserves spelling/music and persis
     }),
   ).toBeVisible();
   await expect(
-    page.getByText("Theoretical notes: Re♭ (D♭) · Fa (F) · La♭ (A♭)", {
-      exact: true,
-    }),
-  ).toBeVisible();
+    page
+      .getByRole("button", { name: "Verse chord 2: Re♭ (D♭)", exact: true })
+      .locator("..")
+      .locator(".chord-diagram-notes"),
+  ).toHaveText("Re♭ (D♭) · Fa (F) · La♭ (A♭)");
   await choice.selectOption("dual-anglo");
   await expect(
     page.getByRole("button", {

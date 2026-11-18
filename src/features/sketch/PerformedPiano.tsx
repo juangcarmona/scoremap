@@ -16,6 +16,7 @@ export function PerformedPiano({
   onToggle,
   label,
   physicalRange,
+  showLegend = true,
 }: {
   harmony: HarmonyIdentity;
   pitches: readonly PianoPitch[];
@@ -25,6 +26,7 @@ export function PerformedPiano({
   onToggle: (pitch: PianoPitch) => void;
   label: string;
   physicalRange?: [number, number];
+  showLegend?: boolean;
 }) {
   const { preference } = useNotation();
   const keys = pianoKeys(firstOctave, octaves);
@@ -41,8 +43,11 @@ export function PerformedPiano({
       className="performed-piano"
       aria-label={label}
       data-editable={editable}
+      data-notation={preference.mode}
     >
-      <figcaption>○ Theoretical reference · ● Performed note</figcaption>
+      {showLegend && (
+        <figcaption>○ Theoretical reference · ● Performed note</figcaption>
+      )}
       <div
         className="keyboard-scroll"
         role="region"
@@ -51,7 +56,9 @@ export function PerformedPiano({
       >
         <div
           className="keyboard-keys"
-          style={{ width: editable ? `${whites * 80}px` : "100%" }}
+          style={{
+            width: editable ? `${whites * 80}px` : `${whites * 3.5}rem`,
+          }}
         >
           {[false, true].flatMap((black) =>
             keys
@@ -107,12 +114,11 @@ export function PerformedPiano({
           ))}
         </div>
       )}
-      <p>
-        {editable
-          ? "Scroll sideways for more keys. "
-          : "The complete selected range fits this view. "}
-        All performed notes are listed below.
-      </p>
+      {editable && (
+        <p>
+          Scroll sideways for more keys. All performed notes are listed below.
+        </p>
+      )}
       <p className="played-note-list" aria-live="polite">
         Performed:{" "}
         {pitches.length

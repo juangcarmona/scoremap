@@ -65,8 +65,11 @@ test("real browser v1 import retains its original, activates deterministic ident
   ).toHaveCount(0);
   await page.reload();
   await expect(
-    page.getByText("Theoretical notes: C · E · G · B", { exact: true }),
-  ).toBeVisible();
+    page
+      .getByRole("button", { name: "Verse chord 1: Cmaj7", exact: true })
+      .locator("..")
+      .locator(".chord-diagram-notes"),
+  ).toHaveText("C · E · G · B");
   expect(await readLibrary(page)).toEqual({ ...expected, revision: 2 });
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 });

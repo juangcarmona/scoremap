@@ -19,4 +19,13 @@
 
 The PR, current-head native CI and disposable Production qualification receipts are recorded separately after committing these inputs.
 
+## Owner-requested consultation redesign
+
+- [x] Place a compact theoretical keyboard and spelled notes with every chord in the performance sketch.
+- [x] Present performed keyboards as proportional horizontal rows with individual visible pitch labels and optional range controls.
+- [x] Verify simultaneous distinct chords, synchronized parts, small-screen bounded scrolling, exact labels and unchanged music in real browsers; capture synthetic examples.
+- [x] Run declared local verification and update the existing non-draft PR with the evidence.
+
+The current-head native CI and independent human review are recorded on the PR after commit.
+
 Independent review, integration, actual operator deployment and physical-device acceptance remain separate facts.

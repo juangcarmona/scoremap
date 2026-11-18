@@ -42,8 +42,11 @@ test("SB-OFFLINE: production application reloads, edits, saves and recovers with
     .getByRole("button", { name: "Verse chord 1: D♭m", exact: true })
     .click();
   await expect(
-    page.getByRole("img", { name: "Db minor piano keyboard" }),
-  ).toBeVisible();
+    page
+      .getByRole("button", { name: "Verse chord 1: D♭m", exact: true })
+      .locator("..")
+      .locator(".chord-diagram-notes"),
+  ).toHaveText("D♭ · F♭ · A♭");
   await context.setOffline(false);
 });
 test("Installability contract exposes complete local manifest, icons and an active service worker", async ({

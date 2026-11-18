@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { PerformedPiano } from "../sketch/PerformedPiano";
-import { formatNote, formatChordSymbol } from "../../shared/music/notation";
+import { formatNote } from "../../shared/music/notation";
 import { useNotation } from "../../shared/music/NotationContext";
 import { harmonyIdentity } from "../../shared/music/harmony";
 import type {
@@ -61,13 +61,53 @@ function KeyboardView({
       data-device-id={device.id}
       data-context={context}
     >
-      <h3>{device.name}</h3>
-      <p>
-        {context} · {formatChordSymbol(harmonic, preference)}
-      </p>
-      <p>
-        Physical range: {note(device.range[0])}–{note(device.range[1])}
-      </p>
+      <header className="keyboard-view-header">
+        <h3>{device.name}</h3>
+        <details className="keyboard-options">
+          <summary>Adjust visible range</summary>
+          <p>
+            Physical range: {note(device.range[0])}–{note(device.range[1])}
+          </p>
+          <button
+            type="button"
+            disabled={!events.length}
+            onClick={() => fitNotes(events, setFirstOctave, setOctaves)}
+          >
+            Find played notes on {device.name}
+          </button>
+          <div className="builder-controls">
+            <label>
+              First visible octave
+              <select
+                aria-label={`First visible octave for keyboard ${device.name}`}
+                value={firstOctave}
+                onChange={(event) => setFirstOctave(Number(event.target.value))}
+              >
+                {Array.from({ length: 9 }, (_, index) => index - 1).map(
+                  (octave) => (
+                    <option key={octave} value={octave}>
+                      {formatNote(`C${octave}`, preference)}
+                    </option>
+                  ),
+                )}
+              </select>
+            </label>
+            <label>
+              Piano span
+              <select
+                aria-label={`Piano span for keyboard ${device.name}`}
+                value={octaves}
+                onChange={(event) =>
+                  setOctaves(Number(event.target.value) as 2 | 3)
+                }
+              >
+                <option value={2}>Two octaves</option>
+                <option value={3}>Three octaves</option>
+              </select>
+            </label>
+          </div>
+        </details>
+      </header>
       {bindings.length === 0 && <p>No part is assigned to this keyboard.</p>}
       <ul className="routing-list">
         {bindings.map((binding) => {
@@ -82,60 +122,24 @@ function KeyboardView({
               {binding.sound ? ` · sound: ${binding.sound}` : ""}
               {binding.layer ? ` · layer: ${binding.layer}` : ""} ·{" "}
               {note(binding.range[0])}–{note(binding.range[1])}
-              <span>
-                {active.length
-                  ? active
-                      .map((event) =>
-                        formatNote(
-                          `${event.pitch.spelling}${event.pitch.octave}`,
-                          preference,
-                        ),
-                      )
-                      .join(" · ")
-                  : "Silent at this event"}
-              </span>
+              {(bindings.length > 1 || !active.length) && (
+                <span>
+                  {active.length
+                    ? active
+                        .map((event) =>
+                          formatNote(
+                            `${event.pitch.spelling}${event.pitch.octave}`,
+                            preference,
+                          ),
+                        )
+                        .join(" · ")
+                    : "Silent at this event"}
+                </span>
+              )}
             </li>
           );
         })}
       </ul>
-      <button
-        type="button"
-        disabled={!events.length}
-        onClick={() => fitNotes(events, setFirstOctave, setOctaves)}
-      >
-        Find played notes on {device.name}
-      </button>
-      <div className="builder-controls">
-        <label>
-          First visible octave
-          <select
-            aria-label={`First visible octave for keyboard ${device.name}`}
-            value={firstOctave}
-            onChange={(event) => setFirstOctave(Number(event.target.value))}
-          >
-            {Array.from({ length: 9 }, (_, index) => index - 1).map(
-              (octave) => (
-                <option key={octave} value={octave}>
-                  {formatNote(`C${octave}`, preference)}
-                </option>
-              ),
-            )}
-          </select>
-        </label>
-        <label>
-          Piano span
-          <select
-            aria-label={`Piano span for keyboard ${device.name}`}
-            value={octaves}
-            onChange={(event) =>
-              setOctaves(Number(event.target.value) as 2 | 3)
-            }
-          >
-            <option value={2}>Two octaves</option>
-            <option value={3}>Three octaves</option>
-          </select>
-        </label>
-      </div>
       <PerformedPiano
         harmony={harmonyIdentity(harmonic)}
         pitches={events.map((event) => event.pitch)}
@@ -145,6 +149,7 @@ function KeyboardView({
         editable={false}
         onToggle={() => undefined}
         label={`${device.name} assigned performed piano`}
+        showLegend={false}
       />
     </article>
   );
@@ -194,6 +199,9 @@ export function ArrangementViews({
     >
       <p className="musical-context" role="status">
         {context}
+      </p>
+      <p className="keyboard-legend">
+        ○ Theoretical reference · ● Performed note
       </p>
       <div className="keyboard-grid">
         {arrangement.devices.map((device) => (
@@ -318,6 +326,7 @@ function UnassignedView({
         editable={false}
         onToggle={() => undefined}
         label={`${part.name} unassigned performed piano`}
+        showLegend={false}
       />
     </article>
   );

@@ -9,12 +9,17 @@
 ## ADDED Requirements
 
 ### Requirement: Unobstructed synchronized consultation
-The existing performance view MUST keep arrangement controls hit-testable after scrolling, show the selected read-only keyboard ranges within their cards and preserve exact musical data. Editable pianos MUST retain touch-sized keys and deliberate bounded scrolling.
+The performance view MUST show compact theoretical diagrams for the chords in the song without selecting each one, and preserve exact musical data when selecting a chord. Arrangement controls MUST remain hit-testable. Performed keyboards MUST have realistic proportions, distinguish theoretical notes from exact played pitches, label every visible played pitch and use bounded scrolling where necessary. Editable pianos MUST retain touch-sized keys.
+
+#### Scenario: Several chords are readable together
+- **GIVEN** a song contains C major and D-flat minor in the same sketch
+- **WHEN** the musician enters performance mode without selecting either chord
+- **THEN** both independent diagrams and their correctly spelled chord tones are visible, with no content revision.
 
 #### Scenario: Three keyboards on a landscape tablet
 - **GIVEN** an existing song with three assigned keyboards and saved performed notes
 - **WHEN** the musician enters performance mode and scrolls to its arrangement
-- **THEN** the reference covers no active selector, all in-view performed keys remain visible, and the acknowledged song is unchanged.
+- **THEN** no reference covers an active selector, each visible performed key is labeled, the keyboards retain their own parts and ranges, and the acknowledged song is unchanged.
 
 #### Scenario: Narrow enlarged-text and editing boundary
 - **GIVEN** the same saved song on a narrow viewport with 200 percent text

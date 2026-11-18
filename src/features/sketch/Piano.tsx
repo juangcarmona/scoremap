@@ -3,6 +3,35 @@ import type { HarmonyIdentity } from "../../shared/music/harmony";
 import { useNotation } from "../../shared/music/NotationContext";
 import { formatNote } from "../../shared/music/notation";
 const keys = pianoKeys();
+const compactKeys = pianoKeys(3, 1);
+export function ChordDiagram({ chord }: { chord: HarmonyIdentity }) {
+  const notes = new Set(chordNotes(chord));
+  return (
+    <span className="chord-diagram">
+      <svg viewBox="0 0 700 360" aria-hidden="true" focusable="false">
+        {[false, true].map((black) => (
+          <g key={String(black)}>
+            {compactKeys
+              .filter((key) => key.black === black)
+              .map((key) => (
+                <rect
+                  key={key.midi}
+                  x={key.x * 100 + 1}
+                  y={1}
+                  width={key.width * 100 - 2}
+                  height={black ? 224 : 358}
+                  rx="2"
+                  className={`${black ? "black-key" : "white-key"}${notes.has(key.pitchClass) ? " highlighted" : ""}`}
+                  data-pitch-class={key.pitchClass}
+                  data-chord-tone={notes.has(key.pitchClass)}
+                />
+              ))}
+          </g>
+        ))}
+      </svg>
+    </span>
+  );
+}
 export function Piano({ chord }: { chord: HarmonyIdentity }) {
   const { preference } = useNotation();
   const notes = new Set(chordNotes(chord));
