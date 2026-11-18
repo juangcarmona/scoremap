@@ -151,7 +151,7 @@ internal sealed partial class LibraryRepository(NpgsqlDataSource dataSource, IDa
       await Execute(connection, "UPDATE sm_libraries SET revision=revision+1,repertoires=$2::jsonb,song_order=$3 WHERE principal=$1", cancellationToken, principal, document.Value.GetProperty("repertoires").GetRawText(), document.Songs.Select(song => song.GetProperty("id").GetString()!).ToArray()).ConfigureAwait(false);
       if (request.RecoveryKeyId is Guid recoveryId)
       {
-        var bound = await Execute(connection, "UPDATE sm_recovery_keys SET resources=ARRAY(SELECT DISTINCT unnest(resources || $3)) WHERE id=$1 AND principal=$2 AND purpose='song'", cancellationToken, recoveryId, principal, document.Songs.Select(song => song.GetProperty("id").GetString()!).ToArray()).ConfigureAwait(false);
+        var bound = await Execute(connection, "UPDATE sm_recovery_keys k SET resources=ARRAY(SELECT DISTINCT unnest(k.resources || $3)),write_resources=ARRAY(SELECT DISTINCT resource FROM (SELECT unnest(COALESCE(k.write_resources,k.resources)) AS resource UNION SELECT s.id FROM sm_songs s LEFT JOIN sm_grants g ON g.song=s.id AND g.principal=$2 WHERE s.id=ANY($3) AND NOT s.deleted AND NOT s.purged AND (s.owner=$2 OR g.role='editor')) permitted) WHERE k.id=$1 AND k.principal=$2 AND k.purpose='song'", cancellationToken, recoveryId, principal, document.Songs.Select(song => song.GetProperty("id").GetString()!).ToArray()).ConfigureAwait(false);
         LibraryDocument.Require(bound == 1, "Private recovery key is unavailable; sign in again without discarding your pending work.");
       }
       var saved = await ReadView(connection, principal, cancellationToken).ConfigureAwait(false);

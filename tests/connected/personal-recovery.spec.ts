@@ -23,9 +23,28 @@ test("personal key purpose and owner remain separate from revoked song grants, a
       })
     ).status(),
   ).toBe(204);
+  const readOnlySong = syntheticSong();
+  await saveView(owner.page, (library) => {
+    library.songs.push(readOnlySong);
+  });
+  expect(
+    (
+      await api(owner.page, `/api/songs/${readOnlySong.id}/grants`, "PUT", {
+        principal,
+        role: "viewer",
+        mode: "edit",
+      })
+    ).status(),
+  ).toBe(204);
   const songKey = await (
     await api(editor.page, "/api/recovery-keys", "POST")
   ).json();
+  // An unrelated read-only baseline must not prevent recovery of this editor's work.
+  expect(
+    (
+      await api(editor.page, `/api/recovery-keys/${songKey.id}/unlock`, "POST")
+    ).status(),
+  ).toBe(200);
   const personalKey = await (
     await api(editor.page, "/api/personal-recovery-keys", "POST")
   ).json();

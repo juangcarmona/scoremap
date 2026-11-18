@@ -42,3 +42,9 @@ Voluntary termination waits for both protection boundaries, without waiting for 
 - [Durable recovery change](../../../openspec/changes/issue-26-durable-recovery/)
 - [Recovery key repository](../../../src/modules/ScoreMap.Modules.Library/Infrastructure/RecoveryVault.cs)
 - [Personal protected journal](../../../src/features/library/personalPending.ts)
+
+## Current edit authority at song-key unlock
+
+New song keys retain separate server-derived read and write resource scopes. Key creation and scoped offline authorization derive the write set from current owner/editor capabilities; the client cannot submit it. An acknowledged song commit atomically extends both scopes with the admitted resources and their current write capabilities. Unlock rechecks reading for the complete protected baseline and editing for the originally checked write set. A downgrade to viewer therefore refuses the old draft key even though ordinary reading remains permitted. An unrelated song that was read-only when the key was issued stays a read obligation and does not block recovery of independently editable work.
+
+The additive nullable `write_resources` column preserves existing key bytes, purpose and original resource scope. Null means the older format did not record a separate write footprint; unlock conservatively requires current editing authority for its original resources. It does not infer historical permissions or silently broaden an old key. This can refuse a legacy mixed-permission draft until appropriate authority is restored; its protected data is preserved. Personal-purpose keys remain independent of these song capabilities.

@@ -103,6 +103,13 @@ test("SB-ROLE-REVOKE: a protected performed-note write based on actual revision 
     await ready;
     const protectedBefore = await protectedDigest(editor.page);
     expect(protectedBefore).toHaveLength(1);
+    const keyPath = `/api/recovery-keys/${protectedBefore[0]!.keyId}/unlock`;
+    expect((await api(editor.page, keyPath, "POST")).status()).toBe(200);
+    const issued = await api(editor.page, "/api/offline-lease", "POST", {
+      songIds: [song.id],
+    });
+    expect(issued.status()).toBe(200);
+    const offlineKeyPath = `/api/recovery-keys/${(await issued.json()).keys.songs.id}/unlock`;
     await grant(owner.page, editor.page, song.id, "viewer");
     release();
     await expect.poll(() => status).toBe(403);
@@ -112,6 +119,8 @@ test("SB-ROLE-REVOKE: a protected performed-note write based on actual revision 
       }),
     ).toBeVisible();
     expect(await protectedDigest(editor.page)).toEqual(protectedBefore);
+    expect((await api(editor.page, keyPath, "POST")).status()).toBe(403);
+    expect((await api(editor.page, offlineKeyPath, "POST")).status()).toBe(403);
     const readable = await (await api(editor.page, "/api/library")).json();
     expect(readable.capabilities[song.id]).toBe("viewer");
     expect(readable.versions[song.id]).toBe(21);

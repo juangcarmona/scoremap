@@ -25,8 +25,8 @@ internal sealed partial class LibraryRepository
     var checkedAt = new DateTimeOffset((DateTime)(await Scalar(connection, "SELECT clock_timestamp()", cancellationToken).ConfigureAwait(false))!);
     var expiresAt = OfflinePolicy.Expiry(checkedAt, command.AuthorizationExpiresAt, command.ConfiguredMinutes);
     var scope = new { songs = view.Capabilities, personal = true, repertoires = true, createSongs = true };
-    var musicKey = await OfflineKey(connection, command.Principal, selected.ToArray(), false, cancellationToken).ConfigureAwait(false);
-    var personalKey = await OfflineKey(connection, command.Principal, [], true, cancellationToken).ConfigureAwait(false);
+    var musicKey = await OfflineKey(connection, command.Principal, selected.ToArray(), view.Capabilities.Where(pair => pair.Value is "owner" or "editor").Select(pair => pair.Key).ToArray(), false, cancellationToken).ConfigureAwait(false);
+    var personalKey = await OfflineKey(connection, command.Principal, [], [], true, cancellationToken).ConfigureAwait(false);
     var id = Guid.NewGuid();
     await Execute(connection, "INSERT INTO sm_offline_leases(id,principal,session_id,checked_at,expires_at,authorization_expires_at,configured_minutes,scope,music_key,personal_key) VALUES($1,$2,$3,$4,$5,$6,$7,$8::jsonb,$9,$10)", cancellationToken, id, command.Principal, command.SessionId, checkedAt, expiresAt, command.AuthorizationExpiresAt, command.ConfiguredMinutes, JsonSerializer.Serialize(scope), musicKey.GetProperty("id").GetGuid(), personalKey.GetProperty("id").GetGuid()).ConfigureAwait(false);
     var notation = await Notation(connection, command.Principal, cancellationToken).ConfigureAwait(false);
@@ -45,12 +45,12 @@ internal sealed partial class LibraryRepository
     var library = JsonSerializer.SerializeToElement(new { schemaVersion = current.Library.GetProperty("schemaVersion").GetInt32(), revision = current.Library.GetProperty("revision").GetInt64(), songs, repertoires });
     return new LibraryView(library, current.Versions.Where(pair => selected.Contains(pair.Key)).ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.Ordinal), current.Capabilities.Where(pair => selected.Contains(pair.Key)).ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.Ordinal));
   }
-  private async Task<JsonElement> OfflineKey(NpgsqlConnection connection, string principal, string[] resources, bool personal, CancellationToken cancellationToken)
+  private async Task<JsonElement> OfflineKey(NpgsqlConnection connection, string principal, string[] resources, string[] writeResources, bool personal, CancellationToken cancellationToken)
   {
     var id = Guid.NewGuid(); var key = RandomNumberGenerator.GetBytes(32);
     var purpose = personal ? "personal" : "song";
     var protector = protection.CreateProtector(personal ? "ScoreMap.PersonalPending.v1" : "ScoreMap.Pending.v1", principal);
-    await Execute(connection, "INSERT INTO sm_recovery_keys(id,principal,resources,protected_key,purpose) VALUES($1,$2,$3,$4,$5)", cancellationToken, id, principal, resources, protector.Protect(key), purpose).ConfigureAwait(false);
+    await Execute(connection, "INSERT INTO sm_recovery_keys(id,principal,resources,protected_key,purpose,write_resources) VALUES($1,$2,$3,$4,$5,$6)", cancellationToken, id, principal, resources, protector.Protect(key), purpose, writeResources).ConfigureAwait(false);
     return JsonSerializer.SerializeToElement(new { id, key = Convert.ToBase64String(key) });
   }
 }

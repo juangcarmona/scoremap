@@ -60,7 +60,7 @@ export async function protectedDigest(page: Page) {
       request.onerror = () => reject(request.error);
     });
     const read = db.transaction("pending").objectStore("pending").getAll();
-    const rows = await new Promise<{ cipher: ArrayBuffer }[]>(
+    const rows = await new Promise<{ cipher: ArrayBuffer; keyId: string }[]>(
       (resolve, reject) => {
         read.onsuccess = () => resolve(read.result);
         read.onerror = () => reject(read.error);
@@ -68,12 +68,13 @@ export async function protectedDigest(page: Page) {
     );
     db.close();
     return Promise.all(
-      rows.map(async (row) =>
-        Array.from(
+      rows.map(async (row) => ({
+        keyId: row.keyId,
+        digest: Array.from(
           new Uint8Array(await crypto.subtle.digest("SHA-256", row.cipher)),
           (value) => value.toString(16).padStart(2, "0"),
         ).join(""),
-      ),
+      })),
     );
   });
 }
