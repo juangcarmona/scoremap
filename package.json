@@ -51,6 +51,9 @@
     "react": "19.3.1",
     "react-dom": "19.3.1"
   },
+  "overrides": {
+    "picomatch": "npm:@ryotsu/picomatch@4.0.7-a"
+  },
   "scripts": {
     "verify:product": "prodshape --serialization-version v1alpha2 validate",
     "verify:citations": "prodshape citations verify --provider openspec --format json && prodshape citations verify docs/architecture --format json",
@@ -74,7 +77,7 @@
     "dev:private": "node scripts/dev-private.mjs",
     "verify:backend": "npm run verify:dotnet",
     "test:connected": "playwright test --config=playwright.connected.config.ts",
-    "verify:security": "node scripts/verify-security.mjs",
+    "verify:security": "node --test tests/security/picomatch.test.mjs && node scripts/verify-security.mjs",
     "verify:dotnet": "node node_modules/@juangcarmona/lighthouse/src/verify-dotnet.mjs && node scripts/verify-backend-boundaries.mjs",
     "verify:frontend-boundaries": "node scripts/verify-frontend-boundaries.mjs",
     "build:container": "node scripts/build-container.mjs",
