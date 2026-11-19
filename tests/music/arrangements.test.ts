@@ -24,6 +24,38 @@ function mapping(copy: (remap: (id: string) => string) => unknown) {
   return result;
 }
 describe("Shared form and independent arrangement configuration", () => {
+  it("reorders rich sections without changing any arrangement, event, binding or identity", () => {
+    const library = fixture();
+    const first = library.songs[0] as RichSong;
+    const withSecond = applyCommand(library, "edit", {
+      type: "insertSection",
+      songId: first.id,
+      id: "synthetic-chorus",
+      name: "Chorus",
+    });
+    const before = structuredClone(withSecond.songs[0] as RichSong);
+    const order = [before.sections[1]!.id, before.sections[0]!.id];
+    const reordered = applyCommand(withSecond, "edit", {
+      type: "reorderSections",
+      songId: first.id,
+      order,
+    });
+    const after = reordered.songs[0] as RichSong;
+    expect(after).toEqual({
+      ...before,
+      sections: [before.sections[1], before.sections[0]],
+    });
+    expect(withSecond.songs[0]).toEqual(before);
+    expect(() =>
+      applyCommand(withSecond, "performance", {
+        type: "reorderSections",
+        songId: first.id,
+        order,
+      }),
+    ).toThrow(/Performance/);
+    validateLibrary(reordered);
+  });
+
   it("retains unrouted occurrences for consultation when a binding selects only some part notes", () => {
     const library = fixture();
     const song = library.songs[0] as RichSong;
