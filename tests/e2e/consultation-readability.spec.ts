@@ -410,4 +410,11 @@ test("landscape tablet keeps song navigation and two keyboards visible together"
       .locator('.performed-key[data-performed="true"]'),
   ).toHaveCount(0);
   expect(await readLibrary(page)).toEqual(before);
+  await page.getByRole("button", { name: "Switch to edit" }).click();
+  const editor = page.locator('.performed-piano[data-editable="true"]');
+  await expect(editor.locator(".played-note-list")).not.toContainText(
+    "Scroll to see",
+  );
+  const editKey = await editor.locator(".played-white").first().boundingBox();
+  expect(editKey!.width).toBeGreaterThanOrEqual(48);
 });

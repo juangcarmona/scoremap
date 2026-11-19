@@ -163,7 +163,7 @@ export function PerformedPiano({
               )
               .join(" · ")
           : "Silent — no performed notes"}
-        {clippedPitches.length > 0 && (
+        {!editable && clippedPitches.length > 0 && (
           <span>
             {" · Scroll to see "}
             {clippedPitches
