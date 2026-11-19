@@ -45,7 +45,7 @@ try:
     if 'Unsupported ScoreMap storage schema' not in logs.stdout + logs.stderr:
         raise RuntimeError('Application exited without the expected schema refusal')
     if database.fingerprints() != unknown:
-        raise RuntimeError('Refusal modified the future-schema database')
+        raise RuntimeError('Refusal modified a ScoreMap table in the future-schema database')
     database.pg('psql', '-v', 'ON_ERROR_STOP=1', '-U', 'scoremap', '-d', 'scoremap', '-c', f'UPDATE sm_schema SET version={version} WHERE id=1')
     if database.fingerprints() != original:
         raise RuntimeError('Restoring the schema marker changed other stored data')
@@ -62,13 +62,13 @@ try:
         'syntheticOnly': True,
         'environment': 'disposable Production HTTPS with real identity and PostgreSQL',
         'unsupportedSchemaRefused': True,
-        'allTableFingerprintsUnchangedOnRefusal': True,
+        'allScoreMapTableFingerprintsUnchangedOnRefusal': True,
         'schemaMarkerRestoredWithoutOtherChanges': True,
         'authenticatedSyntheticDataReconstructed': True,
         'actualOperatorDeployment': False,
     }
     q.write(output, receipt)
-    print('Future schema refused; table fingerprints and authenticated reconstruction verified.', flush=True)
+    print('Future schema refused; ScoreMap table fingerprints and authenticated reconstruction verified.', flush=True)
 finally:
     if q.ACTIVE_STATE is not None and (q.ACTIVE_STATE / 'state.private.json').exists():
         q.cleanup(q.ACTIVE_STATE)
