@@ -1,4 +1,4 @@
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect, type Browser, type Page } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import {
   api,
@@ -521,4 +521,148 @@ test("a performed-note save held after the real commit survives song and mode ch
     release.resolve();
     await owner.context.close();
   }
+});
+
+async function withHeldPiano(
+  browser: Browser,
+  run: (
+    page: Page,
+    release: () => void,
+    song: RichSong,
+    expected: RichSong,
+  ) => Promise<void>,
+) {
+  const owner = await login(browser, "owner-a");
+  const song = await prepare(owner.page);
+  await owner.page
+    .getByLabel("Active performed part", { exact: true })
+    .selectOption(song.arrangements[0]!.parts[1]!.id);
+  const builder = owner.page.getByRole("region", {
+    name: "Played-note builder for Right",
+    exact: true,
+  });
+  const committed = deferred(),
+    release = deferred();
+  const expected = structuredClone(song);
+  expected.arrangements[0]!.parts[1]!.events[1]!.pitch = {
+    spelling: "B",
+    octave: 5,
+    midi: 83,
+  };
+  await owner.page.route("**/api/library", async (route) => {
+    if (route.request().method() !== "PUT") return route.continue();
+    const response = await route.fetch();
+    expect(response.status()).toBe(200);
+    committed.resolve();
+    await release.promise;
+    await route.fulfill({ response }).catch(() => undefined);
+  });
+  try {
+    await builder
+      .getByRole("button", { name: "Raise B4 one octave", exact: true })
+      .click();
+    await builder
+      .getByRole("button", { name: "Apply played notes", exact: true })
+      .click();
+    await committed.promise;
+    await run(owner.page, release.resolve, song, expected);
+  } finally {
+    release.resolve();
+    await owner.context.close();
+  }
+}
+
+test("an import waits for a held performed-note acknowledgement and preserves both songs", async ({
+  browser,
+}) => {
+  await withHeldPiano(browser, async (page, release, song, expected) => {
+    const imported = syntheticSong();
+    await page.getByLabel("Import backup file", { exact: true }).setInputFiles({
+      name: "synthetic-held-import.json",
+      mimeType: "application/json",
+      buffer: Buffer.from(
+        JSON.stringify({
+          format: "scoremap-backup",
+          version: 1,
+          library: {
+            schemaVersion: 1,
+            revision: 0,
+            songs: [imported],
+            repertoires: [],
+          },
+        }),
+      ),
+    });
+    const dialog = page.getByRole("dialog", {
+      name: "Import selected songs",
+      exact: true,
+    });
+    await expect(dialog).toHaveCount(0);
+    expect(
+      (await (await api(page, "/api/library")).json()).library.songs.find(
+        (entry: RichSong) => entry.id === song.id,
+      ),
+    ).toEqual(expected);
+    release();
+    await expect(dialog).toBeVisible();
+    await dialog
+      .getByRole("button", { name: "Import selection", exact: true })
+      .click();
+    await expect(dialog).toHaveCount(0);
+    const after = await (await api(page, "/api/library")).json();
+    expect(
+      after.library.songs.find((entry: RichSong) => entry.id === song.id),
+    ).toEqual(expected);
+    expect(
+      after.library.songs.find((entry: RichSong) => entry.id === imported.id)
+        ?.title,
+    ).toBe(imported.title);
+    expect(
+      await (await api(page, `/api/songs/${song.id}/history`)).json(),
+    ).toHaveLength(2);
+  });
+});
+
+test("a real waiting service worker defers activation until the performed-note acknowledgement", async ({
+  browser,
+}) => {
+  await withHeldPiano(browser, async (page, release, song, expected) => {
+    await page.evaluate(() => navigator.serviceWorker.ready);
+    await page.waitForFunction(() =>
+      Boolean(navigator.serviceWorker.controller),
+    );
+    await page.evaluate(() =>
+      navigator.serviceWorker.register("/sw.js?synthetic-waiting-worker=1", {
+        scope: "/",
+      }),
+    );
+    const update = page.getByRole("button", {
+      name: "Apply available update",
+      exact: true,
+    });
+    await expect(update).toBeVisible();
+    await update.click();
+    await expect
+      .poll(() =>
+        page.evaluate(async () =>
+          Boolean((await navigator.serviceWorker.getRegistration())?.waiting),
+        ),
+      )
+      .toBe(true);
+    expect(
+      (await (await api(page, "/api/library")).json()).library.songs.find(
+        (entry: RichSong) => entry.id === song.id,
+      ),
+    ).toEqual(expected);
+    release();
+    await expect(update).toHaveCount(0);
+    await expect(page.getByText("owner-a · Private library")).toBeVisible();
+    const after = await (await api(page, "/api/library")).json();
+    expect(
+      after.library.songs.find((entry: RichSong) => entry.id === song.id),
+    ).toEqual(expected);
+    expect(
+      await (await api(page, `/api/songs/${song.id}/history`)).json(),
+    ).toHaveLength(2);
+  });
 });
