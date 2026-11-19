@@ -94,6 +94,7 @@
     "test:session-vault": "python3 scripts/qualify-session-vault.py",
     "verify:connected": "node scripts/verify-connected.mjs",
     "test:deployment-schema": "python3 tests/deployment/qualify-future-schema.py",
-    "verify:private-api-contract": "node scripts/verify-private-api-contract.mjs"
+    "verify:private-api-contract": "node scripts/verify-private-api-contract.mjs",
+    "test:deployment-migration": "python3 tests/deployment/qualify-migration-rollback.py"
   }
 }
