@@ -384,7 +384,7 @@
     }
   },
   "28": {
-    "scope": "Implement the accepted issue #28 production publication baseline: a separate guarded Aspire-to-Compose entrypoint, locked typed dependencies, parameterized protected artifacts and executed passing/refusing publication checks. Preserve all existing module/security/product gates. No actual operator deployment, credentials, product-model changes or review-gate bypass.",
+    "scope": "Implement the accepted issue #28 production publication baseline: a separate guarded Aspire-to-Compose entrypoint, locked typed dependencies, parameterized protected artifacts and executed passing/refusing publication checks. Preserve all existing module/security/product gates. No actual operator deployment, credentials, product-model changes or review-gate bypass. Include a bounded generated contract for the actual private HTTP routes and drift verification; musical JSON remains opaque and the client migration remains future work.",
     "paths": [
       "src/",
       "tests/",
@@ -424,7 +424,9 @@
       "openspec/changes/issue-28-production-publication/",
       "docs/evidence/deployment/",
       "scripts/qualify-production.py",
-      "playwright.deployment.config.ts"
+      "playwright.deployment.config.ts",
+      "scripts/verify-private-api-contract.mjs",
+      "tests/contract/"
     ],
     "checks": [
       [
@@ -462,7 +464,9 @@
         "deployment/compose.yaml",
         "scripts/qualify-production.py",
         "playwright.deployment.config.ts",
-        "tests/deployment/"
+        "tests/deployment/",
+        "scripts/verify-private-api-contract.mjs",
+        "tests/contract/"
       ],
       "corrections": {}
     }
