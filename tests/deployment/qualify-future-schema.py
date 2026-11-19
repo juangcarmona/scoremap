@@ -15,6 +15,7 @@ state = None
 try:
     state = q.setup(settings)
     database = q.DisposableDatabase(state)
+    q.execute_browser(state, 'role-seed', 'playwright.connected.config.ts', 'song-scoped editor/viewer grants, revocation, versions and retry receipts')
     q.execute_browser(state, 'before', 'playwright.deployment.config.ts', 'before:')
     application = database.dc('ps', '-q', 'application').strip()
     if not application:
