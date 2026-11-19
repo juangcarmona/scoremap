@@ -418,3 +418,67 @@ test("landscape tablet keeps song navigation and two keyboards visible together"
   const editKey = await editor.locator(".played-white").first().boundingBox();
   expect(editKey!.width).toBeGreaterThanOrEqual(48);
 });
+
+test("1024px landscape tablet keeps two keyboards and library navigation available", async ({
+  page,
+}, testInfo) => {
+  await page.setViewportSize({ width: 1024, height: 768 });
+  await page.goto("/");
+  page.once("dialog", (dialog) => dialog.accept());
+  await page.getByLabel("Import backup file", { exact: true }).setInputFiles({
+    name: "synthetic-tablet-1024.json",
+    mimeType: "application/json",
+    buffer: Buffer.from(
+      JSON.stringify({
+        format: "scoremap-backup",
+        version: 2,
+        library: {
+          schemaVersion: 2,
+          revision: 1,
+          songs: [song],
+          repertoires: [],
+        },
+      }),
+    ),
+  });
+  await saved(page);
+  await page
+    .getByRole("button", { name: "Enter performance", exact: true })
+    .click();
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await testInfo.attach("tablet-1024", {
+    body: await page.screenshot(),
+    contentType: "image/png",
+  });
+  const keyboards = page.locator(".keyboard-view .keyboard-scroll");
+  await expect(keyboards).toHaveCount(3);
+  for (const keyboard of (await keyboards.all()).slice(0, 2)) {
+    const box = await keyboard.boundingBox();
+    expect(box!.y + box!.height).toBeLessThanOrEqual(768);
+    expect(await keyboard.evaluate((el) => el.scrollWidth)).toBeLessThanOrEqual(
+      await keyboard.evaluate((el) => el.clientWidth),
+    );
+    expect(
+      (await keyboard.locator(".played-white").first().boundingBox())!.width,
+    ).toBeGreaterThanOrEqual(18);
+  }
+  for (const notes of (
+    await page.locator(".keyboard-view .played-note-list").all()
+  ).slice(0, 2)) {
+    const box = await notes.boundingBox();
+    expect(box!.y + box!.height).toBeLessThanOrEqual(768);
+  }
+  const toggle = page.getByRole("button", { name: "Library", exact: true });
+  await expect(toggle).toHaveAttribute("aria-expanded", "false");
+  await toggle.click();
+  await expect(toggle).toHaveAttribute("aria-expanded", "true");
+  await expect(
+    page.getByRole("button", { name: /Synthetic synchronized consultation/ }),
+  ).toBeVisible();
+  await toggle.click();
+  await expect(toggle).toHaveAttribute("aria-expanded", "false");
+  expect(
+    await page.evaluate(() => document.documentElement.scrollWidth),
+  ).toBeLessThanOrEqual(1024);
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+});
