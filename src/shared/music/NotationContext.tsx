@@ -10,6 +10,10 @@ export type NotationState = {
   scope: "device" | "account";
   retry: () => void;
   reload: () => void;
+  exportSnapshot: () => Promise<{
+    preference: Notation;
+    sourceRevision: number | null;
+  }>;
 };
 export const NotationContext = createContext<NotationState>({
   preference: defaultNotation,
@@ -20,5 +24,9 @@ export const NotationContext = createContext<NotationState>({
   scope: "device",
   retry: () => undefined,
   reload: () => undefined,
+  exportSnapshot: async () => ({
+    preference: defaultNotation,
+    sourceRevision: null,
+  }),
 });
 export const useNotation = () => useContext(NotationContext);

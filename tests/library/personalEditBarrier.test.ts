@@ -81,3 +81,16 @@ it("blocks delayed personal imports and waits for admitted writes while an updat
   await barrier.run(barrier.begin(), async () => undefined);
   await barrier.runNotation(async () => undefined);
 });
+
+it("refuses a delayed note-name file after update admission but allows note names in performance mode", async () => {
+  const barrier = new PersonalEditBarrier();
+  barrier.setEditing(false);
+  const check = barrier.beginNotation();
+  check();
+  const release = barrier.beginUpdate();
+  expect(check).toThrow(/update interrupted/);
+  release();
+  expect(check).toThrow(/update interrupted/);
+  barrier.beginNotation()();
+  await barrier.runNotation(async () => undefined);
+});
