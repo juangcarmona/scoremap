@@ -98,7 +98,12 @@ function LibraryApp({
   } | null>(null);
   const [transferResult, setTransferResult] = useState("");
   const [importEpoch, setImportEpoch] = useState(0);
-  const [previewDirty, setPreviewDirty] = useState(false);
+  const [previewDirty, setPreviewDirtyState] = useState(false);
+  const previewDirtyRef = useRef(false);
+  function setPreviewDirty(value: boolean) {
+    previewDirtyRef.current = value;
+    setPreviewDirtyState(value);
+  }
   useEffect(() => {
     const protect = (event: BeforeUnloadEvent) => {
       if (previewDirty) {
@@ -326,7 +331,7 @@ function LibraryApp({
             privateLibrary={!!identity}
             beforeUpdate={async () => {
               await session.whenIdle();
-              if (previewDirty)
+              if (previewDirtyRef.current)
                 throw new Error(
                   "Apply or export your played-note preview before updating.",
                 );
