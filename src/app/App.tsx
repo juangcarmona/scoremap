@@ -1,3 +1,4 @@
+import { createPortal } from "react-dom";
 import { OfflinePreparation } from "../features/library/OfflinePreparation";
 import { DeviceProvider } from "../features/library/DeviceContext";
 import { DeviceConfigurations } from "../features/library/DeviceConfigurations";
@@ -99,6 +100,8 @@ function LibraryApp({
   const [transferResult, setTransferResult] = useState("");
   const [importEpoch, setImportEpoch] = useState(0);
   const [previewDirty, setPreviewDirtyState] = useState(false);
+  const appRef = useRef<HTMLDivElement>(null);
+  const [updating, setUpdating] = useState(false);
   const previewDirtyRef = useRef(false);
   const previewOperation = useRef<Promise<void>>(Promise.resolve());
   function beginPreviewOperation() {
@@ -273,6 +276,7 @@ function LibraryApp({
     );
   return (
     <div
+      ref={appRef}
       className={`app ${edit ? "editing" : "performing"}${identity ? " private-library" : ""}`}
       data-build-revision={import.meta.env.VITE_SCOREMAP_BUILD ?? "development"}
     >
@@ -338,16 +342,30 @@ function LibraryApp({
           <PwaStatus
             privateLibrary={!!identity}
             beforeUpdate={async () => {
-              await session.whenIdle();
-              await previewOperation.current;
-              if (previewDirtyRef.current)
-                throw new Error(
-                  "Apply or export your played-note preview before updating.",
-                );
-              if (session.error)
-                throw new Error(
-                  "Export or save your unsaved work before updating.",
-                );
+              const releaseSession = session.beginUpdate();
+              if (appRef.current) appRef.current.inert = true;
+              setUpdating(true);
+              const release = () => {
+                releaseSession();
+                if (appRef.current) appRef.current.inert = false;
+                setUpdating(false);
+              };
+              try {
+                await session.whenIdle();
+                await previewOperation.current;
+                if (previewDirtyRef.current)
+                  throw new Error(
+                    "Apply or export your played-note preview before updating.",
+                  );
+                if (session.error)
+                  throw new Error(
+                    "Export or save your unsaved work before updating.",
+                  );
+                return release;
+              } catch (error) {
+                release();
+                throw error;
+              }
             }}
             report={report}
           />
@@ -1188,6 +1206,11 @@ function LibraryApp({
           onClose={() => setModal(null)}
         />
       )}
+      {updating &&
+        createPortal(
+          <p role="status">Applying update; waiting for your saved work.</p>,
+          document.body,
+        )}
     </div>
   );
 }

@@ -643,6 +643,10 @@ test("a real waiting service worker defers activation until the performed-note a
     });
     await expect(update).toBeVisible();
     await update.click();
+    await expect(page.locator(".app")).toHaveAttribute("inert", "");
+    await expect(
+      page.getByRole("status").filter({ hasText: "Applying update" }),
+    ).toBeVisible();
     await expect
       .poll(() =>
         page.evaluate(async () =>
