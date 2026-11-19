@@ -78,7 +78,7 @@
     "verify:backend": "npm run verify:dotnet",
     "test:connected": "playwright test --config=playwright.connected.config.ts",
     "verify:security": "node --test tests/security/picomatch.test.mjs && node scripts/verify-security.mjs",
-    "verify:dotnet": "node node_modules/@juangcarmona/lighthouse/src/verify-dotnet.mjs && node scripts/verify-backend-boundaries.mjs",
+    "verify:dotnet": "node node_modules/@juangcarmona/lighthouse/src/verify-dotnet.mjs && node scripts/verify-backend-boundaries.mjs && node --test tests/architecture/analyzer-visibility.test.mjs",
     "verify:frontend-boundaries": "node scripts/verify-frontend-boundaries.mjs",
     "build:container": "node scripts/build-container.mjs",
     "verify:music-catalogue": "node scripts/harmony-catalogue.mjs",
