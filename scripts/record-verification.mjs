@@ -19,7 +19,7 @@ if(!connectedReceipt.passed||JSON.stringify(connectedReceipt.source)!==JSON.stri
 const connectedBytes=await fs.readFile(connectedReceipt.reportPath);
 if(sha256(connectedBytes)!==connectedReceipt.reportSha256)throw new Error('Connected report changed after qualification.');
 const connected=JSON.parse(connectedBytes);
-if(connected.stats.expected!==48||connected.stats.unexpected||connected.stats.skipped)throw new Error('Connected qualification failed or skipped cases.');
+if(connected.stats.expected!==49||connected.stats.unexpected||connected.stats.skipped)throw new Error('Connected qualification failed or skipped cases.');
 
 if(!unit.success||unit.numFailedTests||browser.stats.unexpected||browser.stats.skipped)throw new Error('A required verification failed or was skipped.');
 const artifacts=baseline.artifacts.filter(a=>a.type==='structured-behaviour');const byId=new Map(artifacts.map(a=>[a.id,a]));const cache=new Map();

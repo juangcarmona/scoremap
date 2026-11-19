@@ -56,23 +56,23 @@ export function App(
 ) {
   const { store } = props;
   return (
-    <NotationProvider
-      {...(store instanceof PrivateLibraryStore
-        ? { store: store.notation, principal: store.identity.principal }
-        : {})}
-    >
-      <PresetProvider
-        store={store instanceof PrivateLibraryStore ? store : undefined}
+    <PersonalEditProvider>
+      <NotationProvider
+        {...(store instanceof PrivateLibraryStore
+          ? { store: store.notation, principal: store.identity.principal }
+          : {})}
       >
-        <DeviceProvider
+        <PresetProvider
           store={store instanceof PrivateLibraryStore ? store : undefined}
         >
-          <PersonalEditProvider>
+          <DeviceProvider
+            store={store instanceof PrivateLibraryStore ? store : undefined}
+          >
             <LibraryApp {...props} />
-          </PersonalEditProvider>
-        </DeviceProvider>
-      </PresetProvider>
-    </NotationProvider>
+          </DeviceProvider>
+        </PresetProvider>
+      </NotationProvider>
+    </PersonalEditProvider>
   );
 }
 function LibraryApp({
@@ -343,16 +343,34 @@ function LibraryApp({
             privateLibrary={!!identity}
             beforeUpdate={async () => {
               const releaseSession = session.beginUpdate();
+              let releasePersonal: () => void;
+              try {
+                releasePersonal = personalEdit.beginUpdate();
+              } catch (error) {
+                releaseSession();
+                throw error;
+              }
               if (appRef.current) appRef.current.inert = true;
               setUpdating(true);
               const release = () => {
                 releaseSession();
+                releasePersonal();
                 if (appRef.current) appRef.current.inert = false;
                 setUpdating(false);
               };
               try {
-                await session.whenIdle();
+                await Promise.all([
+                  session.whenIdle(),
+                  personalEdit.whenIdle(),
+                ]);
                 await previewOperation.current;
+                if (store instanceof PrivateLibraryStore) {
+                  await store.personal.whenProtected();
+                  if ((await store.personal.list()).length)
+                    throw new Error(
+                      "Resolve protected personal changes before updating.",
+                    );
+                }
                 if (previewDirtyRef.current)
                   throw new Error(
                     "Apply or export your played-note preview before updating.",

@@ -731,3 +731,56 @@ test("a failed performed-note save keeps a waiting update blocked and durable mu
     await owner.context.close();
   }
 });
+
+test("a waiting update preserves a notation change until its acknowledgement", async ({
+  browser,
+}) => {
+  const owner = await login(browser, "owner-a");
+  const page = owner.page;
+  const committed = deferred(),
+    release = deferred();
+  try {
+    await page.evaluate(() => navigator.serviceWorker.ready);
+    await page.waitForFunction(() =>
+      Boolean(navigator.serviceWorker.controller),
+    );
+    await page.evaluate(() =>
+      navigator.serviceWorker.register("/sw.js?synthetic-notation-wait=1", {
+        scope: "/",
+      }),
+    );
+    const update = page.getByRole("button", {
+      name: "Apply available update",
+      exact: true,
+    });
+    await expect(update).toBeVisible();
+    await page.route("**/api/preferences/notation", async (route) => {
+      if (route.request().method() !== "PUT") return route.continue();
+      const response = await route.fetch();
+      expect(response.status()).toBe(200);
+      committed.resolve();
+      await release.promise;
+      await route.fulfill({ response }).catch(() => undefined);
+    });
+    await page.getByLabel("Note names", { exact: true }).selectOption("latin");
+    await committed.promise;
+    await update.click();
+    await expect(page.locator(".app")).toHaveAttribute("inert", "");
+    expect(
+      await page.evaluate(async () =>
+        Boolean((await navigator.serviceWorker.getRegistration())?.waiting),
+      ),
+    ).toBe(true);
+    release.resolve();
+    await expect(update).toHaveCount(0);
+    await expect(page.getByLabel("Note names", { exact: true })).toHaveValue(
+      "latin",
+    );
+    expect(
+      (await (await api(page, "/api/preferences/notation")).json()).mode,
+    ).toBe("latin");
+  } finally {
+    release.resolve();
+    await owner.context.close();
+  }
+});

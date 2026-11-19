@@ -1,3 +1,4 @@
+import { PersonalEditProvider } from "../../src/features/library/PersonalEditBarrier";
 import { afterEach, expect, it, vi } from "vitest";
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -82,9 +83,11 @@ it("account settings ignore anonymous preference and a failed acknowledgement re
   const store: NotationStore = { read: async () => saved, save };
   render(
     <QueryClientProvider client={client}>
-      <NotationProvider principal="synthetic-A" store={store}>
-        <NotationControl />
-      </NotationProvider>
+      <PersonalEditProvider>
+        <NotationProvider principal="synthetic-A" store={store}>
+          <NotationControl />
+        </NotationProvider>
+      </PersonalEditProvider>
     </QueryClientProvider>,
   );
   await waitFor(() =>
@@ -126,9 +129,11 @@ it("switching principals discards the previous account's pending preference", as
   };
   const content = (principal: string, store: NotationStore) => (
     <QueryClientProvider client={client}>
-      <NotationProvider principal={principal} store={store}>
-        <NotationControl />
-      </NotationProvider>
+      <PersonalEditProvider>
+        <NotationProvider principal={principal} store={store}>
+          <NotationControl />
+        </NotationProvider>
+      </PersonalEditProvider>
     </QueryClientProvider>
   );
   const view = render(content("A", storeA));
