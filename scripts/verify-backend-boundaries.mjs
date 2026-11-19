@@ -1,8 +1,59 @@
-import {spawnSync} from 'node:child_process';
-import {mkdtemp,writeFile,rm} from 'node:fs/promises';
-import {tmpdir} from 'node:os';
-import {join,resolve} from 'node:path';
-const run=(args,options={})=>spawnSync('dotnet',args,{encoding:'utf8',...options});
+import { spawnSync } from "node:child_process";
+import { mkdtemp, readFile, writeFile, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { dirname, join, resolve } from "node:path";
+const run = (args, options = {}) =>
+  spawnSync("dotnet", args, { encoding: "utf8", ...options });
+
+async function verifyAnalyzerVisibility(solution) {
+  const root = dirname(solution);
+  const contents = await readFile(solution, "utf8");
+  const projects = [...contents.matchAll(/<Project\b[^>]*\bPath\s*=\s*(["'])([^"']+\.csproj)\1/g)];
+  if (!projects.length) throw new Error("No projects found in solution.");
+  for (const [, , project] of projects) {
+    const result = spawnSync(
+      "dotnet",
+      [
+        "msbuild",
+        resolve(root, project),
+        "-getProperty:AssemblyName",
+        "-getItem:CompilerVisibleProperty",
+      ],
+      { cwd: root, encoding: "utf8" },
+    );
+    if (result.error) throw result.error;
+    if (result.status !== 0)
+      throw new Error(
+        `Cannot evaluate project policy: ${project}\n${result.stderr}`,
+      );
+    const evaluated = JSON.parse(result.stdout);
+    const assembly = evaluated.Properties.AssemblyName;
+    if (
+      !assembly.includes(".Modules.") ||
+      assembly.endsWith(".Contracts") ||
+      assembly.endsWith("Tests")
+    )
+      continue;
+    if (
+      !evaluated.Items.CompilerVisibleProperty.some(
+        (item) => item.Identity === "LighthouseModule",
+      )
+    ) {
+      throw new Error(
+        `Module ${assembly} must expose LighthouseModule to the compiler.`,
+      );
+    }
+  }
+}
+
+if (process.argv[2] === "--visibility-only") {
+  await verifyAnalyzerVisibility(resolve(process.argv[3]));
+  process.exit(0);
+}
+await verifyAnalyzerVisibility(resolve("ScoreMap.slnx"));
+console.log(
+  "Every implementation module exposes LighthouseModule to the compiler.",
+);
 const temporary=await mkdtemp(join(tmpdir(),'scoremap-boundary-'));
 const xml=s=>s.replaceAll('&','&amp;').replaceAll('"','&quot;').replaceAll('<','&lt;');
 try{
