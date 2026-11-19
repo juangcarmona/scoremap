@@ -1,3 +1,4 @@
+import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 
@@ -9,6 +10,10 @@ test("note-name transfer validates first, confirms replacement, and preserves th
     .getByLabel("Note names", { exact: true })
     .selectOption("dual-latin");
   await page.getByText("Back up note names", { exact: true }).click();
+  expect(
+    (await new AxeBuilder({ page }).include(".library-footer").analyze())
+      .violations,
+  ).toEqual([]);
   const download = page.waitForEvent("download");
   await page
     .getByRole("button", { name: "Export note names", exact: true })
@@ -55,4 +60,23 @@ test("note-name transfer validates first, confirms replacement, and preserves th
   await expect(page.getByLabel("Note names", { exact: true })).toHaveValue(
     "dual-latin",
   );
+});
+
+test("note-name transfer remains accessible on a narrow screen", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Library", exact: true }).click();
+  await page.getByText("Back up note names", { exact: true }).click();
+  await expect(
+    page.getByRole("button", { name: "Export note names", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByLabel("Import note names", { exact: true }),
+  ).toBeVisible();
+  expect(
+    (await new AxeBuilder({ page }).include(".library-footer").analyze())
+      .violations,
+  ).toEqual([]);
 });
