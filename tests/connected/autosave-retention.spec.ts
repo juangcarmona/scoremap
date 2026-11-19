@@ -605,6 +605,7 @@ test("an import waits for a held performed-note acknowledgement and preserves bo
     ).toEqual(expected);
     release();
     await expect(dialog).toBeVisible();
+    page.once("dialog", (confirmation) => confirmation.accept());
     await dialog
       .getByRole("button", { name: "Import selection", exact: true })
       .click();
