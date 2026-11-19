@@ -1,21 +1,23 @@
 :root {
-  --lh-canvas: #121822;
-  --lh-surface: #1a2330;
-  --lh-surface-raised: #222e3d;
-  --lh-text: #f3f0e8;
-  --lh-text-muted: #b2bdca;
-  --lh-border: #405069;
-  --lh-action: #aac3ff;
-  --lh-focus: #ffdd8b;
+  --lh-canvas: #f4f5f3;
+  --lh-surface: #ffffff;
+  --lh-surface-raised: #e8eef1;
+  --lh-text: #182b35;
+  --lh-text-muted: #4f626c;
+  --lh-border: #a8b8be;
+  --lh-action: #205577;
+  --lh-focus: #9a4c00;
   --lh-key-white: #f3f0e8;
   --lh-key-black: #151d28;
   --lh-key-ink: #121822;
-  --lh-key-mark: #244f9c;
-  --lh-key-mark-text: #ffffff;
-  --lh-danger-text: #ffb5b5;
-  --lh-error-surface: #40252b;
+  --lh-key-mark: #edbd69;
+  --lh-key-black-mark: #1d708a;
+  --lh-key-mark-text: #151d28;
+  --lh-on-action: #ffffff;
+  --lh-danger-text: #9e2424;
+  --lh-error-surface: #fce9e7;
   --lh-control-radius: 3px;
-  color-scheme: dark;
+  color-scheme: light;
   font-size: 16px;
 }
 * {
@@ -98,7 +100,7 @@ p {
 .primary {
   background: var(--lh-action);
   border-color: var(--lh-action);
-  color: var(--lh-key-ink);
+  color: var(--lh-on-action);
   font-weight: 700;
 }
 .primary:hover {
@@ -167,14 +169,14 @@ p {
 }
 .performing .mode-button {
   background: var(--lh-action);
-  color: var(--lh-key-ink);
+  color: var(--lh-on-action);
 }
 .library-toggle {
   display: none;
 }
 .workspace {
   display: grid;
-  grid-template-columns: 270px minmax(0, 1fr);
+  grid-template-columns: 230px minmax(0, 1fr);
   min-height: calc(100vh - 92px);
 }
 .library {
@@ -372,7 +374,6 @@ p {
 .section {
   background: var(--lh-surface);
   border: 1px solid var(--lh-border);
-  border-left: 3px solid var(--lh-action);
   padding: 1rem;
 }
 .section header {
@@ -432,7 +433,7 @@ p {
   background: var(--lh-canvas);
 }
 .chord-sequence button[aria-pressed="true"] {
-  color: var(--lh-key-ink);
+  color: var(--lh-on-action);
   background: var(--lh-action);
   border-color: var(--lh-action);
 }
@@ -503,7 +504,7 @@ summary {
 .full-notes {
   white-space: pre-wrap;
   padding: 1rem;
-  border-left: 3px solid var(--lh-border);
+  border-left: 1px solid var(--lh-border);
   background: var(--lh-surface);
   overflow-wrap: anywhere;
 }
@@ -549,8 +550,13 @@ summary {
   stroke: var(--lh-key-white);
   stroke-width: 1px;
 }
-.highlighted {
+.white-key.highlighted {
   fill: var(--lh-key-mark);
+}
+.black-key.highlighted {
+  fill: var(--lh-key-black-mark);
+  stroke: var(--lh-key-white);
+  stroke-width: 8px;
 }
 .white-label {
   fill: var(--lh-key-ink);
@@ -601,26 +607,23 @@ summary {
   flex: 1 1 350px;
 }
 .welcome {
-  padding: 8vh 4vw;
-  max-width: 780px;
+  padding: clamp(2rem, 5vh, 4rem) 0;
+  max-width: 38rem;
 }
 .welcome h2 {
-  font-size: clamp(2.7rem, 5vw, 4.5rem);
-  line-height: 1.06;
-  letter-spacing: -0.06em;
-  margin-bottom: 1.5rem;
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.75rem;
 }
 .welcome > p {
-  max-width: 530px;
+  max-width: 34rem;
 }
-.welcome .primary {
-  margin: 1rem 0 2rem;
-}
-.welcome-symbol {
-  font-size: 3.5rem;
-  color: var(--lh-action);
-  display: block;
-  margin-bottom: 1.5rem;
+.welcome-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 1.5rem 0;
 }
 .empty-sketch {
   padding: 2rem 0;
@@ -654,7 +657,10 @@ summary {
   padding: 0.5rem;
 }
 .performing .section {
-  padding: 0.75rem;
+  padding: 1rem 0;
+  border: 0;
+  border-top: 1px solid var(--lh-border);
+  background: transparent;
 }
 .performing .section h3 {
   font-size: 1.25rem;
@@ -691,12 +697,12 @@ summary {
 .performing .chord-tile {
   position: relative;
   width: min(100%, 7.5rem);
-  border: 1px solid var(--lh-border);
-  background: var(--lh-canvas);
+  border: 1px solid transparent;
+  background: var(--lh-surface);
 }
 .performing .chord-tile:has(button[aria-pressed="true"]) {
-  color: var(--lh-key-ink);
-  background: var(--lh-action);
+  color: var(--lh-text);
+  background: var(--lh-surface-raised);
   border-color: var(--lh-action);
 }
 .chord-diagram-guide {
@@ -744,8 +750,35 @@ dialog h2 {
   gap: 0.75rem;
 }
 .startup {
+  width: min(100%, 42rem);
+  margin: clamp(2rem, 8vh, 6rem) auto;
   padding: 2rem;
-  max-width: 700px;
+}
+.startup h1 {
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+}
+.startup h2 {
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  line-height: 1.2;
+}
+.startup p {
+  max-width: 34rem;
+}
+.startup .mode-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0.55rem 1.25rem;
+  border: 1px solid var(--lh-action);
+  border-radius: var(--lh-control-radius);
+  background: var(--lh-action);
+  color: var(--lh-on-action);
+  text-decoration: none;
+}
+.startup .mode-button:hover {
+  background: var(--lh-text);
 }
 @media (max-width: 1250px) {
   .sketch-layout {
@@ -831,15 +864,6 @@ dialog h2 {
   }
   .section-actions {
     flex-wrap: wrap;
-  }
-  .welcome {
-    padding: 3rem 0.5rem;
-  }
-  .welcome h2 {
-    font-size: 2.6rem;
-  }
-  .welcome br {
-    display: none;
   }
   .add-section {
     flex-wrap: wrap;
@@ -963,9 +987,14 @@ dialog h2 {
   opacity: 1;
   cursor: default;
 }
-.performed-key[data-performed="true"] {
+.performed-key.played-white[data-performed="true"] {
   background: var(--lh-key-mark);
   color: var(--lh-key-mark-text);
+}
+.performed-key.played-black[data-performed="true"] {
+  background: var(--lh-key-black-mark);
+  color: var(--lh-key-white);
+  border: 2px solid var(--lh-key-white);
 }
 .performed-key:focus-visible {
   z-index: 3;
@@ -1106,9 +1135,8 @@ dialog h2 {
 }
 .keyboard-view {
   min-width: 0;
-  border: 1px solid var(--lh-border);
-  background: var(--lh-canvas);
-  padding: 0.75rem;
+  border-top: 1px solid var(--lh-border);
+  padding: 0.75rem 0;
 }
 .keyboard-view h3 {
   margin: 0;
@@ -1167,4 +1195,30 @@ dialog h2 {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   max-width: 100%;
+}
+
+@media (max-width: 620px) {
+  .app-header {
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .top-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  .notation-control {
+    flex: 1 1 7rem;
+  }
+  .notation-control > label,
+  .notation-control > .notation-saved {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
 }

@@ -1087,33 +1087,42 @@ function LibraryApp({
             </>
           ) : (
             <div className="welcome">
-              <span className="welcome-symbol" aria-hidden="true">
-                ♮
-              </span>
-              <p className="eyebrow">A CLEARER VIEW OF YOUR MUSIC</p>
               <h2>
-                Your next song,
-                <br />
-                mapped out.
+                {library.songs.length === 0
+                  ? "Your music starts here"
+                  : "No songs in this selection"}
               </h2>
               <p>
-                Shape the sections. Keep your chords and cues together.
-                <br />
-                Take a clear sketch to rehearsal and performance.
+                {library.songs.length === 0
+                  ? songEdit
+                    ? "Create a song or import an existing ScoreMap backup to get started."
+                    : "Switch to edit mode to create or import a song."
+                  : "Choose another repertoire or adjust your search to find a song."}
               </p>
-              {songEdit && (
-                <button
-                  type="button"
-                  className="primary"
-                  onClick={() => setModal("song")}
-                >
-                  Create your first song
-                </button>
+              {songEdit && library.songs.length === 0 && (
+                <div className="welcome-actions">
+                  <button
+                    type="button"
+                    className="primary"
+                    onClick={() => setModal("song")}
+                  >
+                    Create your first song
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      importCopy.current = false;
+                      fileInput.current?.click();
+                    }}
+                  >
+                    Import a backup
+                  </button>
+                </div>
               )}
               <p className="muted">
                 {identity
-                  ? "Import an existing ScoreMap backup or create a song. Changes are saved to your private server library."
-                  : "No account. Your own music. Ready offline after the first load."}
+                  ? "Changes are saved to your private library."
+                  : "Your music is saved on this device and available offline after the first load."}
               </p>
             </div>
           )}
