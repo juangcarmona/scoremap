@@ -211,6 +211,25 @@ describe("Identified form and independent exact performance", () => {
       { ...note, pitch: { spelling: "B", octave: 5, midi: 83 } },
     ]);
   });
+  it("moves E4 to E5 in Cmaj7 without changing the harmony or other performed notes", () => {
+    const { library, arrangementId } = performed();
+    const before = structuredClone(library);
+    const right = score(library).arrangements[0]!.parts[1]!;
+    const note = right.events.find((event) => event.id === "e4")!;
+    const next = applyCommand(library, "edit", {
+      type: "setNoteEvent",
+      songId: "song",
+      arrangementId,
+      partId: right.id,
+      event: { ...note, pitch: { spelling: "E", octave: 5, midi: 76 } },
+    });
+    const expected = structuredClone(before);
+    score(expected).arrangements[0]!.parts[1]!.events.find(
+      (event) => event.id === "e4",
+    )!.pitch = { spelling: "E", octave: 5, midi: 76 };
+    expect(next).toEqual(expected);
+    expect(library).toEqual(before);
+  });
   it("refuses incompatible performed tones unless a custom realization is explicitly confirmed", () => {
     const { library, arrangementId } = performed();
     const note = score(library).arrangements[0]!.parts[1]!.events[0]!;

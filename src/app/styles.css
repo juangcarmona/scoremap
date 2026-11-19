@@ -997,8 +997,10 @@ dialog h2 {
   border: 2px solid var(--lh-key-white);
 }
 .performed-key:focus-visible {
-  z-index: 3;
   outline-offset: -4px;
+}
+.performed-key.played-black:focus-visible {
+  z-index: 3;
 }
 .key-state {
   font-size: 1.125rem;

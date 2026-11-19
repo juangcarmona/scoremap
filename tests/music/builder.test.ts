@@ -71,6 +71,49 @@ describe("Atomic performed preview application and guarded undo", () => {
     expect(() => applyCommand(newer, "edit", undo)).toThrow(/changed after/);
     expect(library).toEqual(performed);
   });
+  it("refuses valid rich note, voicing and arrangement mutations during performance", () => {
+    const library = fixture();
+    const before = structuredClone(library);
+    const song = library.songs[0] as RichSong;
+    const arrangement = song.arrangements[0]!;
+    const part = arrangement.parts[1]!;
+    const note = part.events[0]!;
+    const voicing = arrangement.voicings[0]!;
+    const changed = structuredClone(part.events);
+    changed[0]!.pitch = { spelling: "E", octave: 5, midi: 76 };
+    const commands: Command[] = [
+      {
+        type: "setNoteEvent",
+        songId: song.id,
+        arrangementId: arrangement.id,
+        partId: part.id,
+        event: { ...note, pitch: changed[0]!.pitch },
+      },
+      {
+        type: "setVoicingPerformance",
+        songId: song.id,
+        arrangementId: arrangement.id,
+        partId: part.id,
+        voicingId: voicing.id,
+        voicing,
+        events: changed,
+        expected: { voicing, events: part.events },
+      },
+      {
+        type: "renameArrangement",
+        songId: song.id,
+        arrangementId: arrangement.id,
+        name: "Changed",
+      },
+    ];
+    for (const command of commands) {
+      expect(() => applyCommand(library, "edit", command)).not.toThrow();
+      expect(() => applyCommand(library, "performance", command)).toThrow(
+        /Performance/,
+      );
+      expect(library).toEqual(before);
+    }
+  });
   it("uses absolute bounds with consistent enharmonic octave spelling rather than an invented written-octave bound", () => {
     expect(performedPitchAt(0, "B#")).toEqual({
       spelling: "B#",

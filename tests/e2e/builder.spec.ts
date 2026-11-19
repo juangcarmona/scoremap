@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Locator } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import source from "../fixtures/library-v2.json" with { type: "json" };
 import { readLibrary, saved } from "./helpers";
@@ -118,6 +118,155 @@ test("actual exact-pitch builder cancels, commits and undoes one octave while vi
   });
 });
 
+test("Cmaj7 preserves the other played notes when E4 moves to E5", async ({
+  page,
+}) => {
+  await page.goto("/");
+  page.once("dialog", (dialog) => dialog.accept());
+  await page.getByLabel("Import backup file", { exact: true }).setInputFiles({
+    name: "synthetic-rich.json",
+    mimeType: "application/json",
+    buffer: Buffer.from(
+      JSON.stringify({
+        format: "scoremap-backup",
+        version: 2,
+        library: source,
+      }),
+    ),
+  });
+  await saved(page);
+  const before = await readLibrary(page);
+  const initialSong = before.songs[0] as RichSong;
+  expect(initialSong.sections[0]!.chords[0]).toMatchObject({
+    root: "C",
+    quality: "major-seventh",
+  });
+  expect(
+    initialSong.arrangements[0]!.parts.flatMap((part) =>
+      part.events.map((event) => event.pitch.midi),
+    ),
+  ).toEqual([36, 43, 64, 71]);
+  await page
+    .getByLabel("Active performed part", { exact: true })
+    .selectOption("right");
+  const builder = page.getByRole("region", {
+    name: "Played-note builder for Right",
+    exact: true,
+  });
+  const raise = builder.getByRole("button", {
+    name: "Raise E4 one octave",
+    exact: true,
+  });
+  await page.keyboard.press("Tab");
+  await raise.focus();
+  await expect(raise).toBeFocused();
+  await page.keyboard.press("Enter");
+  const announcement = builder.locator('.played-note-list[aria-live="polite"]');
+  await expect(announcement).toContainText("E5");
+  expect(await readLibrary(page)).toEqual(before);
+  const apply = builder.getByRole("button", {
+    name: "Apply played notes",
+    exact: true,
+  });
+  await apply.focus();
+  await expect(apply).toBeFocused();
+  await page.keyboard.press("Enter");
+  await saved(page);
+  const expected = structuredClone(before);
+  const song = expected.songs[0] as RichSong;
+  const event = song.arrangements[0]!.parts[1]!.events.find(
+    (entry) => entry.pitch.midi === 64,
+  )!;
+  event.pitch = { spelling: "E", octave: 5, midi: 76 };
+  expected.revision++;
+  expect(await readLibrary(page)).toEqual(expected);
+  await page.reload();
+  expect(await readLibrary(page)).toEqual(expected);
+});
+
+test("touching the overlap selects the black key and the exposed area selects its white neighbour", async ({
+  page,
+}) => {
+  await page.goto("/");
+  page.once("dialog", (dialog) => dialog.accept());
+  await page.getByLabel("Import backup file", { exact: true }).setInputFiles({
+    name: "synthetic-rich.json",
+    mimeType: "application/json",
+    buffer: Buffer.from(
+      JSON.stringify({
+        format: "scoremap-backup",
+        version: 2,
+        library: source,
+      }),
+    ),
+  });
+  await saved(page);
+  await page
+    .getByLabel("Active performed part", { exact: true })
+    .selectOption("right");
+  await page
+    .getByLabel("Active performed voicing", { exact: true })
+    .selectOption("new");
+  const builder = page.getByRole("region", {
+    name: "Played-note builder for Right",
+    exact: true,
+  });
+  const white = builder.locator('.performed-key[data-midi="48"]');
+  const black = builder.locator('.performed-key[data-midi="49"]');
+  async function touchOverlap(whiteKey: Locator, upper: boolean) {
+    await whiteKey.scrollIntoViewIfNeeded();
+    const whiteBox = (await whiteKey.boundingBox())!;
+    const blackBox = (await black.boundingBox())!;
+    const left = Math.max(whiteBox.x, blackBox.x);
+    const right = Math.min(
+      whiteBox.x + whiteBox.width,
+      blackBox.x + blackBox.width,
+    );
+    expect(right - left).toBeGreaterThan(4);
+    await page.touchscreen.tap(
+      (left + right) / 2,
+      upper
+        ? blackBox.y + blackBox.height / 2
+        : whiteBox.y + whiteBox.height - 10,
+    );
+  }
+  await touchOverlap(white, true);
+  await expect(black).toHaveAttribute("aria-pressed", "true");
+  await expect(white).toHaveAttribute("aria-pressed", "false");
+  await touchOverlap(white, false);
+  await expect(black).toHaveAttribute("aria-pressed", "true");
+  await expect(white).toHaveAttribute("aria-pressed", "true");
+  await touchOverlap(white, true);
+  await expect(black).toHaveAttribute("aria-pressed", "false");
+  await expect(white).toHaveAttribute("aria-pressed", "true");
+  const otherWhite = builder.locator('.performed-key[data-midi="50"]');
+  await touchOverlap(otherWhite, true);
+  await expect(black).toHaveAttribute("aria-pressed", "true");
+  await expect(otherWhite).toHaveAttribute("aria-pressed", "false");
+  await touchOverlap(otherWhite, false);
+  await expect(black).toHaveAttribute("aria-pressed", "true");
+  await expect(otherWhite).toHaveAttribute("aria-pressed", "true");
+  await page.keyboard.press("Tab");
+  await white.focus();
+  await expect(white).toBeFocused();
+  expect(
+    await white.evaluate((key) => ({
+      visible: key.matches(":focus-visible"),
+      style: getComputedStyle(key).outlineStyle,
+      width: getComputedStyle(key).outlineWidth,
+    })),
+  ).toEqual({ visible: true, style: "solid", width: "3px" });
+  await touchOverlap(white, true);
+  await expect(black).toHaveAttribute("aria-pressed", "false");
+  await expect(white).toHaveAttribute("aria-pressed", "true");
+  await page.keyboard.press("Tab");
+  await otherWhite.focus();
+  await expect(otherWhite).toBeFocused();
+  await touchOverlap(otherWhite, true);
+  await expect(black).toHaveAttribute("aria-pressed", "true");
+  await expect(otherWhite).toHaveAttribute("aria-pressed", "true");
+});
+
 test("reusable presets copy acknowledged versions; later preset pitch changes and deletion leave the actual song copies unchanged", async ({
   page,
 }) => {
@@ -222,6 +371,121 @@ test("reusable presets copy acknowledged versions; later preset pitch changes an
   expect(await readLibrary(page)).toEqual(withCopy);
   await page.reload();
   expect(await readLibrary(page)).toEqual(withCopy);
+});
+
+test("a saved voicing used in two harmonic events remains independent when one copy changes", async ({
+  page,
+}) => {
+  const fixture = structuredClone(source);
+  const section = fixture.songs[0]!.sections[0]!;
+  section.chords[1]!.root = "C";
+  section.chords[1]!.quality = "major-seventh";
+  await page.goto("/");
+  page.once("dialog", (dialog) => dialog.accept());
+  await page.getByLabel("Import backup file", { exact: true }).setInputFiles({
+    name: "synthetic-two-events.json",
+    mimeType: "application/json",
+    buffer: Buffer.from(
+      JSON.stringify({
+        format: "scoremap-backup",
+        version: 2,
+        library: fixture,
+      }),
+    ),
+  });
+  await saved(page);
+  await page
+    .getByLabel("Active performed part", { exact: true })
+    .selectOption("right");
+  const region = () =>
+    page.getByRole("region", {
+      name: "Played-note builder for Right",
+      exact: true,
+    });
+  await region()
+    .getByText("Reusable voicings on this device", { exact: true })
+    .click();
+  await region()
+    .getByLabel("Reusable voicing name", { exact: true })
+    .fill("Shared source");
+  await region()
+    .getByRole("button", {
+      name: "Save preview as reusable voicing",
+      exact: true,
+    })
+    .click();
+  await expect(
+    region().getByText("Reusable voicing saved. Song copies are unchanged.", {
+      exact: true,
+    }),
+  ).toBeVisible();
+  await region()
+    .getByRole("button", { name: "Use copy of Shared source", exact: true })
+    .click();
+  await region()
+    .getByRole("button", { name: "Apply played notes", exact: true })
+    .click();
+  await saved(page);
+  const eventSelector = page.getByLabel("Active performed harmonic event", {
+    exact: true,
+  });
+  await eventSelector.selectOption(section.chords[1]!.id);
+  await region()
+    .getByText("Reusable voicings on this device", { exact: true })
+    .click();
+  await region()
+    .getByRole("button", { name: "Use copy of Shared source", exact: true })
+    .click();
+  await region()
+    .getByRole("button", { name: "Apply played notes", exact: true })
+    .click();
+  await saved(page);
+  const before = await readLibrary(page);
+  const song = before.songs[0] as RichSong;
+  const arrangement = song.arrangements[0]!;
+  const copies = arrangement.voicings.filter(
+    (voicing) => voicing.sourcePreset?.name === "Shared source",
+  );
+  expect(copies).toHaveLength(2);
+  const first = copies.find(
+    (voicing) => voicing.harmonyId === section.chords[0]!.id,
+  )!;
+  const second = copies.find(
+    (voicing) => voicing.harmonyId === section.chords[1]!.id,
+  )!;
+  expect(first.id).not.toBe(second.id);
+  const part = arrangement.parts.find((value) => value.id === "right")!;
+  const secondEvents = part.events.filter(
+    (event) => event.voicingId === second.id,
+  );
+  expect(secondEvents.map((event) => event.pitch.midi)).toEqual([64, 71]);
+  await eventSelector.selectOption(section.chords[0]!.id);
+  await page
+    .getByLabel("Active performed voicing", { exact: true })
+    .selectOption(first.id);
+  await region()
+    .getByRole("button", { name: "Raise E4 one octave", exact: true })
+    .click();
+  await region()
+    .getByRole("button", { name: "Apply played notes", exact: true })
+    .click();
+  await saved(page);
+  const after = await readLibrary(page);
+  const updated = (after.songs[0] as RichSong).arrangements[0]!;
+  const updatedPart = updated.parts.find((value) => value.id === "right")!;
+  expect(
+    updatedPart.events.filter((event) => event.voicingId === second.id),
+  ).toEqual(secondEvents);
+  expect(updated.voicings.find((value) => value.id === second.id)).toEqual(
+    second,
+  );
+  expect(
+    updatedPart.events
+      .filter((event) => event.voicingId === first.id)
+      .map((event) => event.pitch.midi),
+  ).toEqual([76, 71]);
+  await page.reload();
+  expect(await readLibrary(page)).toEqual(after);
 });
 
 test("touch keys distinguish octaves and manual identification stays unknown or ambiguous until an explicit harmonic choice", async ({
