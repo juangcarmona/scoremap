@@ -21,6 +21,30 @@ const cases: [HarmonyIdentity, string[], number[]][] = [
   ],
   [{ root: "F#", quality: "major" }, ["F#", "A#", "C#"], [6, 10, 1]],
   [{ root: "Gb", quality: "major" }, ["Gb", "Bb", "Db"], [6, 10, 1]],
+  [{ root: "G", quality: "minor" }, ["G", "Bb", "D"], [7, 10, 2]],
+  [
+    { root: "D", quality: "dominant-seventh" },
+    ["D", "F#", "A", "C"],
+    [2, 6, 9, 0],
+  ],
+  [
+    { root: "Bb", quality: "dominant-ninth" },
+    ["Bb", "D", "F", "Ab", "C"],
+    [10, 2, 5, 8, 0],
+  ],
+  [
+    { root: "G", quality: "dominant-eleventh" },
+    ["G", "B", "D", "F", "A", "C"],
+    [7, 11, 2, 5, 9, 0],
+  ],
+  [{ root: "D", quality: "suspended-second" }, ["D", "E", "A"], [2, 4, 9]],
+  [{ root: "A", quality: "suspended-fourth" }, ["A", "D", "E"], [9, 2, 4]],
+  [{ root: "F#", quality: "diminished" }, ["F#", "A", "C"], [6, 9, 0]],
+  [
+    { root: "B", quality: "half-diminished-seventh" },
+    ["B", "D", "F", "A"],
+    [11, 2, 5, 9],
+  ],
   [
     { root: "C", quality: "diminished-seventh" },
     ["C", "Eb", "Gb", "Bbb"],
