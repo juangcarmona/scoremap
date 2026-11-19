@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { PersonalEditBarrier } from "../../src/features/library/PersonalEditBarrier";
+import { PersonalEditBarrier } from "../../src/shared/personalEdit/PersonalEditBarrier";
 
 it("waits for an admitted personal write and refuses work from the previous edit session", async () => {
   const barrier = new PersonalEditBarrier();
@@ -50,4 +50,34 @@ it("unblocks a mode change after an ambiguous write failure without hiding that 
   fail(new Error("Unconfirmed response"));
   await failure;
   await idle;
+});
+
+it("blocks delayed personal imports and waits for admitted writes while an update is pending", async () => {
+  const barrier = new PersonalEditBarrier();
+  barrier.setEditing(true);
+  const importing = barrier.begin();
+  const admitted = barrier.begin();
+  let finish!: () => void;
+  const save = barrier.run(
+    admitted,
+    () =>
+      new Promise<void>((resolve) => {
+        finish = resolve;
+      }),
+  );
+  const release = barrier.beginUpdate();
+  expect(importing).toThrow(/Switch to Edit/);
+  expect(() => barrier.runNotation(async () => undefined)).toThrow(/update/);
+  let idle = false;
+  const wait = barrier.whenIdle().then(() => {
+    idle = true;
+  });
+  await Promise.resolve();
+  expect(idle).toBe(false);
+  finish();
+  await save;
+  await wait;
+  release();
+  await barrier.run(barrier.begin(), async () => undefined);
+  await barrier.runNotation(async () => undefined);
 });

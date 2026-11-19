@@ -34,6 +34,7 @@ export function VoicingBuilder({
   report,
   onDirty,
   onApplied,
+  onPreviewApply,
   seedPreset,
   onPickPreset,
 }: {
@@ -46,6 +47,7 @@ export function VoicingBuilder({
   execute: (command: Command) => Promise<void>;
   report: (error: unknown) => void;
   onDirty: (dirty: boolean) => void;
+  onPreviewApply: () => () => void;
   onApplied: (before: Arrangement, after: Arrangement) => void;
   seedPreset: SavedPreset | null;
   onPickPreset: (preset: SavedPreset) => void;
@@ -140,6 +142,7 @@ export function VoicingBuilder({
   }
   async function apply() {
     if (!editable || saving) return;
+    let finish: (() => void) | undefined;
     try {
       const theory = theoreticalHarmony(harmonyIdentity(harmonic));
       const allowed = new Set(theory.tones.map((tone) => tone.pitchClass));
@@ -204,6 +207,7 @@ export function VoicingBuilder({
         (entry) => entry.id === arrangement.id,
       )!;
       setSaving(true);
+      finish = onPreviewApply();
       await execute(command);
       setExpected({
         voicing: structuredClone(nextVoicing),
@@ -216,6 +220,7 @@ export function VoicingBuilder({
     } catch (error) {
       report(error);
     } finally {
+      finish?.();
       setSaving(false);
     }
   }

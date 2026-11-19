@@ -26,6 +26,21 @@ function fixture() {
   };
 }
 describe("Serialized application commands", () => {
+  it("blocks new mutations while an update activates and unlocks after cancellation", async () => {
+    const { session, durable } = fixture();
+    await session.load();
+    const release = session.beginUpdate();
+    await expect(
+      session.execute({ type: "createSong", id: "a", title: "A" }),
+    ).rejects.toThrow(/update/);
+    expect(() => session.replace(emptyLibrary(), true)).toThrow(/update/);
+    expect(() => session.reconcile(async () => undefined)).toThrow(/update/);
+    expect(() => session.retrySave()).toThrow(/update/);
+    expect(durable().songs).toEqual([]);
+    release();
+    await session.execute({ type: "createSong", id: "a", title: "A" });
+    expect(durable().songs).toHaveLength(1);
+  });
   it("SB-PERSIST-RECOVER: rapid commands serialize against the latest candidate", async () => {
     const { session, durable } = fixture();
     await session.load();

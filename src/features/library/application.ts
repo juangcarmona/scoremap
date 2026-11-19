@@ -29,6 +29,18 @@ export class LibrarySession {
   } | null = null;
   private generation = 0;
   private barriers = 0;
+  private updating = false;
+  beginUpdate() {
+    if (this.updating) throw new Error("An update is already being applied.");
+    this.updating = true;
+    return () => {
+      this.updating = false;
+    };
+  }
+  private requireNotUpdating() {
+    if (this.updating)
+      throw new Error("Wait for the application update before editing.");
+  }
   get reconciling() {
     return this.barriers > 0;
   }
@@ -75,6 +87,7 @@ export class LibrarySession {
     return { candidate, prepared, generation: this.generation };
   }
   async execute(command: Command) {
+    this.requireNotUpdating();
     // Restore/import are deliberate state barriers. A command behind one must
     // apply to its acknowledged result rather than a pre-restoration snapshot.
     if (this.barriers)
@@ -100,6 +113,7 @@ export class LibrarySession {
     return waiting.done;
   }
   replace(value: unknown, confirmed: boolean, source?: ImportProvenance) {
+    this.requireNotUpdating();
     this.barriers += 1;
     return this.schedule(async () => {
       try {
@@ -152,6 +166,7 @@ export class LibrarySession {
     }
   }
   retrySave() {
+    this.requireNotUpdating();
     return this.schedule(async () => {
       requireEdit(this.mode);
       if (!this.data) throw new Error("Your library has not loaded.");
@@ -160,6 +175,7 @@ export class LibrarySession {
     });
   }
   reconcile(work: () => Promise<unknown>) {
+    this.requireNotUpdating();
     this.barriers += 1;
     return this.schedule(async () => {
       try {

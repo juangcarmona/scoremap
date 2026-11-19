@@ -1,4 +1,4 @@
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect, type Browser, type Page } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import {
   api,
@@ -436,4 +436,351 @@ test("an unconfirmed JSON import remains visible for immediate original-command 
     source: null,
   });
   await owner.context.close();
+});
+
+test("a performed-note save held after the real commit survives song and mode changes", async ({
+  browser,
+}) => {
+  const owner = await login(browser, "owner-a");
+  const song = await prepare(owner.page);
+  const other = syntheticSong();
+  await saveView(owner.page, (library) => {
+    library.songs.push(other);
+  });
+  await owner.page.reload();
+  await openSong(owner.page, song.title);
+  await owner.page
+    .getByLabel("Active performed part", { exact: true })
+    .selectOption(song.arrangements[0]!.parts[1]!.id);
+  const builder = owner.page.getByRole("region", {
+    name: "Played-note builder for Right",
+    exact: true,
+  });
+  const before = await (await api(owner.page, "/api/library")).json();
+  const committed = deferred(),
+    release = deferred();
+  await owner.page.route("**/api/library", async (route) => {
+    if (route.request().method() !== "PUT") return route.continue();
+    const response = await route.fetch();
+    expect(response.status()).toBe(200);
+    committed.resolve();
+    await release.promise;
+    await route.fulfill({ response }).catch(() => undefined);
+  });
+  try {
+    await builder
+      .getByRole("button", { name: "Raise B4 one octave", exact: true })
+      .click();
+    await builder
+      .getByRole("button", { name: "Apply played notes", exact: true })
+      .click();
+    await committed.promise;
+    const actual = await (await api(owner.page, "/api/library")).json();
+    const expected = structuredClone(song);
+    expected.arrangements[0]!.parts[1]!.events[1]!.pitch = {
+      spelling: "B",
+      octave: 5,
+      midi: 83,
+    };
+    expect(
+      actual.library.songs.find((entry: RichSong) => entry.id === song.id),
+    ).toEqual(expected);
+    expect(actual.versions[song.id]).toBe(before.versions[song.id] + 1);
+    owner.page.once("dialog", (dialog) => dialog.accept());
+    await openSong(owner.page, other.title);
+    await expect(
+      owner.page.getByRole("heading", { name: other.title, exact: true }),
+    ).toBeVisible();
+    await owner.page
+      .getByRole("button", { name: "Enter performance", exact: true })
+      .click();
+    release.resolve();
+    await expect(
+      owner.page.getByRole("button", { name: "Switch to edit", exact: true }),
+    ).toBeVisible();
+    await openSong(owner.page, song.title);
+    await expect(
+      owner.page.getByRole("heading", { name: song.title, exact: true }),
+    ).toBeVisible();
+    const final = await (await api(owner.page, "/api/library")).json();
+    expect(
+      final.library.songs.find((entry: RichSong) => entry.id === song.id),
+    ).toEqual(expected);
+    expect(
+      final.library.songs.find((entry: RichSong) => entry.id === other.id),
+    ).toEqual(
+      actual.library.songs.find((entry: RichSong) => entry.id === other.id),
+    );
+    expect(final.versions[song.id]).toBe(actual.versions[song.id]);
+    const history = await (
+      await api(owner.page, `/api/songs/${song.id}/history`)
+    ).json();
+    expect(history[0].content).toEqual(expected);
+    expect(history).toHaveLength(2);
+  } finally {
+    release.resolve();
+    await owner.context.close();
+  }
+});
+
+async function withHeldPiano(
+  browser: Browser,
+  run: (
+    page: Page,
+    release: () => void,
+    song: RichSong,
+    expected: RichSong,
+  ) => Promise<void>,
+) {
+  const owner = await login(browser, "owner-a");
+  const song = await prepare(owner.page);
+  await owner.page
+    .getByLabel("Active performed part", { exact: true })
+    .selectOption(song.arrangements[0]!.parts[1]!.id);
+  const builder = owner.page.getByRole("region", {
+    name: "Played-note builder for Right",
+    exact: true,
+  });
+  const committed = deferred(),
+    release = deferred();
+  const expected = structuredClone(song);
+  expected.arrangements[0]!.parts[1]!.events[1]!.pitch = {
+    spelling: "B",
+    octave: 5,
+    midi: 83,
+  };
+  await owner.page.route("**/api/library", async (route) => {
+    if (route.request().method() !== "PUT") return route.continue();
+    const response = await route.fetch();
+    expect(response.status()).toBe(200);
+    committed.resolve();
+    await release.promise;
+    await route.fulfill({ response }).catch(() => undefined);
+  });
+  try {
+    await builder
+      .getByRole("button", { name: "Raise B4 one octave", exact: true })
+      .click();
+    await builder
+      .getByRole("button", { name: "Apply played notes", exact: true })
+      .click();
+    await committed.promise;
+    await run(owner.page, release.resolve, song, expected);
+  } finally {
+    release.resolve();
+    await owner.context.close();
+  }
+}
+
+test("an import waits for a held performed-note acknowledgement and preserves both songs", async ({
+  browser,
+}) => {
+  await withHeldPiano(browser, async (page, release, song, expected) => {
+    const imported = syntheticSong();
+    await page.getByLabel("Import backup file", { exact: true }).setInputFiles({
+      name: "synthetic-held-import.json",
+      mimeType: "application/json",
+      buffer: Buffer.from(
+        JSON.stringify({
+          format: "scoremap-backup",
+          version: 1,
+          library: {
+            schemaVersion: 1,
+            revision: 0,
+            songs: [imported],
+            repertoires: [],
+          },
+        }),
+      ),
+    });
+    const dialog = page.getByRole("dialog", {
+      name: "Import selected songs",
+      exact: true,
+    });
+    await expect(dialog).toHaveCount(0);
+    expect(
+      (await (await api(page, "/api/library")).json()).library.songs.find(
+        (entry: RichSong) => entry.id === song.id,
+      ),
+    ).toEqual(expected);
+    release();
+    await expect(dialog).toBeVisible();
+    page.once("dialog", (confirmation) => confirmation.accept());
+    await dialog
+      .getByRole("button", { name: "Import selection", exact: true })
+      .click();
+    await expect(dialog).toHaveCount(0);
+    const after = await (await api(page, "/api/library")).json();
+    expect(
+      after.library.songs.find((entry: RichSong) => entry.id === song.id),
+    ).toEqual(expected);
+    expect(
+      after.library.songs.find((entry: RichSong) => entry.id === imported.id)
+        ?.title,
+    ).toBe(imported.title);
+    expect(
+      await (await api(page, `/api/songs/${song.id}/history`)).json(),
+    ).toHaveLength(2);
+  });
+});
+
+test("a real waiting service worker defers activation until the performed-note acknowledgement", async ({
+  browser,
+}) => {
+  await withHeldPiano(browser, async (page, release, song, expected) => {
+    await page.evaluate(() => navigator.serviceWorker.ready);
+    await page.waitForFunction(() =>
+      Boolean(navigator.serviceWorker.controller),
+    );
+    await page.evaluate(() =>
+      navigator.serviceWorker.register("/sw.js?synthetic-waiting-worker=1", {
+        scope: "/",
+      }),
+    );
+    const update = page.getByRole("button", {
+      name: "Apply available update",
+      exact: true,
+    });
+    await expect(update).toBeVisible();
+    await update.click();
+    await expect(page.locator(".app")).toHaveAttribute("inert", "");
+    await expect(
+      page.getByRole("status").filter({ hasText: "Applying update" }),
+    ).toBeVisible();
+    await expect
+      .poll(() =>
+        page.evaluate(async () =>
+          Boolean((await navigator.serviceWorker.getRegistration())?.waiting),
+        ),
+      )
+      .toBe(true);
+    expect(
+      (await (await api(page, "/api/library")).json()).library.songs.find(
+        (entry: RichSong) => entry.id === song.id,
+      ),
+    ).toEqual(expected);
+    release();
+    await expect(update).toHaveCount(0);
+    await expect(page.getByText("owner-a · Private library")).toBeVisible();
+    const after = await (await api(page, "/api/library")).json();
+    expect(
+      after.library.songs.find((entry: RichSong) => entry.id === song.id),
+    ).toEqual(expected);
+    expect(
+      await (await api(page, `/api/songs/${song.id}/history`)).json(),
+    ).toHaveLength(2);
+  });
+});
+
+test("a failed performed-note save keeps a waiting update blocked and durable music intact", async ({
+  browser,
+}) => {
+  const owner = await login(browser, "owner-a");
+  try {
+    const page = owner.page;
+    const song = await prepare(page);
+    await page
+      .getByLabel("Active performed part", { exact: true })
+      .selectOption(song.arrangements[0]!.parts[1]!.id);
+    await page.evaluate(() => navigator.serviceWorker.ready);
+    await page.waitForFunction(() =>
+      Boolean(navigator.serviceWorker.controller),
+    );
+    await page.evaluate(() =>
+      navigator.serviceWorker.register("/sw.js?synthetic-failed-save=1", {
+        scope: "/",
+      }),
+    );
+    const update = page.getByRole("button", {
+      name: "Apply available update",
+      exact: true,
+    });
+    await expect(update).toBeVisible();
+    await page.route("**/api/library", (route) =>
+      route.request().method() === "PUT"
+        ? route.abort("failed")
+        : route.continue(),
+    );
+    const builder = page.getByRole("region", {
+      name: "Played-note builder for Right",
+      exact: true,
+    });
+    await builder
+      .getByRole("button", { name: "Raise B4 one octave", exact: true })
+      .click();
+    await builder
+      .getByRole("button", { name: "Apply played notes", exact: true })
+      .click();
+    await expect(
+      page.getByRole("button", { name: "Retry save", exact: true }),
+    ).toBeVisible();
+    await update.click();
+    await expect(
+      page.getByRole("button", { name: "Retry save", exact: true }),
+    ).toBeVisible();
+    expect(
+      await page.evaluate(async () =>
+        Boolean((await navigator.serviceWorker.getRegistration())?.waiting),
+      ),
+    ).toBe(true);
+    const actual = await (await api(page, "/api/library")).json();
+    expect(
+      actual.library.songs.find((entry: RichSong) => entry.id === song.id),
+    ).toEqual(song);
+  } finally {
+    await owner.context.close();
+  }
+});
+
+test("a waiting update preserves a notation change until its acknowledgement", async ({
+  browser,
+}) => {
+  const owner = await login(browser, "owner-a");
+  const page = owner.page;
+  const committed = deferred(),
+    release = deferred();
+  try {
+    await page.evaluate(() => navigator.serviceWorker.ready);
+    await page.waitForFunction(() =>
+      Boolean(navigator.serviceWorker.controller),
+    );
+    await page.evaluate(() =>
+      navigator.serviceWorker.register("/sw.js?synthetic-notation-wait=1", {
+        scope: "/",
+      }),
+    );
+    const update = page.getByRole("button", {
+      name: "Apply available update",
+      exact: true,
+    });
+    await expect(update).toBeVisible();
+    await page.route("**/api/preferences/notation", async (route) => {
+      if (route.request().method() !== "PUT") return route.continue();
+      const response = await route.fetch();
+      expect(response.status()).toBe(200);
+      committed.resolve();
+      await release.promise;
+      await route.fulfill({ response }).catch(() => undefined);
+    });
+    await page.getByLabel("Note names", { exact: true }).selectOption("latin");
+    await committed.promise;
+    await update.click();
+    await expect(page.locator(".app")).toHaveAttribute("inert", "");
+    expect(
+      await page.evaluate(async () =>
+        Boolean((await navigator.serviceWorker.getRegistration())?.waiting),
+      ),
+    ).toBe(true);
+    release.resolve();
+    await expect(update).toHaveCount(0);
+    await expect(page.getByLabel("Note names", { exact: true })).toHaveValue(
+      "latin",
+    );
+    expect(
+      (await (await api(page, "/api/preferences/notation")).json()).mode,
+    ).toBe("latin");
+  } finally {
+    release.resolve();
+    await owner.context.close();
+  }
 });

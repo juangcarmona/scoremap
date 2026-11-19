@@ -345,7 +345,10 @@
       "scripts/build-container.mjs",
       "openspec/changes/issue-26-durable-recovery/",
       "docs/evidence/music/",
-      "scripts/qualify-session-vault.py"
+      "scripts/qualify-session-vault.py",
+      "scripts/verify-connected.mjs",
+      "scripts/record-verification.mjs",
+      "scripts/qualify-production.py"
     ],
     "checks": [
       [
@@ -378,7 +381,10 @@
         "scripts/verify-backend-boundaries.mjs",
         "scripts/verify-security.mjs",
         "scripts/verify-frontend-boundaries.mjs",
-        "scripts/qualify-session-vault.py"
+        "scripts/qualify-session-vault.py",
+        "scripts/verify-connected.mjs",
+        "scripts/record-verification.mjs",
+        "scripts/qualify-production.py"
       ],
       "corrections": {}
     }

@@ -3,6 +3,7 @@ import { createContext, useContext, useState, type ReactNode } from "react";
 export class PersonalEditBarrier {
   private epoch = 0;
   private editing = false;
+  private updating = false;
   private pending = new Set<Promise<unknown>>();
 
   setEditing(editing: boolean) {
@@ -12,10 +13,33 @@ export class PersonalEditBarrier {
     }
   }
 
+  beginUpdate() {
+    if (this.updating) throw new Error("An update is already being applied.");
+    this.updating = true;
+    this.epoch++;
+    return () => {
+      this.updating = false;
+    };
+  }
+
+  runNotation<T>(work: () => Promise<T>): Promise<T> {
+    if (this.updating)
+      throw new Error(
+        "Wait for the application update before changing note names.",
+      );
+    const pending = work();
+    this.pending.add(pending);
+    void pending.then(
+      () => this.pending.delete(pending),
+      () => this.pending.delete(pending),
+    );
+    return pending;
+  }
+
   begin() {
     const epoch = this.epoch;
     return () => {
-      if (!this.editing || this.epoch !== epoch)
+      if (this.updating || !this.editing || this.epoch !== epoch)
         throw new Error(
           "Switch to Edit and restart this operation. Existing data and the source file are kept.",
         );
