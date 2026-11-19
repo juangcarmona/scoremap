@@ -13,8 +13,12 @@ import { PitchRange, readRange } from "./PitchRange";
 import { downloadText, MAX_IMPORT_BYTES } from "./backup";
 import { sameData } from "./validation";
 import type { Device } from "./score";
+import { useEditAdmission } from "./useEditAdmission";
+import { usePersonalEditBarrier } from "./PersonalEditBarrier";
 export function DeviceConfigurations({ editable }: { editable: boolean }) {
   const { preference } = useNotation();
+  const beginEdit = useEditAdmission(editable);
+  const barrier = usePersonalEditBarrier();
   function rangeText(range: [number, number]) {
     return range
       .map((midi) => {
@@ -97,13 +101,15 @@ export function DeviceConfigurations({ editable }: { editable: boolean }) {
                 instrument: String(values.get("instrument")),
                 range: readRange(values),
               };
-              await store.mutate({
-                operation: "save",
-                id: configuration.id,
-                expectedRevision: 0,
-                mode: "edit",
-                content: configuration,
-              });
+              await barrier.run(barrier.begin(), () =>
+                store.mutate({
+                  operation: "save",
+                  id: configuration.id,
+                  expectedRevision: 0,
+                  mode: "edit",
+                  content: configuration,
+                }),
+              );
               draft.current = crypto.randomUUID();
               form.reset();
             }, "Reusable keyboard configuration saved. Song copies are unchanged.");
@@ -171,18 +177,20 @@ export function DeviceConfigurations({ editable }: { editable: boolean }) {
                       event.preventDefault();
                       const values = new FormData(event.currentTarget);
                       void act(async () => {
-                        await store.mutate({
-                          operation: "save",
-                          id: saved.id,
-                          expectedRevision: saved.revision,
-                          mode: "edit",
-                          content: {
-                            ...configuration,
-                            name: String(values.get("name")),
-                            instrument: String(values.get("instrument")),
-                            range: readRange(values),
-                          },
-                        });
+                        await barrier.run(barrier.begin(), () =>
+                          store.mutate({
+                            operation: "save",
+                            id: saved.id,
+                            expectedRevision: saved.revision,
+                            mode: "edit",
+                            content: {
+                              ...configuration,
+                              name: String(values.get("name")),
+                              instrument: String(values.get("instrument")),
+                              range: readRange(values),
+                            },
+                          }),
+                        );
                       }, "Reusable configuration updated. Existing song copies are unchanged.");
                     }}
                   >
@@ -219,13 +227,15 @@ export function DeviceConfigurations({ editable }: { editable: boolean }) {
                       )
                         void act(async () => {
                           savedDeviceConfiguration(
-                            await store.mutate({
-                              operation: "delete",
-                              id: saved.id,
-                              expectedRevision: saved.revision,
-                              mode: "edit",
-                              content: null,
-                            }),
+                            await barrier.run(barrier.begin(), () =>
+                              store.mutate({
+                                operation: "delete",
+                                id: saved.id,
+                                expectedRevision: saved.revision,
+                                mode: "edit",
+                                content: null,
+                              }),
+                            ),
                           );
                         }, "Reusable configuration removed. Song copies are unchanged.");
                     }}
@@ -250,12 +260,19 @@ export function DeviceConfigurations({ editable }: { editable: boolean }) {
               const input = event.currentTarget,
                 file = input.files?.[0];
               if (!file) return;
+              const localCheck = beginEdit(),
+                sharedCheck = barrier.begin();
+              const check = () => {
+                localCheck();
+                sharedCheck();
+              };
               void act(async () => {
                 if (file.size > MAX_IMPORT_BYTES)
                   throw new Error(
                     "The configuration file exceeds the import limit. Keep the original file.",
                   );
                 const original = importDeviceConfiguration(await file.text());
+                check();
                 const configuration = original.configuration!;
                 if (
                   !window.confirm(
@@ -267,13 +284,16 @@ export function DeviceConfigurations({ editable }: { editable: boolean }) {
                   ...structuredClone(configuration),
                   id: crypto.randomUUID(),
                 };
-                await store.mutate({
-                  operation: "save",
-                  id: copy.id,
-                  expectedRevision: 0,
-                  mode: "edit",
-                  content: copy,
-                });
+                check();
+                await barrier.run(check, () =>
+                  store.mutate({
+                    operation: "save",
+                    id: copy.id,
+                    expectedRevision: 0,
+                    mode: "edit",
+                    content: copy,
+                  }),
+                );
                 input.value = "";
               }, "Configuration copy import finished. Existing resources and the source file are kept.");
             }}

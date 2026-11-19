@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { PersonalPending, type PersonalKey } from "./personalPending";
 import { downloadText } from "./backup";
+import { useEditAdmission } from "./useEditAdmission";
+import { usePersonalEditBarrier } from "./PersonalEditBarrier";
 
 export function PersonalRecovery({
   store,
@@ -12,6 +14,8 @@ export function PersonalRecovery({
   store: PersonalPending;
   reopen: () => Promise<void>;
 }) {
+  const beginEdit = useEditAdmission(editing);
+  const barrier = usePersonalEditBarrier();
   const client = useQueryClient();
   const key = ["personal-pending", store.principal];
   const records = useQuery({
@@ -123,8 +127,19 @@ export function PersonalRecovery({
               (!editing && (preview as { kind?: string }).kind !== "notation")
             }
             onClick={() => {
+              const localCheck = beginEdit(),
+                sharedCheck = barrier.begin();
+              const check = () => {
+                localCheck();
+                sharedCheck();
+              };
               void act(async () => {
-                await store.retry(selected, editing ? "edit" : "performance");
+                await store.retry(
+                  selected,
+                  editing ? "edit" : "performance",
+                  check,
+                  (work) => barrier.run(check, work),
+                );
                 await reopen();
               });
             }}
