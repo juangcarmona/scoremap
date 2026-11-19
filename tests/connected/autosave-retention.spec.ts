@@ -437,3 +437,88 @@ test("an unconfirmed JSON import remains visible for immediate original-command 
   });
   await owner.context.close();
 });
+
+test("a performed-note save held after the real commit survives song and mode changes", async ({
+  browser,
+}) => {
+  const owner = await login(browser, "owner-a");
+  const song = await prepare(owner.page);
+  const other = syntheticSong();
+  await saveView(owner.page, (library) => {
+    library.songs.push(other);
+  });
+  await owner.page.reload();
+  await openSong(owner.page, song.title);
+  await owner.page
+    .getByLabel("Active performed part", { exact: true })
+    .selectOption(song.arrangements[0]!.parts[1]!.id);
+  const builder = owner.page.getByRole("region", {
+    name: "Played-note builder for Right",
+    exact: true,
+  });
+  const before = await (await api(owner.page, "/api/library")).json();
+  const committed = deferred(),
+    release = deferred();
+  await owner.page.route("**/api/library", async (route) => {
+    if (route.request().method() !== "PUT") return route.continue();
+    const response = await route.fetch();
+    expect(response.status()).toBe(200);
+    committed.resolve();
+    await release.promise;
+    await route.fulfill({ response }).catch(() => undefined);
+  });
+  try {
+    await builder
+      .getByRole("button", { name: "Raise B4 one octave", exact: true })
+      .click();
+    await builder
+      .getByRole("button", { name: "Apply played notes", exact: true })
+      .click();
+    await committed.promise;
+    const actual = await (await api(owner.page, "/api/library")).json();
+    const expected = structuredClone(song);
+    expected.arrangements[0]!.parts[1]!.events[1]!.pitch = {
+      spelling: "B",
+      octave: 5,
+      midi: 83,
+    };
+    expect(
+      actual.library.songs.find((entry: RichSong) => entry.id === song.id),
+    ).toEqual(expected);
+    expect(actual.versions[song.id]).toBe(before.versions[song.id] + 1);
+    owner.page.once("dialog", (dialog) => dialog.accept());
+    await openSong(owner.page, other.title);
+    await expect(
+      owner.page.getByRole("heading", { name: other.title, exact: true }),
+    ).toBeVisible();
+    await owner.page
+      .getByRole("button", { name: "Enter performance", exact: true })
+      .click();
+    release.resolve();
+    await expect(
+      owner.page.getByRole("button", { name: "Switch to edit", exact: true }),
+    ).toBeVisible();
+    await openSong(owner.page, song.title);
+    await expect(
+      owner.page.getByRole("heading", { name: song.title, exact: true }),
+    ).toBeVisible();
+    const final = await (await api(owner.page, "/api/library")).json();
+    expect(
+      final.library.songs.find((entry: RichSong) => entry.id === song.id),
+    ).toEqual(expected);
+    expect(
+      final.library.songs.find((entry: RichSong) => entry.id === other.id),
+    ).toEqual(
+      actual.library.songs.find((entry: RichSong) => entry.id === other.id),
+    );
+    expect(final.versions[song.id]).toBe(actual.versions[song.id]);
+    const history = await (
+      await api(owner.page, `/api/songs/${song.id}/history`)
+    ).json();
+    expect(history[0].content).toEqual(expected);
+    expect(history).toHaveLength(2);
+  } finally {
+    release.resolve();
+    await owner.context.close();
+  }
+});
