@@ -54,6 +54,30 @@ test("current song notation switches labels, preserves spelling/music and persis
     }),
   ).toBeVisible();
   expect(await readLibrary(page)).toEqual(before);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.addStyleTag({ content: "html:root { font-size: 200%; }" });
+  const dual = page.getByRole("button", {
+    name: "Verse chord 1: C♯m (Do♯m)",
+    exact: true,
+  });
+  await expect(dual).toBeVisible();
+  expect(
+    await dual.evaluate(
+      (element) => element.scrollWidth <= element.clientWidth,
+    ),
+  ).toBe(true);
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+  await choice.focus();
+  await expect(choice).toBeFocused();
+  await page.keyboard.press("Home");
+  await expect(choice).toHaveValue("anglo");
+  await page.keyboard.press("End");
+  await expect(choice).toHaveValue("dual-latin");
+  await choice.selectOption("dual-anglo");
   await page.reload();
   await expect(choice).toHaveValue("dual-anglo");
   await expect(
@@ -67,7 +91,13 @@ test("slash-chord notation switches across the song, editor and performance with
   page,
 }) => {
   const library = validateLibrary(structuredClone(source));
-  (library.songs[0] as RichSong).sections[0]!.chords[0]!.bass = "E";
+  const chords = (library.songs[0] as RichSong).sections[0]!.chords;
+  chords[0]!.bass = "E";
+  chords[1]!.root = "C#";
+  chords[1]!.quality = "minor";
+  chords[2]!.root = "Db";
+  chords[2]!.quality = "major";
+  validateLibrary(library);
   await page.goto("/");
   page.once("dialog", (dialog) => dialog.accept());
   await page.getByLabel("Import backup file", { exact: true }).setInputFiles({
@@ -99,6 +129,27 @@ test("slash-chord notation switches across the song, editor and performance with
       .getByLabel("Slash bass for Verse", { exact: true })
       .getByRole("option", { name: "Mi", exact: true }),
   ).toHaveAttribute("value", "E");
+  for (const [mode, minor, major] of [
+    ["anglo", "C♯m", "D♭"],
+    ["latin", "Do♯m", "Re♭"],
+    ["dual-anglo", "C♯m (Do♯m)", "D♭ (Re♭)"],
+    ["dual-latin", "Do♯m (C♯m)", "Re♭ (D♭)"],
+  ]) {
+    await choice.selectOption(mode!);
+    await expect(
+      page.getByRole("button", {
+        name: `Verse chord 2: ${minor}`,
+        exact: true,
+      }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("button", {
+        name: `Verse chord 3: ${major}`,
+        exact: true,
+      }),
+    ).toBeVisible();
+    expect(await readLibrary(page)).toEqual(before);
+  }
   await page
     .getByRole("button", { name: "Enter performance", exact: true })
     .click();
