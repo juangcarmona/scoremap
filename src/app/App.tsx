@@ -331,6 +331,8 @@ function LibraryApp({
             privateLibrary={!!identity}
             beforeUpdate={async () => {
               await session.whenIdle();
+              // Let the acknowledged editor operation settle its preview before checking.
+              await new Promise<void>((resolve) => setTimeout(resolve, 0));
               if (previewDirtyRef.current)
                 throw new Error(
                   "Apply or export your played-note preview before updating.",
