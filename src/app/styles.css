@@ -1222,3 +1222,43 @@ dialog h2 {
     border: 0;
   }
 }
+
+/* Keep the song form and several performed parts together in landscape consultation. */
+@media (min-width: 1200px) and (orientation: landscape) {
+  .sketch-performance {
+    grid-template-columns: minmax(13rem, 0.55fr) minmax(0, 1.45fr);
+    align-items: start;
+  }
+  .sketch-performance > .arrangement-workspace {
+    grid-column: auto;
+    margin-top: 0;
+    container-type: inline-size;
+  }
+  .sketch-performance .musical-context,
+  .sketch-performance .keyboard-legend {
+    margin-bottom: 0.25rem;
+  }
+}
+@container (min-width: 40em) {
+  .sketch-performance .keyboard-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem 1rem;
+  }
+  .sketch-performance .keyboard-view {
+    padding: 0.5rem 0;
+  }
+  .sketch-performance .performed-piano[data-editable="false"] .keyboard-scroll {
+    width: 100%;
+  }
+  .sketch-performance
+    .performed-piano[data-editable="false"]:not([data-notation="dual"])
+    .keyboard-keys {
+    height: 5rem;
+    width: 100% !important;
+  }
+  .sketch-performance
+    .performed-piano[data-editable="false"]:not([data-notation="dual"])
+    .key-pitch {
+    font-size: 0.625rem;
+  }
+}
