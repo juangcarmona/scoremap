@@ -253,6 +253,29 @@ test("touch keys distinguish octaves and manual identification stays unknown or 
   });
   const before = await readLibrary(page);
   for (const name of [
+    "D3 · not performed",
+    "G♭3 · not performed",
+    "A3 · not performed",
+    "C4 · not performed · theoretical tone",
+  ])
+    await builder.getByRole("button", { name, exact: true }).tap();
+  await builder
+    .getByRole("button", { name: "Identify played notes", exact: true })
+    .click();
+  await expect(
+    builder.getByText(
+      "One supported identification; choose it explicitly to change harmony.",
+      { exact: true },
+    ),
+  ).toBeVisible();
+  await expect(
+    builder.getByRole("button", { name: "Choose D7", exact: true }),
+  ).toBeVisible();
+  expect(await readLibrary(page)).toEqual(before);
+  await builder
+    .getByRole("button", { name: "Cancel played-note edit", exact: true })
+    .click();
+  for (const name of [
     "C3 · not performed · theoretical tone",
     "D♭3 · not performed",
     "D3 · not performed",
