@@ -1,4 +1,4 @@
-import { usePersonalEditBarrier } from "../library/PersonalEditBarrier";
+import { usePersonalEditBarrier } from "../../shared/personalEdit/PersonalEditBarrier";
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {

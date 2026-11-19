@@ -6,7 +6,7 @@ import { PersonalRecovery } from "../features/library/PersonalRecovery";
 import {
   PersonalEditProvider,
   usePersonalEditBarrier,
-} from "../features/library/PersonalEditBarrier";
+} from "../shared/personalEdit/PersonalEditBarrier";
 import { ImportPreview } from "../features/library/ImportPreview";
 import type { ImportProvenance } from "../features/library/importSelection";
 import { IndexedLibraryStore } from "../features/library/storage";

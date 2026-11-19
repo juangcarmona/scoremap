@@ -13,7 +13,7 @@ import { requireValue, object, array, sameData } from "./validation";
 import { useNotation } from "../../shared/music/NotationContext";
 import { formatChordSymbol, formatNote } from "../../shared/music/notation";
 import { useEditAdmission } from "./useEditAdmission";
-import { usePersonalEditBarrier } from "./PersonalEditBarrier";
+import { usePersonalEditBarrier } from "../../shared/personalEdit/PersonalEditBarrier";
 export function VoicingPresets({
   editable,
   capture,

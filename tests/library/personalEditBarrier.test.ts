@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { PersonalEditBarrier } from "../../src/features/library/PersonalEditBarrier";
+import { PersonalEditBarrier } from "../../src/shared/personalEdit/PersonalEditBarrier";
 
 it("waits for an admitted personal write and refuses work from the previous edit session", async () => {
   const barrier = new PersonalEditBarrier();

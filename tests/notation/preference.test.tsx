@@ -1,4 +1,4 @@
-import { PersonalEditProvider } from "../../src/features/library/PersonalEditBarrier";
+import { PersonalEditProvider } from "../../src/shared/personalEdit/PersonalEditBarrier";
 import { afterEach, expect, it, vi } from "vitest";
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
