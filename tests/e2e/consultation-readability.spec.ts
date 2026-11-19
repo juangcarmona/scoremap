@@ -2,6 +2,104 @@ import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import song from "../fixtures/arrangement-navigation.json" with { type: "json" };
 import { readLibrary, saved } from "./helpers";
+import { uniqueRichFixture } from "../connected/rich-fixtures";
+import type { RichSong } from "../../src/features/library/score";
+
+test("switching songs and events never leaves stale notes on three keyboards", async ({
+  page,
+}) => {
+  const first = uniqueRichFixture(song as unknown as RichSong);
+  const second = uniqueRichFixture(song as unknown as RichSong);
+  first.song.title = "Synthetic first song";
+  second.song.title = "Synthetic second song";
+  await page.goto("/");
+  page.once("dialog", (dialog) => dialog.accept());
+  await page.getByLabel("Import backup file", { exact: true }).setInputFiles({
+    name: "synthetic-song-switch.json",
+    mimeType: "application/json",
+    buffer: Buffer.from(
+      JSON.stringify({
+        format: "scoremap-backup",
+        version: 2,
+        library: {
+          schemaVersion: 2,
+          revision: 1,
+          songs: [first.song, second.song],
+          repertoires: [],
+        },
+      }),
+    ),
+  });
+  await saved(page);
+  const before = await readLibrary(page);
+  await page
+    .getByRole("button", { name: "Enter performance", exact: true })
+    .click();
+  const selectSong = async (title: string) => {
+    const toggle = page.getByRole("button", { name: "Library", exact: true });
+    if (await toggle.isVisible()) await toggle.click();
+    await page.getByRole("button", { name: title, exact: false }).click();
+  };
+  const event = page.getByLabel("Active performed harmonic event", {
+    exact: true,
+  });
+  const context = page.getByRole("region", {
+    name: "Synchronized keyboard views",
+    exact: true,
+  });
+  const pad = page.getByRole("article", {
+    name: "Keyboard Pad keyboard",
+    exact: true,
+  });
+  const padNotes = pad.locator('.performed-key[data-performed="true"]');
+  const expectKeyboards = async (padPitches: number[]) => {
+    for (const [name, expected] of [
+      ["Low keyboard", [36, 43]],
+      ["High keyboard", [64, 71]],
+      ["Pad keyboard", padPitches],
+    ] as const) {
+      const keys = page
+        .getByRole("article", { name: `Keyboard ${name}`, exact: true })
+        .locator('.performed-key[data-performed="true"]');
+      await expect
+        .poll(() =>
+          keys.evaluateAll((nodes) =>
+            nodes.map((node) => Number(node.getAttribute("data-midi"))),
+          ),
+        )
+        .toEqual(expected);
+    }
+  };
+  await selectSong(first.song.title);
+  await event.selectOption(first.ids.get("h2")!);
+  await expect(padNotes).toHaveCount(0);
+  await expectKeyboards([]);
+  await selectSong(second.song.title);
+  await expect(context).toHaveAttribute(
+    "data-harmonic-event-id",
+    second.ids.get("h1")!,
+  );
+  await expect(padNotes).toHaveCount(1);
+  await expect(padNotes.first()).toHaveAttribute("data-midi", "60");
+  await expectKeyboards([60]);
+  await event.selectOption(second.ids.get("h2")!);
+  await event.selectOption(second.ids.get("h1")!);
+  await event.selectOption(second.ids.get("h2")!);
+  await expect(context).toHaveAttribute(
+    "data-harmonic-event-id",
+    second.ids.get("h2")!,
+  );
+  await expect(padNotes).toHaveCount(0);
+  await expectKeyboards([]);
+  await selectSong(first.song.title);
+  await expect(context).toHaveAttribute(
+    "data-harmonic-event-id",
+    first.ids.get("h1")!,
+  );
+  await expect(padNotes).toHaveCount(1);
+  await expectKeyboards([60]);
+  expect(await readLibrary(page)).toEqual(before);
+});
 
 test("SB-PERFORMANCE SB-KEYBOARD: consultation controls and complete played keyboards remain visible without changing music", async ({
   page,
