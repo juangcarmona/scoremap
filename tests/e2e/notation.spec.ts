@@ -1,6 +1,9 @@
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
-import { addSection, chord, createSong, readLibrary } from "./helpers";
+import { addSection, chord, createSong, readLibrary, saved } from "./helpers";
+import source from "../fixtures/library-v2.json" with { type: "json" };
+import type { RichSong } from "../../src/features/library/score";
+import { validateLibrary } from "../../src/features/library/domain";
 test("current song notation switches labels, preserves spelling/music and persists during read-only consultation", async ({
   page,
 }) => {
@@ -58,4 +61,59 @@ test("current song notation switches labels, preserves spelling/music and persis
   ).toBeVisible();
   expect(await readLibrary(page)).toEqual(before);
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+});
+
+test("slash-chord notation switches across the song, editor and performance without revising music", async ({
+  page,
+}) => {
+  const library = validateLibrary(structuredClone(source));
+  (library.songs[0] as RichSong).sections[0]!.chords[0]!.bass = "E";
+  await page.goto("/");
+  page.once("dialog", (dialog) => dialog.accept());
+  await page.getByLabel("Import backup file", { exact: true }).setInputFiles({
+    name: "synthetic-slash.json",
+    mimeType: "application/json",
+    buffer: Buffer.from(
+      JSON.stringify({ format: "scoremap-backup", version: 2, library }),
+    ),
+  });
+  await saved(page);
+  const before = await readLibrary(page);
+  const choice = page.getByLabel("Note names", { exact: true });
+  await expect(
+    page.getByRole("button", { name: "Verse chord 1: Cmaj7/E", exact: true }),
+  ).toBeVisible();
+  await page.getByText("Edit Verse", { exact: true }).click();
+  await page
+    .getByLabel("Chord position for Verse", { exact: true })
+    .selectOption((library.songs[0] as RichSong).sections[0]!.chords[0]!.id);
+  await expect(
+    page.getByLabel("Slash bass for Verse", { exact: true }),
+  ).toHaveValue("E");
+  await choice.selectOption("latin");
+  await expect(
+    page.getByRole("button", { name: "Verse chord 1: Domaj7/Mi", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page
+      .getByLabel("Slash bass for Verse", { exact: true })
+      .getByRole("option", { name: "Mi", exact: true }),
+  ).toHaveAttribute("value", "E");
+  await page
+    .getByRole("button", { name: "Enter performance", exact: true })
+    .click();
+  await choice.selectOption("dual-latin");
+  const chord = page.getByRole("button", {
+    name: "Verse chord 1: Domaj7/Mi (Cmaj7/E)",
+    exact: true,
+  });
+  await expect(chord).toBeVisible();
+  await expect(chord.locator("..").locator(".chord-diagram-notes")).toHaveText(
+    "Do (C) · Mi (E) · Sol (G) · Si (B)",
+  );
+  expect(await readLibrary(page)).toEqual(before);
+  await page.reload();
+  await expect(choice).toHaveValue("dual-latin");
+  await expect(chord).toBeVisible();
+  expect(await readLibrary(page)).toEqual(before);
 });
