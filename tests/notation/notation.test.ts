@@ -7,6 +7,7 @@ import {
   type Notation,
 } from "../../src/shared/music/notation";
 import { spelledChordNotes } from "../../src/features/sketch/chords";
+import type { ChordQuality } from "../../src/shared/music/catalogue";
 const latin: Notation = { mode: "latin", primary: "latin" };
 const dualLatin: Notation = { mode: "dual", primary: "latin" };
 const dualAnglo: Notation = { mode: "dual", primary: "anglo" };
@@ -58,6 +59,55 @@ describe("Spelling-preserving presentation", () => {
       formatChordSymbol({ root: "C", quality: "toString" }),
     ).toThrow();
   });
+  it.each<[ChordQuality, string]>([
+    ["major", ""],
+    ["minor", "m"],
+    ["diminished", "dim"],
+    ["augmented", "aug"],
+    ["suspended-second", "sus2"],
+    ["suspended-fourth", "sus4"],
+    ["fifth", "5"],
+    ["major-sixth", "6"],
+    ["minor-sixth", "m6"],
+    ["major-sixth-ninth", "6/9"],
+    ["minor-sixth-ninth", "m6/9"],
+    ["dominant-seventh", "7"],
+    ["major-seventh", "maj7"],
+    ["minor-seventh", "m7"],
+    ["half-diminished-seventh", "m7b5"],
+    ["diminished-seventh", "dim7"],
+    ["minor-major-seventh", "mMaj7"],
+    ["augmented-seventh", "aug7"],
+    ["augmented-major-seventh", "augMaj7"],
+    ["suspended-second-seventh", "7sus2"],
+    ["suspended-fourth-seventh", "7sus4"],
+    ["dominant-ninth", "9"],
+    ["major-ninth", "maj9"],
+    ["minor-ninth", "m9"],
+    ["dominant-eleventh", "11"],
+    ["major-eleventh", "maj11"],
+    ["minor-eleventh", "m11"],
+    ["dominant-thirteenth", "13"],
+    ["major-thirteenth", "maj13"],
+    ["minor-thirteenth", "m13"],
+    ["major-added-ninth", "add9"],
+    ["minor-added-ninth", "madd9"],
+  ])(
+    "formats %s with independent expected symbol in every notation",
+    (quality, suffix) => {
+      const chord = { root: "Db", quality, bass: "F#" };
+      const anglo = `D♭${suffix}/F♯`;
+      const translated = `Re♭${suffix}/Fa♯`;
+      expect(formatChordSymbol(chord)).toBe(anglo);
+      expect(formatChordSymbol(chord, latin)).toBe(translated);
+      expect(formatChordSymbol(chord, dualAnglo)).toBe(
+        `${anglo} (${translated})`,
+      );
+      expect(formatChordSymbol(chord, dualLatin)).toBe(
+        `${translated} (${anglo})`,
+      );
+    },
+  );
   it("validates finite preferences and refuses inherited or contradictory settings", () => {
     expect(validNotation(defaultNotation)).toBe(true);
     expect(validNotation(latin)).toBe(true);

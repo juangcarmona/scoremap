@@ -326,22 +326,30 @@ export class PersonalPending {
     );
     return draft as unknown as Draft;
   }
-  async retry(slot: PersonalKey, mode: "edit" | "performance" = "performance") {
+  async retry(
+    slot: PersonalKey,
+    mode: "edit" | "performance" = "performance",
+    checkEdit?: () => void,
+    runEdit?: <T>(work: () => Promise<T>) => Promise<T>,
+  ) {
     const generation = this.generation;
     const draft = await this.review(slot);
     requireValue(
       draft.kind === "notation" || mode === "edit",
       "Switch to Edit before applying a reusable personal resource.",
     );
+    if (draft.kind !== "notation") checkEdit?.();
     const route = routes[draft.kind];
     this.epoch++;
+    const send = () =>
+      this.request<unknown>(route.path, {
+        method: route.method,
+        body: JSON.stringify(draft.request),
+      });
     const acknowledged = validateAcknowledgement(
       draft.kind,
       draft.request,
-      await this.request<unknown>(route.path, {
-        method: route.method,
-        body: JSON.stringify(draft.request),
-      }),
+      await (draft.kind !== "notation" && runEdit ? runEdit(send) : send()),
     );
     this.check(generation);
     this.epoch++;

@@ -96,3 +96,33 @@ test("SB-BACKUP-REJECT: invalid import preserves acknowledged local data", async
   await expect(page.getByRole("alert")).toContainText("unsupported");
   expect(await readLibrary(page)).toEqual(original);
 });
+
+test("an unsupported PDF backup preserves the saved library after reload", async ({
+  page,
+}) => {
+  await prepared(page);
+  const original = await readLibrary(page);
+  const incoming = structuredClone(original);
+  incoming.songs[0]!.pdf = {
+    id: "synthetic-pdf",
+    name: "synthetic.pdf",
+    data: "JVBERi0xLjQK",
+    pages: 1,
+    page: 1,
+  };
+  await page.getByLabel("Import backup file", { exact: true }).setInputFiles({
+    name: "synthetic-pdf-backup.json",
+    mimeType: "application/json",
+    buffer: Buffer.from(
+      JSON.stringify({
+        format: "scoremap-backup",
+        version: incoming.schemaVersion,
+        library: incoming,
+      }),
+    ),
+  });
+  await expect(page.getByRole("alert")).toContainText("PDF attachments");
+  expect(await readLibrary(page)).toEqual(original);
+  await page.reload();
+  expect(await readLibrary(page)).toEqual(original);
+});

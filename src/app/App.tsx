@@ -2,6 +2,10 @@ import { OfflinePreparation } from "../features/library/OfflinePreparation";
 import { DeviceProvider } from "../features/library/DeviceContext";
 import { DeviceConfigurations } from "../features/library/DeviceConfigurations";
 import { PersonalRecovery } from "../features/library/PersonalRecovery";
+import {
+  PersonalEditProvider,
+  usePersonalEditBarrier,
+} from "../features/library/PersonalEditBarrier";
 import { ImportPreview } from "../features/library/ImportPreview";
 import type { ImportProvenance } from "../features/library/importSelection";
 import { IndexedLibraryStore } from "../features/library/storage";
@@ -24,7 +28,13 @@ import {
 } from "../features/notation/NotationPreference";
 import { SongHistory, DeletedSongs } from "../features/library/SongRecovery";
 import { PwaStatus } from "./PwaStatus";
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { useLibrary } from "../features/library/useLibrary";
 import { NameDialog } from "../features/library/NameDialog";
 import { Sketch } from "../features/library/Sketch";
@@ -56,7 +66,9 @@ export function App(
         <DeviceProvider
           store={store instanceof PrivateLibraryStore ? store : undefined}
         >
-          <LibraryApp {...props} />
+          <PersonalEditProvider>
+            <LibraryApp {...props} />
+          </PersonalEditProvider>
         </DeviceProvider>
       </PresetProvider>
     </NotationProvider>
@@ -67,6 +79,8 @@ function LibraryApp({
   identity,
 }: { store?: LibraryStore; identity?: SessionInfo } = {}) {
   const { session, loadError } = useLibrary(store);
+  const personalEdit = usePersonalEditBarrier();
+  const [switchingMode, setSwitchingMode] = useState(false);
   const authorizeExport = useAuthorizeSongExport();
   const [selected, updateSelected] = useState<string | null>(() =>
     new URL(location.href).searchParams.get("song"),
@@ -132,6 +146,9 @@ function LibraryApp({
   const protectedPending =
     store instanceof PrivateLibraryStore && store.pendingRecovery;
   const edit = session?.mode === "edit" && !protectedPending;
+  useLayoutEffect(() => {
+    personalEdit.setEditing(session?.mode === "edit");
+  }, [session?.mode, personalEdit]);
   const activeRep = library?.repertoires.find((r) => r.id === group);
   const memberIds = new Set(library?.repertoires.flatMap((r) => r.songIds));
   const songs =
@@ -340,18 +357,29 @@ function LibraryApp({
           <button
             type="button"
             className="mode-button"
+            disabled={switchingMode}
             aria-pressed={session.mode !== "edit"}
             onClick={() => {
               if (!leavePreview()) return;
-              void session.whenIdle().then(() => {
-                const mode = edit ? "performance" : "edit";
-                session.setMode(mode);
-                try {
-                  localStorage.setItem("scoremap-view-mode", mode);
-                } catch {
-                  /* A missing preference store does not block consultation. */
-                }
-              });
+              setSwitchingMode(true);
+              if (edit) personalEdit.setEditing(false);
+              void Promise.all([session.whenIdle(), personalEdit.whenIdle()])
+                .then(() => {
+                  const mode = edit ? "performance" : "edit";
+                  session.setMode(mode);
+                  try {
+                    localStorage.setItem("scoremap-view-mode", mode);
+                  } catch {
+                    /* A missing preference store does not block consultation. */
+                  }
+                })
+                .catch(() => {
+                  personalEdit.setEditing(session.mode === "edit");
+                  setError(
+                    "Could not finish saving. Review the error and retry before entering performance.",
+                  );
+                })
+                .finally(() => setSwitchingMode(false));
             }}
           >
             {protectedPending
@@ -360,6 +388,9 @@ function LibraryApp({
                 ? "Enter performance"
                 : "Switch to edit"}
           </button>
+          {switchingMode && (
+            <span role="status">Finishing save before changing mode…</span>
+          )}
           <button
             type="button"
             className="library-toggle"
