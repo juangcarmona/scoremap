@@ -3,7 +3,114 @@ import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import legacy from "../fixtures/library-v1.json" with { type: "json" };
 import migrated from "../fixtures/library-v1-migrated.json" with { type: "json" };
-import { readLibrary, saved } from "./helpers";
+import { createSong, readLibrary, saved } from "./helpers";
+
+test("interrupted browser migration preserves the current library and retries the original exactly once", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await createSong(page, "Synthetic preserved song");
+  const before = await readLibrary(page);
+  const backup = {
+    name: "synthetic-v1.json",
+    mimeType: "application/json",
+    buffer: Buffer.from(
+      JSON.stringify({
+        format: "scoremap-backup",
+        version: 1,
+        library: legacy,
+      }),
+    ),
+  };
+  await page.evaluate(() => {
+    const original = IDBObjectStore.prototype.put;
+    const add = IDBObjectStore.prototype.add;
+    (window as typeof window & { stagedMigration: boolean }).stagedMigration =
+      false;
+    IDBObjectStore.prototype.add = function (
+      value: unknown,
+      key?: IDBValidKey,
+    ) {
+      if (
+        this.transaction.db.name === "scoremap" &&
+        this.name === "library" &&
+        typeof key === "string" &&
+        key.startsWith("migration-import-source:")
+      ) {
+        (
+          window as typeof window & { stagedMigration: boolean }
+        ).stagedMigration = true;
+        IDBObjectStore.prototype.add = add;
+      }
+      return add.call(this, value, key);
+    };
+    IDBObjectStore.prototype.put = function (
+      value: unknown,
+      key?: IDBValidKey,
+    ) {
+      if (
+        this.transaction.db.name === "scoremap" &&
+        this.name === "library" &&
+        key === "current"
+      ) {
+        IDBObjectStore.prototype.put = original;
+        throw new DOMException(
+          "Synthetic migration interruption",
+          "QuotaExceededError",
+        );
+      }
+      return original.call(this, value, key);
+    };
+  });
+  page.once("dialog", (dialog) => dialog.accept());
+  await page
+    .getByLabel("Import backup file", { exact: true })
+    .setInputFiles(backup);
+  await expect(page.getByRole("alert")).toContainText(
+    "Synthetic migration interruption",
+  );
+  expect(
+    await page.evaluate(
+      () =>
+        (window as typeof window & { stagedMigration: boolean })
+          .stagedMigration,
+    ),
+  ).toBe(true);
+  expect(await readLibrary(page)).toEqual(before);
+  await page.reload();
+  await expect(
+    page.getByRole("heading", {
+      name: "Synthetic preserved song",
+      exact: true,
+    }),
+  ).toBeVisible();
+  expect(await readLibrary(page)).toEqual(before);
+  page.once("dialog", (dialog) => dialog.accept());
+  await page
+    .getByLabel("Import backup file", { exact: true })
+    .setInputFiles(backup);
+  await saved(page);
+  expect(await readLibrary(page)).toEqual({
+    ...migrated,
+    revision: before.revision + 1,
+  });
+  await page.reload();
+  expect(await readLibrary(page)).toEqual({
+    ...migrated,
+    revision: before.revision + 1,
+  });
+  await page.getByText("Originals before migration", { exact: true }).click();
+  const originals = page.getByRole("button", {
+    name: /Export imported original/,
+  });
+  await expect(originals).toHaveCount(1);
+  const downloaded = page.waitForEvent("download");
+  await originals.click();
+  expect(
+    JSON.parse(await fs.readFile((await (await downloaded).path())!, "utf8"))
+      .library,
+  ).toEqual(legacy);
+});
 test("real browser v1 import retains its original, activates deterministic identified form and edits/reopens the same event", async ({
   page,
 }) => {
