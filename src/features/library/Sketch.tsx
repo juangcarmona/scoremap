@@ -49,6 +49,7 @@ type Props = {
   report: (error: unknown) => void;
   previewDirty: boolean;
   onPreviewDirty: (dirty: boolean) => void;
+  onPreviewApply: () => () => void;
 };
 function ChordEditor(props: {
   section: Section;
@@ -192,6 +193,7 @@ export function Sketch({
   report,
   previewDirty,
   onPreviewDirty,
+  onPreviewApply,
 }: Props) {
   const { preference } = useNotation();
   const [selection, setSelection] = useState<{
@@ -588,6 +590,7 @@ export function Sketch({
           report={report}
           dirty={previewDirty}
           setDirty={onPreviewDirty}
+          onPreviewApply={onPreviewApply}
           onSelectHarmony={(id) => {
             const section = song.sections.find((section) =>
               section.chords.some((event) => event.id === id),

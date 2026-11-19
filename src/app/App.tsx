@@ -100,6 +100,14 @@ function LibraryApp({
   const [importEpoch, setImportEpoch] = useState(0);
   const [previewDirty, setPreviewDirtyState] = useState(false);
   const previewDirtyRef = useRef(false);
+  const previewOperation = useRef<Promise<void>>(Promise.resolve());
+  function beginPreviewOperation() {
+    let finish!: () => void;
+    previewOperation.current = new Promise<void>((resolve) => {
+      finish = resolve;
+    });
+    return finish;
+  }
   function setPreviewDirty(value: boolean) {
     previewDirtyRef.current = value;
     setPreviewDirtyState(value);
@@ -331,8 +339,7 @@ function LibraryApp({
             privateLibrary={!!identity}
             beforeUpdate={async () => {
               await session.whenIdle();
-              // Let the acknowledged editor operation settle its preview before checking.
-              await new Promise<void>((resolve) => setTimeout(resolve, 0));
+              await previewOperation.current;
               if (previewDirtyRef.current)
                 throw new Error(
                   "Apply or export your played-note preview before updating.",
@@ -1038,6 +1045,7 @@ function LibraryApp({
               <Sketch
                 previewDirty={previewDirty}
                 onPreviewDirty={setPreviewDirty}
+                onPreviewApply={beginPreviewOperation}
                 key={`${song.id}-${importEpoch}`}
                 song={song}
                 noteDrafts={noteDrafts}

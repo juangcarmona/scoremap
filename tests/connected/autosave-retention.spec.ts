@@ -712,10 +712,7 @@ test("a failed performed-note save keeps a waiting update blocked and durable mu
     ).toBeVisible();
     await update.click();
     await expect(
-      page.getByText(
-        "Apply or export your played-note preview before updating.",
-        { exact: true },
-      ),
+      page.getByRole("button", { name: "Retry save", exact: true }),
     ).toBeVisible();
     expect(
       await page.evaluate(async () =>
