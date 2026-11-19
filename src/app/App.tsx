@@ -373,6 +373,12 @@ function LibraryApp({
                     /* A missing preference store does not block consultation. */
                   }
                 })
+                .catch(() => {
+                  personalEdit.setEditing(session.mode === "edit");
+                  setError(
+                    "Could not finish saving. Review the error and retry before entering performance.",
+                  );
+                })
                 .finally(() => setSwitchingMode(false));
             }}
           >
@@ -382,6 +388,9 @@ function LibraryApp({
                 ? "Enter performance"
                 : "Switch to edit"}
           </button>
+          {switchingMode && (
+            <span role="status">Finishing save before changing mode…</span>
+          )}
           <button
             type="button"
             className="library-toggle"

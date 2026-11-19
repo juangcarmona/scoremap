@@ -34,7 +34,14 @@ export class PersonalEditBarrier {
   }
 
   async whenIdle() {
-    while (this.pending.size) await Promise.allSettled([...this.pending]);
+    let failure: unknown;
+    while (this.pending.size) {
+      const results = await Promise.allSettled([...this.pending]);
+      failure ??= results.find(
+        (result) => result.status === "rejected",
+      )?.reason;
+    }
+    if (failure !== undefined) throw failure;
   }
 }
 

@@ -44,7 +44,9 @@ it("unblocks a mode change after an ambiguous write failure without hiding that 
   );
   const failure = expect(write).rejects.toThrow("Unconfirmed response");
   barrier.setEditing(false);
-  const idle = barrier.whenIdle();
+  const idle = expect(barrier.whenIdle()).rejects.toThrow(
+    "Unconfirmed response",
+  );
   fail(new Error("Unconfirmed response"));
   await failure;
   await idle;

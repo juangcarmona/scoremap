@@ -778,6 +778,11 @@ test("entering performance waits for an already admitted preset save", async ({
     page.getByRole("button", { name: "Enter performance", exact: true }),
   ).toBeDisabled();
   await expect(
+    page
+      .getByRole("status")
+      .filter({ hasText: "Finishing save before changing mode" }),
+  ).toBeVisible();
+  await expect(
     page.getByRole("button", { name: "Switch to edit", exact: true }),
   ).toHaveCount(0);
   await page.evaluate(() =>
@@ -812,6 +817,92 @@ test("entering performance waits for an already admitted preset save", async ({
       ),
     )
     .toContain("Synthetic in flight");
+});
+
+test("a failed in-flight preset save keeps edit mode and explains the failure", async ({
+  page,
+}) => {
+  await page.goto("/");
+  page.once("dialog", (dialog) => dialog.accept());
+  await page.getByLabel("Import backup file", { exact: true }).setInputFiles({
+    name: "synthetic-rich.json",
+    mimeType: "application/json",
+    buffer: Buffer.from(
+      JSON.stringify({
+        format: "scoremap-backup",
+        version: 2,
+        library: source,
+      }),
+    ),
+  });
+  await saved(page);
+  await page
+    .getByLabel("Active performed part", { exact: true })
+    .selectOption("right");
+  const builder = page.getByRole("region", {
+    name: "Played-note builder for Right",
+    exact: true,
+  });
+  await builder
+    .getByText("Reusable voicings on this device", { exact: true })
+    .click();
+  await builder
+    .getByLabel("Reusable voicing name", { exact: true })
+    .fill("Synthetic in flight");
+  await page.evaluate(() => {
+    const original = crypto.subtle.digest.bind(crypto.subtle);
+    let release!: () => void;
+    const gate = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    Object.assign(window, { releaseDigest: release, digestStarted: false });
+    crypto.subtle.digest = async (...args) => {
+      Object.assign(window, { digestStarted: true });
+      await gate;
+      void original;
+      void args;
+      throw new Error("Synthetic save failed");
+    };
+  });
+  await builder
+    .getByRole("button", {
+      name: "Save preview as reusable voicing",
+      exact: true,
+    })
+    .click();
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () => (window as unknown as { digestStarted: boolean }).digestStarted,
+      ),
+    )
+    .toBe(true);
+  await page
+    .getByRole("button", { name: "Enter performance", exact: true })
+    .click();
+  await expect(
+    page.getByRole("button", { name: "Enter performance", exact: true }),
+  ).toBeDisabled();
+  await expect(
+    page
+      .getByRole("status")
+      .filter({ hasText: "Finishing save before changing mode" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Switch to edit", exact: true }),
+  ).toHaveCount(0);
+  await page.evaluate(() =>
+    (window as unknown as { releaseDigest: () => void }).releaseDigest(),
+  );
+  await expect(
+    page.getByRole("alert").filter({ hasText: "Could not finish saving" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Enter performance", exact: true }),
+  ).toBeEnabled();
+  await expect(builder.getByRole("alert")).toContainText(
+    "Synthetic save failed",
+  );
 });
 
 test("switching to performance while a configuration file is read does not import it", async ({

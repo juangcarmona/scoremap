@@ -238,25 +238,48 @@ it("rechecks edit admission after unlocking a retained resource and before repla
 
 it("retains an unconfirmed personal write when a pending mode change follows a timeout", async () => {
   const principal = crypto.randomUUID();
-  const key = Buffer.from(crypto.getRandomValues(new Uint8Array(32))).toString("base64");
-  const content = { id: crypto.randomUUID(), name: "Synthetic", instrument: "keyboard", range: [21, 108] };
-  const request = { operation: "save", id: content.id, content, expectedRevision: 0, mode: "edit", commandId: crypto.randomUUID() };
+  const key = Buffer.from(crypto.getRandomValues(new Uint8Array(32))).toString(
+    "base64",
+  );
+  const content = {
+    id: crypto.randomUUID(),
+    name: "Synthetic",
+    instrument: "keyboard",
+    range: [21, 108],
+  };
+  const request = {
+    operation: "save",
+    id: content.id,
+    content,
+    expectedRevision: 0,
+    mode: "edit",
+    commandId: crypto.randomUUID(),
+  };
   let fail!: (reason: Error) => void, started!: () => void;
-  const waiting = new Promise<never>((_resolve, reject) => { fail = reject; });
-  const sent = new Promise<void>((resolve) => { started = resolve; });
+  const waiting = new Promise<never>((_resolve, reject) => {
+    fail = reject;
+  });
+  const sent = new Promise<void>((resolve) => {
+    started = resolve;
+  });
   const transport = async <T>(path: string): Promise<T> => {
-    if (path.startsWith("/api/personal-recovery-keys")) return { id: "synthetic-key", key } as T;
+    if (path.startsWith("/api/personal-recovery-keys"))
+      return { id: "synthetic-key", key } as T;
     started();
     return waiting;
   };
   const store = new PersonalPending(principal, transport, () => true);
   const barrier = new PersonalEditBarrier();
   barrier.setEditing(true);
-  const write = barrier.run(barrier.begin(), () => store.mutate("device", request, (value) => value));
+  const write = barrier.run(barrier.begin(), () =>
+    store.mutate("device", request, (value) => value),
+  );
   const failure = expect(write).rejects.toThrow("Unconfirmed response");
   await sent;
   barrier.setEditing(false);
-  const idle = barrier.whenIdle();
+  const idle = expect(barrier.whenIdle()).rejects.toThrow(
+    "Unconfirmed response",
+  );
   fail(new Error("Unconfirmed response"));
   await failure;
   await idle;
