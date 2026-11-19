@@ -667,3 +667,66 @@ test("a real waiting service worker defers activation until the performed-note a
     ).toHaveLength(2);
   });
 });
+
+test("a failed performed-note save keeps a waiting update blocked and durable music intact", async ({
+  browser,
+}) => {
+  const owner = await login(browser, "owner-a");
+  try {
+    const page = owner.page;
+    const song = await prepare(page);
+    await page
+      .getByLabel("Active performed part", { exact: true })
+      .selectOption(song.arrangements[0]!.parts[1]!.id);
+    await page.evaluate(() => navigator.serviceWorker.ready);
+    await page.waitForFunction(() =>
+      Boolean(navigator.serviceWorker.controller),
+    );
+    await page.evaluate(() =>
+      navigator.serviceWorker.register("/sw.js?synthetic-failed-save=1", {
+        scope: "/",
+      }),
+    );
+    const update = page.getByRole("button", {
+      name: "Apply available update",
+      exact: true,
+    });
+    await expect(update).toBeVisible();
+    await page.route("**/api/library", (route) =>
+      route.request().method() === "PUT"
+        ? route.abort("failed")
+        : route.continue(),
+    );
+    const builder = page.getByRole("region", {
+      name: "Played-note builder for Right",
+      exact: true,
+    });
+    await builder
+      .getByRole("button", { name: "Raise B4 one octave", exact: true })
+      .click();
+    await builder
+      .getByRole("button", { name: "Apply played notes", exact: true })
+      .click();
+    await expect(
+      page.getByRole("button", { name: "Retry save", exact: true }),
+    ).toBeVisible();
+    await update.click();
+    await expect(
+      page.getByText(
+        "Apply or export your played-note preview before updating.",
+        { exact: true },
+      ),
+    ).toBeVisible();
+    expect(
+      await page.evaluate(async () =>
+        Boolean((await navigator.serviceWorker.getRegistration())?.waiting),
+      ),
+    ).toBe(true);
+    const actual = await (await api(page, "/api/library")).json();
+    expect(
+      actual.library.songs.find((entry: RichSong) => entry.id === song.id),
+    ).toEqual(song);
+  } finally {
+    await owner.context.close();
+  }
+});
