@@ -11,6 +11,9 @@ spec = importlib.util.spec_from_file_location('scoremap_qualifier', ROOT / 'scri
 q = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(q)
 settings = json.loads(Path(sys.argv[1]).read_text())
+output = Path(sys.argv[2]).resolve()
+if output.exists():
+    raise RuntimeError('Select a new receipt path; do not overwrite prior evidence')
 state = None
 try:
     state = q.setup(settings)
@@ -49,7 +52,11 @@ try:
     q.call(['docker', 'start', application])
     database.ready()
     q.execute_browser(state, 'after-recovery', 'playwright.deployment.config.ts', 'after:')
+    source = json.loads((state / 'state.private.json').read_text())['verificationSource']
+    if q.verification_source() != source:
+        raise RuntimeError('Verification inputs changed during qualification')
     receipt = {
+        'verificationSource': source,
         'applicationRevision': settings['ApplicationRevision'],
         'applicationImage': settings['ApplicationImage'],
         'syntheticOnly': True,
@@ -60,8 +67,8 @@ try:
         'authenticatedSyntheticDataReconstructed': True,
         'actualOperatorDeployment': False,
     }
-    q.write(Path(sys.argv[2]), receipt)
-    print(json.dumps(receipt), flush=True)
+    q.write(output, receipt)
+    print('Future schema refused; table fingerprints and authenticated reconstruction verified.', flush=True)
 finally:
     if q.ACTIVE_STATE is not None and (q.ACTIVE_STATE / 'state.private.json').exists():
         q.cleanup(q.ACTIVE_STATE)
