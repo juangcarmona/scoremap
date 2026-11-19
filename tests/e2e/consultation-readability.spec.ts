@@ -298,6 +298,187 @@ test("SB-KEYBOARD: flat notes on black keys retain their complete dual labels at
       }),
     ).toBe(true);
   }
+  await page.setViewportSize({ width: 1280, height: 800 });
+  for (const fontSize of ["100%", "200%"]) {
+    await page.evaluate((size) => {
+      document.documentElement.style.fontSize = size;
+    }, fontSize);
+    for (const key of await blackKeys.all()) {
+      expect(
+        await key.evaluate((element) => {
+          const label = element.querySelector(".key-pitch")!;
+          const bounds = element.getBoundingClientRect();
+          const range = document.createRange();
+          range.selectNodeContents(label);
+          return Array.from(range.getClientRects()).every(
+            (text) =>
+              text.left >= bounds.left - 1 &&
+              text.right <= bounds.right + 1 &&
+              text.top >= bounds.top - 1 &&
+              text.bottom <= bounds.bottom + 1,
+          );
+        }),
+      ).toBe(true);
+    }
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth),
+    ).toBeLessThanOrEqual(1280);
+  }
   expect(await readLibrary(page)).toEqual(original);
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+});
+
+test("landscape tablet keeps song navigation and two keyboards visible together", async ({
+  page,
+}, testInfo) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("/");
+  page.once("dialog", (dialog) => dialog.accept());
+  await page.getByLabel("Import backup file", { exact: true }).setInputFiles({
+    name: "synthetic-tablet-layout.json",
+    mimeType: "application/json",
+    buffer: Buffer.from(
+      JSON.stringify({
+        format: "scoremap-backup",
+        version: 2,
+        library: {
+          schemaVersion: 2,
+          revision: 1,
+          songs: [song],
+          repertoires: [],
+        },
+      }),
+    ),
+  });
+  await saved(page);
+  const before = await readLibrary(page);
+  await page
+    .getByRole("button", { name: "Enter performance", exact: true })
+    .click();
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await testInfo.attach("tablet-consultation", {
+    body: await page.screenshot(),
+    contentType: "image/png",
+  });
+  const keyboardRegions = page.locator(".keyboard-view .keyboard-scroll");
+  await expect(keyboardRegions).toHaveCount(3);
+  for (const region of (await keyboardRegions.all()).slice(0, 2)) {
+    const box = await region.boundingBox();
+    expect(box).not.toBeNull();
+    expect(box!.y).toBeGreaterThanOrEqual(0);
+    expect(box!.y + box!.height).toBeLessThanOrEqual(800);
+    const whiteKey = await region
+      .locator(".played-white")
+      .first()
+      .boundingBox();
+    expect(whiteKey!.width).toBeGreaterThanOrEqual(18);
+    expect(
+      await region.evaluate((element) => element.scrollWidth),
+    ).toBeLessThanOrEqual(
+      await region.evaluate((element) => element.clientWidth),
+    );
+  }
+  for (const noteList of (
+    await page.locator(".keyboard-view .played-note-list").all()
+  ).slice(0, 2)) {
+    const box = await noteList.boundingBox();
+    expect(box!.y + box!.height).toBeLessThanOrEqual(800);
+  }
+  await expect(
+    page.getByRole("button", { name: /Cmaj7/ }).first(),
+  ).toBeVisible();
+  expect(
+    await page.evaluate(() => document.documentElement.scrollWidth),
+  ).toBeLessThanOrEqual(1280);
+  await page.setViewportSize({ width: 390, height: 844 });
+  const high = page.getByRole("article", { name: "Keyboard High keyboard" });
+  await expect(high.locator(".played-note-list")).toContainText(
+    "Scroll to see B4",
+  );
+  await high.locator(".keyboard-scroll").evaluate((element) => {
+    element.scrollLeft = element.scrollWidth;
+  });
+  await expect(high.locator(".played-note-list")).not.toContainText(
+    "Scroll to see B4",
+  );
+  await page
+    .getByLabel("Active performed harmonic event")
+    .selectOption({ index: 1 });
+  await expect(
+    page
+      .getByRole("article", { name: "Keyboard Pad keyboard" })
+      .locator('.performed-key[data-performed="true"]'),
+  ).toHaveCount(0);
+  expect(await readLibrary(page)).toEqual(before);
+  await page.getByRole("button", { name: "Switch to edit" }).click();
+  const editor = page.locator('.performed-piano[data-editable="true"]');
+  await expect(editor.locator(".played-note-list")).not.toContainText(
+    "Scroll to see",
+  );
+  const editKey = await editor.locator(".played-white").first().boundingBox();
+  expect(editKey!.width).toBeGreaterThanOrEqual(48);
+});
+
+test("1024px landscape tablet keeps two keyboards and library navigation available", async ({
+  page,
+}, testInfo) => {
+  await page.setViewportSize({ width: 1024, height: 768 });
+  await page.goto("/");
+  page.once("dialog", (dialog) => dialog.accept());
+  await page.getByLabel("Import backup file", { exact: true }).setInputFiles({
+    name: "synthetic-tablet-1024.json",
+    mimeType: "application/json",
+    buffer: Buffer.from(
+      JSON.stringify({
+        format: "scoremap-backup",
+        version: 2,
+        library: {
+          schemaVersion: 2,
+          revision: 1,
+          songs: [song],
+          repertoires: [],
+        },
+      }),
+    ),
+  });
+  await saved(page);
+  await page
+    .getByRole("button", { name: "Enter performance", exact: true })
+    .click();
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await testInfo.attach("tablet-1024", {
+    body: await page.screenshot(),
+    contentType: "image/png",
+  });
+  const keyboards = page.locator(".keyboard-view .keyboard-scroll");
+  await expect(keyboards).toHaveCount(3);
+  for (const keyboard of (await keyboards.all()).slice(0, 2)) {
+    const box = await keyboard.boundingBox();
+    expect(box!.y + box!.height).toBeLessThanOrEqual(768);
+    expect(await keyboard.evaluate((el) => el.scrollWidth)).toBeLessThanOrEqual(
+      await keyboard.evaluate((el) => el.clientWidth),
+    );
+    expect(
+      (await keyboard.locator(".played-white").first().boundingBox())!.width,
+    ).toBeGreaterThanOrEqual(18);
+  }
+  for (const notes of (
+    await page.locator(".keyboard-view .played-note-list").all()
+  ).slice(0, 2)) {
+    const box = await notes.boundingBox();
+    expect(box!.y + box!.height).toBeLessThanOrEqual(768);
+  }
+  const toggle = page.getByRole("button", { name: "Library", exact: true });
+  await expect(toggle).toHaveAttribute("aria-expanded", "false");
+  await toggle.click();
+  await expect(toggle).toHaveAttribute("aria-expanded", "true");
+  await expect(
+    page.getByRole("button", { name: /Synthetic synchronized consultation/ }),
+  ).toBeVisible();
+  await toggle.click();
+  await expect(toggle).toHaveAttribute("aria-expanded", "false");
+  expect(
+    await page.evaluate(() => document.documentElement.scrollWidth),
+  ).toBeLessThanOrEqual(1024);
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 });

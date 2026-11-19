@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import { pianoKeys } from "./chords";
 import {
   performedPitchAt,
@@ -29,6 +30,38 @@ export function PerformedPiano({
   showLegend?: boolean;
 }) {
   const { preference } = useNotation();
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [clipped, setClipped] = useState("");
+  const pitchIds = pitches.map((pitch) => pitch.midi).join(",");
+  const clippedPitches = pitches.filter((pitch) =>
+    clipped.split(",").includes(String(pitch.midi)),
+  );
+  function updateClipped() {
+    const container = scrollRef.current;
+    if (!container || editable) return;
+    const bounds = container.getBoundingClientRect();
+    const hidden = [
+      ...container.querySelectorAll<HTMLElement>(
+        '.performed-key[data-performed="true"]',
+      ),
+    ]
+      .filter((key) => {
+        const rect = key.getBoundingClientRect();
+        return rect.left < bounds.left || rect.right > bounds.right;
+      })
+      .map((key) => key.dataset.midi);
+    setClipped(hidden.join(","));
+  }
+  useEffect(() => {
+    updateClipped();
+    const container = scrollRef.current;
+    if (!container || typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(updateClipped);
+    observer.observe(container);
+    return () => observer.disconnect();
+    // Recalculate when the performed pitches or selected range change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pitchIds, firstOctave, octaves, editable, preference.mode]);
   const keys = pianoKeys(firstOctave, octaves);
   const theory = theoreticalHarmony(harmony);
   const spellings = new Map(
@@ -50,6 +83,8 @@ export function PerformedPiano({
       )}
       <div
         className="keyboard-scroll"
+        ref={scrollRef}
+        onScroll={updateClipped}
         role="region"
         tabIndex={0}
         aria-label={`${label} · scroll piano view`}
@@ -128,6 +163,16 @@ export function PerformedPiano({
               )
               .join(" · ")
           : "Silent — no performed notes"}
+        {!editable && clippedPitches.length > 0 && (
+          <span>
+            {" · Scroll to see "}
+            {clippedPitches
+              .map((pitch) =>
+                formatNote(`${pitch.spelling}${pitch.octave}`, preference),
+              )
+              .join(" · ")}
+          </span>
+        )}
       </p>
       {outside.length > 0 && (
         <p role="status">
