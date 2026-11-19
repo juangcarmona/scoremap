@@ -639,6 +639,256 @@ test("touch keys distinguish octaves and manual identification stays unknown or 
   expect(await readLibrary(page)).toEqual(chosen);
 });
 
+test("switching to performance while a preset file is read does not import it", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const panel = page.locator(".library-footer");
+  await panel
+    .getByText("Reusable voicings on this device", { exact: true })
+    .click();
+  await page.evaluate(() => {
+    const original = File.prototype.text;
+    let release!: () => void;
+    const gate = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    Object.assign(window, {
+      releasePresetRead: release,
+      presetReadStarted: false,
+    });
+    File.prototype.text = async function () {
+      Object.assign(window, { presetReadStarted: true });
+      await gate;
+      return original.call(this);
+    };
+  });
+  await panel
+    .getByLabel("Reusable voicing import file", { exact: true })
+    .setInputFiles({
+      name: "synthetic-preset.json",
+      mimeType: "application/json",
+      buffer: Buffer.from(
+        JSON.stringify({
+          format: "scoremap-voicing-presets",
+          version: 1,
+          presets: [
+            {
+              id: "source",
+              revision: 1,
+              preset: {
+                id: "source",
+                name: "Synthetic delayed",
+                harmony: { root: "C", quality: "major" },
+                pitches: [{ spelling: "C", octave: 3, midi: 48 }],
+                custom: false,
+              },
+            },
+          ],
+        }),
+      ),
+    });
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          (window as unknown as { presetReadStarted: boolean })
+            .presetReadStarted,
+      ),
+    )
+    .toBe(true);
+  await page
+    .getByRole("button", { name: "Enter performance", exact: true })
+    .click();
+  await expect(
+    page.getByRole("button", { name: "Switch to edit", exact: true }),
+  ).toBeVisible();
+  page.once("dialog", (dialog) => dialog.accept());
+  await page.evaluate(() =>
+    (
+      window as unknown as { releasePresetRead: () => void }
+    ).releasePresetRead(),
+  );
+  await expect(panel.getByRole("alert")).toContainText("Switch to Edit");
+  await expect(
+    panel.getByText("Synthetic delayed", { exact: false }),
+  ).toHaveCount(0);
+});
+
+test("entering performance waits for an already admitted preset save", async ({
+  page,
+}) => {
+  await page.goto("/");
+  page.once("dialog", (dialog) => dialog.accept());
+  await page.getByLabel("Import backup file", { exact: true }).setInputFiles({
+    name: "synthetic-rich.json",
+    mimeType: "application/json",
+    buffer: Buffer.from(
+      JSON.stringify({
+        format: "scoremap-backup",
+        version: 2,
+        library: source,
+      }),
+    ),
+  });
+  await saved(page);
+  await page
+    .getByLabel("Active performed part", { exact: true })
+    .selectOption("right");
+  const builder = page.getByRole("region", {
+    name: "Played-note builder for Right",
+    exact: true,
+  });
+  await builder
+    .getByText("Reusable voicings on this device", { exact: true })
+    .click();
+  await builder
+    .getByLabel("Reusable voicing name", { exact: true })
+    .fill("Synthetic in flight");
+  await page.evaluate(() => {
+    const original = crypto.subtle.digest.bind(crypto.subtle);
+    let release!: () => void;
+    const gate = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    Object.assign(window, { releaseDigest: release, digestStarted: false });
+    crypto.subtle.digest = async (...args) => {
+      Object.assign(window, { digestStarted: true });
+      await gate;
+      return original(...args);
+    };
+  });
+  await builder
+    .getByRole("button", {
+      name: "Save preview as reusable voicing",
+      exact: true,
+    })
+    .click();
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () => (window as unknown as { digestStarted: boolean }).digestStarted,
+      ),
+    )
+    .toBe(true);
+  await page
+    .getByRole("button", { name: "Enter performance", exact: true })
+    .click();
+  await expect(
+    page.getByRole("button", { name: "Enter performance", exact: true }),
+  ).toBeDisabled();
+  await expect(
+    page.getByRole("button", { name: "Switch to edit", exact: true }),
+  ).toHaveCount(0);
+  await page.evaluate(() =>
+    (window as unknown as { releaseDigest: () => void }).releaseDigest(),
+  );
+  await expect(
+    page.getByRole("button", { name: "Switch to edit", exact: true }),
+  ).toBeVisible();
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          new Promise<string[]>((resolve, reject) => {
+            const open = indexedDB.open("scoremap-voicings", 1);
+            open.onerror = () => reject(open.error);
+            open.onsuccess = () => {
+              const db = open.result;
+              const read = db
+                .transaction("presets")
+                .objectStore("presets")
+                .getAll();
+              read.onerror = () => {
+                db.close();
+                reject(read.error);
+              };
+              read.onsuccess = () => {
+                db.close();
+                resolve(read.result.map((row) => row.preset?.name));
+              };
+            };
+          }),
+      ),
+    )
+    .toContain("Synthetic in flight");
+});
+
+test("switching to performance while a configuration file is read does not import it", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const panel = page.locator(".library-footer");
+  await panel
+    .getByText("Reusable keyboard configurations on this device", {
+      exact: true,
+    })
+    .click();
+  await page.evaluate(() => {
+    const original = File.prototype.text;
+    let release!: () => void;
+    const gate = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    Object.assign(window, {
+      releaseConfigurationRead: release,
+      configurationReadStarted: false,
+    });
+    File.prototype.text = async function () {
+      Object.assign(window, { configurationReadStarted: true });
+      await gate;
+      return original.call(this);
+    };
+  });
+  await panel
+    .getByLabel("Reusable configuration import file", { exact: true })
+    .setInputFiles({
+      name: "synthetic-device.json",
+      mimeType: "application/json",
+      buffer: Buffer.from(
+        JSON.stringify({
+          format: "scoremap-device-configuration",
+          version: 1,
+          resource: {
+            id: "synthetic-device",
+            revision: 1,
+            configuration: {
+              id: "synthetic-device",
+              name: "Synthetic delayed device",
+              instrument: "keyboard",
+              range: [21, 108],
+            },
+          },
+        }),
+      ),
+    });
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          (window as unknown as { configurationReadStarted: boolean })
+            .configurationReadStarted,
+      ),
+    )
+    .toBe(true);
+  await page
+    .getByRole("button", { name: "Enter performance", exact: true })
+    .click();
+  await expect(
+    page.getByRole("button", { name: "Switch to edit", exact: true }),
+  ).toBeVisible();
+  page.once("dialog", (dialog) => dialog.accept());
+  await page.evaluate(() =>
+    (
+      window as unknown as { releaseConfigurationRead: () => void }
+    ).releaseConfigurationRead(),
+  );
+  await expect(panel.getByRole("alert")).toContainText("Switch to Edit");
+  await expect(
+    panel.getByText("Synthetic delayed device", { exact: false }),
+  ).toHaveCount(0);
+});
+
 test("interrupted reusable-voicing import resumes after browser restart using its retained mapping without duplicating acknowledged resources", async ({
   page,
 }) => {

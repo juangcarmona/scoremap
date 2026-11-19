@@ -12,6 +12,8 @@ import { downloadText, MAX_IMPORT_BYTES } from "./backup";
 import { requireValue, object, array, sameData } from "./validation";
 import { useNotation } from "../../shared/music/NotationContext";
 import { formatChordSymbol, formatNote } from "../../shared/music/notation";
+import { useEditAdmission } from "./useEditAdmission";
+import { usePersonalEditBarrier } from "./PersonalEditBarrier";
 export function VoicingPresets({
   editable,
   capture,
@@ -22,6 +24,8 @@ export function VoicingPresets({
   onApply?: (preset: SavedPreset) => void;
 }) {
   const store = usePresetStore();
+  const beginEdit = useEditAdmission(editable);
+  const barrier = usePersonalEditBarrier();
   const { preference } = useNotation();
   const presets = useQuery({
     queryKey: ["voicing-presets", store.scope],
@@ -33,12 +37,22 @@ export function VoicingPresets({
   const [failure, setFailure] = useState("");
   const draftId = useRef(crypto.randomUUID());
   const file = useRef<HTMLInputElement>(null);
-  async function act(work: () => Promise<unknown>, success: string) {
+  async function act(
+    work: (check: () => void) => Promise<unknown>,
+    success: string,
+  ) {
     setBusy(true);
     setFailure("");
     setStatus("");
     try {
-      if ((await work()) !== false) setStatus(success);
+      const localCheck = beginEdit(),
+        sharedCheck = barrier.begin();
+      const check = () => {
+        localCheck();
+        sharedCheck();
+      };
+      check();
+      if ((await work(check)) !== false) setStatus(success);
     } catch (error) {
       setFailure(
         error instanceof Error
@@ -72,19 +86,21 @@ export function VoicingPresets({
           className="builder-controls"
           onSubmit={(event) => {
             event.preventDefault();
-            void act(async () => {
+            void act(async (check) => {
               const preset = validatePreset({
                 ...capture(),
                 id: draftId.current,
                 name,
               });
-              await store.mutate({
-                operation: "save",
-                id: preset.id,
-                expectedRevision: 0,
-                mode: "edit",
-                content: preset,
-              });
+              await barrier.run(check, () =>
+                store.mutate({
+                  operation: "save",
+                  id: preset.id,
+                  expectedRevision: 0,
+                  mode: "edit",
+                  content: preset,
+                }),
+              );
               draftId.current = crypto.randomUUID();
               setName("");
             }, "Reusable voicing saved. Song copies are unchanged.");
@@ -147,18 +163,20 @@ export function VoicingPresets({
                         )
                           return;
                         void act(
-                          () =>
-                            store.mutate({
-                              operation: "save",
-                              id: saved.id,
-                              expectedRevision: saved.revision,
-                              mode: "edit",
-                              content: validatePreset({
-                                ...capture(),
+                          (check) =>
+                            barrier.run(check, () =>
+                              store.mutate({
+                                operation: "save",
                                 id: saved.id,
-                                name: preset.name,
+                                expectedRevision: saved.revision,
+                                mode: "edit",
+                                content: validatePreset({
+                                  ...capture(),
+                                  id: saved.id,
+                                  name: preset.name,
+                                }),
                               }),
-                            }),
+                            ),
                           "Preset updated as a new independent version; existing song copies are unchanged.",
                         );
                       }}
@@ -176,14 +194,16 @@ export function VoicingPresets({
                       );
                       if (next !== null)
                         void act(
-                          () =>
-                            store.mutate({
-                              operation: "save",
-                              id: saved.id,
-                              expectedRevision: saved.revision,
-                              mode: "edit",
-                              content: { ...preset, name: next },
-                            }),
+                          (check) =>
+                            barrier.run(check, () =>
+                              store.mutate({
+                                operation: "save",
+                                id: saved.id,
+                                expectedRevision: saved.revision,
+                                mode: "edit",
+                                content: { ...preset, name: next },
+                              }),
+                            ),
                           "Preset renamed as a new version; song copies are unchanged.",
                         );
                     }}
@@ -200,14 +220,16 @@ export function VoicingPresets({
                         )
                       )
                         void act(
-                          () =>
-                            store.mutate({
-                              operation: "delete",
-                              id: saved.id,
-                              expectedRevision: saved.revision,
-                              mode: "edit",
-                              content: null,
-                            }),
+                          (check) =>
+                            barrier.run(check, () =>
+                              store.mutate({
+                                operation: "delete",
+                                id: saved.id,
+                                expectedRevision: saved.revision,
+                                mode: "edit",
+                                content: null,
+                              }),
+                            ),
                           "Reusable voicing deleted; song copies are unchanged.",
                         );
                     }}
@@ -270,12 +292,13 @@ export function VoicingPresets({
               const selected = event.target.files?.[0];
               event.target.value = "";
               if (!selected) return;
-              void act(async () => {
+              void act(async (check) => {
                 requireValue(
                   selected.size <= MAX_IMPORT_BYTES,
                   "This preset backup exceeds the supported import limit. Keep the source file.",
                 );
                 const raw = await selected.text();
+                check();
                 const envelope: unknown = JSON.parse(raw);
                 object(envelope, ["format", "version", "presets"]);
                 requireValue(
@@ -300,10 +323,12 @@ export function VoicingPresets({
                   raw,
                   originals.length,
                 );
+                check();
                 const acknowledged = await store.list();
                 let committed = 0;
                 try {
                   for (const [index, original] of originals.entries()) {
+                    check();
                     const content = {
                       ...original.preset!,
                       id: plan.ids[index]!,
@@ -317,22 +342,26 @@ export function VoicingPresets({
                         "A resource from this import changed. Compare it before continuing.",
                       );
                     else
-                      await store.mutate(
-                        {
-                          operation: "save",
-                          id: content.id,
-                          expectedRevision: 0,
-                          mode: "edit",
-                          content,
-                        },
-                        plan.commands[index],
+                      await barrier.run(check, () =>
+                        store.mutate(
+                          {
+                            operation: "save",
+                            id: content.id,
+                            expectedRevision: 0,
+                            mode: "edit",
+                            content,
+                          },
+                          plan.commands[index],
+                        ),
                       );
                     committed++;
                   }
+                  check();
                   await finishPresetImport(key);
-                } catch {
+                } catch (error) {
                   throw new Error(
-                    `${committed} of ${originals.length} voicings saved. Keep the original file and compare the saved list before importing the remainder.`,
+                    `${committed} of ${originals.length} voicings saved. Keep the original file and compare the saved list before importing the remainder.${error instanceof Error && error.message.startsWith("Switch to Edit") ? ` ${error.message}` : ""}`,
+                    { cause: error },
                   );
                 }
               }, "Reusable voicing import completed. Review the saved list; source files are kept.");

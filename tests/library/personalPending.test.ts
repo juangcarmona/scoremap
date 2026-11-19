@@ -1,6 +1,7 @@
 // @vitest-environment node
 import { expect, it } from "vitest";
 import { PersonalPending } from "../../src/features/library/personalPending";
+import { PersonalEditBarrier } from "../../src/features/library/PersonalEditBarrier";
 
 it("protects personal changes before transport and reconciles the original command after reopening", async () => {
   const principal = crypto.randomUUID();
@@ -174,5 +175,94 @@ it("does not replay a retained reusable resource in performance mode and keeps t
   await store.retry(retained[0]!.key, "edit");
   expect(sends).toBe(2);
   expect(await store.list()).toEqual([]);
+  store.close();
+});
+
+it("rechecks edit admission after unlocking a retained resource and before replay", async () => {
+  const principal = crypto.randomUUID();
+  const key = Buffer.from(crypto.getRandomValues(new Uint8Array(32))).toString(
+    "base64",
+  );
+  const content = {
+    id: crypto.randomUUID(),
+    name: "Synthetic",
+    instrument: "keyboard",
+    range: [21, 108],
+  };
+  const request = {
+    operation: "save",
+    id: content.id,
+    content,
+    expectedRevision: 0,
+    mode: "edit",
+    commandId: crypto.randomUUID(),
+  };
+  let sends = 0,
+    release!: () => void,
+    unlockStarted!: () => void;
+  const gate = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  const started = new Promise<void>((resolve) => {
+    unlockStarted = resolve;
+  });
+  const transport = async <T>(path: string): Promise<T> => {
+    if (path.includes("/unlock")) {
+      unlockStarted();
+      await gate;
+      return { key } as T;
+    }
+    if (path.startsWith("/api/personal-recovery-keys"))
+      return { id: "synthetic-key", key } as T;
+    sends++;
+    throw new Error("Lost response");
+  };
+  const store = new PersonalPending(principal, transport, () => true);
+  await expect(
+    store.mutate("device", request, (value) => value),
+  ).rejects.toThrow("Lost response");
+  const retained = await store.list();
+  let editing = true;
+  const retry = store.retry(retained[0]!.key, "edit", () => {
+    if (!editing) throw new Error("Switch to Edit");
+  });
+  await started;
+  editing = false;
+  release();
+  await expect(retry).rejects.toThrow("Switch to Edit");
+  expect(sends).toBe(1);
+  expect(await store.list()).toEqual(retained);
+  await store.remove(retained[0]!.key);
+  store.close();
+});
+
+it("retains an unconfirmed personal write when a pending mode change follows a timeout", async () => {
+  const principal = crypto.randomUUID();
+  const key = Buffer.from(crypto.getRandomValues(new Uint8Array(32))).toString("base64");
+  const content = { id: crypto.randomUUID(), name: "Synthetic", instrument: "keyboard", range: [21, 108] };
+  const request = { operation: "save", id: content.id, content, expectedRevision: 0, mode: "edit", commandId: crypto.randomUUID() };
+  let fail!: (reason: Error) => void, started!: () => void;
+  const waiting = new Promise<never>((_resolve, reject) => { fail = reject; });
+  const sent = new Promise<void>((resolve) => { started = resolve; });
+  const transport = async <T>(path: string): Promise<T> => {
+    if (path.startsWith("/api/personal-recovery-keys")) return { id: "synthetic-key", key } as T;
+    started();
+    return waiting;
+  };
+  const store = new PersonalPending(principal, transport, () => true);
+  const barrier = new PersonalEditBarrier();
+  barrier.setEditing(true);
+  const write = barrier.run(barrier.begin(), () => store.mutate("device", request, (value) => value));
+  const failure = expect(write).rejects.toThrow("Unconfirmed response");
+  await sent;
+  barrier.setEditing(false);
+  const idle = barrier.whenIdle();
+  fail(new Error("Unconfirmed response"));
+  await failure;
+  await idle;
+  const retained = await store.list();
+  expect(retained).toHaveLength(1);
+  expect(JSON.stringify(retained)).not.toContain("Synthetic");
+  await store.remove(retained[0]!.key);
   store.close();
 });
