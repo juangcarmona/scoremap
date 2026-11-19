@@ -92,6 +92,7 @@
     "publish:production": "node scripts/publish-production.mjs",
     "test:deployment": "python3 scripts/qualify-production.py",
     "test:session-vault": "python3 scripts/qualify-session-vault.py",
-    "verify:connected": "node scripts/verify-connected.mjs"
+    "verify:connected": "node scripts/verify-connected.mjs",
+    "test:deployment-schema": "python3 tests/deployment/qualify-future-schema.py"
   }
 }
