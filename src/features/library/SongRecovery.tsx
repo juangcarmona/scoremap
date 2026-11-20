@@ -1,3 +1,7 @@
+import {
+  getApiSongsByIdHistory,
+  getApiTrash,
+} from "../../shared/api/private-client.gen";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { Song } from "./domain";
@@ -61,16 +65,16 @@ export function SongHistory({
       song.revision,
     ],
     queryFn: () =>
-      store.request<Version[]>(
-        `/api/songs/${encodeURIComponent(song.id)}/history`,
-      ),
+      getApiSongsByIdHistory(store.request.bind(store), {
+        id: song.id,
+      }) as Promise<Version[]>,
     enabled: open,
     retry: false,
   });
   async function exportVersion(revision: number) {
-    const current = await store.request<Version[]>(
-      `/api/songs/${encodeURIComponent(song.id)}/history`,
-    );
+    const current = (await getApiSongsByIdHistory(store.request.bind(store), {
+      id: song.id,
+    })) as Version[];
     const version = current.find((entry) => entry.revision === revision);
     if (!version)
       throw new Error(
@@ -216,7 +220,8 @@ export function DeletedSongs({
   const [status, setStatus] = useState("");
   const trash = useQuery({
     queryKey: ["deleted-songs", store.identity.principal, revision],
-    queryFn: () => store.request<RetainedSong[]>("/api/trash"),
+    queryFn: () =>
+      getApiTrash(store.request.bind(store)) as Promise<RetainedSong[]>,
     enabled: open,
     retry: false,
   });

@@ -23,6 +23,7 @@ function fixture() {
     expectedRevision: number;
     commandId: string;
   }[] = [];
+  const rawRequests: string[] = [];
   const receipts = new Map<string, object>();
   const view = () => ({
     library: structuredClone(durable),
@@ -45,6 +46,7 @@ function fixture() {
         });
       if (url !== "/api/library") throw new Error("Unexpected fixture request");
       if (init.method !== "PUT") return Response.json(view());
+      rawRequests.push(String(init.body));
       const request = JSON.parse(
         String(init.body),
       ) as (typeof requests)[number];
@@ -77,6 +79,7 @@ function fixture() {
     store,
     session: new LibrarySession(store),
     requests,
+    rawRequests,
     durable: () => durable,
     loseReply: () => {
       loseReply = true;
@@ -133,6 +136,7 @@ it("reconciles an ambiguous original receipt before sending newer protected work
   await f.session.retrySave();
   expect(f.requests).toHaveLength(3);
   expect(f.requests[1]).toEqual(f.requests[0]);
+  expect(f.rawRequests[1]).toBe(f.rawRequests[0]);
   expect(f.requests[2]?.commandId).not.toBe(f.requests[0]?.commandId);
   expect(f.requests[2]?.expectedRevision).toBe(1);
   expect(f.durable().revision).toBe(2);

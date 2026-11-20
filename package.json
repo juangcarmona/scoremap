@@ -67,7 +67,7 @@
     "verify:architecture": "arcshape validate --docs docs/architecture --links --citations",
     "verify:baseline": "lighthouse verify && node scripts/lighthouse-guard.mjs verify",
     "verify:specs": "openspec validate --all --strict --no-interactive",
-    "verify": "npm run verify:product && npm run verify:citations && npm run verify:architecture && npm run verify:baseline && npm run verify:specs && npm run verify:development-fixture && npm run verify:music-catalogue && npm run verify:backend && npm run verify:private-api-contract && npm run verify:private-api-types && npm run verify:deployment && npm run verify:security && npm run verify:frontend-boundaries && npm run verify:app",
+    "verify": "npm run verify:product && npm run verify:citations && npm run verify:architecture && npm run verify:baseline && npm run verify:specs && npm run verify:development-fixture && npm run verify:music-catalogue && npm run verify:backend && npm run verify:private-api-contract && npm run verify:private-api-types && npm run verify:private-api-client && npm run verify:deployment && npm run verify:security && npm run verify:frontend-boundaries && npm run verify:app",
     "dev": "vite --host 0.0.0.0",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
@@ -102,6 +102,8 @@
     "build:pdf-validator": "node scripts/build-pdf-validator.mjs",
     "test:pdf-validator": "python3 tests/pdf/qualify-validator.py",
     "generate:private-api-types": "node scripts/generate-private-api-types.mjs",
-    "verify:private-api-types": "node scripts/generate-private-api-types.mjs --check"
+    "verify:private-api-types": "node scripts/generate-private-api-types.mjs --check",
+    "generate:private-api-client": "node scripts/generate-private-api-client.mjs",
+    "verify:private-api-client": "node scripts/generate-private-api-client.mjs --check && node --test tests/contract/generated-client-drift.test.mjs"
   }
 }

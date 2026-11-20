@@ -1,3 +1,4 @@
+import { getApiVoicingPresets } from "../../shared/api/private-client.gen";
 import type { PersonalPending } from "./personalPending";
 import { openDB, type DBSchema, type IDBPDatabase } from "idb";
 import {
@@ -56,7 +57,7 @@ export class RemotePresetStore extends RetriablePresetStore {
     super();
   }
   async list() {
-    const value = await this.request<unknown>("/api/voicing-presets");
+    const value = await getApiVoicingPresets(this.request);
     requireValue(Array.isArray(value), "Invalid saved-preset response.");
     return value.map(savedPreset);
   }
