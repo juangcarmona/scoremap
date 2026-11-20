@@ -14,9 +14,13 @@ export function OfflinePreparation({
   const [info, setInfo] = useState<OfflineLeaseInfo | null>(null),
     [busy, setBusy] = useState(false),
     [error, setError] = useState("");
-  const [expanded, setExpanded] = useState(session.mode === "edit");
+  const [expansion, setExpansion] = useState({
+    mode: session.mode,
+    open: session.mode === "edit",
+  });
+  const expanded =
+    expansion.mode === session.mode ? expansion.open : session.mode === "edit";
   const [disconnected, setDisconnected] = useState(navigator.onLine === false);
-  useEffect(() => setExpanded(session.mode === "edit"), [session.mode]);
   useEffect(() => store.offline.subscribe(() => setInfo(null)), [store]);
   useEffect(() => {
     const offline = () => setDisconnected(true),
@@ -36,7 +40,9 @@ export function OfflinePreparation({
     >
       <details
         open={expanded}
-        onToggle={(event) => setExpanded(event.currentTarget.open)}
+        onToggle={(event) =>
+          setExpansion({ mode: session.mode, open: event.currentTarget.open })
+        }
       >
         <summary>Prepare for temporary offline use</summary>
         <p>
