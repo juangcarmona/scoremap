@@ -1,6 +1,11 @@
 // Generated from the registered partial private API contract. Do not edit.
 import type * as Api from "./private-api.gen";
 export type Transport = <T>(path: string, init?: RequestInit) => Promise<T>;
+declare const serializedBody: unique symbol;
+export type SerializedBody<T> = string & { readonly [serializedBody]: T };
+export function serializeBody<T>(body: T): SerializedBody<T> {
+  return JSON.stringify(body) as SerializedBody<T>;
+}
 export const getApiSongsBySongIdArrangementsByArrangementId = (
   request: Transport,
   path: Api.GetApiSongsBySongIdArrangementsByArrangementIdData["path"],
@@ -18,6 +23,12 @@ export const postApiOfflineLease = (
   Api.PostApiOfflineLeaseResponses[keyof Api.PostApiOfflineLeaseResponses]
 > =>
   request(`/api/offline-lease`, { method: "POST", body: JSON.stringify(body) });
+export const postApiOfflineLeaseSerialized = (
+  request: Transport,
+  body: SerializedBody<Api.PostApiOfflineLeaseData["body"]>,
+): Promise<
+  Api.PostApiOfflineLeaseResponses[keyof Api.PostApiOfflineLeaseResponses]
+> => request(`/api/offline-lease`, { method: "POST", body });
 export const getApiDeviceConfigurations = (
   request: Transport,
 ): Promise<
@@ -33,6 +44,12 @@ export const postApiDeviceConfigurations = (
     method: "POST",
     body: JSON.stringify(body),
   });
+export const postApiDeviceConfigurationsSerialized = (
+  request: Transport,
+  body: SerializedBody<Api.PostApiDeviceConfigurationsData["body"]>,
+): Promise<
+  Api.PostApiDeviceConfigurationsResponses[keyof Api.PostApiDeviceConfigurationsResponses]
+> => request(`/api/device-configurations`, { method: "POST", body });
 export const getApiVoicingPresets = (
   request: Transport,
 ): Promise<
@@ -48,6 +65,12 @@ export const postApiVoicingPresets = (
     method: "POST",
     body: JSON.stringify(body),
   });
+export const postApiVoicingPresetsSerialized = (
+  request: Transport,
+  body: SerializedBody<Api.PostApiVoicingPresetsData["body"]>,
+): Promise<
+  Api.PostApiVoicingPresetsResponses[keyof Api.PostApiVoicingPresetsResponses]
+> => request(`/api/voicing-presets`, { method: "POST", body });
 export const getApiPreferencesNotation = (
   request: Transport,
 ): Promise<
@@ -63,6 +86,12 @@ export const putApiPreferencesNotation = (
     method: "PUT",
     body: JSON.stringify(body),
   });
+export const putApiPreferencesNotationSerialized = (
+  request: Transport,
+  body: SerializedBody<Api.PutApiPreferencesNotationData["body"]>,
+): Promise<
+  Api.PutApiPreferencesNotationResponses[keyof Api.PutApiPreferencesNotationResponses]
+> => request(`/api/preferences/notation`, { method: "PUT", body });
 export const getApiLibrary = (
   request: Transport,
 ): Promise<Api.GetApiLibraryResponses[keyof Api.GetApiLibraryResponses]> =>
@@ -72,6 +101,11 @@ export const putApiLibrary = (
   body: Api.PutApiLibraryData["body"],
 ): Promise<Api.PutApiLibraryResponses[keyof Api.PutApiLibraryResponses]> =>
   request(`/api/library`, { method: "PUT", body: JSON.stringify(body) });
+export const putApiLibrarySerialized = (
+  request: Transport,
+  body: SerializedBody<Api.PutApiLibraryData["body"]>,
+): Promise<Api.PutApiLibraryResponses[keyof Api.PutApiLibraryResponses]> =>
+  request(`/api/library`, { method: "PUT", body });
 export const putApiSongsByIdGrants = (
   request: Transport,
   path: Api.PutApiSongsByIdGrantsData["path"],
@@ -82,6 +116,17 @@ export const putApiSongsByIdGrants = (
   request(`/api/songs/${encodeURIComponent(path["id"])}/grants`, {
     method: "PUT",
     body: JSON.stringify(body),
+  });
+export const putApiSongsByIdGrantsSerialized = (
+  request: Transport,
+  path: Api.PutApiSongsByIdGrantsData["path"],
+  body: SerializedBody<Api.PutApiSongsByIdGrantsData["body"]>,
+): Promise<
+  Api.PutApiSongsByIdGrantsResponses[keyof Api.PutApiSongsByIdGrantsResponses]
+> =>
+  request(`/api/songs/${encodeURIComponent(path["id"])}/grants`, {
+    method: "PUT",
+    body,
   });
 export const postApiRecoveryKeys = (
   request: Transport,
@@ -154,6 +199,17 @@ export const postApiSongsByIdRestore = (
     method: "POST",
     body: JSON.stringify(body),
   });
+export const postApiSongsByIdRestoreSerialized = (
+  request: Transport,
+  path: Api.PostApiSongsByIdRestoreData["path"],
+  body: SerializedBody<Api.PostApiSongsByIdRestoreData["body"]>,
+): Promise<
+  Api.PostApiSongsByIdRestoreResponses[keyof Api.PostApiSongsByIdRestoreResponses]
+> =>
+  request(`/api/songs/${encodeURIComponent(path["id"])}/restore`, {
+    method: "POST",
+    body,
+  });
 export const postApiSongsByIdPurge = (
   request: Transport,
   path: Api.PostApiSongsByIdPurgeData["path"],
@@ -164,4 +220,15 @@ export const postApiSongsByIdPurge = (
   request(`/api/songs/${encodeURIComponent(path["id"])}/purge`, {
     method: "POST",
     body: JSON.stringify(body),
+  });
+export const postApiSongsByIdPurgeSerialized = (
+  request: Transport,
+  path: Api.PostApiSongsByIdPurgeData["path"],
+  body: SerializedBody<Api.PostApiSongsByIdPurgeData["body"]>,
+): Promise<
+  Api.PostApiSongsByIdPurgeResponses[keyof Api.PostApiSongsByIdPurgeResponses]
+> =>
+  request(`/api/songs/${encodeURIComponent(path["id"])}/purge`, {
+    method: "POST",
+    body,
   });
