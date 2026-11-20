@@ -149,6 +149,21 @@ test("real OIDC, current JSON import, atomic save and a clean second session", a
   });
   const axe = await new AxeBuilder({ page }).analyze();
   expect(axe.violations).toEqual([]);
+  const beforeCallback = await (await api(page, "/api/library")).json();
+  const historyBeforeCallback = await (
+    await api(page, `/api/songs/${id}/history`)
+  ).json();
+  const rejectedCallback = await page.request.get(
+    "/signin-oidc?code=forged&state=untrusted",
+    { maxRedirects: 0 },
+  );
+  expect(rejectedCallback.status()).toBe(400);
+  expect(await (await api(page, "/api/library")).json()).toEqual(
+    beforeCallback,
+  );
+  expect(await (await api(page, `/api/songs/${id}/history`)).json()).toEqual(
+    historyBeforeCallback,
+  );
   const second = await login(browser, "owner-a");
   await expect(
     second.page.getByRole("button", { name: new RegExp(title) }),
