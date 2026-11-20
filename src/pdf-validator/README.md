@@ -15,7 +15,7 @@ isolated, resource-limited container:
 ```sh
 npm run build:pdf-validator
 # Obtain the ID of the image printed by the build command.
-npm run test:pdf-validator -- sha256:<image-id>
+npm run test:pdf-validator -- sha256:REPLACE_WITH_IMAGE_ID
 ```
 
 The test verifies that the image and archived source share the exact Git
