@@ -24,6 +24,7 @@ public sealed class CompilerBoundaryTests
   [InlineData("using Microsoft.AspNetCore.Builder; namespace ScoreMap.Infrastructure { public class Store {} } namespace ScoreMap.Http { public static class Routes { private static string Read(ScoreMap.Infrastructure.Store store) => store.ToString()!; public static void Map(WebApplication app) { app.MapGet(\"/\", Read); } } }", "SM1004")]
   [InlineData("using Microsoft.AspNetCore.Builder; namespace ScoreMap.Infrastructure { public class Store {} } namespace ScoreMap.Http { public static class Routes { private static string Read(ScoreMap.Infrastructure.Store store) => \"bad\"; private static string Read(string value) => value; public static void Map(WebApplication app) { app.MapGet(\"/\", (System.Func<ScoreMap.Infrastructure.Store, string>)Read); } } }", "SM1004")]
   [InlineData("using Microsoft.AspNetCore.Builder; namespace ScoreMap.Infrastructure { public class Store {} } namespace ScoreMap.Http { public static class Routes { private static string Read(ScoreMap.Infrastructure.Store store) => \"bad\"; public static void Map(WebApplication app) { System.Func<ScoreMap.Infrastructure.Store, string> handler = Read; app.MapGet(\"/\", handler); } } }", "SM1004")]
+  [InlineData("using Microsoft.AspNetCore.Builder; namespace ScoreMap.Infrastructure { public class Store {} } namespace ScoreMap.Http { public static class Routes { private static string Read(ScoreMap.Infrastructure.Store store) => \"bad\"; public static void Map(WebApplication app) { System.Delegate handler = (System.Func<ScoreMap.Infrastructure.Store, string>)Read; app.MapGet(\"/\", handler); } } }", "SM1004")]
   public async Task SemanticRulesRejectAliasesGlobalTypesNestedPayloadsAndInheritance(string source, string expected)
   {
     var diagnostics = await Analyze(source);
@@ -51,6 +52,12 @@ public sealed class CompilerBoundaryTests
   public async Task UnrelatedMapGetMethodIsNotAnEndpoint()
   {
     var diagnostics = await Analyze("namespace ScoreMap.Infrastructure { public class Store {} } namespace ScoreMap.Http { public class Router { public void MapGet(string route, System.Delegate handler) {} } public static class Routes { private static string Read(ScoreMap.Infrastructure.Store store) => \"ok\"; public static void Map(Router router) { System.Func<ScoreMap.Infrastructure.Store, string> handler = Read; router.MapGet(\"/\", handler); } } }");
+    Assert.DoesNotContain(diagnostics, diagnostic => diagnostic.Id == "SM1004");
+  }
+  [Fact]
+  public async Task DelegateWithValidSignatureOrReassignmentDoesNotProduceFalsePositive()
+  {
+    var diagnostics = await Analyze("using Microsoft.AspNetCore.Builder; namespace ScoreMap.Infrastructure { public class Store {} } namespace ScoreMap.Http { public static class Routes { private static string Bad(ScoreMap.Infrastructure.Store store) => \"bad\"; private static string Good(string value) => value; public static void Map(WebApplication app) { System.Delegate safe = (System.Func<string, string>)Good; app.MapGet(\"/safe\", safe); System.Delegate changed = (System.Func<ScoreMap.Infrastructure.Store, string>)Bad; changed = (System.Func<string, string>)Good; app.MapGet(\"/changed\", changed); } } }");
     Assert.DoesNotContain(diagnostics, diagnostic => diagnostic.Id == "SM1004");
   }
   private static async Task<ImmutableArray<Diagnostic>> Analyze(string source)

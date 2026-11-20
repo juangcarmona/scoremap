@@ -56,6 +56,8 @@ public sealed class ScoreMapBoundaryAnalyzer : DiagnosticAnalyzer
     var expression = invocation.ArgumentList.Arguments.LastOrDefault()?.Expression;
     if (expression == null) return;
     var delegateType = context.SemanticModel.GetTypeInfo(expression, context.CancellationToken).Type as INamedTypeSymbol;
+    if (delegateType?.ToDisplayString() == "System.Delegate")
+      delegateType = UnchangedLocalDelegateType(context, expression) ?? delegateType;
     if (delegateType?.DelegateInvokeMethod is IMethodSymbol delegateSignature)
     {
       CheckEndpointParameters(context, expression, delegateSignature);
@@ -68,6 +70,19 @@ public sealed class ScoreMapBoundaryAnalyzer : DiagnosticAnalyzer
     var candidates = context.SemanticModel.GetMemberGroup(expression, context.CancellationToken).OfType<IMethodSymbol>().ToArray();
     var handler = symbol ?? (candidates.Length == 1 ? candidates[0] : null);
     if (handler != null) CheckEndpointParameters(context, expression, handler);
+  }
+  private static INamedTypeSymbol? UnchangedLocalDelegateType(SyntaxNodeAnalysisContext context, ExpressionSyntax expression)
+  {
+    if (expression is not IdentifierNameSyntax identifier || context.SemanticModel.GetSymbolInfo(identifier, context.CancellationToken).Symbol is not ILocalSymbol local) return null;
+    var method = identifier.Ancestors().OfType<BaseMethodDeclarationSyntax>().FirstOrDefault();
+    if (method == null) return null;
+    var references = method.DescendantNodes().OfType<IdentifierNameSyntax>()
+      .Where(node => SymbolEqualityComparer.Default.Equals(context.SemanticModel.GetSymbolInfo(node, context.CancellationToken).Symbol, local)).ToArray();
+    if (references.Length != 1 || references[0] != identifier) return null;
+    var declaration = local.DeclaringSyntaxReferences.SingleOrDefault()?.GetSyntax(context.CancellationToken) as VariableDeclaratorSyntax;
+    return declaration?.Initializer?.Value is ExpressionSyntax value
+      ? context.SemanticModel.GetTypeInfo(value, context.CancellationToken).Type as INamedTypeSymbol
+      : null;
   }
   private static void CheckEndpointParameters(SyntaxNodeAnalysisContext context, ExpressionSyntax expression, IMethodSymbol handler)
   {
