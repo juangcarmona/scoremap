@@ -61,8 +61,10 @@ try{
  const cases=[
   ['SM1001','global using Web = Microsoft.AspNetCore.Http.HttpContext; namespace ScoreMap.Domain; internal class Song { private Web? context; }'],
   ['SM1002','namespace ScoreMap.Domain { public class Song {} } namespace ScoreMap.Contracts { public record Payload(System.Collections.Generic.List<ScoreMap.Domain.Song[]> Value); }'],
+  ['SM1002','namespace ScoreMap.Domain { public class Song {} } namespace ScoreMap.Contracts { public interface IReader { System.Threading.Tasks.Task<System.Collections.Generic.IReadOnlyList<ScoreMap.Domain.Song[]>> Read(); } }'],
   ['SM1003','namespace ScoreMap.Http; public class Api : Microsoft.AspNetCore.Mvc.ControllerBase {}'],
   ['SM1004','using Microsoft.AspNetCore.Builder; namespace ScoreMap.Infrastructure { public class Store {} } namespace ScoreMap.Http { public static class Routes { public static void Map(Microsoft.AspNetCore.Builder.WebApplication app) { app.MapGet("/", (ScoreMap.Infrastructure.Store store) => store.ToString()); } } }'],
+  ['SM1004','using Microsoft.AspNetCore.Builder; namespace ScoreMap.Infrastructure { public class Store {} } namespace ScoreMap.Http { public static class Routes { private static string Read(ScoreMap.Infrastructure.Store store) => store.ToString()!; public static void Map(WebApplication app) { app.MapGet("/", Read); } } }'],
  ];
  for(const [diagnostic,source] of cases){
   await writeFile(join(temporary,'Probe.cs'),source);
