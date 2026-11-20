@@ -29,7 +29,7 @@ try:
     after = database.fingerprints()
     changed = [name for name in before if name != 'sm_sessions' and before[name] != after.get(name)]
     if changed or set(before) != set(after):
-        raise RuntimeError('The failed migration changed ScoreMap data other than authentication sessions')
+        raise RuntimeError('The failed migration changed ScoreMap tables: ' + ', '.join(changed))
     database.pg('psql', '-v', 'ON_ERROR_STOP=1', '-U', 'scoremap', '-d', 'scoremap', '-c', 'DROP TRIGGER scoremap_test_fail_migration ON sm_migrations; DROP FUNCTION scoremap_test_fail_migration()')
     trigger_installed = False
     q.execute_browser(state, 'migration-retry', 'playwright.migration.config.ts', 'retry:')
