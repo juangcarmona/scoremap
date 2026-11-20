@@ -29,3 +29,5 @@ The PWA navigation fallback excludes API, authentication, health and both OIDC c
 ## Risks and limits
 
 The single transaction lock prioritizes clear consistency over high write throughput. PostgreSQL/key-ring backup restoration, rich-arrangement retention/purge coverage, long-running session renewal, production artifact qualification and physical-device acceptance need their own executed evidence. The scoped analyzer rules and compiler refusals do not prove identity or transaction security.
+
+The Development bootstrap validates the selected native realm before creating runtime files or starting the provider. User IDs and case-insensitive usernames and client IDs must be unique; each user supplies an enabled flag and password credential. The selected client is enabled and confidential. Explicit user role bindings must refer to declared realm/client roles, except the provider's standard realm roles. Realm names cannot contain path separators, and the identity authority must match. Validation failures omit fixture contents and credentials. These are bootstrap-fixture checks; song grants remain independent resource-scoped permissions.
