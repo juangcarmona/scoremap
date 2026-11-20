@@ -1,3 +1,16 @@
+import {
+  postApiPersonalRecoveryKeys,
+  postApiPersonalRecoveryKeysByIdUnlock,
+  postApiVoicingPresets,
+  postApiDeviceConfigurations,
+  putApiPreferencesNotation,
+  type Transport,
+} from "../../shared/api/private-client.gen";
+import type {
+  NotationRequest,
+  PresetRequest,
+  DeviceConfigurationRequest,
+} from "../../shared/api/private-api.gen";
 import { savedDeviceConfiguration } from "./deviceConfigurations";
 import { openDB } from "idb";
 import { object, requireValue, sameData } from "./validation";
@@ -17,11 +30,26 @@ interface Draft {
   kind: Kind;
   request: Record<string, unknown>;
 }
-const routes = {
-  notation: { path: "/api/preferences/notation", method: "PUT" },
-  preset: { path: "/api/voicing-presets", method: "POST" },
-  device: { path: "/api/device-configurations", method: "POST" },
-} as const;
+function sendPersonal(
+  request: Transport,
+  kind: Kind,
+  body: Record<string, unknown>,
+) {
+  switch (kind) {
+    case "notation":
+      return putApiPreferencesNotation(
+        request,
+        body as unknown as NotationRequest,
+      );
+    case "preset":
+      return postApiVoicingPresets(request, body as unknown as PresetRequest);
+    case "device":
+      return postApiDeviceConfigurations(
+        request,
+        body as unknown as DeviceConfigurationRequest,
+      );
+  }
+}
 const database = () =>
   openDB("scoremap-protected-personal", 1, {
     upgrade(db) {
@@ -124,9 +152,11 @@ export class PersonalPending {
     );
   }
   private obtainKey() {
-    return (this.key ??= this.request<{ id: string; key: string }>(
-      "/api/personal-recovery-keys",
-      { method: "POST" },
+    return (this.key ??= (
+      postApiPersonalRecoveryKeys(this.request) as Promise<{
+        id: string;
+        key: string;
+      }>
     )
       .then(async (value) => ({
         id: value.id,
@@ -263,13 +293,7 @@ export class PersonalPending {
     );
     await this.protection;
     this.check(generation);
-    const route = routes[kind];
-    const acknowledged = validate(
-      await this.request<unknown>(route.path, {
-        method: route.method,
-        body: JSON.stringify(body),
-      }),
-    );
+    const acknowledged = validate(await sendPersonal(this.request, kind, body));
     this.check(generation);
     validateAcknowledgement(kind, body, acknowledged);
     this.epoch++;
@@ -298,10 +322,10 @@ export class PersonalPending {
       throw new Error(
         "This protected personal record is unreadable and has been preserved.",
       );
-    const response = await this.request<{ key: string }>(
-      `/api/personal-recovery-keys/${encodeURIComponent(record.keyId)}/unlock`,
-      { method: "POST" },
-    );
+    const response = (await postApiPersonalRecoveryKeysByIdUnlock(
+      this.request,
+      { id: record.keyId },
+    )) as { key: string };
     const key = await this.importKey(response.key);
     const plaintext = await crypto.subtle.decrypt(
       {
@@ -339,13 +363,8 @@ export class PersonalPending {
       "Switch to Edit before applying a reusable personal resource.",
     );
     if (draft.kind !== "notation") checkEdit?.();
-    const route = routes[draft.kind];
     this.epoch++;
-    const send = () =>
-      this.request<unknown>(route.path, {
-        method: route.method,
-        body: JSON.stringify(draft.request),
-      });
+    const send = () => sendPersonal(this.request, draft.kind, draft.request);
     const acknowledged = validateAcknowledgement(
       draft.kind,
       draft.request,

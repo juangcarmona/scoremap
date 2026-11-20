@@ -23,6 +23,7 @@ public sealed class ScoreMapBoundaryAnalyzer : DiagnosticAnalyzer
     context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
     context.EnableConcurrentExecution();
     context.RegisterSyntaxNodeAction(CheckTypeUse, SyntaxKind.IdentifierName, SyntaxKind.GenericName);
+    context.RegisterSyntaxNodeAction(CheckEndpointMethodGroup, SyntaxKind.InvocationExpression);
     context.RegisterSymbolAction(CheckNamedType, SymbolKind.NamedType);
   }
   private static bool Framework(ITypeSymbol type)
@@ -45,6 +46,24 @@ public sealed class ScoreMapBoundaryAnalyzer : DiagnosticAnalyzer
     if (invocation?.Expression is MemberAccessExpressionSyntax access && EndpointMethods.Contains(access.Name.Identifier.ValueText) &&
         ((type.ContainingNamespace?.ToDisplayString() ?? "").Contains(".Infrastructure") || (type.ContainingNamespace?.ToDisplayString() ?? "").StartsWith("Npgsql", StringComparison.Ordinal) || (type.ContainingNamespace?.ToDisplayString() ?? "").StartsWith("Microsoft.EntityFrameworkCore", StringComparison.Ordinal)))
       context.ReportDiagnostic(Diagnostic.Create(Endpoint, context.Node.GetLocation(), type.ToDisplayString()));
+  }
+  private static void CheckEndpointMethodGroup(SyntaxNodeAnalysisContext context)
+  {
+    var invocation = (InvocationExpressionSyntax)context.Node;
+    if (invocation.Expression is not MemberAccessExpressionSyntax access || !EndpointMethods.Contains(access.Name.Identifier.ValueText)) return;
+    var mappedMethod = context.SemanticModel.GetSymbolInfo(invocation, context.CancellationToken).Symbol as IMethodSymbol;
+    if (mappedMethod == null || !mappedMethod.ContainingNamespace.ToDisplayString().StartsWith("Microsoft.AspNetCore.Builder", StringComparison.Ordinal)) return;
+    var expression = invocation.ArgumentList.Arguments.LastOrDefault()?.Expression;
+    while (expression is ParenthesizedExpressionSyntax parenthesized) expression = parenthesized.Expression;
+    if (expression is CastExpressionSyntax cast) expression = cast.Expression;
+    if (expression is not (IdentifierNameSyntax or MemberAccessExpressionSyntax)) return;
+    var symbol = context.SemanticModel.GetSymbolInfo(expression, context.CancellationToken).Symbol as IMethodSymbol;
+    var candidates = context.SemanticModel.GetMemberGroup(expression, context.CancellationToken).OfType<IMethodSymbol>().ToArray();
+    var handler = symbol ?? (candidates.Length == 1 ? candidates[0] : null);
+    if (handler == null) return;
+    foreach (var parameter in handler.Parameters)
+      if ((parameter.Type.ContainingNamespace?.ToDisplayString() ?? "").Contains(".Infrastructure") || (parameter.Type.ContainingNamespace?.ToDisplayString() ?? "").StartsWith("Npgsql", StringComparison.Ordinal) || (parameter.Type.ContainingNamespace?.ToDisplayString() ?? "").StartsWith("Microsoft.EntityFrameworkCore", StringComparison.Ordinal))
+        context.ReportDiagnostic(Diagnostic.Create(Endpoint, expression.GetLocation(), parameter.Type.ToDisplayString()));
   }
   private static ITypeSymbol? Unsafe(ITypeSymbol type) => Unsafe(type, new HashSet<ITypeSymbol>(SymbolEqualityComparer.Default));
   private static ITypeSymbol? Unsafe(ITypeSymbol type, HashSet<ITypeSymbol> visited)
@@ -73,8 +92,11 @@ public sealed class ScoreMapBoundaryAnalyzer : DiagnosticAnalyzer
       var payload = member is IPropertySymbol property ? property.Type : member is IFieldSymbol field ? field.Type : null;
       if (payload != null && Unsafe(payload) is ITypeSymbol invalid) context.ReportDiagnostic(Diagnostic.Create(Payload, member.Locations.FirstOrDefault(), type.Name, invalid.ToDisplayString()));
       if (member is IMethodSymbol method)
+      {
+        if (Unsafe(method.ReturnType) is ITypeSymbol invalidReturn) context.ReportDiagnostic(Diagnostic.Create(Payload, method.Locations.FirstOrDefault(), type.Name, invalidReturn.ToDisplayString()));
         foreach (var parameter in method.Parameters)
           if (Unsafe(parameter.Type) is ITypeSymbol invalidParameter) context.ReportDiagnostic(Diagnostic.Create(Payload, parameter.Locations.FirstOrDefault(), type.Name, invalidParameter.ToDisplayString()));
+      }
     }
   }
 }
