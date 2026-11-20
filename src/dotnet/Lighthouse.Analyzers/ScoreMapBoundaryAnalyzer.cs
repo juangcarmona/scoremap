@@ -54,13 +54,23 @@ public sealed class ScoreMapBoundaryAnalyzer : DiagnosticAnalyzer
     var mappedMethod = context.SemanticModel.GetSymbolInfo(invocation, context.CancellationToken).Symbol as IMethodSymbol;
     if (mappedMethod == null || !mappedMethod.ContainingNamespace.ToDisplayString().StartsWith("Microsoft.AspNetCore.Builder", StringComparison.Ordinal)) return;
     var expression = invocation.ArgumentList.Arguments.LastOrDefault()?.Expression;
+    if (expression == null) return;
+    var delegateType = context.SemanticModel.GetTypeInfo(expression, context.CancellationToken).Type as INamedTypeSymbol;
+    if (delegateType?.DelegateInvokeMethod is IMethodSymbol delegateSignature)
+    {
+      CheckEndpointParameters(context, expression, delegateSignature);
+      return;
+    }
     while (expression is ParenthesizedExpressionSyntax parenthesized) expression = parenthesized.Expression;
     if (expression is CastExpressionSyntax cast) expression = cast.Expression;
     if (expression is not (IdentifierNameSyntax or MemberAccessExpressionSyntax)) return;
     var symbol = context.SemanticModel.GetSymbolInfo(expression, context.CancellationToken).Symbol as IMethodSymbol;
     var candidates = context.SemanticModel.GetMemberGroup(expression, context.CancellationToken).OfType<IMethodSymbol>().ToArray();
     var handler = symbol ?? (candidates.Length == 1 ? candidates[0] : null);
-    if (handler == null) return;
+    if (handler != null) CheckEndpointParameters(context, expression, handler);
+  }
+  private static void CheckEndpointParameters(SyntaxNodeAnalysisContext context, ExpressionSyntax expression, IMethodSymbol handler)
+  {
     foreach (var parameter in handler.Parameters)
       if ((parameter.Type.ContainingNamespace?.ToDisplayString() ?? "").Contains(".Infrastructure") || (parameter.Type.ContainingNamespace?.ToDisplayString() ?? "").StartsWith("Npgsql", StringComparison.Ordinal) || (parameter.Type.ContainingNamespace?.ToDisplayString() ?? "").StartsWith("Microsoft.EntityFrameworkCore", StringComparison.Ordinal))
         context.ReportDiagnostic(Diagnostic.Create(Endpoint, expression.GetLocation(), parameter.Type.ToDisplayString()));
