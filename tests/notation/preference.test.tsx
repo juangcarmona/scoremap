@@ -22,9 +22,11 @@ it("invalid device settings fall back safely and a choice survives a remount", a
     '{"mode":"unknown","primary":"latin"}',
   );
   const first = render(
-    <NotationProvider>
-      <NotationControl />
-    </NotationProvider>,
+    <PersonalEditProvider>
+      <NotationProvider>
+        <NotationControl />
+      </NotationProvider>
+    </PersonalEditProvider>,
   );
   expect(screen.getByLabelText("Note names")).toHaveValue("anglo");
   await userEvent.selectOptions(
@@ -37,9 +39,11 @@ it("invalid device settings fall back safely and a choice survives a remount", a
   });
   first.unmount();
   render(
-    <NotationProvider>
-      <NotationControl />
-    </NotationProvider>,
+    <PersonalEditProvider>
+      <NotationProvider>
+        <NotationControl />
+      </NotationProvider>
+    </PersonalEditProvider>,
   );
   expect(screen.getByLabelText("Note names")).toHaveValue("dual-latin");
 });
@@ -48,9 +52,11 @@ it("a refused device write stays displayed as unsaved rather than claiming succe
     throw new Error("Storage is full");
   });
   render(
-    <NotationProvider>
-      <NotationControl />
-    </NotationProvider>,
+    <PersonalEditProvider>
+      <NotationProvider>
+        <NotationControl />
+      </NotationProvider>
+    </PersonalEditProvider>,
   );
   await userEvent.selectOptions(screen.getByLabelText("Note names"), "latin");
   expect(screen.getByLabelText("Note names")).toHaveValue("latin");

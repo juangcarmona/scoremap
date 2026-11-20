@@ -4,6 +4,7 @@ export class PersonalEditBarrier {
   private epoch = 0;
   private editing = false;
   private updating = false;
+  private updateEpoch = 0;
   private pending = new Set<Promise<unknown>>();
 
   setEditing(editing: boolean) {
@@ -16,9 +17,20 @@ export class PersonalEditBarrier {
   beginUpdate() {
     if (this.updating) throw new Error("An update is already being applied.");
     this.updating = true;
+    this.updateEpoch++;
     this.epoch++;
     return () => {
       this.updating = false;
+    };
+  }
+
+  beginNotation() {
+    const epoch = this.updateEpoch;
+    return () => {
+      if (this.updating || this.updateEpoch !== epoch)
+        throw new Error(
+          "The update interrupted this operation. Your source file and settings are unchanged.",
+        );
     };
   }
 
