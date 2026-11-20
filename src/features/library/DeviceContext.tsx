@@ -1,3 +1,4 @@
+import { getApiDeviceConfigurations } from "../../shared/api/private-client.gen";
 import {
   createContext,
   useContext,
@@ -24,7 +25,7 @@ export function DeviceProvider({
         store?.identity.principal ?? "anonymous",
         store
           ? {
-              list: () => store.request("/api/device-configurations"),
+              list: () => getApiDeviceConfigurations(store.request.bind(store)),
               mutate: (request) =>
                 store.personal.mutate(
                   "device",
