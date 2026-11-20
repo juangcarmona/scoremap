@@ -98,7 +98,9 @@ try:
         authority = urlsplit(data['authority'])
         if (destination.scheme, destination.netloc) != (authority.scheme, authority.netloc):
             raise RuntimeError('Challenge left the synthetic identity origin')
-        result = subprocess.run(['curl', '--noproxy', '*', '--silent', '--show-error', '--max-time', '10', '--cacert', str(state / 'ca.crt'), '--resolve', f"{authority.hostname}:{authority.port}:127.0.0.1", '--write-out', '\n%{http_code}', locations[0]], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
+        result = subprocess.run(['curl', '--noproxy', '*', '--silent', '--show-error', '--max-time', '10', '--cacert', str(state / 'ca.crt'), '--connect-to', f"::127.0.0.1:{authority.port}", '--location', '--max-redirs', '5', '--cookie', '', '--write-out', '\n%{http_code}', locations[0]], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
+        if result.returncode:
+            return False
         body, separator, code = result.stdout.rpartition(b'\n')
         print('Synthetic provider response:', code.decode(errors='replace'), 'username:', b'id="username"' in body, 'password:', b'id="password"' in body, flush=True)
         return bool(separator and code == b'200' and b'id="username"' in body and b'id="password"' in body)
