@@ -65,6 +65,7 @@ try{
   ['SM1003','namespace ScoreMap.Http; public class Api : Microsoft.AspNetCore.Mvc.ControllerBase {}'],
   ['SM1004','using Microsoft.AspNetCore.Builder; namespace ScoreMap.Infrastructure { public class Store {} } namespace ScoreMap.Http { public static class Routes { public static void Map(Microsoft.AspNetCore.Builder.WebApplication app) { app.MapGet("/", (ScoreMap.Infrastructure.Store store) => store.ToString()); } } }'],
   ['SM1004','using Microsoft.AspNetCore.Builder; namespace ScoreMap.Infrastructure { public class Store {} } namespace ScoreMap.Http { public static class Routes { private static string Read(ScoreMap.Infrastructure.Store store) => store.ToString()!; public static void Map(WebApplication app) { app.MapGet("/", Read); } } }'],
+  ['SM1004','using Microsoft.AspNetCore.Builder; namespace ScoreMap.Infrastructure { public class Store {} } namespace ScoreMap.Http { public static class Routes { private static string Read(ScoreMap.Infrastructure.Store store) => store.ToString()!; public static void Map(WebApplication app) { System.Func<ScoreMap.Infrastructure.Store, string> handler = Read; app.MapGet("/", handler); } } }'],
  ];
  for(const [diagnostic,source] of cases){
   await writeFile(join(temporary,'Probe.cs'),source);
