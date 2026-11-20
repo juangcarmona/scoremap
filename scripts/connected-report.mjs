@@ -31,8 +31,13 @@ export function renderConnectedReport(manifest, receipt, bytes, revision) {
       visit(suite.suites);
     }
   }
-  if (verified) visit(report.suites);
-  const passed = verified && receipt.passed === true && completeConnectedQualification(report, manifest);
+  let passed = false;
+  try {
+    if (verified) visit(report.suites);
+    passed = verified && receipt.passed === true && completeConnectedQualification(report, manifest);
+  } catch {
+    verified = false;
+  }
   const modelFiles = Object.entries(receipt?.source?.filesSha256 ?? {}).filter(([name]) => name.startsWith('docs/product/model/')).sort(([a], [b]) => a.localeCompare(b));
   const modelDigest = verified && modelFiles.length ? createHash('sha256').update(JSON.stringify(modelFiles)).digest('hex') : 'unavailable';
   const run = verified && receipt?.run?.kind === 'github-actions' && /^\d+$/.test(receipt.run.id) && /^\d+$/.test(receipt.run.attempt) ? `GitHub Actions ${receipt.run.id}, attempt ${receipt.run.attempt}` : 'local or unavailable';

@@ -36,6 +36,13 @@ test('never reports success for changed, missing or failed evidence', () => {
   assert.match(html, /<td>failed<\/td>/);
   assert.doesNotMatch(html, /secret-session-token/);
 });
+test('a structurally malformed report is inconclusive even if its digest matches', () => {
+  const bytes = Buffer.from(JSON.stringify({ suites: [{ specs: {} }], stats: { expected: 52 } }));
+  const receipt = { source: { revision }, passed: true, reportSha256: createHash('sha256').update(bytes).digest('hex') };
+  const html = renderConnectedReport(manifest, receipt, bytes, revision);
+  assert.match(html, /incomplete or failed/);
+  assert.match(html, /unverified/);
+});
 test('escapes committed labels', () => {
   const html = renderConnectedReport([['<script>', '<unsafe>', 'browser']], null, Buffer.alloc(0), revision);
   assert.match(html, /&lt;script&gt;/);
