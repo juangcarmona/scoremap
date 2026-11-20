@@ -16,9 +16,11 @@ it("protects personal changes before transport and reconciles the original comma
   };
   let lose = true,
     sends = 0;
+  const sentBodies: string[] = [];
   const transport = async <T>(path: string, init?: RequestInit): Promise<T> => {
     if (path.startsWith("/api/personal-recovery-keys"))
       return { id: "synthetic-key", key } as T;
+    sentBodies.push(String(init?.body));
     expect(JSON.parse(String(init?.body))).toEqual(request);
     sends++;
     if (lose) throw new Error("Unknown response");
@@ -42,6 +44,7 @@ it("protects personal changes before transport and reconciles the original comma
   lose = false;
   await second.retry(retained[0]!.key);
   expect(sends).toBe(2);
+  expect(sentBodies[1]).toBe(sentBodies[0]);
   expect(await second.list()).toEqual([]);
   second.close();
 });

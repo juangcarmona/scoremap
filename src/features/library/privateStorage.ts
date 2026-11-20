@@ -1,4 +1,17 @@
-import { getApiPreferencesNotation } from "../../shared/api/private-client.gen";
+import {
+  getApiPreferencesNotation,
+  getApiLibrary,
+  getApiSongsByIdHistory,
+  postApiOfflineLease,
+  postApiRecoveryKeys,
+  postApiRecoveryKeysByIdUnlock,
+  putApiLibrary,
+  putApiLibrarySerialized,
+  serializeBody,
+  postApiSongsByIdRestore,
+  postApiSongsByIdPurge,
+  type SerializedBody,
+} from "../../shared/api/private-client.gen";
 import type {
   CommitLibrary as ApiCommitLibrary,
   NotationRequest as ApiNotationRequest,
@@ -202,15 +215,9 @@ export class PrivateLibraryStore implements LibraryStore {
       this.personal.version === personalVersion &&
       this.acknowledgedRevision === candidate.revision;
     try {
-      const envelope = await this.request<OfflineEnvelope>(
-        "/api/offline-lease",
-        {
-          method: "POST",
-          body: JSON.stringify({
-            songIds: candidate.songs.map((song) => song.id),
-          }),
-        },
-      );
+      const envelope = (await postApiOfflineLease(this.request.bind(this), {
+        songIds: candidate.songs.map((song) => song.id),
+      })) as OfflineEnvelope;
       this.assertAccess(generation);
       this.assertViewPermissions(envelope.view, candidate);
       if (
@@ -325,15 +332,15 @@ export class PrivateLibraryStore implements LibraryStore {
       this.controller = new AbortController();
     this.assertAccess();
     const generation = this.generation;
-    const view = await this.request<LibraryView>("/api/library");
+    const view = (await getApiLibrary(this.request.bind(this))) as LibraryView;
     this.assertViewPermissions(view);
     this.versions = view.versions;
     this.capabilities = view.capabilities;
     this.acknowledgedRevision = view.library.revision;
     await this.refreshDrafts();
-    const recovery = await this.request<RecoveryKey>("/api/recovery-keys", {
-      method: "POST",
-    });
+    const recovery = (await postApiRecoveryKeys(
+      this.request.bind(this),
+    )) as RecoveryKey;
     const key = await this.importKey(recovery.key);
     this.assertAccess(generation);
     this.keyId = recovery.id;
@@ -370,7 +377,7 @@ export class PrivateLibraryStore implements LibraryStore {
     }
   }
   async checkAccess() {
-    const view = await this.request<LibraryView>("/api/library");
+    const view = (await getApiLibrary(this.request.bind(this))) as LibraryView;
     if (
       Object.entries(this.capabilities).some(
         ([id, role]) => view.capabilities[id] !== role,
@@ -440,7 +447,7 @@ export class PrivateLibraryStore implements LibraryStore {
     const slot = this.ownKey;
     const initialRevision = this.acknowledgedRevision;
     const initialVersions = { ...this.versions };
-    let sent: string | null = null;
+    let sent: SerializedBody<ApiCommitLibrary> | null = null;
     let acknowledged: Library | null = null;
     const retain = async (
       expectedRevision: number,
@@ -521,7 +528,7 @@ export class PrivateLibraryStore implements LibraryStore {
           const versions = { ...this.versions };
           if (sequence === this.sequence)
             await retain(expectedRevision, versions);
-          sent = JSON.stringify({
+          sent = serializeBody<ApiCommitLibrary>({
             library,
             expectedRevision,
             versions,
@@ -535,10 +542,10 @@ export class PrivateLibraryStore implements LibraryStore {
         let saved: LibraryView;
         this.unconfirmed = write;
         try {
-          saved = await this.request<LibraryView>("/api/library", {
-            method: "PUT",
-            body: sent,
-          });
+          saved = (await putApiLibrarySerialized(
+            this.request.bind(this),
+            sent,
+          )) as LibraryView;
         } catch (error) {
           if (
             intent === "import" &&
@@ -585,14 +592,14 @@ export class PrivateLibraryStore implements LibraryStore {
     return this.prepare(candidate, intent, source).save(expectedRevision);
   }
   async verifyImported(acknowledged: Library, imported: Library) {
-    const view = await this.request<LibraryView>("/api/library").catch(
+    const view = (await getApiLibrary(this.request.bind(this)).catch(
       (cause: unknown) => {
         throw new Error(
           "The import was acknowledged, but its current authorized readback is unavailable. The original source is kept. Reload and compare before importing again.",
           { cause },
         );
       },
-    );
+    )) as LibraryView;
     this.assertViewPermissions(view);
     const actual = validateLibrary(view.library);
     for (const song of imported.songs) {
@@ -628,10 +635,9 @@ export class PrivateLibraryStore implements LibraryStore {
     this.assertAccess();
     const generation = this.generation;
     const { pending, key: slot } = await this.pendingRecord();
-    const key = await this.request<RecoveryKey>(
-      `/api/recovery-keys/${pending.keyId}/unlock`,
-      { method: "POST" },
-    );
+    const key = (await postApiRecoveryKeysByIdUnlock(this.request.bind(this), {
+      id: pending.keyId,
+    })) as RecoveryKey;
     const plaintext = await crypto.subtle.decrypt(
       { name: "AES-GCM", iv: new Uint8Array(pending.iv) },
       await this.importKey(key.key),
@@ -664,15 +670,12 @@ export class PrivateLibraryStore implements LibraryStore {
   }
   async retryPending() {
     const { record, pending, slot } = await this.unlockPending();
-    const saved = await this.request<LibraryView>("/api/library", {
-      method: "PUT",
-      body: JSON.stringify({
-        ...record,
-        commandId: pending.commandId,
-        mode: "edit",
-        recoveryKeyId: pending.keyId,
-      } satisfies ApiCommitLibrary),
-    });
+    const saved = (await putApiLibrary(this.request.bind(this), {
+      ...record,
+      commandId: pending.commandId,
+      mode: "edit",
+      recoveryKeyId: pending.keyId,
+    } satisfies ApiCommitLibrary)) as LibraryView;
     this.versions = saved.versions;
     this.capabilities = saved.capabilities;
     await removeStoredPending(slot, pending.commandId);
@@ -731,13 +734,13 @@ export class PrivateLibraryStore implements LibraryStore {
     const { record, pending, slot } = await this.unlockPending();
     const source = record.library.songs.find((song) => song.id === songId);
     if (!source) throw new Error("This song is not in the protected draft.");
-    const view = await this.request<LibraryView>("/api/library");
+    const view = (await getApiLibrary(this.request.bind(this))) as LibraryView;
     if (
       Object.hasOwn(record.versions, songId) &&
       !Object.hasOwn(view.capabilities, songId)
     ) {
       // Deleted content needs a fresh owner-only read; a revoked grantee fails here.
-      await this.request(`/api/songs/${encodeURIComponent(songId)}/history`);
+      await getApiSongsByIdHistory(this.request.bind(this), { id: songId });
     }
     const plan = await this.copyPlan(pending, source, slot);
     const ids = new Map(Object.entries(plan.identities));
@@ -766,18 +769,15 @@ export class PrivateLibraryStore implements LibraryStore {
         isRichSong(copy) || view.library.schemaVersion === 2 ? 2 : 1,
       songs: [...view.library.songs, copy],
     });
-    const saved = await this.request<LibraryView>("/api/library", {
-      method: "PUT",
-      body: JSON.stringify({
-        library,
-        expectedRevision: view.library.revision,
-        versions: view.versions,
-        commandId: plan.commandId,
-        mode: "edit",
-        import: true,
-        recoveryKeyId: pending.keyId,
-      } satisfies ApiCommitLibrary),
-    });
+    const saved = (await putApiLibrary(this.request.bind(this), {
+      library,
+      expectedRevision: view.library.revision,
+      versions: view.versions,
+      commandId: plan.commandId,
+      mode: "edit",
+      import: true,
+      recoveryKeyId: pending.keyId,
+    } satisfies ApiCommitLibrary)) as LibraryView;
     // Keep the original encrypted draft. Only its opaque copy mapping is added;
     // an unknown response can be reconciled by the same destination identity.
     return validateLibrary(saved.library);
@@ -802,16 +802,22 @@ export class PrivateLibraryStore implements LibraryStore {
         ? this.recoveryRetry.commandId
         : crypto.randomUUID();
     this.recoveryRetry = { candidate, commandId };
-    return this.request(
-      `/api/songs/${encodeURIComponent(songId)}/${operation}`,
-      {
-        method: "POST",
-        body: JSON.stringify({ ...request, commandId }),
+    const body = {
+      expectedRevision,
+      ...(revision === undefined ? {} : { revision }),
+      ...(confirmation === undefined ? {} : { confirmation }),
+      confirmed: true,
+      mode: "edit",
+      commandId,
+    };
+    const invoke =
+      operation === "restore" ? postApiSongsByIdRestore : postApiSongsByIdPurge;
+    return invoke(this.request.bind(this), { id: songId }, body).then(
+      (acknowledgement) => {
+        this.recoveryRetry = null;
+        return acknowledgement;
       },
-    ).then((acknowledgement) => {
-      this.recoveryRetry = null;
-      return acknowledgement;
-    });
+    );
   }
   close() {
     this.unsubscribeOffline();
