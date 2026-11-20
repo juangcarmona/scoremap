@@ -59,6 +59,9 @@
     },
     "micromark-extension-math": {
       "katex": "0.18.10"
+    },
+    "@hey-api/json-schema-ref-parser": {
+      "js-yaml": "4.3.2"
     }
   },
   "scripts": {
