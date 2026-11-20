@@ -1,0 +1,262 @@
+[
+  [
+    "arrangement-workspace.spec.ts",
+    "SB-NAVIGATION: one private performance context synchronizes three independently ranged keyboards and clears the silent part",
+    "connected-chromium"
+  ],
+  [
+    "arrangement-workspace.spec.ts",
+    "SB-PART-ISOLATION: one private editor command adds P4 and K4 binding while preserving three prior parts, independent Q and shared form",
+    "connected-chromium"
+  ],
+  [
+    "autosave-retention.spec.ts",
+    "a failed performed-note save keeps a waiting update blocked and durable music intact",
+    "connected-chromium"
+  ],
+  [
+    "autosave-retention.spec.ts",
+    "a performed-note save held after the real commit survives song and mode changes",
+    "connected-chromium"
+  ],
+  [
+    "autosave-retention.spec.ts",
+    "a real pending-store quota refusal sends no save, claims no local protection and can be explicitly retried once storage works",
+    "connected-chromium"
+  ],
+  [
+    "autosave-retention.spec.ts",
+    "a real waiting service worker defers activation until the performed-note acknowledgement",
+    "connected-chromium"
+  ],
+  [
+    "autosave-retention.spec.ts",
+    "a waiting update preserves a notation change until its acknowledgement",
+    "connected-chromium"
+  ],
+  [
+    "autosave-retention.spec.ts",
+    "an import waits for a held performed-note acknowledgement and preserves both songs",
+    "connected-chromium"
+  ],
+  [
+    "autosave-retention.spec.ts",
+    "an unconfirmed JSON import remains visible for immediate original-command recovery without replacing the current library",
+    "connected-chromium"
+  ],
+  [
+    "autosave-retention.spec.ts",
+    "rapid typing is encrypted before an older real service acknowledgement and survives reload without replaying the latest draft",
+    "connected-chromium"
+  ],
+  [
+    "autosave-retention.spec.ts",
+    "the previous principal-keyed protected record remains recoverable after upgrading to editing-context records",
+    "connected-chromium"
+  ],
+  [
+    "autosave-retention.spec.ts",
+    "two private tabs retain independently recoverable encrypted drafts without clobbering one another or changing acknowledged music",
+    "connected-chromium"
+  ],
+  [
+    "autosave-retention.spec.ts",
+    "voluntary real logout waits for local protection rather than a held commit response and the exact receipt remains recoverable",
+    "connected-chromium"
+  ],
+  [
+    "canonical-access.spec.ts",
+    "SB-ISOLATION: an independent actual owner cannot read a guessed nested arrangement; both owners' complete resources remain unchanged",
+    "connected-chromium"
+  ],
+  [
+    "canonical-access.spec.ts",
+    "SB-ROLE-REVOKE: a protected performed-note write based on actual revision 21 refuses after an acknowledged editor-to-viewer downgrade",
+    "connected-chromium"
+  ],
+  [
+    "canonical-notation.spec.ts",
+    "SB-NOTATION: real dual Latin-primary preference changes D-flat3 F3 A-flat3 across editor, theory, saved voicing and consultation without a musical revision",
+    "connected-chromium"
+  ],
+  [
+    "canonical-recovery.spec.ts",
+    "SB-PRIVATE-RECOVER: a clean independently authenticated browser reconstructs Song 13, both independent arrangements and separately acknowledged notation without replay",
+    "connected-chromium"
+  ],
+  [
+    "canonical-recovery.spec.ts",
+    "SB-REMOTE-COMMIT: actual Song 12→13 atomically saves performed pitches and bindings; application acknowledgement preserves a newer draft and original retry preserves history",
+    "connected-chromium"
+  ],
+  [
+    "canonical-retention.spec.ts",
+    "SB-LIBRARY-RESTORE: a full rich Song restores 18→19 into a populated private library without changing its surviving song, history, memberships or personal resources",
+    "connected-chromium"
+  ],
+  [
+    "canonical-retention.spec.ts",
+    "SB-SONG-PURGE: separately named irreversible confirmation purges complete retained revision 18 while preserving an active song and independent personal resources",
+    "connected-chromium"
+  ],
+  [
+    "canonical-retention.spec.ts",
+    "SB-SONG-RETAIN SB-SONG-RESTORE: complete independent rich arrangements delete 17→18 and restore 18→19 into an empty real owner's library without reviving grants or memberships",
+    "connected-chromium"
+  ],
+  [
+    "device-configurations.spec.ts",
+    "reusable keyboard configurations protect a lost save, copy independently into one arrangement and preserve song content through owner-scoped edit, export, removal and import",
+    "connected-chromium"
+  ],
+  [
+    "import-selection.spec.ts",
+    "a saved import whose fresh readback fails is reported separately, keeps its source and refuses a second identity-preserving import",
+    "connected-chromium"
+  ],
+  [
+    "import-selection.spec.ts",
+    "selected anonymous claim keeps complete source music, previews collisions and resumes an independent copy after a real lost commit response",
+    "connected-chromium"
+  ],
+  [
+    "notation-transfer.spec.ts",
+    "private note-name transfer uses an independently acknowledged preference",
+    "connected-chromium"
+  ],
+  [
+    "pending-recovery.spec.ts",
+    "SB-PRIVATE-REFUSE: the same reauthenticated editor cannot open a protected complete draft after owner revocation, but can explicitly remove its ciphertext",
+    "connected-chromium"
+  ],
+  [
+    "pending-recovery.spec.ts",
+    "SB-SESSION-LOCK: a real principal's known deadline locks complete performed-note pending work, rejects late responses and retains only protected recovery across account switch",
+    "connected-chromium"
+  ],
+  [
+    "pending-recovery.spec.ts",
+    "a retained legacy draft copies once through atomic v1 migration and reconciles the same rich copy after a lost acknowledgement",
+    "connected-chromium"
+  ],
+  [
+    "pending-recovery.spec.ts",
+    "protected complete-song retry after reload reconciles a lost actual commit without another revision or history entry",
+    "connected-chromium"
+  ],
+  [
+    "pending-recovery.spec.ts",
+    "stale protected work refuses overwrite and saves one complete independent recovery copy despite a lost copy acknowledgement and reload",
+    "connected-chromium"
+  ],
+  [
+    "pending-recovery.spec.ts",
+    "typing protects the latest complete draft and coalesces a burst into one real service revision",
+    "connected-chromium"
+  ],
+  [
+    "personal-recovery.spec.ts",
+    "an encrypted personal preference survives lost acknowledgement and account switching, then explicitly reconciles without changing music",
+    "connected-chromium"
+  ],
+  [
+    "personal-recovery.spec.ts",
+    "personal key purpose and owner remain separate from revoked song grants, and personal keys cannot authorize a song commit",
+    "connected-chromium"
+  ],
+  [
+    "private-library.spec.ts",
+    "SB-VOICING: actual private builder acknowledges one exact octave edit, preserving shared form, independent parts, history and personal resources",
+    "connected-chromium"
+  ],
+  [
+    "private-library.spec.ts",
+    "account notation persists independently, ignores anonymous settings and reconciles failed/lost acknowledgements",
+    "connected-chromium"
+  ],
+  [
+    "private-library.spec.ts",
+    "current-format song history, retained deletion, restore and irreversible purge",
+    "connected-chromium"
+  ],
+  [
+    "private-library.spec.ts",
+    "disabled credentials, unauthenticated routes, callback state and server-only session tokens",
+    "connected-chromium"
+  ],
+  [
+    "private-library.spec.ts",
+    "independent private presets enforce owner scope, edit mode, versions and stable receipts without changing song copies",
+    "connected-chromium"
+  ],
+  [
+    "private-library.spec.ts",
+    "private reusable-voicing import resumes a lost committed response after reload without duplicates or a song revision",
+    "connected-chromium"
+  ],
+  [
+    "private-library.spec.ts",
+    "protected pending work survives logout, refuses another account and recovers explicitly on a narrow touch screen",
+    "connected-chromium"
+  ],
+  [
+    "private-library.spec.ts",
+    "real OIDC, current JSON import, atomic save and a clean second session",
+    "connected-chromium"
+  ],
+  [
+    "private-library.spec.ts",
+    "restore/purge serialize and a failed multi-song transaction rolls back earlier inserts",
+    "connected-chromium"
+  ],
+  [
+    "private-library.spec.ts",
+    "song-scoped editor/viewer grants, revocation, versions and retry receipts",
+    "connected-chromium"
+  ],
+  [
+    "private-offline-refusal.spec.ts",
+    "a real prepared private context locks on detected wall-clock rollback while the provider session remains independently valid",
+    "connected-chromium"
+  ],
+  [
+    "private-offline-refusal.spec.ts",
+    "a revoked real editor loses offline access before reconnect exposure and cannot unlock or replay its retained draft",
+    "connected-chromium"
+  ],
+  [
+    "private-offline-refusal.spec.ts",
+    "an actual offline-copy storage refusal creates no usable offline authority and preserves the acknowledged service state",
+    "connected-chromium"
+  ],
+  [
+    "private-offline-refusal.spec.ts",
+    "fresh offline authorization is scoped, rejects forged scope and keys, and cannot activate a browser from login or a direct API response alone",
+    "connected-chromium"
+  ],
+  [
+    "private-offline.spec.ts",
+    "a real prepared lease ends at its configured earlier deadline and an offline restart never opens retained private content",
+    "connected-chromium"
+  ],
+  [
+    "private-offline.spec.ts",
+    "an offline personal choice is encrypted before transport and reconnect never automatically replays its mutation",
+    "connected-chromium"
+  ],
+  [
+    "private-offline.spec.ts",
+    "real scoped offline use protects a complete performed edit, locks on reconnect and explicitly reconciles one service revision",
+    "connected-chromium"
+  ],
+  [
+    "rate-limit-recovery.spec.ts",
+    "a rate-limited initial library read waits and uses the explicit recovery control",
+    "connected-chromium"
+  ],
+  [
+    "rate-limit-recovery.spec.ts",
+    "a recovered 429 cannot cause a later 503 or rate-limited write to be retried",
+    "connected-chromium"
+  ]
+]
