@@ -54,7 +54,7 @@ for (const custom of [false, true]) test(`an aborted rerun preserves prior resul
     mkdirSync(path.join(dir, 'scripts'));
     mkdirSync(path.join(dir, 'test-results/connected'), { recursive: true });
     mkdirSync(path.join(dir, 'bin'));
-    for (const name of ['verify-connected.mjs', 'verification-inputs.mjs', 'connected-qualification.mjs']) copyFileSync(path.join('scripts', name), path.join(dir, 'scripts', name));
+    for (const name of ['verify-connected.mjs', 'verification-inputs.mjs', 'connected-qualification.mjs', 'connected-report.mjs']) copyFileSync(path.join('scripts', name), path.join(dir, 'scripts', name));
     writeFileSync(path.join(dir, 'bin/npm'), '#!/bin/sh\nprintf %s "$SCOREMAP_TEST_REPORT_DIRECTORY" > "$PWD/bin/actual-directory"\nexit 1\n', { mode: 0o755 });
     execFileSync('git', ['init', '-q'], { cwd: dir });
     execFileSync('git', ['add', 'scripts'], { cwd: dir });
@@ -82,7 +82,7 @@ test('a successful run records its own result without replacing a custom directo
     mkdirSync(path.join(dir, 'bin'));
     const reportDir = path.join(dir, 'custom-reports');
     mkdirSync(reportDir);
-    for (const name of ['verify-connected.mjs', 'verification-inputs.mjs', 'connected-qualification.mjs']) copyFileSync(path.join('scripts', name), path.join(dir, 'scripts', name));
+    for (const name of ['verify-connected.mjs', 'verification-inputs.mjs', 'connected-qualification.mjs', 'connected-report.mjs']) copyFileSync(path.join('scripts', name), path.join(dir, 'scripts', name));
     writeFileSync(path.join(dir, 'tests/connected/qualification-manifest.json'), JSON.stringify(manifest));
     writeFileSync(path.join(dir, 'bin/report.json'), example().bytes);
     writeFileSync(path.join(dir, 'bin/npm'), '#!/bin/sh\ncp "$PWD/bin/report.json" "$SCOREMAP_TEST_REPORT_DIRECTORY/results.json"\n', { mode: 0o755 });
@@ -98,5 +98,10 @@ test('a successful run records its own result without replacing a custom directo
     assert.equal(path.dirname(path.dirname(receipt.reportPath)), reportDir);
     assert.equal(readFileSync(receipt.reportPath, 'utf8'), example().bytes.toString());
     assert.equal(readFileSync(oldReport, 'utf8'), 'other user report');
+    const summary = spawnSync(process.execPath, ['scripts/connected-report.mjs'], { cwd: dir });
+    assert.equal(summary.status, 0, summary.stderr.toString());
+    const html = readFileSync(path.join(dir, 'test-results/connected/summary.html'), 'utf8');
+    assert.match(html, /Overall: <strong>passed/);
+    assert.doesNotMatch(html, /secret-session-token/);
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
