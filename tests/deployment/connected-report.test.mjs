@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { mkdtempSync, mkdirSync, writeFileSync, copyFileSync, existsSync, rmSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, copyFileSync, existsSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { execFileSync, spawnSync } from 'node:child_process';
@@ -48,24 +48,55 @@ test('escapes committed labels', () => {
   assert.match(html, /&lt;script&gt;/);
   assert.doesNotMatch(html, /<script>/);
 });
-test('an aborted rerun cannot reuse the previous success receipt', () => {
+for (const custom of [false, true]) test(`an aborted rerun preserves prior results and cannot reuse the receipt (${custom ? 'custom' : 'default'} directory)`, () => {
   const dir = mkdtempSync(path.join(tmpdir(), 'scoremap-qualification-'));
   try {
     mkdirSync(path.join(dir, 'scripts'));
     mkdirSync(path.join(dir, 'test-results/connected'), { recursive: true });
     mkdirSync(path.join(dir, 'bin'));
     for (const name of ['verify-connected.mjs', 'verification-inputs.mjs', 'connected-qualification.mjs']) copyFileSync(path.join('scripts', name), path.join(dir, 'scripts', name));
-    writeFileSync(path.join(dir, 'bin/npm'), '#!/bin/sh\nexit 1\n', { mode: 0o755 });
+    writeFileSync(path.join(dir, 'bin/npm'), '#!/bin/sh\nprintf %s "$SCOREMAP_TEST_REPORT_DIRECTORY" > "$PWD/bin/actual-directory"\nexit 1\n', { mode: 0o755 });
     execFileSync('git', ['init', '-q'], { cwd: dir });
     execFileSync('git', ['add', 'scripts'], { cwd: dir });
     execFileSync('git', ['-c', 'user.name=Test', '-c', 'user.email=test@example.invalid', 'commit', '-qm', 'fixture'], { cwd: dir });
     const receipt = path.join(dir, 'test-results/connected/source-receipt.json');
-    const results = path.join(dir, 'test-results/connected/results.json');
+    const reportDir = custom ? path.join(dir, 'custom-reports') : path.join(dir, 'test-results/connected');
+    mkdirSync(reportDir, { recursive: true });
+    const results = path.join(reportDir, 'results.json');
     writeFileSync(receipt, '{"passed":true}');
-    writeFileSync(results, '{}');
-    const result = spawnSync(process.execPath, ['scripts/verify-connected.mjs'], { cwd: dir, env: { ...process.env, PATH: `${dir}/bin:${process.env.PATH}` } });
+    writeFileSync(results, 'previous report, must not change');
+    const result = spawnSync(process.execPath, ['scripts/verify-connected.mjs'], { cwd: dir, env: { ...process.env, PATH: `${dir}/bin:${process.env.PATH}`, ...(custom ? { SCOREMAP_TEST_REPORT_DIRECTORY: reportDir } : { SCOREMAP_TEST_REPORT_DIRECTORY: '' }) } });
     assert.notEqual(result.status, 0);
     assert.equal(existsSync(receipt), false);
-    assert.equal(existsSync(results), false);
+    assert.equal(readFileSync(results, 'utf8'), 'previous report, must not change');
+    const actualDir = readFileSync(path.join(dir, 'bin/actual-directory'), 'utf8');
+    assert.equal(path.dirname(actualDir), reportDir);
+    assert.match(path.basename(actualDir), /^run-/);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+test('a successful run records its own result without replacing a custom directory file', () => {
+  const dir = mkdtempSync(path.join(tmpdir(), 'scoremap-qualification-success-'));
+  try {
+    mkdirSync(path.join(dir, 'scripts'));
+    mkdirSync(path.join(dir, 'tests/connected'), { recursive: true });
+    mkdirSync(path.join(dir, 'bin'));
+    const reportDir = path.join(dir, 'custom-reports');
+    mkdirSync(reportDir);
+    for (const name of ['verify-connected.mjs', 'verification-inputs.mjs', 'connected-qualification.mjs']) copyFileSync(path.join('scripts', name), path.join(dir, 'scripts', name));
+    writeFileSync(path.join(dir, 'tests/connected/qualification-manifest.json'), JSON.stringify(manifest));
+    writeFileSync(path.join(dir, 'bin/report.json'), example().bytes);
+    writeFileSync(path.join(dir, 'bin/npm'), '#!/bin/sh\ncp "$PWD/bin/report.json" "$SCOREMAP_TEST_REPORT_DIRECTORY/results.json"\n', { mode: 0o755 });
+    execFileSync('git', ['init', '-q'], { cwd: dir });
+    execFileSync('git', ['add', 'scripts', 'tests'], { cwd: dir });
+    execFileSync('git', ['-c', 'user.name=Test', '-c', 'user.email=test@example.invalid', 'commit', '-qm', 'fixture'], { cwd: dir });
+    const oldReport = path.join(reportDir, 'results.json');
+    writeFileSync(oldReport, 'other user report');
+    const result = spawnSync(process.execPath, ['scripts/verify-connected.mjs'], { cwd: dir, env: { ...process.env, PATH: `${dir}/bin:${process.env.PATH}`, SCOREMAP_TEST_REPORT_DIRECTORY: reportDir } });
+    assert.equal(result.status, 0, result.stderr.toString());
+    const receipt = JSON.parse(readFileSync(path.join(dir, 'test-results/connected/source-receipt.json'), 'utf8'));
+    assert.equal(receipt.passed, true);
+    assert.equal(path.dirname(path.dirname(receipt.reportPath)), reportDir);
+    assert.equal(readFileSync(receipt.reportPath, 'utf8'), example().bytes.toString());
+    assert.equal(readFileSync(oldReport, 'utf8'), 'other user report');
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });

@@ -41,7 +41,9 @@ After `npm run verify:connected`, run `npm run report:connected` and open
 `test-results/connected/summary.html`. CI also includes it in the verification
 artifact, including when qualification fails. It identifies the committed
 selection and reports each outcome only when the source and result receipt
-match. A missing, changed or incomplete receipt is shown as unverified.
+match. A missing, changed or incomplete receipt is shown as unverified. Each
+connected run creates a unique subdirectory under `test-results/connected`, or
+under the configured `SCOREMAP_TEST_REPORT_DIRECTORY`, preserving prior reports.
 
 The HTML deliberately excludes raw errors, screenshots, video and traces; these
 can contain private session or musical data. It does not establish which target
