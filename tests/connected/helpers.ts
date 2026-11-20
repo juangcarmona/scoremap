@@ -9,6 +9,7 @@ if (["5380", "5381"].includes(target.port))
     "Synthetic connected fixtures must not target the real manual-trial ports.",
   );
 export const applicationOrigin = target.origin;
+const libraryRateLimit = new WeakMap<Page, number>();
 export const fixture = JSON.parse(
   await readFile(
     process.env.SCOREMAP_TEST_USERS ?? "config/development-users.example.json",
@@ -31,10 +32,19 @@ export async function login(
   const context = await browser.newContext(options);
   const page = await context.newPage();
   page.on("response", (response) => {
-    if (response.status() === 429)
+    const pathname = new URL(response.url()).pathname;
+    const libraryRead =
+      pathname === "/api/library" && response.request().method() === "GET";
+    if (libraryRead) libraryRateLimit.delete(page);
+    if (response.status() === 429) {
+      const header = response.headers()["retry-after"] ?? "";
+      const seconds = Number(header);
+      if (libraryRead && /^\d+$/.test(header) && seconds >= 1 && seconds <= 60)
+        libraryRateLimit.set(page, Date.now() + seconds * 1000);
       console.warn(
-        `[synthetic-rate-limit] ${new URL(response.url()).pathname} retryAfter=${response.headers()["retry-after"] ?? "unavailable"}`,
+        `[synthetic-rate-limit] ${pathname} retryAfter=${header || "unavailable"}`,
       );
+    }
   });
   await signIn(page, username);
   return { context, page };
@@ -142,7 +152,32 @@ export async function openSong(page: Page, title: string) {
     exact: true,
     includeHidden: true,
   });
-  await toggle.waitFor({ state: "attached" });
+  const retry = page.getByRole("button", {
+    name: "Try opening again",
+    exact: true,
+  });
+  const outcome = await Promise.race([
+    toggle.waitFor({ state: "attached" }).then(() => "ready" as const),
+    retry.waitFor({ state: "attached" }).then(() => "failed" as const),
+  ]);
+  if (outcome === "failed") {
+    const until = libraryRateLimit.get(page);
+    if (until === undefined)
+      throw new Error("Library load failed without a retryable rate limit.");
+    libraryRateLimit.delete(page);
+    const remaining = until - Date.now();
+    if (remaining > 0)
+      await new Promise((resolve) => setTimeout(resolve, remaining + 100));
+    const loaded = page.waitForResponse(
+      (response) =>
+        new URL(response.url()).pathname === "/api/library" &&
+        response.request().method() === "GET",
+    );
+    await retry.click();
+    if ((await loaded).status() !== 200)
+      throw new Error("Library read failed after its one rate-limit retry.");
+    await toggle.waitFor({ state: "attached" });
+  }
   if (await toggle.isVisible()) await toggle.click();
   await page.getByRole("button", { name: new RegExp(title) }).click();
 }

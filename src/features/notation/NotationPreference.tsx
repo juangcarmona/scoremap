@@ -65,6 +65,11 @@ function DeviceNotation({ children }: { children: ReactNode }) {
         scope: "device",
         retry: () => choose(preference),
         reload: () => undefined,
+        exportSnapshot: async () => {
+          if (error)
+            throw new Error("Save your note-name choice before exporting.");
+          return { preference, sourceRevision: null };
+        },
       }}
     >
       {children}
@@ -169,6 +174,23 @@ function AccountNotation({
         retry: () => {
           if (saved.isError) void saved.refetch();
           else if (draft) choose(draft);
+        },
+        exportSnapshot: async () => {
+          if (draft || mutation.isPending || error)
+            throw new Error(
+              "Save or recover your note-name choice before exporting.",
+            );
+          const confirmed = await store.read();
+          if (
+            !validNotation(confirmed) ||
+            !Number.isSafeInteger(confirmed.revision) ||
+            confirmed.revision < 0
+          )
+            throw new Error("Saved note names could not be verified.");
+          return {
+            preference: { mode: confirmed.mode, primary: confirmed.primary },
+            sourceRevision: confirmed.revision,
+          };
         },
         reload: () => {
           try {
