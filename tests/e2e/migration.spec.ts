@@ -5,6 +5,64 @@ import legacy from "../fixtures/library-v1.json" with { type: "json" };
 import migrated from "../fixtures/library-v1-migrated.json" with { type: "json" };
 import { createSong, readLibrary, saved } from "./helpers";
 
+test("SB-BACKUP-IMPORT-EMPTY: a confirmed empty v1 import replaces music only after consent and retains its original", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await createSong(page, "Synthetic song before empty import");
+  const before = await readLibrary(page);
+  const original = {
+    schemaVersion: 1,
+    revision: 7,
+    songs: [],
+    repertoires: [],
+  };
+  const backup = {
+    name: "synthetic-empty-v1.json",
+    mimeType: "application/json",
+    buffer: Buffer.from(
+      JSON.stringify({
+        format: "scoremap-backup",
+        version: 1,
+        library: original,
+      }),
+    ),
+  };
+  const input = page.getByLabel("Import backup file", { exact: true });
+  page.once("dialog", (dialog) => dialog.dismiss());
+  await input.setInputFiles(backup);
+  expect(await readLibrary(page)).toEqual(before);
+  await page.reload();
+  expect(await readLibrary(page)).toEqual(before);
+
+  page.once("dialog", (dialog) => dialog.accept());
+  await input.setInputFiles(backup);
+  await expect
+    .poll(async () => await readLibrary(page))
+    .toEqual({ ...original, schemaVersion: 2, revision: before.revision + 1 });
+  await saved(page);
+  await expect(
+    page.getByText("Your music starts here. Create a song when you are ready."),
+  ).toBeVisible();
+  await page.reload();
+  expect(await readLibrary(page)).toEqual({
+    ...original,
+    schemaVersion: 2,
+    revision: before.revision + 1,
+  });
+  await page.getByText("Originals before migration", { exact: true }).click();
+  const originals = page.getByRole("button", {
+    name: /Export imported original/,
+  });
+  await expect(originals).toHaveCount(1);
+  const downloaded = page.waitForEvent("download");
+  await originals.click();
+  expect(
+    JSON.parse(await fs.readFile((await (await downloaded).path())!, "utf8"))
+      .library,
+  ).toEqual(original);
+});
+
 test("interrupted browser migration preserves the current library and retries the original exactly once", async ({
   page,
 }) => {
