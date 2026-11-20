@@ -355,6 +355,9 @@ test("landscape tablet keeps song navigation and two keyboards visible together"
   await page
     .getByRole("button", { name: "Enter performance", exact: true })
     .click();
+  await page
+    .getByRole("button", { name: "Show keyboards beside song" })
+    .click();
   await page.evaluate(() => window.scrollTo(0, 0));
   await testInfo.attach("tablet-consultation", {
     body: await page.screenshot(),
@@ -444,6 +447,9 @@ test("1024px landscape tablet keeps two keyboards and library navigation availab
   await saved(page);
   await page
     .getByRole("button", { name: "Enter performance", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Show keyboards beside song" })
     .click();
   await page.evaluate(() => window.scrollTo(0, 0));
   await testInfo.attach("tablet-1024", {

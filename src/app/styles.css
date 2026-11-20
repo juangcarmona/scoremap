@@ -364,6 +364,9 @@ p {
 .sketch-caption span {
   font-size: 0.75rem;
 }
+.keyboard-layout-toggle {
+  display: none;
+}
 .section-list {
   list-style: none;
   margin: 0;
@@ -637,6 +640,9 @@ summary {
 .performing .song-workspace {
   padding-top: 1rem;
 }
+.performing .offline-preparation {
+  padding-block: 0;
+}
 .performing .song-header {
   padding-bottom: 0.5rem;
 }
@@ -677,7 +683,7 @@ summary {
   align-items: stretch;
   gap: 0.45rem;
   text-align: left;
-  font-size: 1.1rem;
+  font-size: 1.35rem;
   width: 100%;
   min-width: 0;
   padding: 0.65rem 0.65rem 0;
@@ -1225,16 +1231,20 @@ dialog h2 {
   }
 }
 
-/* Keep the song form and several performed parts together in landscape consultation. */
+/* Give the song form the full line; performed parts remain together below it. */
 @media (min-width: 960px) and (orientation: landscape) {
-  .sketch-performance {
+  .sketch-performance.show-keyboards {
     grid-template-columns: minmax(13rem, 0.55fr) minmax(0, 1.45fr);
     align-items: start;
   }
-  .sketch-performance > .arrangement-workspace {
+  .sketch-performance.show-keyboards > .arrangement-workspace {
     grid-column: auto;
     margin-top: 0;
     container-type: inline-size;
+  }
+  .sketch-performance .keyboard-layout-toggle {
+    display: inline-block;
+    font-size: 0.75rem;
   }
   .sketch-performance .musical-context,
   .sketch-performance .keyboard-legend {
@@ -1265,7 +1275,7 @@ dialog h2 {
   }
 }
 
-@media (min-width: 960px) and (max-width: 1199px) and (orientation: landscape) {
+@media (min-width: 621px) {
   .performing .workspace {
     display: block;
   }

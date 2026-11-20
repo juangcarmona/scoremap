@@ -202,6 +202,7 @@ export function Sketch({
     eventId?: string;
   } | null>(null);
   const [notesOpen, setNotesOpen] = useState(false);
+  const [sideBySide, setSideBySide] = useState(false);
   const selectedSection = song.sections.find(
     (s) => s.id === selection?.sectionId,
   );
@@ -239,7 +240,9 @@ export function Sketch({
     );
   }
   return (
-    <div className={`sketch-layout${edit ? "" : " sketch-performance"}`}>
+    <div
+      className={`sketch-layout${edit ? "" : " sketch-performance"}${!edit && sideBySide ? " show-keyboards" : ""}`}
+    >
       <div className="structure">
         {selection?.eventId &&
           isRichSong(song) &&
@@ -257,6 +260,18 @@ export function Sketch({
             {song.sections.length}{" "}
             {song.sections.length === 1 ? "section" : "sections"}
           </span>
+          {!edit && isRichSong(song) && (
+            <button
+              type="button"
+              className="keyboard-layout-toggle"
+              aria-pressed={sideBySide}
+              onClick={() => setSideBySide(!sideBySide)}
+            >
+              {sideBySide
+                ? "Give song full width"
+                : "Show keyboards beside song"}
+            </button>
+          )}
         </div>
         {!edit && (
           <p className="chord-diagram-guide">

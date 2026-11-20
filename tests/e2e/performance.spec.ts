@@ -1,6 +1,30 @@
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { prepared, readLibrary, saved } from "./helpers";
+test("landscape performance prioritizes the song and keeps the library accessible", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await prepared(page);
+  const before = await readLibrary(page);
+  await page.getByRole("button", { name: "Enter performance" }).click();
+  const structure = page.locator(".sketch-performance .structure");
+  const workspace = page.locator(".song-workspace");
+  const structureBox = await structure.boundingBox();
+  const workspaceBox = await workspace.boundingBox();
+  expect(structureBox!.width).toBeGreaterThan(workspaceBox!.width * 0.85);
+  await expect(
+    page.getByRole("button", { name: "Intro chord 1: C" }),
+  ).toBeInViewport();
+  const toggle = page.getByRole("button", { name: "Library", exact: true });
+  await expect(toggle).toHaveAttribute("aria-expanded", "false");
+  await toggle.click();
+  await expect(
+    page.getByRole("complementary", { name: "Music library" }),
+  ).toBeVisible();
+  await expect(toggle).toHaveAttribute("aria-expanded", "true");
+  expect(await readLibrary(page)).toEqual(before);
+});
 test("SB-SECTION-REORDER SB-ANNOTATIONS SB-PERFORMANCE SB-PERFORMANCE-REJECT SB-KEYBOARD: prepare, reorder, consult and retain exact content", async ({
   page,
 }) => {

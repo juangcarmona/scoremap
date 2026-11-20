@@ -14,7 +14,9 @@ export function OfflinePreparation({
   const [info, setInfo] = useState<OfflineLeaseInfo | null>(null),
     [busy, setBusy] = useState(false),
     [error, setError] = useState("");
+  const [expanded, setExpanded] = useState(session.mode === "edit");
   const [disconnected, setDisconnected] = useState(navigator.onLine === false);
+  useEffect(() => setExpanded(session.mode === "edit"), [session.mode]);
   useEffect(() => store.offline.subscribe(() => setInfo(null)), [store]);
   useEffect(() => {
     const offline = () => setDisconnected(true),
@@ -28,56 +30,64 @@ export function OfflinePreparation({
   }, []);
   if (!store.identity.privateOfflineMinutes && !info) return null;
   return (
-    <section className="notice" aria-label="Private offline preparation">
-      <h2>Prepare for temporary offline use</h2>
-      <p>
-        Prepare this library and your personal settings while connected. Only
-        the checked songs and permissions are covered. Restarting without a
-        connection locks the copy. Reconnecting locks private work until current
-        permissions are checked; changes never replay automatically.
-      </p>
-      <button
-        type="button"
-        disabled={busy || disconnected || session.reconciling}
-        onClick={() => {
-          void (async () => {
-            setBusy(true);
-            setError("");
-            try {
-              await session.whenIdle();
-              if (session.error || session.pending || !session.data)
-                throw new Error(
-                  "Confirm or recover pending saves before preparing offline use.",
-                );
-              const prepared = await store.prepareOffline(session.data);
-              const keys = [
-                ["voicing-presets", store.identity.principal],
-                ["device-configurations", store.identity.principal],
-              ];
-              await Promise.all(
-                keys.map((queryKey) => client.cancelQueries({ queryKey })),
-              );
-              const personal = store.preparedPersonal();
-              client.setQueryData(keys[0]!, personal.presets);
-              client.setQueryData(keys[1]!, personal.deviceConfigurations);
-              setInfo(prepared);
-            } catch (error) {
-              setInfo(null);
-              setError(
-                error instanceof Error
-                  ? error.message
-                  : "Offline preparation was not confirmed. Stay connected and try again.",
-              );
-            } finally {
-              setBusy(false);
-            }
-          })();
-        }}
+    <section
+      className="notice offline-preparation"
+      aria-label="Private offline preparation"
+    >
+      <details
+        open={expanded}
+        onToggle={(event) => setExpanded(event.currentTarget.open)}
       >
-        {busy
-          ? "Protecting the prepared copy…"
-          : "Prepare private offline copy"}
-      </button>
+        <summary>Prepare for temporary offline use</summary>
+        <p>
+          Prepare this library and your personal settings while connected. Only
+          the checked songs and permissions are covered. Restarting without a
+          connection locks the copy. Reconnecting locks private work until
+          current permissions are checked; changes never replay automatically.
+        </p>
+        <button
+          type="button"
+          disabled={busy || disconnected || session.reconciling}
+          onClick={() => {
+            void (async () => {
+              setBusy(true);
+              setError("");
+              try {
+                await session.whenIdle();
+                if (session.error || session.pending || !session.data)
+                  throw new Error(
+                    "Confirm or recover pending saves before preparing offline use.",
+                  );
+                const prepared = await store.prepareOffline(session.data);
+                const keys = [
+                  ["voicing-presets", store.identity.principal],
+                  ["device-configurations", store.identity.principal],
+                ];
+                await Promise.all(
+                  keys.map((queryKey) => client.cancelQueries({ queryKey })),
+                );
+                const personal = store.preparedPersonal();
+                client.setQueryData(keys[0]!, personal.presets);
+                client.setQueryData(keys[1]!, personal.deviceConfigurations);
+                setInfo(prepared);
+              } catch (error) {
+                setInfo(null);
+                setError(
+                  error instanceof Error
+                    ? error.message
+                    : "Offline preparation was not confirmed. Stay connected and try again.",
+                );
+              } finally {
+                setBusy(false);
+              }
+            })();
+          }}
+        >
+          {busy
+            ? "Protecting the prepared copy…"
+            : "Prepare private offline copy"}
+        </button>
+      </details>
       {info && (
         <p role="status">
           {disconnected
