@@ -49,7 +49,7 @@ def callback(headers):
         raise RuntimeError('Sign-in did not return one redirect')
     candidates = parse_qs(urlsplit(locations[0]).query).get('redirect_uri', [])
     if len(candidates) != 1:
-        raise RuntimeError('The identity challenge did not contain one callback')
+        raise RuntimeError('The identity challenge did not contain one callback; query keys: ' + ', '.join(sorted(parse_qs(urlsplit(locations[0]).query))))
     return urlsplit(candidates[0])
 
 try:
