@@ -4,10 +4,11 @@ This isolated validator is a preparation for issue #13. ScoreMap does not start,
 publish or call it, and PDF attachments remain disabled. The image alone does
 not impose its resource or network restrictions. Do not expose its HTTP port.
 
-The validator rejects unsupported or unsafe input and returns only a page count
-and SHA-256 digest; it does not store files or log their contents. The parser
-supports a bounded subset of PDF. Passing this check does not qualify browser
-rendering, backup recovery, authorization or user-device performance.
+The validator applies structural and resource checks to a bounded subset of PDF
+and returns only a page count and SHA-256 digest; it does not store files or
+log their contents. These checks cannot guarantee that every unsafe PDF is
+rejected. Passing them does not qualify browser rendering, backup recovery,
+authorization or user-device performance.
 
 Build from the current committed revision and run the synthetic tests in an
 isolated, resource-limited container:
