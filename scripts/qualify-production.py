@@ -234,7 +234,7 @@ def execute_browser(state, phase, config, grep=None):
     if result.returncode:
         raise RuntimeError('Disposable ' + phase + ' browser qualification failed; inspect its private log')
     completed = json.loads((report / 'results.json').read_text())
-    expected = 49 if config == 'playwright.connected.config.ts' and (not grep) else 3 if phase == 'tls-targeted' else 1
+    expected = 52 if config == 'playwright.connected.config.ts' and (not grep) else 3 if phase == 'tls-targeted' else 1
     if not (completed['stats']['expected'] == expected and completed['stats']['unexpected'] == 0 and (completed['stats']['skipped'] == 0)):
         raise RuntimeError("Qualification safety check failed: completed['stats']['expected'] == expected and completed['stats']['unexpected'] == 0 and (completed['stats']['skipped'] == 0)")
 
@@ -428,8 +428,8 @@ def smoke(state):
     if not previous['exitCode'] == 0:
         raise RuntimeError("Qualification safety check failed: previous['exitCode'] == 0")
     report = json.loads((Path(previous['directory']) / 'results.json').read_text())
-    if not (report['stats']['expected'] == 49 and report['stats']['unexpected'] == 0):
-        raise RuntimeError("Qualification safety check failed: report['stats']['expected'] == 49 and report['stats']['unexpected'] == 0")
+    if not (report['stats']['expected'] == 52 and report['stats']['unexpected'] == 0):
+        raise RuntimeError("Qualification safety check failed: report['stats']['expected'] == 52 and report['stats']['unexpected'] == 0")
     execute_browser(state, 'before', 'playwright.deployment.config.ts', 'before:')
     database = DisposableDatabase(state)
     database.dc('restart', 'application')

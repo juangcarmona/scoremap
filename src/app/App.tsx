@@ -29,6 +29,7 @@ import {
 } from "../features/notation/NotationPreference";
 import { SongHistory, DeletedSongs } from "../features/library/SongRecovery";
 import { PwaStatus } from "./PwaStatus";
+import { NotationTransfer } from "../features/notation/NotationTransfer";
 import {
   useCallback,
   useEffect,
@@ -698,6 +699,7 @@ function LibraryApp({
             </p>
           )}
           <footer className="library-footer">
+            <NotationTransfer />
             <VoicingPresets editable={edit} />
             <DeviceConfigurations editable={edit} />
             {store instanceof PrivateLibraryStore && (
