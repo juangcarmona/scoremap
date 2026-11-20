@@ -8,6 +8,7 @@ import json
 import ssl
 import subprocess
 import sys
+import time
 import uuid
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -90,8 +91,12 @@ try:
     q.call(['docker', 'exec', data['project'] + '-proxy', 'nginx', '-s', 'reload'])
 
     probe = 'forged-origin.scoremap.test'
-    status, proxy_headers = request(data['origin'], {'X-Forwarded-Host': probe}, state / 'ca.crt', '/health/ready')
-    if status != 200 or values(proxy_headers, 'x-qualification-forwarded-host') != [probe]:
+    for _ in range(50):
+        status, proxy_headers = request(data['origin'], {'X-Forwarded-Host': probe}, state / 'ca.crt', '/health/ready')
+        if status == 200 and values(proxy_headers, 'x-qualification-forwarded-host') == [probe]:
+            break
+        time.sleep(0.1)
+    else:
         raise RuntimeError('Synthetic trusted proxy did not forward the test header')
 
     def accepted_callback(headers):
