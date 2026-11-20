@@ -33,7 +33,7 @@ test("a rate-limited initial library read waits and uses the explicit recovery c
   }
 });
 
-test("other library errors and rate-limited writes are not retried", async ({
+test("a recovered 429 cannot cause a later 503 or rate-limited write to be retried", async ({
   browser,
 }) => {
   const owner = await login(browser, "owner-a");
@@ -47,6 +47,13 @@ test("other library errors and rate-limited writes are not retried", async ({
     await owner.page.route("**/api/library", (route) => {
       if (route.request().method() === "GET") {
         reads++;
+        if (reads === 1)
+          return route.fulfill({
+            status: 429,
+            headers: { "Retry-After": "1" },
+            body: "",
+          });
+        if (reads === 2) return route.continue();
         return route.fulfill({ status: 503, body: "" });
       }
       if (route.request().method() === "PUT") {
@@ -60,10 +67,19 @@ test("other library errors and rate-limited writes are not retried", async ({
       return route.continue();
     });
     await owner.page.reload();
+    await expect(
+      owner.page.getByRole("button", {
+        name: "Try opening again",
+        exact: true,
+      }),
+    ).toBeVisible();
+    await owner.page.reload();
+    await openSong(owner.page, song.title);
+    await owner.page.reload();
     await expect(openSong(owner.page, song.title)).rejects.toThrow(
       "without a retryable rate limit",
     );
-    expect(reads).toBe(1);
+    expect(reads).toBe(3);
     const status = await owner.page.evaluate(
       async () => (await fetch("/api/library", { method: "PUT" })).status,
     );

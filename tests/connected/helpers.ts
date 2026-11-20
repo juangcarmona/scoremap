@@ -32,17 +32,14 @@ export async function login(
   const context = await browser.newContext(options);
   const page = await context.newPage();
   page.on("response", (response) => {
+    const pathname = new URL(response.url()).pathname;
+    const libraryRead =
+      pathname === "/api/library" && response.request().method() === "GET";
+    if (libraryRead) libraryRateLimit.delete(page);
     if (response.status() === 429) {
-      const pathname = new URL(response.url()).pathname;
       const header = response.headers()["retry-after"] ?? "";
       const seconds = Number(header);
-      if (
-        pathname === "/api/library" &&
-        response.request().method() === "GET" &&
-        /^\d+$/.test(header) &&
-        seconds >= 1 &&
-        seconds <= 60
-      )
+      if (libraryRead && /^\d+$/.test(header) && seconds >= 1 && seconds <= 60)
         libraryRateLimit.set(page, Date.now() + seconds * 1000);
       console.warn(
         `[synthetic-rate-limit] ${pathname} retryAfter=${header || "unavailable"}`,
