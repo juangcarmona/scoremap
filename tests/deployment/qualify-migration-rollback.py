@@ -50,7 +50,9 @@ try:
     q.write(output, {'verificationSource': source, 'applicationRevision': settings['ApplicationRevision'], 'applicationImage': settings['ApplicationImage'], 'syntheticOnly': True, 'environment': 'disposable Production HTTPS, Keycloak and PostgreSQL', 'migrationInsertFaulted': True, 'scoremapTablesUnchangedExceptSessionsAndRecoveryKeys': True, 'previousRecoveryKeysUnchanged': True, 'newRecoveryKeyCount': len(after_keys - original_keys), 'sameCommandRetriedOnce': True, 'legacyOriginalAndHistoryReconstructed': True, 'actualOperatorDeployment': False})
     print('Synthetic PostgreSQL migration failure rolled back; original and idempotent retry verified.', flush=True)
 finally:
-    if trigger_installed and database:
-        database.pg('psql', '-v', 'ON_ERROR_STOP=1', '-U', 'scoremap', '-d', 'scoremap', '-c', 'DROP TRIGGER IF EXISTS scoremap_test_fail_migration ON sm_migrations; DROP FUNCTION IF EXISTS scoremap_test_fail_migration()')
-    if q.ACTIVE_STATE is not None and (q.ACTIVE_STATE / 'state.private.json').exists():
-        q.cleanup(q.ACTIVE_STATE)
+    try:
+        if trigger_installed and database:
+            database.pg('psql', '-v', 'ON_ERROR_STOP=1', '-U', 'scoremap', '-d', 'scoremap', '-c', 'DROP TRIGGER IF EXISTS scoremap_test_fail_migration ON sm_migrations; DROP FUNCTION IF EXISTS scoremap_test_fail_migration()')
+    finally:
+        if q.ACTIVE_STATE is not None and (q.ACTIVE_STATE / 'state.private.json').exists():
+            q.cleanup(q.ACTIVE_STATE)
