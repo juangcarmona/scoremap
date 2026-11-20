@@ -85,7 +85,7 @@
     "verify:backend": "npm run verify:dotnet",
     "test:connected": "playwright test --config=playwright.connected.config.ts",
     "verify:security": "node --test tests/security/*.test.mjs && node scripts/verify-security.mjs",
-    "verify:dotnet": "node node_modules/@juangcarmona/lighthouse/src/verify-dotnet.mjs && node scripts/verify-backend-boundaries.mjs && node --test tests/architecture/analyzer-visibility.test.mjs && node tests/architecture/verify-module-analyzer-severity.mjs && node --test tests/architecture/analyzer-severity.test.mjs",
+    "verify:dotnet": "node node_modules/@juangcarmona/lighthouse/src/verify-dotnet.mjs && node scripts/verify-backend-boundaries.mjs && node --test tests/architecture/analyzer-visibility.test.mjs && node tests/architecture/verify-module-analyzer-severity.mjs && node --test tests/architecture/analyzer-severity.test.mjs && node --test tests/architecture/lighthouse-handler-contracts.test.mjs",
     "verify:frontend-boundaries": "node scripts/verify-frontend-boundaries.mjs",
     "build:container": "node scripts/build-container.mjs",
     "verify:development-fixture": "node --test tests/deployment/development-fixture.test.mjs tests/deployment/connected-qualification.test.mjs",

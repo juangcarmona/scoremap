@@ -14,9 +14,14 @@ public sealed class CompilerBoundaryTests
   [InlineData("namespace ScoreMap.Infrastructure { public class Store {} } namespace ScoreMap.Application { internal class Handler { private global::ScoreMap.Infrastructure.Store store = new(); } }", "SM1001")]
   [InlineData("namespace ScoreMap.Domain { public class Song {} } namespace ScoreMap.Contracts { public record Payload(System.Collections.Generic.List<ScoreMap.Domain.Song[]> Value); }", "SM1002")]
   [InlineData("namespace ScoreMap.Contracts { public record Payload(System.Linq.IQueryable<string> Value); }", "SM1002")]
+  [InlineData("namespace ScoreMap.Domain { public class Song {} } namespace ScoreMap.Contracts { public interface IReader { ScoreMap.Domain.Song Read(); } }", "SM1002")]
+  [InlineData("namespace ScoreMap.Domain { public class Song {} } namespace ScoreMap.Contracts { public interface IReader { System.Threading.Tasks.Task<System.Collections.Generic.IReadOnlyList<ScoreMap.Domain.Song[]>> Read(); } }", "SM1002")]
+  [InlineData("namespace ScoreMap.Contracts { public interface IReader { System.Linq.IQueryable<string> Read(); } }", "SM1002")]
+  [InlineData("namespace ScoreMap.Infrastructure { public class Store {} } namespace ScoreMap.Contracts { public interface IReader { StoreResult Read(); } public record StoreResult(ScoreMap.Infrastructure.Store Storage); }", "SM1002")]
   [InlineData("namespace Microsoft.AspNetCore.Mvc { public class ControllerBase {} } namespace ScoreMap.Http { public class Parent : Microsoft.AspNetCore.Mvc.ControllerBase {} public class Api : Parent {} }", "SM1003")]
   [InlineData("namespace ScoreMap.Domain { public class Song {} } namespace ScoreMap.Contracts { public record Wrapped(ScoreMap.Domain.Song Song); public record Payload(System.Collections.Generic.IReadOnlyList<Wrapped> Values); }", "SM1002")]
   [InlineData("using Microsoft.AspNetCore.Builder; namespace ScoreMap.Infrastructure { public class Store {} } namespace ScoreMap.Http { public static class Routes { public static void Map(WebApplication app) { app.MapGet(\"/\", (ScoreMap.Infrastructure.Store store) => store.ToString()); } } }", "SM1004")]
+  [InlineData("using Microsoft.AspNetCore.Builder; namespace ScoreMap.Infrastructure { public class Store {} } namespace ScoreMap.Http { public static class Routes { private static string Read(ScoreMap.Infrastructure.Store store) => store.ToString()!; public static void Map(WebApplication app) { app.MapGet(\"/\", Read); } } }", "SM1004")]
   public async Task SemanticRulesRejectAliasesGlobalTypesNestedPayloadsAndInheritance(string source, string expected)
   {
     var diagnostics = await Analyze(source);
@@ -25,8 +30,14 @@ public sealed class CompilerBoundaryTests
   [Fact]
   public async Task PureDomainAndPortableDtosPass()
   {
-    var diagnostics = await Analyze("namespace ScoreMap.Domain { internal record Note(int Pitch); } namespace ScoreMap.Contracts { public record Payload(System.Collections.Generic.IReadOnlyList<string> Names); }");
+    var diagnostics = await Analyze("namespace ScoreMap.Domain { internal record Note(int Pitch); } namespace ScoreMap.Contracts { public record Payload(System.Collections.Generic.IReadOnlyList<string> Names); public interface IReader { System.Threading.Tasks.Task<System.Collections.Generic.IReadOnlyList<string>> Read(); } }");
     Assert.Empty(diagnostics);
+  }
+  [Fact]
+  public async Task HttpContextAndApplicationHandlerMethodGroupsRemainAllowed()
+  {
+    var diagnostics = await Analyze("using Microsoft.AspNetCore.Builder; namespace ScoreMap.Application { public class Handler {} } namespace ScoreMap.Http { public static class Routes { private static string Read(Microsoft.AspNetCore.Http.HttpContext context, ScoreMap.Application.Handler handler) => \"ok\"; public static void Map(WebApplication app) { app.MapGet(\"/\", Read); } } }");
+    Assert.DoesNotContain(diagnostics, diagnostic => diagnostic.Id == "SM1004");
   }
   private static async Task<ImmutableArray<Diagnostic>> Analyze(string source)
   {
