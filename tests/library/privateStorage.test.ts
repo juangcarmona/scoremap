@@ -169,3 +169,18 @@ it("keeps song acknowledgement independent of a personal-resource protection fai
   );
   await f.store.close();
 });
+
+it("validates notation reads and keeps the authenticated CSRF transport", async () => {
+  const f = fixture();
+  const fetchMock = vi.fn(async (_url: string, init: RequestInit) => {
+    expect(init.credentials).toBe("same-origin");
+    expect(init.headers).toMatchObject({ "X-ScoreMap-CSRF": "synthetic" });
+    return Response.json({ revision: -1, mode: "anglo", primary: "anglo" });
+  });
+  vi.stubGlobal("fetch", fetchMock);
+  await expect(f.store.notation.read()).rejects.toThrow(
+    "valid notation settings",
+  );
+  expect(fetchMock).toHaveBeenCalledOnce();
+  await f.store.close();
+});
