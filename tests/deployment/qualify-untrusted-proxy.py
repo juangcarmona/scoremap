@@ -78,6 +78,37 @@ try:
     if len(correlation) < 2 or any('secure' not in value or 'httponly' not in value or 'samesite=lax' not in value for value in correlation):
         raise RuntimeError('Trusted authentication cookies lack expected attributes')
 
+    # Model a trusted ingress that passes through an attacker-supplied host header.
+    # Keycloak validates the PAR callback before presenting the login form; using
+    # a forged ordinary Host as a negative control proves this check is sensitive.
+    proxy_config = state / 'nginx.conf'
+    proxy_text = proxy_config.read_text()
+    expected = 'proxy_set_header X-Forwarded-Host $http_host;'
+    if proxy_text.count(expected) != 1:
+        raise RuntimeError('Unexpected synthetic trusted proxy configuration')
+    proxy_config.write_text(proxy_text.replace(expected, 'proxy_set_header X-Forwarded-Host $http_x_forwarded_host;'))
+    q.call(['docker', 'exec', data['project'] + '-proxy', 'nginx', '-s', 'reload'])
+
+    def accepted_callback(headers):
+        status, challenge_headers = request(data['origin'], headers, state / 'ca.crt')
+        locations = values(challenge_headers, 'location')
+        if status != 302 or len(locations) != 1:
+            return False
+        destination = urlsplit(locations[0])
+        authority = urlsplit(data['authority'])
+        if (destination.scheme, destination.netloc) != (authority.scheme, authority.netloc):
+            raise RuntimeError('Challenge left the synthetic identity origin')
+        result = subprocess.run(['curl', '--noproxy', '*', '--silent', '--show-error', '--max-time', '10', '--cacert', str(state / 'ca.crt'), '--resolve', f"{authority.hostname}:{authority.port}:127.0.0.1", '--write-out', '\n%{http_code}', locations[0]], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
+        body, separator, code = result.stdout.rpartition(b'\n')
+        return bool(separator and code == b'200' and b'id="username"' in body and b'id="password"' in body)
+
+    if not accepted_callback({}):
+        raise RuntimeError('Synthetic provider did not accept the ordinary callback')
+    if not accepted_callback({'X-Forwarded-Host': 'forged-origin.scoremap.test'}):
+        raise RuntimeError('Forged forwarded host changed the registered callback')
+    if accepted_callback({'Host': 'forged-origin.scoremap.test'}):
+        raise RuntimeError('Forged ordinary Host unexpectedly passed callback validation')
+
     # HSTS is emitted by the real production middleware only when the forwarded
     # scheme is HTTPS. Use a non-localhost Host because ASP.NET excludes localhost.
     source_host = 'untrusted-origin.scoremap.test'
@@ -106,7 +137,7 @@ try:
         raise RuntimeError('Forged client addresses bypassed the login rate limit')
     if q.verification_source() != data['verificationSource']:
         raise RuntimeError('Verification inputs changed during qualification')
-    q.write(output, {'verificationSource': data['verificationSource'], 'applicationRevision': settings['ApplicationRevision'], 'applicationImage': settings['ApplicationImage'], 'syntheticOnly': True, 'environment': 'disposable Production HTTPS, Keycloak and PostgreSQL', 'trustedProxyProducedIdentityChallenge': True, 'trustedAuthCookiesSecureHttpOnlySameSiteLax': True, 'untrustedPeerIgnoredForwardedProto': True, 'forgedForwardedForCouldNotBypassLoginRateLimit': True, 'distinctUntrustedContainer': True, 'actualOperatorDeployment': False})
+    q.write(output, {'verificationSource': data['verificationSource'], 'applicationRevision': settings['ApplicationRevision'], 'applicationImage': settings['ApplicationImage'], 'syntheticOnly': True, 'environment': 'disposable Production HTTPS, Keycloak and PostgreSQL', 'trustedProxyProducedIdentityChallenge': True, 'trustedAuthCookiesSecureHttpOnlySameSiteLax': True, 'untrustedPeerIgnoredForwardedProto': True, 'forwardedHostDidNotChangeCallback': True, 'forgedHostNegativeControlRejected': True, 'forgedForwardedForCouldNotBypassLoginRateLimit': True, 'distinctUntrustedContainer': True, 'actualOperatorDeployment': False})
     print('Trusted and spoofed ingress behavior verified in disposable Production.', flush=True)
 finally:
     try:
