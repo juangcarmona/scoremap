@@ -24,7 +24,11 @@ attacker = None
 def request(origin, headers, ca=None):
     url = urlsplit(origin)
     if url.scheme == 'https':
-        connection = http.client.HTTPSConnection(url.hostname, url.port or 443, context=ssl.create_default_context(cafile=str(ca)), timeout=15)
+        context = ssl.create_default_context(cafile=str(ca))
+        # The existing synthetic CA predates Python 3.14's strict key-usage default.
+        # Keep certificate chain and hostname verification enabled.
+        context.verify_flags &= ~ssl.VERIFY_X509_STRICT
+        connection = http.client.HTTPSConnection(url.hostname, url.port or 443, context=context, timeout=15)
     else:
         connection = http.client.HTTPConnection(url.hostname, url.port or 80, timeout=15)
     try:
