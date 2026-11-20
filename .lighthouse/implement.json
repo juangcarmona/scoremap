@@ -348,7 +348,8 @@
       "scripts/qualify-session-vault.py",
       "scripts/verify-connected.mjs",
       "scripts/record-verification.mjs",
-      "scripts/qualify-production.py"
+      "scripts/qualify-production.py",
+      "playwright.migration.config.ts"
     ],
     "checks": [
       [
