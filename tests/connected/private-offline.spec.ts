@@ -125,6 +125,21 @@ test("real scoped offline use protects a complete performed edit, locks on recon
   ).json();
   const info = await prepare(owner.page);
   expect(info.songIds).toContain(song.id);
+  const offlinePanel = owner.page.getByRole("region", {
+    name: "Private offline preparation",
+  });
+  await offlinePanel.locator("summary").click();
+  await owner.page.getByRole("button", { name: "Enter performance" }).click();
+  await expect(offlinePanel.getByRole("status")).toContainText(
+    "Offline copy protected and ready.",
+  );
+  await expect(
+    offlinePanel.getByRole("button", { name: "Prepare private offline copy" }),
+  ).not.toBeVisible();
+  await owner.page.getByRole("button", { name: "Switch to edit" }).click();
+  await expect(
+    offlinePanel.getByRole("button", { name: "Prepare private offline copy" }),
+  ).toBeVisible();
   const copies = await protectedRows(
     owner.page,
     "scoremap-protected-offline",

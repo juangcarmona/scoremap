@@ -413,6 +413,11 @@ function LibraryApp({
             onClick={() => {
               if (!leavePreview()) return;
               setSwitchingMode(true);
+              if (
+                edit &&
+                appRef.current?.querySelector(".library-footer details[open]")
+              )
+                setLibraryOpen(true);
               if (edit) personalEdit.setEditing(false);
               void Promise.all([session.whenIdle(), personalEdit.whenIdle()])
                 .then(() => {
