@@ -1,3 +1,4 @@
+import { createPortal } from "react-dom";
 import { OfflinePreparation } from "../features/library/OfflinePreparation";
 import { DeviceProvider } from "../features/library/DeviceContext";
 import { DeviceConfigurations } from "../features/library/DeviceConfigurations";
@@ -5,7 +6,7 @@ import { PersonalRecovery } from "../features/library/PersonalRecovery";
 import {
   PersonalEditProvider,
   usePersonalEditBarrier,
-} from "../features/library/PersonalEditBarrier";
+} from "../shared/personalEdit/PersonalEditBarrier";
 import { ImportPreview } from "../features/library/ImportPreview";
 import type { ImportProvenance } from "../features/library/importSelection";
 import { IndexedLibraryStore } from "../features/library/storage";
@@ -55,23 +56,23 @@ export function App(
 ) {
   const { store } = props;
   return (
-    <NotationProvider
-      {...(store instanceof PrivateLibraryStore
-        ? { store: store.notation, principal: store.identity.principal }
-        : {})}
-    >
-      <PresetProvider
-        store={store instanceof PrivateLibraryStore ? store : undefined}
+    <PersonalEditProvider>
+      <NotationProvider
+        {...(store instanceof PrivateLibraryStore
+          ? { store: store.notation, principal: store.identity.principal }
+          : {})}
       >
-        <DeviceProvider
+        <PresetProvider
           store={store instanceof PrivateLibraryStore ? store : undefined}
         >
-          <PersonalEditProvider>
+          <DeviceProvider
+            store={store instanceof PrivateLibraryStore ? store : undefined}
+          >
             <LibraryApp {...props} />
-          </PersonalEditProvider>
-        </DeviceProvider>
-      </PresetProvider>
-    </NotationProvider>
+          </DeviceProvider>
+        </PresetProvider>
+      </NotationProvider>
+    </PersonalEditProvider>
   );
 }
 function LibraryApp({
@@ -98,7 +99,22 @@ function LibraryApp({
   } | null>(null);
   const [transferResult, setTransferResult] = useState("");
   const [importEpoch, setImportEpoch] = useState(0);
-  const [previewDirty, setPreviewDirty] = useState(false);
+  const [previewDirty, setPreviewDirtyState] = useState(false);
+  const appRef = useRef<HTMLDivElement>(null);
+  const [updating, setUpdating] = useState(false);
+  const previewDirtyRef = useRef(false);
+  const previewOperation = useRef<Promise<void>>(Promise.resolve());
+  function beginPreviewOperation() {
+    let finish!: () => void;
+    previewOperation.current = new Promise<void>((resolve) => {
+      finish = resolve;
+    });
+    return finish;
+  }
+  function setPreviewDirty(value: boolean) {
+    previewDirtyRef.current = value;
+    setPreviewDirtyState(value);
+  }
   useEffect(() => {
     const protect = (event: BeforeUnloadEvent) => {
       if (previewDirty) {
@@ -260,6 +276,7 @@ function LibraryApp({
     );
   return (
     <div
+      ref={appRef}
       className={`app ${edit ? "editing" : "performing"}${identity ? " private-library" : ""}`}
       data-build-revision={import.meta.env.VITE_SCOREMAP_BUILD ?? "development"}
     >
@@ -325,15 +342,48 @@ function LibraryApp({
           <PwaStatus
             privateLibrary={!!identity}
             beforeUpdate={async () => {
-              await session.whenIdle();
-              if (previewDirty)
-                throw new Error(
-                  "Apply or export your played-note preview before updating.",
-                );
-              if (session.error)
-                throw new Error(
-                  "Export or save your unsaved work before updating.",
-                );
+              const releaseSession = session.beginUpdate();
+              let releasePersonal: () => void;
+              try {
+                releasePersonal = personalEdit.beginUpdate();
+              } catch (error) {
+                releaseSession();
+                throw error;
+              }
+              if (appRef.current) appRef.current.inert = true;
+              setUpdating(true);
+              const release = () => {
+                releaseSession();
+                releasePersonal();
+                if (appRef.current) appRef.current.inert = false;
+                setUpdating(false);
+              };
+              try {
+                await Promise.all([
+                  session.whenIdle(),
+                  personalEdit.whenIdle(),
+                ]);
+                await previewOperation.current;
+                if (store instanceof PrivateLibraryStore) {
+                  await store.personal.whenProtected();
+                  if ((await store.personal.list()).length)
+                    throw new Error(
+                      "Resolve protected personal changes before updating.",
+                    );
+                }
+                if (previewDirtyRef.current)
+                  throw new Error(
+                    "Apply or export your played-note preview before updating.",
+                  );
+                if (session.error)
+                  throw new Error(
+                    "Export or save your unsaved work before updating.",
+                  );
+                return release;
+              } catch (error) {
+                release();
+                throw error;
+              }
             }}
             report={report}
           />
@@ -1031,6 +1081,7 @@ function LibraryApp({
               <Sketch
                 previewDirty={previewDirty}
                 onPreviewDirty={setPreviewDirty}
+                onPreviewApply={beginPreviewOperation}
                 key={`${song.id}-${importEpoch}`}
                 song={song}
                 noteDrafts={noteDrafts}
@@ -1173,6 +1224,11 @@ function LibraryApp({
           onClose={() => setModal(null)}
         />
       )}
+      {updating &&
+        createPortal(
+          <p role="status">Applying update; waiting for your saved work.</p>,
+          document.body,
+        )}
     </div>
   );
 }

@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { PersonalPending, type PersonalKey } from "./personalPending";
 import { downloadText } from "./backup";
 import { useEditAdmission } from "./useEditAdmission";
-import { usePersonalEditBarrier } from "./PersonalEditBarrier";
+import { usePersonalEditBarrier } from "../../shared/personalEdit/PersonalEditBarrier";
 
 export function PersonalRecovery({
   store,

@@ -14,7 +14,7 @@ import { downloadText, MAX_IMPORT_BYTES } from "./backup";
 import { sameData } from "./validation";
 import type { Device } from "./score";
 import { useEditAdmission } from "./useEditAdmission";
-import { usePersonalEditBarrier } from "./PersonalEditBarrier";
+import { usePersonalEditBarrier } from "../../shared/personalEdit/PersonalEditBarrier";
 export function DeviceConfigurations({ editable }: { editable: boolean }) {
   const { preference } = useNotation();
   const beginEdit = useEditAdmission(editable);

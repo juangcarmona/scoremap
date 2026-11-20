@@ -1,3 +1,4 @@
+import { usePersonalEditBarrier } from "../../shared/personalEdit/PersonalEditBarrier";
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -80,6 +81,7 @@ function AccountNotation({
   children: ReactNode;
 }) {
   const client = useQueryClient();
+  const barrier = usePersonalEditBarrier();
   const saved = useQuery({
     queryKey: ["notation", principal],
     queryFn: async () => {
@@ -141,7 +143,17 @@ function AccountNotation({
             commandId: crypto.randomUUID(),
           };
     retry.current = request;
-    mutation.mutate(request);
+    try {
+      void barrier
+        .runNotation(() => mutation.mutateAsync(request))
+        .catch(() => undefined);
+    } catch (error) {
+      setRecoveryError(
+        error instanceof Error
+          ? error.message
+          : "Note-name update unavailable.",
+      );
+    }
   }
   const error =
     recoveryError || saved.error?.message || mutation.error?.message || "";
@@ -159,26 +171,34 @@ function AccountNotation({
           else if (draft) choose(draft);
         },
         reload: () => {
-          void saved
-            .refetch()
-            .then(async (result) => {
-              if (result.isSuccess) {
-                if (retry.current) await store.discard?.(retry.current);
-                if (!active.current) return;
-                setRecoveryError("");
-                setDraft(null);
-                retry.current = null;
-                mutation.reset();
-              }
-            })
-            .catch((error: unknown) => {
-              if (active.current)
-                setRecoveryError(
-                  error instanceof Error
-                    ? error.message
-                    : "The protected choice could not be removed. Keep it until recovery is confirmed.",
-                );
-            });
+          try {
+            void barrier
+              .runNotation(async () => {
+                const result = await saved.refetch();
+                if (result.isSuccess) {
+                  if (retry.current) await store.discard?.(retry.current);
+                  if (!active.current) return;
+                  setRecoveryError("");
+                  setDraft(null);
+                  retry.current = null;
+                  mutation.reset();
+                }
+              })
+              .catch((error: unknown) => {
+                if (active.current)
+                  setRecoveryError(
+                    error instanceof Error
+                      ? error.message
+                      : "The protected choice could not be removed. Keep it until recovery is confirmed.",
+                  );
+              });
+          } catch (error) {
+            setRecoveryError(
+              error instanceof Error
+                ? error.message
+                : "Note-name recovery unavailable.",
+            );
+          }
         },
       }}
     >

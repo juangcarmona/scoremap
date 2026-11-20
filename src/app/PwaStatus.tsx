@@ -9,7 +9,7 @@ export function PwaStatus({
   privateLibrary = false,
 }: {
   privateLibrary?: boolean;
-  beforeUpdate: () => Promise<unknown>;
+  beforeUpdate: () => Promise<() => void>;
   report: (error: unknown) => void;
 }) {
   const [offline, setOffline] = useState(!navigator.onLine);
@@ -66,8 +66,11 @@ export function PwaStatus({
     };
   }, [report]);
   async function applyUpdate() {
-    await beforeUpdate();
-    if (!waiting) return;
+    const release = await beforeUpdate();
+    if (!waiting) {
+      release();
+      return;
+    }
     if (waiting.state === "activated") {
       location.reload();
       return;
@@ -96,6 +99,9 @@ export function PwaStatus({
       }, 10000);
       navigator.serviceWorker.addEventListener("controllerchange", changed);
       waiting.postMessage({ type: "SKIP_WAITING" });
+    }).catch((error: unknown) => {
+      release();
+      throw error;
     });
   }
   return (

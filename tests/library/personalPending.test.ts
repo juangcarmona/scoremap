@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { expect, it } from "vitest";
 import { PersonalPending } from "../../src/features/library/personalPending";
-import { PersonalEditBarrier } from "../../src/features/library/PersonalEditBarrier";
+import { PersonalEditBarrier } from "../../src/shared/personalEdit/PersonalEditBarrier";
 
 it("protects personal changes before transport and reconciles the original command after reopening", async () => {
   const principal = crypto.randomUUID();

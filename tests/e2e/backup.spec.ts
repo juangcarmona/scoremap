@@ -126,3 +126,45 @@ test("an unsupported PDF backup preserves the saved library after reload", async
   await page.reload();
   expect(await readLibrary(page)).toEqual(original);
 });
+
+test("an oversized backup is refused before reading or changing an existing library", async ({
+  page,
+}, testInfo) => {
+  await prepared(page);
+  const original = await readLibrary(page);
+  const filename = testInfo.outputPath("oversized-synthetic.json");
+  const file = await fs.open(filename, "w");
+  try {
+    await file.truncate(64 * 1024 * 1024 + 1);
+  } finally {
+    await file.close();
+  }
+  try {
+    await page.evaluate(() => {
+      const originalText = File.prototype.text;
+      File.prototype.text = function () {
+        (window as typeof window & { oversizedRead?: boolean }).oversizedRead =
+          true;
+        return originalText.call(this);
+      };
+    });
+    await page
+      .getByLabel("Import backup file", { exact: true })
+      .setInputFiles(filename);
+    await expect(page.getByRole("alert")).toContainText(
+      "exceeds the 64 MiB import limit",
+    );
+    expect(
+      await page.evaluate(
+        () =>
+          (window as typeof window & { oversizedRead?: boolean })
+            .oversizedRead ?? false,
+      ),
+    ).toBe(false);
+    expect(await readLibrary(page)).toEqual(original);
+    await page.reload();
+    expect(await readLibrary(page)).toEqual(original);
+  } finally {
+    await fs.unlink(filename);
+  }
+});

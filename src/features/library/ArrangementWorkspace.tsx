@@ -16,6 +16,7 @@ export function ArrangementWorkspace({
   onSelectHarmony,
   dirty,
   setDirty,
+  onPreviewApply,
 }: {
   song: RichSong;
   harmonic: HarmonicEvent | undefined;
@@ -25,6 +26,7 @@ export function ArrangementWorkspace({
   onSelectHarmony: (id: string) => void;
   dirty: boolean;
   setDirty: (dirty: boolean) => void;
+  onPreviewApply: () => () => void;
 }) {
   const { preference } = useNotation();
   const [arrangementId, setArrangementId] = useState(
@@ -243,6 +245,7 @@ export function ArrangementWorkspace({
           execute={execute}
           report={report}
           seedPreset={seedPreset}
+          onPreviewApply={onPreviewApply}
           onPickPreset={(preset) =>
             select(() => {
               setSeedPreset(preset);
