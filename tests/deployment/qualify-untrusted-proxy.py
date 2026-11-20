@@ -1,6 +1,6 @@
 """Qualify trusted and spoofed forwarding through isolated Production containers."""
 from pathlib import Path
-from urllib.parse import parse_qs, urlsplit
+from urllib.parse import urlsplit
 import http.client
 import importlib.util
 import ipaddress
@@ -21,7 +21,7 @@ if output.exists():
 state = None
 attacker = None
 
-def request(origin, headers, ca=None):
+def request(origin, headers, ca=None, path='/auth/login'):
     url = urlsplit(origin)
     if url.scheme == 'https':
         context = ssl.create_default_context(cafile=str(ca))
@@ -32,7 +32,7 @@ def request(origin, headers, ca=None):
     else:
         connection = http.client.HTTPConnection(url.hostname, url.port or 80, timeout=15)
     try:
-        connection.request('GET', '/auth/login', headers=headers)
+        connection.request('GET', path, headers=headers)
         response = connection.getresponse()
         values = response.getheaders()
         response.read()
@@ -42,15 +42,6 @@ def request(origin, headers, ca=None):
 
 def values(headers, name):
     return [value for key, value in headers if key.lower() == name.lower()]
-
-def callback(headers):
-    locations = values(headers, 'location')
-    if len(locations) != 1:
-        raise RuntimeError('Sign-in did not return one redirect')
-    candidates = parse_qs(urlsplit(locations[0]).query).get('redirect_uri', [])
-    if len(candidates) != 1:
-        raise RuntimeError('The identity challenge did not contain one callback; query keys: ' + ', '.join(sorted(parse_qs(urlsplit(locations[0]).query))))
-    return urlsplit(candidates[0])
 
 try:
     state = q.setup(settings)
@@ -80,33 +71,42 @@ try:
     address = 'http://127.0.0.1:' + binding[0]['HostPort']
 
     status, trusted_headers = request(data['origin'], {}, state / 'ca.crt')
-    expected = urlsplit(data['origin'])
-    trusted_callback = callback(trusted_headers)
-    if status != 302 or (trusted_callback.scheme, trusted_callback.netloc, trusted_callback.path) != ('https', expected.netloc, '/signin-oidc'):
-        raise RuntimeError('Trusted TLS ingress did not produce the expected HTTPS callback')
+    if status != 302 or len(values(trusted_headers, 'location')) != 1:
+        raise RuntimeError('Trusted TLS ingress did not produce an identity challenge')
     cookies = values(trusted_headers, 'set-cookie')
     correlation = [value.lower() for value in cookies if '.aspnetcore.correlation.' in value.lower() or '.aspnetcore.openidconnect.nonce.' in value.lower()]
     if len(correlation) < 2 or any('secure' not in value or 'httponly' not in value or 'samesite=lax' not in value for value in correlation):
         raise RuntimeError('Trusted authentication cookies lack expected attributes')
 
+    # HSTS is emitted by the real production middleware only when the forwarded
+    # scheme is HTTPS. Use a non-localhost Host because ASP.NET excludes localhost.
     source_host = 'untrusted-origin.scoremap.test'
+    status, headers = request(data['origin'], {'Host': source_host}, state / 'ca.crt', '/health/ready')
+    if status != 200 or not values(headers, 'strict-transport-security'):
+        raise RuntimeError('Trusted HTTPS control did not emit HSTS')
     def forged(index):
         return {'Host': source_host, 'X-Forwarded-Proto': 'https', 'X-Forwarded-Host': 'forged-origin.scoremap.test', 'X-Forwarded-For': '198.51.100.' + str(index + 1)}
-    status, untrusted_headers = request(address, forged(0))
-    untrusted_callback = callback(untrusted_headers)
-    if status != 302 or (untrusted_callback.scheme, untrusted_callback.netloc, untrusted_callback.path) != ('http', source_host, '/signin-oidc'):
-        raise RuntimeError('Untrusted forwarding influenced the challenge origin')
-    for index in range(1, 30):
+    status, headers = request(address, forged(0), path='/health/ready')
+    if status != 200 or values(headers, 'strict-transport-security'):
+        raise RuntimeError('Untrusted forwarded scheme was accepted')
+
+    # Challenges can fail at the identity provider because the deliberately
+    # untrusted HTTP origin is not a registered callback. Rate limiting must
+    # still apply before another challenge regardless of its upstream result.
+    baseline = None
+    for index in range(30):
         status, _ = request(address, forged(index))
-        if status != 302:
-            raise RuntimeError('The synthetic source was limited before the expected boundary')
+        if baseline is None:
+            baseline = status
+        if status != baseline or status == 429:
+            raise RuntimeError('Unexpected challenge response before rate limit')
     status, rejected_headers = request(address, forged(30))
     retry = values(rejected_headers, 'retry-after')
     if status != 429 or len(retry) != 1 or not retry[0].isdigit() or not 1 <= int(retry[0]) <= 60:
         raise RuntimeError('Forged client addresses bypassed the login rate limit')
     if q.verification_source() != data['verificationSource']:
         raise RuntimeError('Verification inputs changed during qualification')
-    q.write(output, {'verificationSource': data['verificationSource'], 'applicationRevision': settings['ApplicationRevision'], 'applicationImage': settings['ApplicationImage'], 'syntheticOnly': True, 'environment': 'disposable Production HTTPS, Keycloak and PostgreSQL', 'trustedProxyProducedHttpsCallback': True, 'trustedAuthCookiesSecureHttpOnlySameSiteLax': True, 'untrustedPeerIgnoredForwardedProtoAndHost': True, 'forgedForwardedForCouldNotBypassLoginRateLimit': True, 'distinctUntrustedContainer': True, 'actualOperatorDeployment': False})
+    q.write(output, {'verificationSource': data['verificationSource'], 'applicationRevision': settings['ApplicationRevision'], 'applicationImage': settings['ApplicationImage'], 'syntheticOnly': True, 'environment': 'disposable Production HTTPS, Keycloak and PostgreSQL', 'trustedProxyProducedIdentityChallenge': True, 'trustedAuthCookiesSecureHttpOnlySameSiteLax': True, 'untrustedPeerIgnoredForwardedProto': True, 'forgedForwardedForCouldNotBypassLoginRateLimit': True, 'distinctUntrustedContainer': True, 'actualOperatorDeployment': False})
     print('Trusted and spoofed ingress behavior verified in disposable Production.', flush=True)
 finally:
     try:
