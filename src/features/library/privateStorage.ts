@@ -1,3 +1,4 @@
+import { getApiPreferencesNotation } from "../../shared/api/private-client.gen";
 import type {
   CommitLibrary as ApiCommitLibrary,
   NotationRequest as ApiNotationRequest,
@@ -60,7 +61,7 @@ export class PrivateLibraryStore implements LibraryStore {
       };
     },
     read: () =>
-      this.request<unknown>("/api/preferences/notation").then(notationSettings),
+      getApiPreferencesNotation(this.request.bind(this)).then(notationSettings),
     save: (request) =>
       this.personal.mutate(
         "notation",

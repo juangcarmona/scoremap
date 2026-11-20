@@ -1,3 +1,4 @@
+import { putApiSongsByIdGrants } from "../../shared/api/private-client.gen";
 import { useState } from "react";
 import { PrivateLibraryStore } from "./privateStorage";
 export function SongAccess({
@@ -36,15 +37,15 @@ export function SongAccess({
           event.preventDefault();
           setBusy(true);
           setStatus("");
-          void store
-            .request(`/api/songs/${encodeURIComponent(songId)}/grants`, {
-              method: "PUT",
-              body: JSON.stringify({
-                principal,
-                role: role === "revoke" ? null : role,
-                mode: "edit",
-              }),
-            })
+          void putApiSongsByIdGrants(
+            store.request.bind(store),
+            { id: songId },
+            {
+              principal,
+              role: role === "revoke" ? null : role,
+              mode: "edit",
+            },
+          )
             .then(() =>
               setStatus(
                 role === "revoke" ? "Access revoked." : "Song access saved.",
