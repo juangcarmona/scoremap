@@ -86,8 +86,13 @@ try:
     expected = 'proxy_set_header X-Forwarded-Host $http_host;'
     if proxy_text.count(expected) != 1:
         raise RuntimeError('Unexpected synthetic trusted proxy configuration')
-    proxy_config.write_text(proxy_text.replace(expected, 'proxy_set_header X-Forwarded-Host $http_x_forwarded_host;'))
+    proxy_config.write_text(proxy_text.replace(expected, 'proxy_set_header X-Forwarded-Host $http_x_forwarded_host; add_header X-Qualification-Forwarded-Host $http_x_forwarded_host always;'))
     q.call(['docker', 'exec', data['project'] + '-proxy', 'nginx', '-s', 'reload'])
+
+    probe = 'forged-origin.scoremap.test'
+    status, proxy_headers = request(data['origin'], {'X-Forwarded-Host': probe}, state / 'ca.crt', '/health/ready')
+    if status != 200 or values(proxy_headers, 'x-qualification-forwarded-host') != [probe]:
+        raise RuntimeError('Synthetic trusted proxy did not forward the test header')
 
     def accepted_callback(headers):
         status, challenge_headers = request(data['origin'], headers, state / 'ca.crt')
