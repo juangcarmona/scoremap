@@ -1,5 +1,6 @@
 import {readdir,readFile} from 'node:fs/promises';
-import {posix} from 'node:path';
+import {posix,resolve} from 'node:path';
+import {pathToFileURL} from 'node:url';
 import assert from 'node:assert/strict';
 import ts from 'typescript';
 // Existing reviewed musical surface: library screens consume only these Sketch exports.
@@ -24,12 +25,18 @@ for(const [source,target,expected] of [
  ['src/features/library/a.ts','src/features/library/domain.ts',true],
  ['src/app/App.tsx','src/features/library/Sketch.tsx',true],
 ])assert.equal(allowed(source,target),expected,source+' -> '+target);
-async function walk(dir){for(const entry of await readdir(dir,{withFileTypes:true})){if(['bin','obj'].includes(entry.name))continue;const path=dir+'/'+entry.name;if(entry.isDirectory())await walk(path);else if(/\.tsx?$/u.test(path)){
- const file=ts.createSourceFile(path,await readFile(path,'utf8'),ts.ScriptTarget.Latest,true);
+// Parse the same syntax TypeScript accepts, including deferred and type-only imports.
+export function verifySource(path,content){
+ const file=ts.createSourceFile(path,content,ts.ScriptTarget.Latest,true);
  function check(node){
-  const specifier=ts.isImportDeclaration(node)||ts.isExportDeclaration(node)?node.moduleSpecifier:undefined;
-  if(specifier&&ts.isStringLiteral(specifier)&&!tonalBoundary(path,specifier.text))throw new Error('Tonal imports must stay behind the product theory adapter: '+path);
-  if(specifier&&ts.isStringLiteral(specifier)&&specifier.text.startsWith('.')){
+  let specifier;
+  if(ts.isImportDeclaration(node)||ts.isExportDeclaration(node))specifier=node.moduleSpecifier;
+  else if(ts.isCallExpression(node)&&node.expression.kind===ts.SyntaxKind.ImportKeyword){
+   specifier=node.arguments[0];
+   if(!specifier||!ts.isStringLiteralLike(specifier))throw new Error('Dynamic frontend import must use a literal specifier: '+path);
+  }else if(ts.isImportTypeNode(node)&&ts.isLiteralTypeNode(node.argument))specifier=node.argument.literal;
+  if(specifier&&ts.isStringLiteralLike(specifier)&&!tonalBoundary(path,specifier.text))throw new Error('Tonal imports must stay behind the product theory adapter: '+path);
+  if(specifier&&ts.isStringLiteralLike(specifier)&&specifier.text.startsWith('.')){
    const base=posix.normalize(posix.join(posix.dirname(path),specifier.text));
    const candidates=[base,base+'.ts',base+'.tsx',base+'/index.ts'];
    if(!candidates.some(target=>allowed(path,target)))throw new Error('Forbidden frontend import '+path+' -> '+specifier.text);
@@ -37,5 +44,16 @@ async function walk(dir){for(const entry of await readdir(dir,{withFileTypes:tru
   ts.forEachChild(node,check);
  }
  check(file);
-}}}
-await walk('src');console.log('Frontend dependency direction and nine passing/refusing boundary fixtures passed.');
+}
+async function walk(dir){
+ for(const entry of await readdir(dir,{withFileTypes:true})){
+  if(['bin','obj'].includes(entry.name))continue;
+  const path=dir+'/'+entry.name;
+  if(entry.isDirectory())await walk(path);
+  else if(/\.tsx?$/u.test(path))verifySource(path,await readFile(path,'utf8'));
+ }
+}
+if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href){
+ await walk('src');
+ console.log('Frontend dependency direction and boundary fixtures passed.');
+}
