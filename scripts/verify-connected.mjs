@@ -4,12 +4,15 @@ import { verificationInputs, requireSameInputs, sha256 } from './verification-in
 import { completeConnectedQualification } from './connected-qualification.mjs';
 const source = await verificationInputs();
 const startedAt = new Date().toISOString();
+const reportPath = process.env.SCOREMAP_TEST_REPORT_DIRECTORY ? process.env.SCOREMAP_TEST_REPORT_DIRECTORY + '/results.json' : 'test-results/connected/results.json';
+await fs.rm('test-results/connected/source-receipt.json', { force: true });
+await fs.rm(reportPath, { force: true });
 const result = spawnSync('npm',['run','test:connected'],{stdio:'inherit',env:process.env});
 await requireSameInputs(source);
-const reportPath = process.env.SCOREMAP_TEST_REPORT_DIRECTORY ? process.env.SCOREMAP_TEST_REPORT_DIRECTORY + '/results.json' : 'test-results/connected/results.json';
 const bytes = await fs.readFile(reportPath), report = JSON.parse(bytes);
 const manifest = JSON.parse(await fs.readFile('tests/connected/qualification-manifest.json'));
 const passed = !result.error && result.status === 0 && completeConnectedQualification(report, manifest);
 await fs.mkdir('test-results/connected',{recursive:true});
-await fs.writeFile('test-results/connected/source-receipt.json',JSON.stringify({source,startedAt,endedAt:new Date().toISOString(),reportPath,reportSha256:sha256(bytes),passed,exitCode:result.status},null,2)+'\n');
+const run = /^\d+$/.test(process.env.GITHUB_RUN_ID ?? '') && /^\d+$/.test(process.env.GITHUB_RUN_ATTEMPT ?? '') ? {kind:'github-actions',id:process.env.GITHUB_RUN_ID,attempt:process.env.GITHUB_RUN_ATTEMPT} : {kind:'local'};
+await fs.writeFile('test-results/connected/source-receipt.json',JSON.stringify({source,startedAt,endedAt:new Date().toISOString(),run,reportPath,reportSha256:sha256(bytes),passed,exitCode:result.status},null,2)+'\n');
 if(!passed) throw new Error('The complete connected qualification failed or skipped required cases.');

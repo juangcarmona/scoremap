@@ -34,3 +34,17 @@ PDF behaviours are explicitly unimplemented in this first core delivery and
 remain inconclusive. Emulator/Chromium results do not prove physical Android
 installation or tablet-distance readability. The owner operates Cloudflare Pages
 publication; deployment must be observed separately from a source merge.
+
+## Connected journey summary
+
+After `npm run verify:connected`, run `npm run report:connected` and open
+`test-results/connected/summary.html`. CI also includes it in the verification
+artifact, including when qualification fails. It identifies the committed
+selection and reports each outcome only when the source and result receipt
+match. A missing, changed or incomplete receipt is shown as unverified.
+
+The HTML deliberately excludes raw errors, screenshots, video and traces; these
+can contain private session or musical data. It does not establish which target
+was reached, a real operator deployment, independent review, physical-device
+use or human acceptance. Synthetic test names describe expected outcomes;
+status alone is not a per-step visual record.
