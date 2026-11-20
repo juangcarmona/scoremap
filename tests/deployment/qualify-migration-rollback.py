@@ -2,6 +2,7 @@
 from pathlib import Path
 import importlib.util
 import json
+import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -29,6 +30,10 @@ try:
     database.pg('psql', '-v', 'ON_ERROR_STOP=1', '-U', 'scoremap', '-d', 'scoremap', '-c', "CREATE FUNCTION scoremap_test_fail_migration() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'synthetic migration fault'; END $$; CREATE TRIGGER scoremap_test_fail_migration BEFORE INSERT ON sm_migrations FOR EACH ROW EXECUTE FUNCTION scoremap_test_fail_migration()")
     trigger_installed = True
     q.execute_browser(state, 'migration-fault', 'playwright.migration.config.ts', 'fault:')
+    application = database.dc('ps', '-q', 'application').strip()
+    logs = subprocess.run(['docker', 'logs', application], capture_output=True, text=True, check=True)
+    if 'synthetic migration fault' not in logs.stdout + logs.stderr:
+        raise RuntimeError('The injected database migration failure was not observed')
     after = database.fingerprints()
     changed = [name for name in before if name not in ('sm_sessions', 'sm_recovery_keys') and before[name] != after.get(name)]
     if changed or set(before) != set(after):

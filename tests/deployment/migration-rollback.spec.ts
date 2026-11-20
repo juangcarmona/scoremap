@@ -51,7 +51,7 @@ test("fault: migration failure retains the previous library and source", async (
       await readFile(fixture, "utf8"),
     );
     const response = await api(owner.page, "/api/library", "PUT", command);
-    expect(response.status()).toBeGreaterThanOrEqual(400);
+    expect(response.status()).toBe(500);
     expect(await (await api(owner.page, "/api/library")).json()).toEqual(
       before,
     );
