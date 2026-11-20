@@ -1,13 +1,15 @@
 import fs from 'node:fs/promises';
 import { spawnSync } from 'node:child_process';
 import { verificationInputs, requireSameInputs, sha256 } from './verification-inputs.mjs';
+import { completeConnectedQualification } from './connected-qualification.mjs';
 const source = await verificationInputs();
 const startedAt = new Date().toISOString();
 const result = spawnSync('npm',['run','test:connected'],{stdio:'inherit',env:process.env});
 await requireSameInputs(source);
 const reportPath = process.env.SCOREMAP_TEST_REPORT_DIRECTORY ? process.env.SCOREMAP_TEST_REPORT_DIRECTORY + '/results.json' : 'test-results/connected/results.json';
 const bytes = await fs.readFile(reportPath), report = JSON.parse(bytes);
-const passed = !result.error && result.status === 0 && report.stats.expected === 52 && !report.stats.unexpected && !report.stats.skipped;
+const manifest = JSON.parse(await fs.readFile('tests/connected/qualification-manifest.json'));
+const passed = !result.error && result.status === 0 && completeConnectedQualification(report, manifest);
 await fs.mkdir('test-results/connected',{recursive:true});
-await fs.writeFile('test-results/connected/source-receipt.json',JSON.stringify({source,startedAt,endedAt:new Date().toISOString(),reportPath,reportSha256:sha256(bytes),passed,exitCode:result.status,actualProviderAndStorage:true},null,2)+'\n');
+await fs.writeFile('test-results/connected/source-receipt.json',JSON.stringify({source,startedAt,endedAt:new Date().toISOString(),reportPath,reportSha256:sha256(bytes),passed,exitCode:result.status},null,2)+'\n');
 if(!passed) throw new Error('The complete connected qualification failed or skipped required cases.');
