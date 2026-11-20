@@ -1,3 +1,7 @@
+import type {
+  CommitLibrary as ApiCommitLibrary,
+  NotationRequest as ApiNotationRequest,
+} from "../../shared/api/private-api.gen";
 import { OfflineAuthority } from "../../shared/auth/offlineLease";
 import { sessionRequestAnchor } from "../../shared/auth/sessionDeadline";
 import {
@@ -55,9 +59,14 @@ export class PrivateLibraryStore implements LibraryStore {
         this.notationListeners.delete(listener);
       };
     },
-    read: () => this.request<NotationSettings>("/api/preferences/notation"),
+    read: () =>
+      this.request<unknown>("/api/preferences/notation").then(notationSettings),
     save: (request) =>
-      this.personal.mutate("notation", request, notationSettings),
+      this.personal.mutate(
+        "notation",
+        request satisfies ApiNotationRequest,
+        notationSettings,
+      ),
     discard: (request) =>
       this.personal.discardOwn("notation", "notation", request.commandId),
   };
@@ -520,7 +529,7 @@ export class PrivateLibraryStore implements LibraryStore {
             recoveryKeyId: keyId,
             import: intent === "import",
             ...(source ? { source } : {}),
-          });
+          } satisfies ApiCommitLibrary);
         }
         let saved: LibraryView;
         this.unconfirmed = write;
@@ -661,7 +670,7 @@ export class PrivateLibraryStore implements LibraryStore {
         commandId: pending.commandId,
         mode: "edit",
         recoveryKeyId: pending.keyId,
-      }),
+      } satisfies ApiCommitLibrary),
     });
     this.versions = saved.versions;
     this.capabilities = saved.capabilities;
@@ -766,7 +775,7 @@ export class PrivateLibraryStore implements LibraryStore {
         mode: "edit",
         import: true,
         recoveryKeyId: pending.keyId,
-      }),
+      } satisfies ApiCommitLibrary),
     });
     // Keep the original encrypted draft. Only its opaque copy mapping is added;
     // an unknown response can be reconciled by the same destination identity.
