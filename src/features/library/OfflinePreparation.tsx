@@ -14,12 +14,6 @@ export function OfflinePreparation({
   const [info, setInfo] = useState<OfflineLeaseInfo | null>(null),
     [busy, setBusy] = useState(false),
     [error, setError] = useState("");
-  const [expansion, setExpansion] = useState({
-    mode: session.mode,
-    open: session.mode === "edit",
-  });
-  const expanded =
-    expansion.mode === session.mode ? expansion.open : session.mode === "edit";
   const [disconnected, setDisconnected] = useState(navigator.onLine === false);
   useEffect(() => store.offline.subscribe(() => setInfo(null)), [store]);
   useEffect(() => {
@@ -38,12 +32,7 @@ export function OfflinePreparation({
       className="notice offline-preparation"
       aria-label="Private offline preparation"
     >
-      <details
-        open={expanded}
-        onToggle={(event) =>
-          setExpansion({ mode: session.mode, open: event.currentTarget.open })
-        }
-      >
+      <details key={session.mode} open={session.mode === "edit"}>
         <summary>Prepare for temporary offline use</summary>
         <p>
           Prepare this library and your personal settings while connected. Only
