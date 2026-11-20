@@ -523,6 +523,13 @@ test("a performed-note save held after the real commit survives song and mode ch
   }
 });
 
+async function ensureControlled(page: Page) {
+  await page.evaluate(() => navigator.serviceWorker.ready);
+  if (!(await page.evaluate(() => Boolean(navigator.serviceWorker.controller))))
+    await page.reload();
+  await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller));
+}
+
 async function withHeldPiano(
   browser: Browser,
   run: (
@@ -533,6 +540,7 @@ async function withHeldPiano(
   ) => Promise<void>,
 ) {
   const owner = await login(browser, "owner-a");
+  await ensureControlled(owner.page);
   const song = await prepare(owner.page);
   await owner.page
     .getByLabel("Active performed part", { exact: true })
@@ -628,10 +636,6 @@ test("a real waiting service worker defers activation until the performed-note a
   browser,
 }) => {
   await withHeldPiano(browser, async (page, release, song, expected) => {
-    await page.evaluate(() => navigator.serviceWorker.ready);
-    await page.waitForFunction(() =>
-      Boolean(navigator.serviceWorker.controller),
-    );
     await page.evaluate(() =>
       navigator.serviceWorker.register("/sw.js?synthetic-waiting-worker=1", {
         scope: "/",
@@ -678,14 +682,11 @@ test("a failed performed-note save keeps a waiting update blocked and durable mu
   const owner = await login(browser, "owner-a");
   try {
     const page = owner.page;
+    await ensureControlled(page);
     const song = await prepare(page);
     await page
       .getByLabel("Active performed part", { exact: true })
       .selectOption(song.arrangements[0]!.parts[1]!.id);
-    await page.evaluate(() => navigator.serviceWorker.ready);
-    await page.waitForFunction(() =>
-      Boolean(navigator.serviceWorker.controller),
-    );
     await page.evaluate(() =>
       navigator.serviceWorker.register("/sw.js?synthetic-failed-save=1", {
         scope: "/",
@@ -740,10 +741,7 @@ test("a waiting update preserves a notation change until its acknowledgement", a
   const committed = deferred(),
     release = deferred();
   try {
-    await page.evaluate(() => navigator.serviceWorker.ready);
-    await page.waitForFunction(() =>
-      Boolean(navigator.serviceWorker.controller),
-    );
+    await ensureControlled(page);
     await page.evaluate(() =>
       navigator.serviceWorker.register("/sw.js?synthetic-notation-wait=1", {
         scope: "/",
