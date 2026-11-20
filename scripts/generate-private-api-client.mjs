@@ -19,10 +19,14 @@ for (const [path, verbs] of Object.entries(schema.paths)) {
     const args = ["request: Transport", ...(parameters.length ? [`path: Api.${typeName}Data[\"path\"]`] : []), ...(hasBody ? [`body: Api.${typeName}Data[\"body\"]`] : [])];
     const url = "`" + path.replace(/\{([^}]+)\}/gu, (_, name) => `\${encodeURIComponent(path[${JSON.stringify(name)}])}`) + "`";
     operations.push(`export const ${name} = (${args.join(", ")}): Promise<Api.${typeName}Responses[keyof Api.${typeName}Responses]> => request(${url}, { method: ${JSON.stringify(verb.toUpperCase())}${hasBody ? ", body: JSON.stringify(body)" : ""} });`);
+    if (hasBody) {
+      const rawArgs = [...args.slice(0, -1), `body: SerializedBody<Api.${typeName}Data[\"body\"]>`];
+      operations.push(`export const ${name}Serialized = (${rawArgs.join(", ")}): Promise<Api.${typeName}Responses[keyof Api.${typeName}Responses]> => request(${url}, { method: ${JSON.stringify(verb.toUpperCase())}, body });`);
+    }
   }
 }
-const output = await prettier.format(`// Generated from the registered partial private API contract. Do not edit.\nimport type * as Api from "./private-api.gen";\nexport type Transport = <T>(path: string, init?: RequestInit) => Promise<T>;\n${operations.join("\n")}\n`, { ...(await prettier.resolveConfig(destination)), parser: "typescript" });
+const output = await prettier.format(`// Generated from the registered partial private API contract. Do not edit.\nimport type * as Api from "./private-api.gen";\nexport type Transport = <T>(path: string, init?: RequestInit) => Promise<T>;\ndeclare const serializedBody: unique symbol;\nexport type SerializedBody<T> = string & { readonly [serializedBody]: T };\nexport function serializeBody<T>(body: T): SerializedBody<T> { return JSON.stringify(body) as SerializedBody<T>; }\n${operations.join("\n")}\n`, { ...(await prettier.resolveConfig(destination)), parser: "typescript" });
 if (process.argv.includes("--check")) {
   if (readFileSync(destination, "utf8") !== output) throw new Error("Generated private API client drifted; run npm run generate:private-api-client.");
-  console.log(`Generated HTTP client matches ${operations.length} contract operations.`);
+  console.log(`Generated HTTP client matches ${Object.values(schema.paths).reduce((total, verbs) => total + Object.keys(verbs).length, 0)} contract operations.`);
 } else writeFileSync(destination, output);
