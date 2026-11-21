@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
+import { tmpdir } from 'node:os';
 import { dirname, resolve } from 'node:path';
 import { test } from 'node:test';
 import { pathToFileURL } from 'node:url';
@@ -10,8 +11,8 @@ import { pathToFileURL } from 'node:url';
 const sdkSource = dirname(createRequire(import.meta.url).resolve('@juangcarmona/lighthouse-sdlc'));
 const sdkPackage = JSON.parse(await readFile(resolve(sdkSource, '../package.json'), 'utf8'));
 assert.equal(sdkPackage.version, '0.30.1');
-const { verificationIntegrity } = await import(pathToFileURL(resolve(sdkSource, 'verification-integrity.mjs')));
-const { validateImplementationPolicy, withinScope } = await import(pathToFileURL(resolve(sdkSource, 'implementation.mjs')));
+const { verificationIntegrity, sourceDigest } = await import(pathToFileURL(resolve(sdkSource, 'verification-integrity.mjs')));
+const { validateImplementationPolicy, withinScope, sourceFiles } = await import(pathToFileURL(resolve(sdkSource, 'implementation.mjs')));
 const { defaults: policy } = JSON.parse(await readFile('.lighthouse/implement.json', 'utf8'));
 const required = ['vitest.config.ts', 'playwright.config.ts', 'package.json', 'package-lock.json', 'scripts/verify-security.mjs'];
 const legacy = 'tests/library/domain.test.ts';
@@ -86,4 +87,37 @@ test('the owning validator refuses wildcard verification inventories and excess 
   const excess = structuredClone(policy);
   excess.verification.corrections = Object.fromEntries(Array.from({ length: 41 }, (_, index) => [`tests/synthetic-${index}.mjs`, 'bounded synthetic correction']));
   assert.throws(() => validateImplementationPolicy(excess, 1000), /Verification needs explicit input paths/u);
+});
+
+test('browser verification provisions the locked Playwright browser in a fresh candidate', async () => {
+  const pkg = JSON.parse(await readFile('package.json', 'utf8'));
+  assert.equal(pkg.scripts['test:e2e'], 'playwright install chromium && playwright test');
+});
+
+test('browser captures use disposable result paths without overwriting retained evidence', async () => {
+  for (const spec of ['acceptance', 'android']) {
+    const source = await readFile(`tests/e2e/${spec}.spec.ts`, 'utf8');
+    assert.doesNotMatch(source, /docs\/evidence\/screenshots\//u);
+    assert.match(source, /test-results\/browser\//u);
+  }
+});
+
+test('the actual SDK inventory ignores browser cache and captures while preserving tracked evidence', async () => {
+  const root = await mkdtemp(resolve(tmpdir(), 'scoremap-browser-inventory-'));
+  try {
+    await writeFile(resolve(root, '.gitignore'), await readFile('.gitignore'));
+    await mkdir(resolve(root, 'docs/evidence/screenshots'), { recursive: true });
+    await writeFile(resolve(root, 'docs/evidence/screenshots/retained.png'), 'retained synthetic evidence');
+    const before = await sourceFiles(root);
+    for (const path of ['.cache/ms-playwright/synthetic-browser', 'test-results/browser/synthetic-capture.png']) {
+      await mkdir(dirname(resolve(root, path)), { recursive: true });
+      await writeFile(resolve(root, path), 'synthetic runtime output');
+    }
+    const after = await sourceFiles(root, before);
+    assert.deepEqual([...after.keys()].sort(), [...before.keys()].sort());
+    assert.equal(sourceDigest(before), sourceDigest(after));
+    assert(after.has('docs/evidence/screenshots/retained.png'));
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
 });

@@ -80,7 +80,7 @@
     "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\" \"tests/**/*.{ts,tsx}\" \"*.config.{ts,js}\"",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\" \"tests/**/*.{ts,tsx}\" \"*.config.{ts,js}\"",
     "test": "vitest run",
-    "test:e2e": "playwright test",
+    "test:e2e": "playwright install chromium && playwright test",
     "verify:app": "npm run typecheck && npm run lint && npm run format:check && npm test && npm run build",
     "evidence:record": "node scripts/record-verification.mjs && prodshape evidence verify docs/evidence/mvp/verification-evidence.json --format json",
     "verify:delivery": "node scripts/verify-delivery.mjs",

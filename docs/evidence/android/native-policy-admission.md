@@ -45,6 +45,25 @@ required-file deletion, file modes, unchanged commands/review and malformed
 policy bounds. These are policy qualification results, not native product
 coverage or an APK build.
 
+## Browser check source preservation
+
+A complete clean-baseline rehearsal then passed `npm run verify` and all 48
+browser cases, but exposed additional SDK admission problems: five browser
+captures overwrote tracked evidence, and the SDK-selected browser cache was
+unignored. Its independent host checks use fresh containers and reject any
+source digest change, even if a changed screenshot is within ordinary scope.
+
+The browser command now installs the browser selected by the locked Playwright
+dependency before running the same tests. Its workspace cache is ignored at
+the exact `/.cache/ms-playwright/` path. Existing capture calls now write into
+ignored `test-results/browser/`, retaining their assertions and capture content;
+historical committed screenshots are preserved. Three added regressions first
+failed and then passed, giving fifteen passing policy/runtime-input cases.
+The inventory case calls the actual SDK source scanner and digest on a
+synthetic filesystem. Qualification of the owning SDK's separate-container
+host-check route remains distinct from the earlier persistent-container
+baseline rehearsal.
+
 ## Fresh native admission
 
 The current #79 parent is bound to its original source revision. Released

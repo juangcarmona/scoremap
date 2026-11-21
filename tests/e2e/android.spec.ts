@@ -66,7 +66,7 @@ test("SB-OFFLINE SB-PERFORMANCE: Android phone touch editing and offline consult
     ),
   ).toBe(true);
   await page.screenshot({
-    path: "docs/evidence/screenshots/android-phone-offline.png",
+    path: "test-results/browser/android-phone-offline.png",
     fullPage: true,
   });
   await context.setOffline(false);

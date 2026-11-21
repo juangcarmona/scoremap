@@ -21,7 +21,7 @@ test("Tablet, Android-compatible phone and 200% text retain readable touch consu
       .toBe(true);
     if (width === 390 || width === 1280)
       await page.screenshot({
-        path: `docs/evidence/screenshots/performance-${width}.png`,
+        path: `test-results/browser/performance-${width}.png`,
         fullPage: true,
       });
   }
@@ -42,7 +42,7 @@ test("Tablet, Android-compatible phone and 200% text retain readable touch consu
     )
     .toBe(true);
   await page.screenshot({
-    path: "docs/evidence/screenshots/performance-text-200.png",
+    path: "test-results/browser/performance-text-200.png",
     fullPage: true,
   });
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
@@ -59,7 +59,7 @@ test("Edit surfaces, dialogs and empty states have accessible names and contrast
   await prepared(page);
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   await page.screenshot({
-    path: "docs/evidence/screenshots/editor-tablet.png",
+    path: "test-results/browser/editor-tablet.png",
     fullPage: true,
   });
 });
