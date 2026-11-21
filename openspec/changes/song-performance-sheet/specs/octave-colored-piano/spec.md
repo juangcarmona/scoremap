@@ -23,3 +23,14 @@ The piano SHALL color the full surface of each selected performed key with the d
 - **GIVEN** a permitted exact performed pitch outside the documented octave palette
 - **WHEN** the musician views that pitch
 - **THEN** the piano retains a distinct performed indication and does not clip, transpose or discard the note
+
+### Requirement: Full-instrument orientation while editing
+
+The editor SHALL present an 88-key A0 through C8 overview with the current enlarged range and exact selected pitches. Range controls SHALL give access to the full 88-key instrument without changing stored pitches.
+
+#### Scenario: Navigate to the end of the instrument
+
+- **GIVEN** the musician is editing exact played notes
+- **WHEN** the musician chooses a range containing the lowest or highest key
+- **THEN** the overview shows the current range and the enlarged keyboard makes A0 or C8 operable
+- **AND** changing range does not transpose or remove selected notes

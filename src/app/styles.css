@@ -1344,3 +1344,18 @@ dialog h2 {
     display: flex;
   }
 }
+
+.piano-overview {
+  margin: 0 0 1rem;
+}
+.piano-overview figcaption {
+  margin-bottom: 0.5rem;
+  color: var(--lh-text-muted);
+  font-size: 0.875rem;
+}
+.piano-overview svg {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  height: auto;
+}
