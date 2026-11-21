@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "repository": "juangcarmona/scoremap",
+  "issue": 92,
+  "runId": "cc5a0d15aa57040b0d7489be05fa9e6f93bfb14a373d1907a338634e27df4e5e",
+  "workflowRunId": "44956860969",
+  "attempt": 1,
+  "stage": "refine",
+  "sourceRevision": "3b516bac3927ca79825f0cb72550af2882548a13",
+  "candidateTree": null,
+  "assessmentSha256": "c6e18c1687ee777ddc36b9147c4da0e3ee2c73f7524908a434d83265b04c65a1",
+  "status": "provided",
+  "reason": "Native library, editor, protected consultation and import preview/error change user-facing interaction. Inline examples are planning proposals, not native captures.",
+  "items": [
+    {
+      "id": "phone-import-preview",
+      "kind": "proposal",
+      "view": "Import set",
+      "state": "Preview before independent-copy commit",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "path": "evidence/visual/18126596b3a8211a8c08b01c1b6cce7d77baf4d6afccb5481bf73a2e76044b7f.png",
+      "sha256": "18126596b3a8211a8c08b01c1b6cce7d77baf4d6afccb5481bf73a2e76044b7f",
+      "bytes": 33636,
+      "producer": "isolated proposed-design renderer",
+      "htmlSha256": "13a77dee4a4b8f70ced4f9b19b3f86f5fa0aa70fa4d9019486cc3b23c925b4ad"
+    },
+    {
+      "id": "tablet-consultation",
+      "kind": "proposal",
+      "view": "Protected song consultation",
+      "state": "Verse with exact hand-labelled pitches",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "path": "evidence/visual/a0f016f197a40ac2328f4bbeed80889869522e0ce3acf61dda0fef64bc4250af.png",
+      "sha256": "a0f016f197a40ac2328f4bbeed80889869522e0ce3acf61dda0fef64bc4250af",
+      "bytes": 41025,
+      "producer": "isolated proposed-design renderer",
+      "htmlSha256": "87ae6004413e4a3f623996b0ba0ddb3616621accac26cdc67aa30c78d9fed28a"
+    }
+  ]
+}
