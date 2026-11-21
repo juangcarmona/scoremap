@@ -22,6 +22,12 @@
     "publishEvidence": true,
     "postMergeWorkflows": [
       "ci.yml"
+    ],
+    "protectionObservations": [
+      {
+        "id": 27309864,
+        "revision": "0f24e231cb7026ad098446c35d83d1e853fa37bae0235c3bf7d89352f7ef9eb1"
+      }
     ]
   }
 }
