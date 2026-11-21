@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "repository": "juangcarmona/scoremap",
+  "issue": 84,
+  "runId": "517bcc0f27d1b174ac9967b7ef19a234bcb689c1c1a1eaa3641e75beca8a7ad6",
+  "workflowRunId": "44944250209",
+  "attempt": 1,
+  "stage": "refine",
+  "sourceRevision": "ccdcafb8b983818a2d65d7f4d0254e172d4cdd6a",
+  "candidateTree": null,
+  "assessmentSha256": "61aa4b9837f30c41b36a6cd0962dbd57717a78d200b10d8a80ff29800ec1e2dd",
+  "status": "provided",
+  "reason": "The new synthetic Compose shell has a visible startup state; this example is a proposed test scaffold, not a musician workflow or approved design.",
+  "items": [
+    {
+      "id": "synthetic-shell-tablet",
+      "kind": "proposal",
+      "view": "Synthetic Android shell",
+      "state": "Launched, no musical functionality",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "path": "evidence/visual/9551ad41683b7d6cf1a50a4d60c2a4220cb5d60c3add57eca58d8a7e68217925.png",
+      "sha256": "9551ad41683b7d6cf1a50a4d60c2a4220cb5d60c3add57eca58d8a7e68217925",
+      "bytes": 24501,
+      "producer": "isolated proposed-design renderer",
+      "htmlSha256": "0af5769fe75e4d94ffffa92e78fa8537353168b337f739ea69374c776454d3ed"
+    }
+  ]
+}
