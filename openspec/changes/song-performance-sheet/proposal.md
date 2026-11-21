@@ -26,3 +26,5 @@ None.
 ## Impact
 
 Existing performed-piano rendering and style roles; focused rendering and browser tests. No song mutations, storage migration, lyrics, staff or full-range editor in this first slice. These remain outstanding requirements of CHG-SONG-PERFORMANCE.
+
+The piano-first editor slice also supplies a full 88-key visual orientation tied to the existing accessible enlarged-range controls. Both-hand combined editing and compact staff remain outstanding.

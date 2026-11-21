@@ -9,3 +9,5 @@
 - [x] Render actual performed keys using the documented complete-key octave colors and preserve fallback outside the mapping.
 - [x] Verify white and black selected keys at independent octaves, labels and unselected/theoretical state.
 - [ ] Run relevant type, unit, browser, accessibility and build checks; identify unperformed acceptance and remaining product scope.
+- [x] Show the actual 88-key range and current zoom alongside the accessible piano editor.
+- [x] Verify the lowest and highest keys and preservation while changing view.

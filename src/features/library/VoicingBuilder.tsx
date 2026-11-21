@@ -1,5 +1,6 @@
 import { useAuthorizeSongExport } from "./PresetContext";
 import { VoicingPresets } from "./VoicingPresets";
+import { PianoOverview } from "./PianoOverview";
 import type { SavedPreset } from "./voicingPresets";
 import { useState } from "react";
 import { PerformedPiano } from "../sketch/PerformedPiano";
@@ -275,6 +276,11 @@ export function VoicingBuilder({
         {part.role || "No role assigned"}
         {part.hand ? ` · ${part.hand} context` : " · hand unassigned"}
       </p>
+      <PianoOverview
+        pitches={draft.map((event) => event.pitch)}
+        firstOctave={firstOctave}
+        octaves={octaves}
+      />
       <div className="builder-controls">
         <label>
           First visible octave
