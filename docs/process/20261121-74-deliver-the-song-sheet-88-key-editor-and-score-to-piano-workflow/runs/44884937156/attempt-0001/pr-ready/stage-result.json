@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "runId": "92f91bd9f91b77f14ca98106c35ae386382c48f8e7cd804e33149fe93e29665c",
+  "stage": "integrate",
+  "gate": "done",
+  "status": "blocked",
+  "evidence": [
+    {
+      "id": "github-check:136784042283",
+      "status": "passed",
+      "source": "https://github.com/juangcarmona/scoremap/actions/runs/44883614824/job/136784042283",
+      "reason": "Required Verify ScoreMap check, app 15368, passed on the accepted head; the green check alone does not demonstrate all issue acceptance criteria."
+    },
+    {
+      "id": "github-check:136784042078",
+      "status": "passed",
+      "source": "https://github.com/juangcarmona/scoremap/actions/runs/44883614783/job/136784042078",
+      "reason": "Additional Lighthouse foundation check passed on the accepted head; it is not a separate forge-required check."
+    },
+    {
+      "id": "candidate-independent-review",
+      "status": "pending-review",
+      "source": "https://github.com/juangcarmona/scoremap/pull/75",
+      "reason": "Issue #74 explicitly requires independent review of the actual candidate before merge; the supplied review list is empty and the PR describes review as outstanding. Forge policy specifies zero required approvals, which does not waive the issue requirement."
+    },
+    {
+      "id": "current-head-verification-detail",
+      "status": "unavailable",
+      "source": "openspec/changes/song-performance-sheet/tasks.md",
+      "reason": "The final verification task remains unchecked. The host supplies a passing aggregate check but no matching implementation command receipts; prior-head local and connected claims cannot establish each requested current-head verification."
+    }
+  ],
+  "missingEvidence": [
+    "Current-head evidence mapping the issue's explicit domain, browser, accessibility and authenticated private-service requirements, including actual role refusal, landscape/narrow and enlarged text, to executed checks is not supplied. The PR cites earlier-head execution, not equivalent detailed current-head evidence.",
+    "Issue #74's complete song-sheet, 88-key editor, score/phrase, persistence and transfer outcome and synthetic round-trip are not delivered by this first slice; the PR and openspec/changes/song-performance-sheet/proposal.md explicitly say so. Keep the issue open and do not present this slice as completion."
+  ],
+  "unavailableChecks": [
+    "Host-verified implementation command receipts are unavailable for this PR. ProductShape index scope cannot resolve CHG-SONG-PERFORMANCE and detailed FR-PIANO-SCORE and FR-SONG-SHEET reports are not materialized; model files and the applied change were inspected directly instead. These limitations do not establish a failed check or absent product intent."
+  ],
+  "pendingReview": [
+    "An independent reviewer must review the actual PR #75 candidate at the accepted head and record findings and disposition before merge, as required by issue #74."
+  ],
+  "nextAction": "The delivery maintainer should arrange and record an independent current-head review, supply the missing current-head verification evidence, and resolve the issue's outstanding delivery requirements or obtain an explicit authorized scope decision before requesting integration again.",
+  "output": {
+    "integration": {
+      "repository": "juangcarmona/scoremap",
+      "issue": 74,
+      "pullRequest": 75,
+      "head": "949d20c2c4375fb19b99bff45e6c09198dc564c3",
+      "base": "cc2cec5956d7ef30d5b11a808bfae44e191a2a6d",
+      "targetBranch": "main",
+      "hostSuppliedBinding": {
+        "intent": "5ccef69a811d40c05526fee014326357b9fa4d3801285e7de4412616b3287b40",
+        "policy": "04fcf78998f1a68dcdb99759aa9ec2278565106c3d5ecf2d9517e692c9d3a9df",
+        "reviews": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "prIntent": "97062ffd937858b10f952cac212e5f048486dd6302608f9ca30925b066073a4e",
+        "files": "06104bd870a66d9e2e72a3212c227a2e23302c1b509d84c8c906cbb376c7d8bb"
+      },
+      "dispatch": "Owner workflow_dispatch explicitly requested merge=true for the full accepted head; this is authority to request a merge only after stage validation and fresh publisher and GitHub checks, not evidence of merge.",
+      "policy": "Verify ScoreMap app 15368 is the only supplied forge-required check. Strict status checks, thread resolution and GitHub protection remain subject to publisher recheck. Host reports mergeable and not merged.",
+      "scope": "ProductShape change and selected octave palette are the first slice; full issue functionality remains outstanding. Product change file records owner approval and local application, not a merged accepted baseline.",
+      "guidance": "AGENTS.md requires accepted product guidance, declared checks and separate review/deployment reporting. FR-PIANO-SCORE requires accurate hands, staff, labels and palette; OpenSpec restricts this slice to performed-key rendering. PerformedPiano.tsx retains MIDI-based octave and non-color state labels. Authored tests are not independent review or proof of execution. No source defect is asserted from the missing evidence.",
+      "synchronization": "Observed issue open with enhancement; PR open with no labels. Host on-passed and on-blocked plans preserve labels and do not close issue; reservation cleanup is host-managed.",
+      "laterStages": {
+        "merge": "not performed; blocked assessment",
+        "postMergeCI": "not performed; publisher would request ci.yml after an actual merge",
+        "deployment": "not demonstrated",
+        "physicalTabletAcceptance": "not demonstrated; requires musician exercise",
+        "reviewStage": "separate entry required"
+      },
+      "audienceReview": "Lighthouse Plain English and Humanizer manual fallbacks, followed by comparison against the supplied issue, PR and check evidence; no upstream helper execution claimed."
+    }
+  }
+}
