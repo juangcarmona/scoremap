@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "kind": "current-source-planning-trace-not-native-acceptance",
+  "repository": "juangcarmona/scoremap",
+  "repositoryId": 1458674261,
+  "parent": 92,
+  "sourceRevision": "39e3ee8f6dc72e29a04a93da36991d3eeb653ea8",
+  "sourceTree": "4e53a0772c880cb8b93d4024fdb4a399e9d4af02",
+  "actualCiRun": 44949569420,
+  "actualCiCheckout": "1c43e343aaa6326adca81323c5e447c53c2d07d8",
+  "files": [
+    {
+      "path": "issue-comment.md",
+      "bytes": 27850,
+      "sha256": "7ecba55c91992499632df988fc89108d7922d9fb6d2eb40287eabf264e05c55a"
+    },
+    {
+      "path": "trace.json",
+      "bytes": 283983,
+      "sha256": "a6962dbd628bf7681f49fed287342412bb7bb6a5d11366aad2a3264c0427f00d"
+    },
+    {
+      "path": "source-binding.json",
+      "bytes": 92040,
+      "sha256": "0bdf2f3b54c6cc525bc5225abb556b3bf2fb58e649107ad6335293fb1476f6af"
+    },
+    {
+      "path": "provider-model.json",
+      "bytes": 205864,
+      "sha256": "d18497fa33cb811ac975bd839802449534ad57f309e3297ad73a77a39e23868c"
+    },
+    {
+      "path": "openspec-citations.json",
+      "bytes": 248364,
+      "sha256": "7789c35092ff5634ba0866f6ab4ddac6502e8b4ed0d463da4b64012bea24d5ac"
+    },
+    {
+      "path": "architecture-citations.json",
+      "bytes": 17657,
+      "sha256": "b6094eaa5213bf174a8b03a0de11fe1b74f3f9c13031564f797eda29c6ed8a3c"
+    },
+    {
+      "path": "source-assertions.json",
+      "bytes": 123993,
+      "sha256": "c504ffc3d688d28cb091c8ed7fae750627e23697635890ecdffb6bd8d20f5907"
+    },
+    {
+      "path": "artifact-provenance.json",
+      "bytes": 479,
+      "sha256": "f0815c0b9733bc5d863e51485fd4ae4b365647cc433017e14227ecfe6b7f176e"
+    }
+  ],
+  "limits": [
+    "Current CI contains102citedpassed witnesses, not complete63SB/allLC-invariant qualification.",
+    "Four native SBs and three PDF SBs remain inconclusive; native executed=0.",
+    "Existing anonymous-browser/private-service tests do not qualify Android.",
+    "Original private review/full-provider-receipt blobs unavailable; only publicagreementand27artifactbindings rechecked.",
+    "GitHub archive digest is provider-declared; downloaded member hashes were recomputed.",
+    "Model/citation/provider validation is read-only; tests were not re-executed.",
+    "No rendered native visual review, APK/signing/tablet or musician acceptance established by this pack."
+  ],
+  "operatorPrivateReceiptExcluded": "receipt.json contains local audit paths; do not publish it verbatim."
+}
