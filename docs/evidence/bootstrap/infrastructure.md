@@ -110,3 +110,30 @@ minutes for implementation. This admission change leaves the actual agent
 execution deadlines and repository integration checks intact. A fresh owner
 Product Change request follows the confirmed failed attempt; it does not replay
 an unconfirmed dispatch or imply that an earlier agent ran.
+
+## Native composition transport upgrade — 2026-11-21
+
+The consumer now selects Lighthouse 0.13.27 and SDLC 0.30.1 through exact npm
+pins, the Lighthouse manifest and generated projections. The owning
+`lighthouse upgrade --scope all` preview reported complete adoption and no
+ownership conflicts before apply. The SDLC package-mode installer regenerated
+the selected completion, Product Change, unattended, epic and maintenance
+workflows; gh-aw 0.93.2 regenerated all nine agent workflow locks.
+
+This prerequisite addresses Product Change run
+[44913149709](https://github.com/juangcarmona/scoremap/actions/runs/44913149709),
+which completed with a blocked result at `productcomposition_inspect` and
+published no candidate. The older SDLC transport rejected the bounded MCP
+`_meta` fields sent by OpenCode 2.1.0. The released transport accepts its bounded
+progress/session metadata while retaining rejection of unsupported fields.
+The package and workflow update must be integrated before a fresh Product
+Change request; local protocol execution does not prove a native catalog,
+approval, apply or parent continuation.
+
+The existing CI checks, 150-minute implementation deadline, 360-minute
+implementation job, 180-minute shared agent admission, policies, canonical
+ProductShape/ArcShape ownership and eight-stage Android plan remain intact.
+Unattended policy remains `enabled=false`, `merge=false`. The newer refinement
+publisher can retain visual evidence with `contents: write`; its agent and
+preparation jobs retain `contents: read`. This upgrade changes no operator
+configuration, worker image, production application or Android implementation.
