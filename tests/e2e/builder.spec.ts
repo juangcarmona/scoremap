@@ -28,6 +28,27 @@ test("actual exact-pitch builder cancels, commits and undoes one octave while vi
     name: "Played-note builder for Right",
     exact: true,
   });
+  const overview = builder.getByRole("img", { name: /88-key piano overview/ });
+  await expect(overview.locator("rect")).toHaveCount(88);
+  const octave = builder.getByLabel("First visible octave for Right", {
+    exact: true,
+  });
+  await octave.selectOption("0");
+  await expect(overview.locator('[data-midi="21"]')).toHaveAttribute(
+    "data-in-view",
+    "true",
+  );
+  await expect(builder.locator('.performed-key[data-midi="21"]')).toBeEnabled();
+  await octave.selectOption("7");
+  await expect(overview.locator('[data-midi="108"]')).toHaveAttribute(
+    "data-in-view",
+    "true",
+  );
+  await expect(
+    builder.locator('.performed-key[data-midi="108"]'),
+  ).toBeEnabled();
+  await octave.selectOption("3");
+  expect(await readLibrary(page)).toEqual(before);
   await builder
     .getByRole("button", { name: "Raise B4 one octave", exact: true })
     .click();
