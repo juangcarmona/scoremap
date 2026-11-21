@@ -1,7 +1,8 @@
 <!-- pdac-scope: cited -->
-<!-- pdac:cite id="FR-CHORDS" digest="sha256:8aaafe1e9c1362c203e895077404984869afb9f9221cddb3a56f8ded8dda62a4" -->
-<!-- pdac:cite id="FR-CONSULT" digest="sha256:8e10d6c8a69132e9b0d73f90adbca6fffa8dbe5ba983d7adb805113a1b49ce5b" -->
-<!-- pdac:cite id="QR-READABILITY" digest="sha256:a06eedc5a285ec4a2cb00991cada5423bb1bfac11bf2ad99f327b9007a1c2221" -->
+<!-- pdac:cite id="FR-PIANO-SCORE" digest="sha256:c7090b853deaf69a52df30a9a1ae62d24b51a0cb620dcb38a272ec1e0856cde5" -->
+<!-- pdac:cite id="FR-CHORDS" digest="sha256:4da1a2f14b722446609a1fca78c027c682d149ecbef18a835eb561f6050f1ae4" -->
+<!-- pdac:cite id="FR-CONSULT" digest="sha256:8afd8d795cf7cd9ec628100291b0772c1588e74a2c4411da5b4dab59bd7c0078" -->
+<!-- pdac:cite id="QR-READABILITY" digest="sha256:fd18e2b171a6c15b68dc256acc88c7cf32f0376d723faf7a662a374ce49a9f5f" -->
 
 ## ADDED Requirements
 

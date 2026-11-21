@@ -44,5 +44,3 @@ The first connected checkpoint uses the same selected users fixture for manual t
 ## Completion Conditions
 
 The intended complete content is acknowledged and recoverable at its declared boundary and readable in protected performance consultation while authorized. Anonymous device durability and private-service recovery remain distinguishable. Failed/refused commands preserve acknowledgement and protected recoverable work without a lifecycle transition. Expired private access remains locked, not considered successful consultation merely because a record exists. Full musical, protected-offline, accessibility and recovery acceptance requires its actual evidence; the connected checkpoint alone does not establish full completion, publication or deployment.
-
-The musician can review a focused song sheet with known key, sections, repeats, chords, lyrics and cues; prepare both hands using the full-range piano and compact score; and compare prepared phrases across score and piano. These views preserve the same authorization, guard, acknowledgement and recovery boundaries above.

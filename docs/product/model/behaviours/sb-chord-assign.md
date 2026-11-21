@@ -24,5 +24,3 @@ Assign ordered major and minor chords.
 ## Boundaries
 
 Clauses describe observable product results. All preconditions and outcomes are conjunctive; alternatives are separate behaviours. Applicable rules supply guards and invariants. Executable evidence is external to the product model.
-
-The focused song-sheet and full-range piano direction preserves this existing scenario and its edit, identity, permission and durability boundaries.

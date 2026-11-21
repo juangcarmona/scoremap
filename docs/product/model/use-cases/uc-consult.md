@@ -61,11 +61,3 @@ Unknown or inaccessible song/child identities expose no private content. Expiry,
 ## Postconditions
 
 Every relevant view presents the same selected context and only its assigned actual pitches with clear part ownership, notation, silence and out-of-view indications. Musical identities, timing, order and bindings are unchanged by consultation, mode switching and view selection. Session mode, navigation context and save status remain distinct from library presence, structure presence and song retention. Authored consultation requirements do not establish measured accessibility, connected execution, physical-device acceptance or deployment.
-
-## Song sheet and phrase consultation
-
-Provide a continuous, vertically scrollable performance sheet that prioritizes the music on a landscape tablet. Show the song key, ordered sections, their chords and repetitions, and lyrics when present. Place chord changes above their associated words where the musician has supplied that association; a repeated chord loop may appear once while changing verses remain readable. Allow short optional personal notes, cues, precise passages and free sections without inventing lyrics, repeat counts or timings. Provide accessible song navigation and an exit from the focused performance view.
-
-At the musician's request show exact performed notes of both hands together in a wide keyboard under each chord, with hand ownership independently identifiable, enough visible range or an explicit range control, and complete highlighted key surfaces colored by octave according to the approved design reference. Do not infer performed register or hand from theoretical harmony. Support a synchronized score-and-piano view for prepared melodic phrases: selecting or advancing a note identifies the same exact pitch in both representations, with the same octave color and an independent label. Unavailable score data remains honestly unavailable.
-
-In edit mode the musician prepares or changes the known key, lyrics and explicit chord-to-lyric associations, section cues and repetition information. These edits independently require the existing authorization, edit guard, valid associations and durable commit; absent information is never inferred.

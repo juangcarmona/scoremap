@@ -23,5 +23,3 @@ Enter protected performance consultation.
 ## Boundaries
 
 Clauses describe observable product results. All preconditions and outcomes are conjunctive; alternatives are separate behaviours. Applicable rules supply guards and invariants. Executable evidence is external to the product model.
-
-The focused song sheet also retains the known key, section structure and available lyrics, with chord-to-lyric alignment where explicitly supplied. Optional piano positions show actual performed notes only.

@@ -39,5 +39,3 @@ Make B02 and musical B10 refusal concrete without treating newly accepted qualit
 ## Boundaries
 
 This single command proposes a contradictory alteration pair; it does not combine unknown-root, unknown-quality and authorization failures into one example. Unsupported qualities remain separately refused under FR-CHORDS and BR-CHORDS. Compatible alterations on different degrees remain valid. The refusal is not a content, structure-presence or save-state transition. Definition authoring does not prove executed domain or builder validation.
-
-The focused song-sheet and full-range piano direction preserves this existing scenario and its edit, identity, permission and durability boundaries.

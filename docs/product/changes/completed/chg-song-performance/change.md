@@ -5,27 +5,11 @@ title: 'Song sheet and exact-pitch piano preparation'
 status: applied
 base-revision: '96204e09397597a1240dff83cdc99c125c58bda0'
 operations:
-  add: []
-  modify:
-    - UC-CONSULT
-    - UC-CHORDS
-    - FR-CONSULT
-    - FR-CHORDS
-    - QR-READABILITY
-    - FR-BACKUP
-    - JRN-PREPARE-PERFORM
-    - QR-INTEGRITY
-    - QR-OFFLINE
-    - SB-CHORD-ASSIGN
-    - SB-CHORD-INVALID
-    - SB-CHORD-MODIFY
-    - SB-KEYBOARD
-    - SB-NOTATION
-    - SB-VOICING
-    - SB-EDIT-RESUME
-    - SB-NAVIGATION
-    - SB-PERFORMANCE
-    - SB-PERFORMANCE-REJECT
+  add:
+    - FR-SONG-SHEET
+    - FR-PIANO-SCORE
+    - FR-PHRASE-REFERENCE
+  modify: []
   remove: []
 ---
 

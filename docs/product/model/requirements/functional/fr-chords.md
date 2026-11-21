@@ -57,13 +57,3 @@ Musicians MUST be able to name, retain and reuse custom voicings. A preset MUST 
 ## Rationale
 
 A chord's harmonic meaning, a musician's exact performed pitches and the language used to display them are different things. Keeping them separate allows realistic preparation without losing existing triads, event associations or trust in the piano reference.
-
-## Piano-first two-hand editor
-
-The editor MUST provide an 88-key A0–C8 orientation and an enlarged, navigable keyboard with operable touch targets for selecting exact pitches across that range. Left and right hand selections MUST remain independently identifiable and reviewable together, including notes outside the current enlarged range. An explicit save MUST obey the declared atomic commit boundary and all existing admission, conflict, authorization and durability rules; cancel MUST preserve acknowledged music.
-
-A compact staff MUST show the selected pitches with correct clefs, known key signature, accidentals and ledger lines or explicit octave indications. Staff note colors and complete selected white and black piano keys MUST use the documented octave mapping, with text or other non-color cues for pitch and hand. The staff MUST NOT fabricate a key signature, pitch, duration or performed note. The representation of a single chord MUST use compact horizontal space.
-
-## Melodic phrase preparation
-
-The musician MUST be able to enter, review, change and remove an ordered sequence of exact pitched notes for a passage, including explicit note durations and rests when supplied, and identify the associated hand or part. Selection through the enlarged piano MUST update the synchronized score and piano preview. The editor MUST preserve note order, actual register and supplied timing; when timing has not been supplied it MUST NOT invent a precise rhythm. Save, cancel, invalid notes and conflicts obey the same guarded, authorized and durably acknowledged boundaries as other musical edits.

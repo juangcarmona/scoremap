@@ -45,5 +45,3 @@ Make B05 concrete: one event selection moves all relevant keyboards to the same 
 ## Boundaries
 
 This is one read-only selection of an existing event, not a chain of section edits or a save. It changes no library-presence, section-presence or retention state and therefore asserts no lifecycle transition. Out-of-view pitches, removed selections and narrow-view accessibility have distinct FR-CONSULT acceptance examples. The example requires current private read authority; performance mode does not supply it. It neither starts an offline lease nor promises disconnected detection of revocation. Browser assertions on actual context and key pitches remain later execution evidence.
-
-The focused song-sheet and full-range piano direction preserves this existing scenario and its edit, identity, permission and durability boundaries.
