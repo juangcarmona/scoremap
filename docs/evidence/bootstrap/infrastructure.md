@@ -87,7 +87,26 @@ A separate Android 17/API 37 tablet emulator booted and installed the temporary
 APK. Its Compose screen appeared only after a synthetic Room insert/read
 assertion succeeded. Neither this experiment nor the host build proves ScoreMap
 feature coverage, durability, migration, file exchange or physical tablet
-acceptance. The operator must select the qualified immutable worker image
-outside Git before Android implementation; repository policy continues to use
-the supported `dotnet` environment profile. Signing keys and operator runtime
-configuration remain outside the repository.
+acceptance. The operator selected the qualified immutable worker image outside
+Git and verified that the ScoreMap runner observes it. Only the existing
+`dotnet` environment image changed; other execution settings were preserved.
+Repository policy continues to use the supported `dotnet` environment profile.
+Signing keys and operator runtime configuration remain outside the repository.
+
+### Shared host admission
+
+The gh-aw gateway admits one host job at a time. A job waiting in runner setup
+has not necessarily started its agent. Product Change run `44910018775` failed
+after 1,800 seconds waiting for that slot; it published no validated result or
+candidate. The concurrently observed engine belonged to a different repository
+and was preserved. Execution evidence must match the repository and workflow
+run, rather than relying on the presence of a process or busy runner.
+
+The operator added ScoreMap to the existing 7,200-second host-wait policy and
+verified its shell syntax and all affected selection branches. Other
+repositories and the default wait remain unchanged. ScoreMap's compiled agent
+jobs allow 180 minutes for product preparation, refinement and review, and 360
+minutes for implementation. This admission change leaves the actual agent
+execution deadlines and repository integration checks intact. A fresh owner
+Product Change request follows the confirmed failed attempt; it does not replay
+an unconfirmed dispatch or imply that an earlier agent ran.
