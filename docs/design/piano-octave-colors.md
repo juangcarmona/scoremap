@@ -32,6 +32,7 @@ note's color or pitch. Do not infer exact performed pitches or octaves from a
 theoretical chord.
 
 The accepted readability and musical-domain requirements remain authoritative.
-This reference records a design decision; the current application has not yet
-been updated to implement it. Actual presentation changes require the product
-change and delivery process described in `AGENTS.md`.
+The exact-pitch performed piano uses this palette for selected keys. The
+complete song sheet, two-hand editor and score views remain subject to their
+separate implementation and acceptance; this reference does not establish
+deployment or physical-device acceptance.
