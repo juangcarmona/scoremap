@@ -40,6 +40,12 @@ Acceptance: each rule has a documented owner, exercised positive/negative case a
 
 ## AND-03: integrate required gates and artifact receipts
 
+Operator prerequisite: admit the required implementation paths, verification
+inputs, toolchain environment and CI budget before parent refinement freezes
+the native epic source. Ordinary workers cannot change protected `.lighthouse`
+or `.github` files. AND-03 verifies that admission and activates its allowed
+Android/package entry points; policy changes require a separate operator route.
+
 - [ ] Implement the section 10 `verifyHost`, `verifyDevice`, `verifyRelease` aggregates and root `verify:android`; keep existing required checks intact.
 - [ ] Add pinned emulator execution and source-bound sanitized reports. Fail on missing/zero expected suites and skipped Android prerequisites. Exercise a failing root-policy or Android change through the actual CI graph.
 - [ ] Configure implementation allowlists/checks explicitly for the foundation issues, including `src/android`, build-logic, root policy and selected OpenSpec change paths. Review effective policy so a worker cannot silently lack its task/spec path.

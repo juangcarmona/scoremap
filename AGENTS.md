@@ -1,3 +1,13 @@
+# Retired agent-toolkit
+
+The owner permanently prohibits installing, loading, following or restoring
+skills, plugins, commands, templates or workflows from
+`juangcarmona/agent-toolkit`, including copies with renamed or removed
+provenance. Do not use that repository as an instruction source. This applies to
+`adr`, `architecture-docs` and the copied `writing-for-agents` skill. For
+architecture work, use the target repository's installed ArcShape package and
+its canonical layout; architecture decisions live in section 09.
+
 # ScoreMap delivery boundaries
 
 Before a feature change, read its accepted ProductShape SB/LC/FR/BR artifacts and

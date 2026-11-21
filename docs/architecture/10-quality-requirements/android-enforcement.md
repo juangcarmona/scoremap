@@ -8,6 +8,48 @@ Use the Gradle Wrapper, Kotlin DSL, a version catalog and included convention pl
 
 Use one formatter: Spotless with pinned ktlint. Detekt checks Kotlin quality and coroutine mistakes; Android Lint checks Android/Compose/resource issues. Kotlin compiler warnings fail builds. Run Lint explicitly for debug and release: compilation alone does not execute all Lint checks. Keep expected diagnostics actionable and use one formatting policy for Gradle and source Kotlin, with documented generated-source handling.
 
+### Analyzer compatibility preflight — 2026-11-21
+
+Temporary fixtures exercised Spotless 8.12.0 with ktlint 1.8.0, Detekt 1.23.8,
+ArchUnit 1.5.1, Kotlin metadata 2.4.21 and Gradle TestKit 9.7.0 alongside the
+[qualified compiler/build set](../../evidence/bootstrap/infrastructure.md#android-build-environment-qualification--2026-11-21).
+These are stable implementation candidates; AND-01/AND-02 still own their
+integration, locks and the complete production/fixture source inventory.
+Quality dependencies were resolved into the temporary fixture cache, not the
+immutable worker seed. Provision approved-repository access or a separately
+prepared public dependency cache before the first real quality build.
+
+Use stable Detekt for demonstrated AST, style and declaration checks. Do not
+treat its older compiler as complete Kotlin 2.4.21 type-resolution evidence:
+the controlled typed probe detected `System.gc`, `GlobalScope.launch` and
+`Thread.sleep` in a suspend function, but missed a configured forbidden
+`kotlin.io.println`. A preview comparison detected that additional call; no
+preview analyzer or compiler-dependency override is selected. The prescribed
+compiler, evaluated Gradle graph, compiled ArchUnit and Kotlin metadata checks
+remain responsible for resolved architecture semantics. They must exercise
+every applicable AND-G rule and its aliases/signatures, rather than relying on
+the older typed analysis to fill an untested gap.
+
+With AGP 9.3.1 built-in Kotlin, the stable Detekt plugin did not create
+`detektDebug`. An explicitly wired generic `detekt` task did reject an implicit
+export in compiled Android Kotlin. Convention plugins must therefore register
+the actual required tasks and enumerate each module/source set, including newly
+added modules. Fail on absent tasks, omitted inputs, unparsed permitted syntax
+or missing expected diagnostics; missing automatic variants are not a passing
+analysis. Keep failures fatal and prove both the corrected and violating cases.
+
+Bound fixture JVMs separately from the main build. The tested TestKit setup used
+a 768 MiB outer heap, a 256 MiB single test fork and sequential nested builds
+with a 768 MiB heap and one worker. It executed a real valid Java compilation
+and an expected rejected build. This proves that bounded mechanism; it does not
+qualify large nested Android/Kotlin builds or the complete `verifyHost` graph.
+The worker helper already supplies its worker limit, so do not append a
+duplicate `--max-workers` argument; nested runners must declare their own limits.
+A later `-Dorg.gradle.jvmargs` property does override the helper's heap: a
+separate corrected fixture run verified a 768 MiB outer heap with its fixed two
+workers. That warm run passed 21 tasks and three tests in 44 seconds with a
+2,116,780,032-byte peak; it remains bounded tooling evidence.
+
 The following names are the proposed task contract, to be created and fixture-tested in AND-01..AND-03:
 
 | Entry point | Required work |

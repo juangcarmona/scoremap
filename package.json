@@ -17,7 +17,7 @@
     "@eslint/js": "10.0.1",
     "@fission-ai/openspec": "1.15.0",
     "@hey-api/openapi-ts": "0.97.3",
-    "@juangcarmona/lighthouse": "0.13.19",
+    "@juangcarmona/lighthouse": "0.13.27",
     "@playwright/test": "1.65.1",
     "@prodshape/cli": "0.26.1",
     "@testing-library/jest-dom": "7.0.1",

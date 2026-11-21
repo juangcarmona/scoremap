@@ -5,7 +5,7 @@
 - Baseline: `0.1.0`
 - Product: `ScoreMap`
 - Profiles: `react-web-platform`, `pwa-capability`, `visual-theme`, `dotnet-backend`, `web-bff`
-- SDLC package: `@juangcarmona/lighthouse-sdlc@0.25.2`
+- SDLC package: `@juangcarmona/lighthouse-sdlc@0.30.1`
 - UI package: `@juangcarmona/lighthouse-ui@0.2.1`
 - ProductShape: 0.26.1
 - Required PDaC serialization: `v1alpha2`
