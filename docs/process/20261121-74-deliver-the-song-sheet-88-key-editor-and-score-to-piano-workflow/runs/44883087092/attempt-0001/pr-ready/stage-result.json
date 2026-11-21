@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "runId": "c9c53312c8bb396a112eb18a7b5c98631caca502de04c51fb73a879e02869c66",
+  "stage": "integrate",
+  "gate": "done",
+  "status": "blocked",
+  "evidence": [
+    {
+      "id": "github-check:136764542816",
+      "status": "passed",
+      "source": "https://github.com/juangcarmona/scoremap/actions/runs/44877244898/job/136764542816",
+      "reason": "Required Verify ScoreMap check, app 15368, passed on the accepted head."
+    },
+    {
+      "id": "github-check:136764542931",
+      "status": "passed",
+      "source": "https://github.com/juangcarmona/scoremap/actions/runs/44877244865/job/136764542931",
+      "reason": "Additional foundation check passed on the accepted head."
+    },
+    {
+      "id": "github-check:136764745386",
+      "status": "passed",
+      "source": "https://github.com/juangcarmona/scoremap/runs/136764745386",
+      "reason": "Additional Cloudflare Pages check passed; this does not establish deployment acceptance."
+    },
+    {
+      "id": "independent-review",
+      "status": "pending-review",
+      "reason": "Issue #74 and PR #75 require independent candidate review; host reports no reviews. Forge minimum approvals of zero does not waive this work-item requirement."
+    },
+    {
+      "id": "implementation-receipts",
+      "status": "unavailable",
+      "reason": "Host did not supply verified implementation command receipts; PR claims and authored tests do not independently establish their execution or adequacy."
+    },
+    {
+      "id": "mergeability",
+      "status": "failed",
+      "reason": "Host observed mergeable=false, without a cause. This is not a failed CI check; the publisher must recheck GitHub protection and mergeability."
+    }
+  ],
+  "missingEvidence": [
+    "PR #75 is explicitly a first slice; issue #74 remains open for the song sheet, full editor, score, phrase, persistence and transfer journeys. No full-journey completion or backup round-trip is established.",
+    "OpenSpec tasks.md leaves relevant verification unchecked. Revision-bound evidence of the required browser, accessibility and real authenticated private-service checks, including role refusal, is not supplied; PR-reported local results are not retained command receipts.",
+    "Design process requires rendered desktop, tablet landscape, narrow and 200% text review with revision and viewport evidence; the supplied observations do not establish it. Physical-tablet musician acceptance and deployed revision are not established.",
+    "PR #75 says it is based on #73; the supplied context does not establish that dependency's integration status or why the candidate is not mergeable.",
+    "docs/design/piano-octave-colors.md:35-36 says the application has not been updated, while the PR and src/features/sketch/PerformedPiano.tsx describe and implement the palette slice. The delivery owner should reconcile this stale guidance against the accepted candidate."
+  ],
+  "unavailableChecks": [
+    "Host implementationEvidence is unavailable: not an open repository-owned implementation PR; no matched command receipts were supplied.",
+    "Product evidence scope did not resolve CHG-SONG-PERFORMANCE; FR-PIANO-SCORE and SB-KEYBOARD detailed reports are not materialized. The model files and change document were inspected directly, but provider impact/citation verification cannot be inferred from their presence."
+  ],
+  "pendingReview": [
+    "Independent reviewer: review the actual current-head palette and product-change candidate, including intended behavior, accessibility and preservation; record findings and disposition."
+  ],
+  "nextAction": "Delivery owner: resolve PR #75 mergeability and #73 dependency, reconcile the stale palette guidance, and provide revision-bound verification; an independent reviewer must review the candidate before the publisher reassesses integration.",
+  "output": {
+    "integration": {
+      "repository": "juangcarmona/scoremap",
+      "issue": 74,
+      "pullRequest": 75,
+      "head": "3cdb547555abee8f9e3484f0208e625f57d789bb",
+      "base": "cc2cec5956d7ef30d5b11a808bfae44e191a2a6d",
+      "intentFingerprint": "5ccef69a811d40c05526fee014326357b9fa4d3801285e7de4412616b3287b40",
+      "policyFingerprint": "04fcf78998f1a68dcdb99759aa9ec2278565106c3d5ecf2d9517e692c9d3a9df",
+      "reviewFingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "prIntentFingerprint": "33f3174cc5f1466a23fe30f325cb08872f2b5fa6cbbb233867c86222173b6d53",
+      "filesFingerprint": "4476b74b5fce437eeaac55edd29375a57cc24512d1f3c6ccd174ae37143c0abc",
+      "provenance": "Host-supplied completion binding and explicit owner dispatch with merge=true for this exact head; publisher must freshly recheck authority, checks, reservation and GitHub rules.",
+      "scope": "Product change and existing performed-piano octave palette first slice, not the complete issue. openspec/changes/song-performance-sheet/specs/octave-colored-piano/spec.md requires complete surfaces, pitch labels, theoretical distinction and fallback. Component tests assert pitch state and octave attributes; they are authored coverage, not independent visual acceptance.",
+      "synchronization": "Preserve PR labels and keep issue open; host finalization adds/removes no outcome labels and closes no issue. The observed execution-failed label predates reservation cleanup and is not a current CI failure. Host manages reservation cleanup.",
+      "merge": "Not performed. Although the exact-head owner dispatch requests merge, blocked assessment prevents readiness; GitHub must enforce protection. No merge receipt exists.",
+      "laterStage": "Post-merge ci.yml, deployment verification, separate review stage and physical musician acceptance are not performed or passed."
+    },
+    "audienceReview": "Lighthouse Plain English and Humanizer manual fallbacks, compared against host context and source; no upstream helper execution claimed."
+  }
+}

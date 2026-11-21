@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "state": "blocked",
+  "sha": null,
+  "acceptedHead": "3cdb547555abee8f9e3484f0208e625f57d789bb",
+  "authorization": {
+    "issue": 74,
+    "pr": 75,
+    "head": "3cdb547555abee8f9e3484f0208e625f57d789bb",
+    "merge": true
+  },
+  "binding": {
+    "repository": "juangcarmona/scoremap",
+    "issue": 74,
+    "pr": 75,
+    "head": "3cdb547555abee8f9e3484f0208e625f57d789bb",
+    "base": "cc2cec5956d7ef30d5b11a808bfae44e191a2a6d",
+    "branch": "main",
+    "intent": "5ccef69a811d40c05526fee014326357b9fa4d3801285e7de4412616b3287b40",
+    "policy": "04fcf78998f1a68dcdb99759aa9ec2278565106c3d5ecf2d9517e692c9d3a9df",
+    "reviews": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "prIntent": "33f3174cc5f1466a23fe30f325cb08872f2b5fa6cbbb233867c86222173b6d53",
+    "files": "4476b74b5fce437eeaac55edd29375a57cc24512d1f3c6ccd174ae37143c0abc"
+  }
+}

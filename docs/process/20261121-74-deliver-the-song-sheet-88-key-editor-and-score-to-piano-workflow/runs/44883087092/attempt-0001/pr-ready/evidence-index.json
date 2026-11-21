@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "indexId": "evidence-index",
+  "runId": "c9c53312c8bb396a112eb18a7b5c98631caca502de04c51fb73a879e02869c66",
+  "repository": "juangcarmona/scoremap",
+  "revision": "3cdb547555abee8f9e3484f0208e625f57d789bb",
+  "records": [
+    {
+      "id": "completion:c9c53312c8bb396a112eb18a7b5c98631caca502de04c51fb73a879e02869c66",
+      "path": "evidence-record.json",
+      "sha256": "5006e08cf3cdd03a178907c61b8cd5a32087c28e11a76f669562abce9960fcfd",
+      "kind": "stage-result",
+      "status": "pending-review",
+      "subject": {
+        "type": "issue",
+        "id": "https://github.com/juangcarmona/scoremap/issues/74"
+      }
+    }
+  ],
+  "coverage": [
+    {
+      "subject": {
+        "type": "issue",
+        "id": "https://github.com/juangcarmona/scoremap/issues/74"
+      },
+      "status": "incomplete",
+      "evidenceIds": [
+        "completion:c9c53312c8bb396a112eb18a7b5c98631caca502de04c51fb73a879e02869c66"
+      ],
+      "nextAction": "Collect or resolve evidence for issue:https://github.com/juangcarmona/scoremap/issues/74."
+    }
+  ]
+}
