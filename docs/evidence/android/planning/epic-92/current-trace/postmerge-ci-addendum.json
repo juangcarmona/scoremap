@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "kind": "operator-readback-of-actual-postmerge-ci",
+  "repository": "juangcarmona/scoremap",
+  "repositoryId": 1458674261,
+  "run": 44951221134,
+  "url": "https://github.com/juangcarmona/scoremap/actions/runs/44951221134",
+  "artifactId": 14726018164,
+  "sourceRevision": "39e3ee8f6dc72e29a04a93da36991d3eeb653ea8",
+  "sourceTree": "4e53a0772c880cb8b93d4024fdb4a399e9d4af02",
+  "actualReceiptStatus": "passed",
+  "allReceiptCommandsExitZero": true,
+  "sourceFilesRehashed": 776,
+  "reportFilesRehashed": {
+    "test-results/vitest.json": "7ee881232eb32a4b835649b8a994d93e2949cab8a94a7ae8bfcbdd97d31e3670",
+    "test-results/playwright.json": "c0ae8be3dd1f86d979890978a06670c90d6b5733766c41fa44475291a5b75461",
+    "test-results/connected/run-gj7tRG/results.json": "a97121b654989760ca7bd2f300a3a1a63b26ef888a58b689ae3c017f530421fa"
+  },
+  "tests": {
+    "unit": 220,
+    "browser": 48,
+    "connected": 52
+  },
+  "summary": {
+    "behaviours": 63,
+    "executed": 56,
+    "deferred": 7
+  },
+  "literalVerificationResultsEqualPriorReviewedTrace": true,
+  "verificationResults": 109,
+  "limits": [
+    "Native source is absent; native workflow jobs report out of scope, not executed Android coverage.",
+    "The existing 63SB summary counts 56 with witnesses, not full-invariant qualification; four native and three PDF remain inconclusive.",
+    "This addendum reads actual completed workflow artifacts; it does not rerun tests or replace the independently reviewed trace."
+  ]
+}
