@@ -13,6 +13,8 @@ jobs:
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
       - uses: actions/setup-node@v4
         with:
           node-version: 24
@@ -43,6 +45,8 @@ jobs:
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
       - uses: actions/setup-node@v4
         with:
           node-version: 24
@@ -89,6 +93,8 @@ jobs:
           ANDROID_DEVICE_RESULT: ${{ needs.android_device.result }}
         run: test "$ANDROID_HOST_RESULT" = success && test "$ANDROID_DEVICE_RESULT" = success
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
       - uses: actions/setup-node@v4
         with:
           node-version: 24

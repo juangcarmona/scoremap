@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
+import { execFileSync, spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 import { verifyChecksum, scope, metadataCheck, installedCheck, requireKvm, reportCheck, wrapperCheck } from '../../scripts/android-ci-toolchain.mjs';
 
 async function fixture(t) {
@@ -76,4 +78,26 @@ test('host and device report guards require fresh actual cases in their own resu
     await fs.writeFile(host, invalid);
     assert.throws(() => reportCheck(directory, 'host', 0), /failed/);
   }
+});
+
+test('all CI jobs check out the immutable event SHA for verification pushes', async () => {
+  const workflow = await fs.readFile(new URL('../../.github/workflows/ci.yml', import.meta.url), 'utf8');
+  const checkouts = [...workflow.matchAll(/      - uses: actions\/checkout@v4([^]*?)(?=      -|$)/g)];
+  assert.equal(checkouts.length, 3);
+  for (const checkout of checkouts) assert.match(checkout[1], /with:\s+ref: \$\{\{ github\.sha \}\}/);
+});
+
+test('technical verification refs require a detached checkout while named branch rules remain enforced', async t => {
+  const directory = await fixture(t);
+  const git = args => execFileSync('git', args, { cwd: directory, stdio: 'pipe' });
+  git(['init', '--quiet']);
+  git(['-c', 'user.name=Fixture', '-c', 'user.email=fixture@example.invalid', 'commit', '--allow-empty', '-m', 'test: fixture']);
+  git(['checkout', '-b', 'lighthouse/verification-1-' + 'a'.repeat(40)]);
+  const guard = fileURLToPath(new URL('../../scripts/lighthouse-guard.mjs', import.meta.url));
+  const run = () => spawnSync(process.execPath, [guard, 'verify'], { cwd: directory, encoding: 'utf8' });
+  const refused = run();
+  assert.equal(refused.status, 1);
+  assert.match(refused.stderr, /does not match/);
+  git(['checkout', '--detach']);
+  assert.equal(run().status, 0);
 });
