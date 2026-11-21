@@ -16,3 +16,22 @@ A repository-scoped lighthouse-workflow runner is online. Its mounted engine-sco
 Workers are installed separately from activation. Bounded unattended policy retains enabled=false and merge=false; epic/completion stay disabled until their live prerequisites can be verified. Refinement may be enabled independently after its runner and default-branch workflow are verified. Never copy CI private keys into source or chat.
 
 Required CI is Verify ScoreMap from GitHub Actions App ID 15368 on push/PR, including lighthouse/verification-* pushes. Evidence targets lighthouse-evidence, which also needs no-delete/no-force-push protection before completion can publish trusted records.
+
+
+## Android epic activation — 2026-11-21
+
+The owner enabled native epic execution for `juangcarmona/scoremap` (repository
+ID `1458674261`). Readback confirmed `LIGHTHOUSE_AUTOMATION_ENABLED=true`,
+`LIGHTHOUSE_EPIC_ENABLED=true` and `LIGHTHOUSE_EPIC_CAPACITY=1`. The installed
+adopter now uses Lighthouse 0.13.19 / SDLC 0.25.2 and already contains the optional
+`lighthouse-sdlc-epic.yml` controller. This activation supersedes the earlier
+statement that epic execution remains disabled; unattended merge policy remains
+`enabled=false`, `merge=false`.
+
+[Epic #79](https://github.com/juangcarmona/scoremap/issues/79) defines the Android
+MVP. Its first documentation PR precedes the source revision bound by parent
+refinement. The controller must create and authenticate its eight child issues,
+then retain each refinement, implementation, readiness and owner acceptance
+receipt. Activation and a responding runner do not prove native delivery. The
+Android compiler/emulator and physical tablet qualification remain explicit
+AND-01/AND-03/AND-07 work; no APK, device test or epic acceptance is claimed here.

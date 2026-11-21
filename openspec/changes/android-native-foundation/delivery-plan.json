@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 1,
+  "parent": {
+    "id": "GH-79",
+    "number": 79,
+    "title": "Deliver the native Android MVP with local song and set exchange",
+    "integrationBranch": "lighthouse/epic-79",
+    "base": "main"
+  },
+  "slices": [
+    {
+      "id": "AND-00",
+      "title": "Align native local product intent",
+      "acceptance": [
+        "no unresolved product-semantic decisions for the selected first native journey; the accepted baseline describes the operation to be implemented."
+      ],
+      "dependencies": [],
+      "scope": [
+        "- [ ] Prepare a separate Product Change for native Android installation, no-login device-local authority, editable song/set import/export and preservation of existing musical outcomes.\n- [ ] Resolve same-identity import/copy/update, history retention/transfer, independently owned resource transfer, attachment milestones and coexistence with the existing private service. Reclassify affected account/session/retention rules; no blanket deletion from the current product.\n- [ ] Validate the overlay; obtain product approval; apply through ProductShape; re-ground impacted OpenSpec/ArcShape citations. Record exact change/commit and keep product application separate from implementation approval."
+      ],
+      "labels": [
+        "enhancement"
+      ]
+    },
+    {
+      "id": "AND-01",
+      "title": "Bootstrap isolated Android build and TDD runners",
+      "acceptance": [
+        "clean-checkout build and a synthetic shell run on the declared emulator; host tests need no emulator. New source has an owning verifier. No musical feature or permission is claimed."
+      ],
+      "dependencies": [],
+      "scope": [
+        "- [ ] Add `src/android` Gradle Wrapper/Kotlin DSL/settings/catalog and build-logic. Select and prove the supported stable toolchain; lock dependencies/plugins and wrapper checksum. Keep existing paths in place.\n- [ ] Establish the section 05 module boundaries with the smallest compiling public surfaces and a Compose shell. Configure Kotlin warnings as errors, explicit API discipline, a pinned formatter, Detekt and debug/release Android Lint.\n- [ ] Add JVM/coroutine and instrumented Room/Compose runners plus one meaningful failing-then-passing harness fixture. Do not count a dummy assertion as musician coverage.\n- [ ] Audit TS, formatting, frontend-boundary, security and .NET discovery over `src`; record exact ownership of Kotlin/Gradle/resources and prove existing sources are still verified."
+      ],
+      "labels": [
+        "enhancement"
+      ]
+    },
+    {
+      "id": "AND-02",
+      "title": "Enforce architecture with demonstrated refusals",
+      "acceptance": [
+        "each rule has a documented owner, exercised positive/negative case and real refusal where compilation is the enforcement point. Host verification fails on an injected architecture violation."
+      ],
+      "dependencies": [
+        "AND-01"
+      ],
+      "scope": [
+        "- [ ] Implement AND-G01..G05 and AND-G08 from section 10 using convention plugins, compiler visibility, compiled ArchUnit rules and bounded Kotlin declaration rules.\n- [ ] Add passing and failing fixtures for every rule. Include aliases/fully qualified types, annotations/inheritance, nested generic API leaks, unused forbidden project references, same-module shortcuts and a newly added module missing its quality convention.\n- [ ] Run real fixture builds via Gradle TestKit. Capture expected diagnostic/rule and nonzero exit for forbidden code. An invalid fixture unexpectedly succeeding must fail verification.\n- [ ] Test suppression, severity downgrade, omitted aggregate task and zero-test-suite attempts. Keep exceptions narrow and reviewable."
+      ],
+      "labels": [
+        "enhancement"
+      ]
+    },
+    {
+      "id": "AND-03",
+      "title": "Integrate required gates and artifact receipts",
+      "acceptance": [
+        "required CI reports a demonstrated injected failure and a subsequent clean pass; the downloadable artifact identifies its exact revision. Store signing/release installation remains separate."
+      ],
+      "dependencies": [
+        "AND-02"
+      ],
+      "scope": [
+        "- [ ] Implement the section 10 `verifyHost`, `verifyDevice`, `verifyRelease` aggregates and root `verify:android`; keep existing required checks intact.\n- [ ] Add pinned emulator execution and source-bound sanitized reports. Fail on missing/zero expected suites and skipped Android prerequisites. Exercise a failing root-policy or Android change through the actual CI graph.\n- [ ] Configure implementation allowlists/checks explicitly for the foundation issues, including `src/android`, build-logic, root policy and selected OpenSpec change paths. Review effective policy so a worker cannot silently lack its task/spec path.\n- [ ] Verify current required status configuration and independent review at the actual candidate head; do not infer enforcement from YAML. Produce an unsigned/debug artifact without committing credentials."
+      ],
+      "labels": [
+        "enhancement"
+      ]
+    },
+    {
+      "id": "AND-04",
+      "title": "Port pure musical rules with independent expectations",
+      "acceptance": [
+        "meaningful red/green/refactor receipt and native domain/application tests for admitted, refused and boundary outcomes."
+      ],
+      "dependencies": [
+        "AND-00",
+        "AND-01"
+      ],
+      "scope": [
+        "- [ ] Select accepted BR/SB/LC coverage and synthetic fixtures for the first native milestone. Write expected red tests for empty/first-song state, invalid names, stable section identity/order/repeats and protected performance commands.\n- [ ] Port spelled harmony/exact pitches as separate values, including independent hand/register semantics and empty structures. Preserve supported lyric/phrase/binding associations when their selected content is carried; reject unsupported capabilities.\n- [ ] Compare independently expected fixture values against both existing and Kotlin implementations; do not use the old algorithm's generated output as the sole oracle."
+      ],
+      "labels": [
+        "enhancement"
+      ]
+    },
+    {
+      "id": "AND-05",
+      "title": "Deliver one local create/save/reopen vertical slice",
+      "acceptance": [
+        "install the exact candidate, create/edit/save, restart and reopen synthetic music without login or network. AND-G06 executed, including edit-guard rejection outside visible controls."
+      ],
+      "dependencies": [
+        "AND-03",
+        "AND-04"
+      ],
+      "scope": [
+        "- [ ] Start with failing application and real Room tests for expected revision, whole-aggregate rollback, duplicate command retry, storage failure and restart/reopen; implement the local adapter and receipt boundary.\n- [ ] Deliver Compose library/create/edit and protected consultation screens through the same application API. Reorder identified sections without losing associated content. Show failed versus acknowledged save states clearly.\n- [ ] Prove cancellation and failure preserve durable data, process recreation does not erase acknowledged content, stale responses do not replace newer drafts and supported schema upgrades preserve a recovery copy."
+      ],
+      "labels": [
+        "enhancement"
+      ]
+    },
+    {
+      "id": "AND-06",
+      "title": "Deliver complete editable song/set transfer",
+      "acceptance": [
+        "reconstructed values are independently compared, not only accepted by a decoder. Both installations can edit their own local result. AND-G07 executed; sharing files does not imply live synchronization."
+      ],
+      "dependencies": [
+        "AND-05"
+      ],
+      "scope": [
+        "- [ ] Write failing codec/application/device tests for the approved transfer policy. Distinguish song versus set scope, complete dependencies/attachments, format version, source revision and destination identity mapping.\n- [ ] Implement export, Android Sharesheet, document selection and incoming-file handling. Import validates and previews complete content before the selected atomic commit; existing unrelated songs remain as specified by AND-00.\n- [ ] Test malformed/unknown/truncated/oversized input, duplicate IDs, dangling references, unsupported content, cancellation, repeated import and storage exhaustion. Preserve original files and prior database on refusal. Qualify attachment staging/crash cleanup if attachments enter this milestone.\n- [ ] On two independent installations, export a synthetic song and complete ordered set from A, deliver through an available messaging/email document route, import into B with pre-existing unrelated music, edit there, re-export and reopen. Record unavailable external-app routes honestly."
+      ],
+      "labels": [
+        "enhancement"
+      ]
+    },
+    {
+      "id": "AND-07",
+      "title": "Qualify rehearsal use and native feature parity",
+      "acceptance": [
+        "owner exercises the selected musical journeys on the target device; remaining capabilities and unperformed acceptance are explicit."
+      ],
+      "dependencies": [
+        "AND-06"
+      ],
+      "scope": [
+        "- [ ] Derive remaining editor/piano/staff/song-sheet/phrase work from accepted outcomes and issue #74's final integration. Add separate behavior slices; do not call the minimal create/save journey complete feature parity.\n- [ ] Verify a signed release/update on the actual target tablet, offline reopen, failed-import preservation and actual touch/readability from playing distance. Agree measurable performance budgets after a release baseline; test changes against them.\n- [ ] Review source independently, verify required checks at the integration head and qualify the distributed artifact. Record authored coverage, execution, review, merge, release, installation and musician acceptance separately.\n- [ ] Scope MIDI/audio device trials as follow-up Product Changes; no hardware claim follows from this harness."
+      ],
+      "labels": [
+        "enhancement"
+      ]
+    }
+  ]
+}
