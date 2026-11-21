@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "repository": "juangcarmona/scoremap",
+  "issue": 79,
+  "runId": "4fac41b707087fe31f5c04de59c4fe6fa5434688b8e9c7279b6f01d94bfb0eb8",
+  "workflowRunId": "44929713449",
+  "attempt": 1,
+  "stage": "refine",
+  "sourceRevision": "ccdcafb8b983818a2d65d7f4d0254e172d4cdd6a",
+  "candidateTree": null,
+  "assessmentSha256": "80ec8453efb38e066f1c08d616b0422897759565fe11333b0fbc52be5a2ae74b",
+  "status": "provided",
+  "reason": "New Android library, editing, consultation and transfer interactions need proposed phone and tablet views; these wireframes are not implementation or approval.",
+  "items": [
+    {
+      "id": "library-phone-empty",
+      "kind": "proposal",
+      "view": "Native library",
+      "state": "Empty local library",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "path": "evidence/visual/dc6fb2c9a7d8f784805fdfeb3fdafd40c438bf0478f0f39cd9be8357a64b628f.png",
+      "sha256": "dc6fb2c9a7d8f784805fdfeb3fdafd40c438bf0478f0f39cd9be8357a64b628f",
+      "bytes": 18962,
+      "producer": "isolated proposed-design renderer",
+      "htmlSha256": "60fd025cf3538df566d93d81cf79fdab4ee2cc27a8480b7d6085addda781e5ae"
+    },
+    {
+      "id": "consult-tablet",
+      "kind": "proposal",
+      "view": "Song consultation",
+      "state": "Protected performance view of synthetic song",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "path": "evidence/visual/e5e1b171153f26084d14c21a1a6dc3b3136902ab2a46b6077cf37dfefccda239.png",
+      "sha256": "e5e1b171153f26084d14c21a1a6dc3b3136902ab2a46b6077cf37dfefccda239",
+      "bytes": 31974,
+      "producer": "isolated proposed-design renderer",
+      "htmlSha256": "ab2f5543f4d12261687086ec08348566fbbc5a71477da7c5dc562bd3ca40627f"
+    }
+  ]
+}
