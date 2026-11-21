@@ -6,6 +6,14 @@ Use the project-pinned [Impeccable skill](../../.agents/skills/impeccable/SKILL.
 
 The owner selected a clear, functional interface. The first consultation pass uses a light surface, a narrower library rail and quieter section and chord containers. Treat it as a starting point for review, not acceptance of the whole application redesign.
 
+## Owner-selected performance sketch
+
+Use the [performance sketch reference](ideal-performance-view.md) as the owner-selected direction for the expanded chord positions.
+
+## Piano octave colors
+
+Use [Piano octave colors](piano-octave-colors.md) as the single design reference for the owner-selected 88-key octave palette.
+
 ## Start with the musician’s task
 
 Identify the specific surface and its current behaviour. For consultation, use a representative synthetic song with multiple sections and chords, and arrangements with one, two and three keyboards. Keep theoretical chord diagrams distinct from played pitches and keep the content protected in performance mode. Inspect the actual rendered interface before choosing a direction.
