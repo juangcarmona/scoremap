@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "runId": "cdc1f62a0e0382004a802e243062743970a71af01924a74323b898d464c32115",
+  "stage": "integrate",
+  "gate": "done",
+  "status": "blocked",
+  "evidence": [
+    {
+      "id": "github-check:136784042283",
+      "status": "passed",
+      "source": "https://github.com/juangcarmona/scoremap/actions/runs/44883614824/job/136784042283",
+      "reason": "Required Verify ScoreMap check, app 15368, passed on accepted head."
+    },
+    {
+      "id": "github-check:136784042078",
+      "status": "passed",
+      "source": "https://github.com/juangcarmona/scoremap/actions/runs/44883614783/job/136784042078",
+      "reason": "Additional foundation check passed on accepted head; not an additional forge requirement."
+    },
+    {
+      "id": "independent-review",
+      "status": "pending-review",
+      "source": "https://github.com/juangcarmona/scoremap/pull/75",
+      "reason": "The PR describes a separate read-only review, but host observations include no GitHub reviews or independent review receipt. The work item explicitly requires independent current-candidate review; its completion cannot be independently established from the supplied evidence."
+    },
+    {
+      "id": "product-change-impact",
+      "status": "unavailable",
+      "source": "/workspace/.lighthouse-product-evidence/index.json",
+      "reason": "CHG-SONG-PERFORMANCE is unresolved in the product evidence scope; relevant detailed reports are not materialized. The change document claims application, but a validated application and impact receipt is not supplied."
+    }
+  ],
+  "missingEvidence": [
+    "A verifiable current-head independent review record or equivalent retained evidence for the explicitly required candidate review.",
+    "Validated ProductShape application and impact evidence for CHG-SONG-PERFORMANCE, including current product and architecture citation review; the candidate's applied status alone is not a receipt."
+  ],
+  "unavailableChecks": [
+    "ProductShape scoped inspect/impact evidence for CHG-SONG-PERFORMANCE is unavailable: the requested ID is unresolved and relevant detailed reports are not materialized. This is missing verification, not a failed check."
+  ],
+  "pendingReview": [
+    "Independent reviewer: substantiate or complete the required review of PR #75 at the accepted head, including the changed visual surface and its evidence."
+  ],
+  "nextAction": "The delivery owner should provide the validated ProductShape apply/impact and citation evidence and arrange a verifiable independent current-head review of PR #75; then request a fresh integration assessment.",
+  "output": {
+    "integration": {
+      "repository": "juangcarmona/scoremap",
+      "issue": 74,
+      "pullRequest": 75,
+      "head": "949d20c2c4375fb19b99bff45e6c09198dc564c3",
+      "base": "cc2cec5956d7ef30d5b11a808bfae44e191a2a6d",
+      "branch": "main",
+      "binding": "Host-supplied binding includes intent, policy, review, PR intent and changed-file fingerprints; publisher rechecks current authority and reservation.",
+      "authorization": "Owner workflow dispatch explicitly requests merge=true for the full accepted head. Blocked assessment requests no merge; GitHub protection and publisher rechecks remain authoritative.",
+      "scope": "PR #75 and openspec/changes/song-performance-sheet/proposal.md identify the octave-colored performed piano and product definition as an incremental slice, not completion of #74. Keep the issue open.",
+      "findings": [
+        "The issue requires independent review of the actual candidate. The PR asserts a separate read-only reviewer found no actionable issues, but does not provide a host-verifiable review receipt; the authenticated reviews array is empty. Zero forge-required approvals does not remove the work-item requirement.",
+        "docs/product/changes/completed/chg-song-performance/change.md says the owner approved and the change was applied; product evidence index lists the requested change as unresolved and FR-PIANO-SCORE and FR-CHORDS reports as not materialized. Candidate model files and matching citation strings do not independently establish the validated apply route or impact review.",
+        "openspec/changes/song-performance-sheet/tasks.md leaves the relevant checks and remaining-scope identification task unchecked. The required CI is green, and tests/e2e/consultation-readability.spec.ts contains white- and black-key color, viewport and axe assertions; the checkbox is a documentation/evidence discrepancy, not a failed CI check. Delivery owner should reconcile it against retained run details.",
+        "src/features/sketch/PerformedPiano.tsx derives octave from MIDI and preserves performed labels; docs/design/piano-octave-colors.md defines palette and distinction. Inspection is not a complete independent rendered-design review; actual screenshots and full run assertions were not supplied for inspection. No source defect is established by these evidence gaps."
+      ],
+      "synchronization": "Observed issue is open with enhancement label; PR is open and unmerged with no labels. Finalization preserves PR labels and changes no issue labels or issue state on either outcome; reservation cleanup belongs to host.",
+      "laterEvidence": [
+        {
+          "stage": "implement",
+          "status": "outstanding",
+          "detail": "Complete sheet, 88-key two-hand editor, staff, phrase, persistence and transfer; full synthetic round-trip and failure cases are not delivered by this slice."
+        },
+        {
+          "stage": "integrate",
+          "status": "outstanding for full issue delivery",
+          "detail": "Verified local-network deployment preserving the existing library and session, its exact revision and test instructions; physical-tablet musician acceptance requires actual use."
+        },
+        {
+          "stage": "review",
+          "status": "not performed",
+          "detail": "Post-merge review requires a separate entry. No merge, deployment or post-merge workflow is claimed."
+        }
+      ],
+      "reviewMethod": "Human-facing effect reviewed with Lighthouse Plain English and Humanizer fallbacks and compared with source; no upstream helper execution claimed."
+    }
+  }
+}
