@@ -8,7 +8,7 @@ description: Known limits and qualification needs
 
 Browser data can be evicted or removed by the device owner; export is the initial recovery mechanism. Origin changes isolate local data. Whole-library snapshots favor simplicity; large PDF libraries may require separate attachment object stores after measured limits justify a migration. Multiple sessions need revision conflict rejection.
 
-<!-- pdac:cite id="BR-DURABILITY" digest="sha256:6b075527861da086b9571e8d117c7844348a437e363423bca46f60cc83b02e0b" -->
+<!-- pdac:cite id="BR-DURABILITY" digest="sha256:d822f18f163b8685937ae5a3137dc04ef4a2d5947ab7a9954245bd965b72fa45" -->
 
 GitHub branch-rule availability, repository App installation, runner authorization, provider access and the selected HTTPS deployment target are operational prerequisites, tracked in delivery evidence. Enforced-check unavailability must not be treated as authorization to weaken completion gates. Physical Android installation and tablet-distance readability need owner/device evidence.
 

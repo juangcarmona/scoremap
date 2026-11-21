@@ -4,8 +4,8 @@
 ## Context
 
 Implement the applied CHG-ARRANGEMENT-EVOLUTION without treating configuration, a local write or a passing unit test as private authority or a remote commit.
-<!-- pdac:cite id="FR-PERSIST" digest="sha256:5f901e669e39923921cd1d28302b3f308460a72bda3bce53d83ffa7255934cd4" -->
-<!-- pdac:cite id="BR-DURABILITY" digest="sha256:6b075527861da086b9571e8d117c7844348a437e363423bca46f60cc83b02e0b" -->
+<!-- pdac:cite id="FR-PERSIST" digest="sha256:19c3bdee25cf34e4b6c6742a5da9a3c8905ba657d9056227fa0180474ed9b5e3" -->
+<!-- pdac:cite id="BR-DURABILITY" digest="sha256:d822f18f163b8685937ae5a3137dc04ef4a2d5947ab7a9954245bd965b72fa45" -->
 <!-- pdac:cite id="BR-EDIT-GUARD" digest="sha256:20e678c4743404c64a51c01e4446026ac95811827d2f5e1c641839291ad32718" -->
 
 ## Decisions
@@ -13,12 +13,12 @@ Implement the applied CHG-ARRANGEMENT-EVOLUTION without treating configuration, 
 The API host composes one Library module. HTTP endpoints invoke typed internal sealed handlers; pure domain validation precedes repository operations. The infrastructure adapter owns Npgsql and the transaction. Ownership comes from the validated issuer/subject session. Song grants and content writes serialize under one transaction advisory lock for this bounded MVP. Conditional personal-library and song revisions reject stale writes; complete song history and command receipts commit together. Receipts contain revision/capability metadata, never a duplicate musical library. Retrying returns current content only when acknowledgement metadata still matches current authorization and revisions; otherwise it refuses for explicit comparison. Recovery receipts contain only command/song identity, revision and retention result.
 
 Provider access/refresh tokens are in encrypted server-side tickets. The browser has only a protected session cookie and anti-forgery token. Fresh provider introspection and current database grants govern operations. The Keycloak fixture explicitly includes the confidential client audience required for introspection. Known proxy configuration is private and production requires HTTPS and separately qualified identity/settings.
-<!-- pdac:cite id="BR-ACCESS" digest="sha256:fcc173c80ae4a5903dbeb2e11c141cb6ee8d03382c812ebc527d5065347b72c9" -->
-<!-- pdac:cite id="BR-SESSION" digest="sha256:a8c63526b6fe52375791a737ed14280609d00938808928153d49fd2627416326" -->
+<!-- pdac:cite id="BR-ACCESS" digest="sha256:9b679c2f86bdff7fc86ae00f0669e3a76023c3579895249dd21bbb3d617494a9" -->
+<!-- pdac:cite id="BR-SESSION" digest="sha256:ef810362632ea22983eed6cfcdb6adfafb1d37497623582d64c0bc7c349e7bc2" -->
 
 An import preview identifies counts and preservation/copy intent. Validation refuses unknown schema/fields, duplicate IDs and dangling memberships before commit. Import cannot modify/remove existing private songs; explicit copies remap every internal identity consistently. A current v1 file is retained; unsupported richer or PDF-bearing data is never silently truncated.
-<!-- pdac:cite id="BR-BACKUP" digest="sha256:0ca300361becac0a9858d098ab1e029b5bc1dfe41a06a58ecc40408fee32ed3b" -->
-<!-- pdac:cite id="LC-LIBRARY" digest="sha256:40aaed3bcc086823445f840db9aa19d0e7bdf28ac94bd8ebfa8848b5702c711f" -->
+<!-- pdac:cite id="BR-BACKUP" digest="sha256:6e01f0285df7783f48eb0c482fa31f490f09e97e0f67a3a5fb3261dc1d1ed29c" -->
+<!-- pdac:cite id="LC-LIBRARY" digest="sha256:87592e7d48ad80b922f219f370fee009668a74146f83cbb2f159e16752fbdda5" -->
 
 Pending work is encrypted with AES-GCM before a private save attempt. Only ciphertext and an opaque key reference persist in browser storage. The server protects the principal-bound key and records its resource scope; unlock revalidates current permissions. Offline events and unknown/revoked sessions lock the private view and remove active key material. Recovery is explicit export/comparison, with no automatic replay. Private persistent offline editing remains disabled.
 

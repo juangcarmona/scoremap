@@ -18,14 +18,14 @@
 <!-- pdac:cite id="SB-SONG-DELETE" digest="sha256:bbd38eb21cb613007349d8e8a1ecedaf120174f33d7caca81a0f0acdcaf2d060" -->
 <!-- pdac:cite id="SB-SONG-EDIT" digest="sha256:1e27a22da49c7b805dcc4023c563afa4b2ec78936ca42473957617aecb9fa33a" -->
 <!-- pdac:cite id="BR-EDIT-GUARD" digest="sha256:20e678c4743404c64a51c01e4446026ac95811827d2f5e1c641839291ad32718" -->
-<!-- pdac:cite id="BR-IDENTITY" digest="sha256:6b3d38400ae82fdc926ae2b7a9eee5d02e684c50502545f323adc41cea150768" -->
-<!-- pdac:cite id="LC-LIBRARY" digest="sha256:40aaed3bcc086823445f840db9aa19d0e7bdf28ac94bd8ebfa8848b5702c711f" -->
+<!-- pdac:cite id="BR-IDENTITY" digest="sha256:d9c6607eb0cc984270a900d1889980f7515f3c1648f31efe56ceb9f3818e0352" -->
+<!-- pdac:cite id="LC-LIBRARY" digest="sha256:87592e7d48ad80b922f219f370fee009668a74146f83cbb2f159e16752fbdda5" -->
 <!-- pdac:cite id="FR-MEMBERSHIP" digest="sha256:5616e543703cb1206e49a200d319d27a6bd55c401c3374b9ed3564583aab6b3e" -->
-<!-- pdac:cite id="FR-REPERTOIRES" digest="sha256:0aee3aeb1d99cd55e0c9a52b1e4d95b11fca2a94dea44975e27a62afb581a927" -->
-<!-- pdac:cite id="FR-SONGS" digest="sha256:db0ae5a70a9b74fd370621e6c7395f924e13f1ba2a931b59514f6eda7c946625" -->
+<!-- pdac:cite id="FR-REPERTOIRES" digest="sha256:dcba63d54b9537950221b434cc50236f2aa2e4cdb1e53a229891b757e440f70f" -->
+<!-- pdac:cite id="FR-SONGS" digest="sha256:77823d9d26f9d5aa3f2fedb540d015a16b2aadc76c1eb2836824b7bb255ec739" -->
 <!-- pdac:cite id="UC-MEMBERSHIP" digest="sha256:e3f170c1793e24b326a5fe28a985095a50ed7757cfd75d028c9cac9a6f4d8447" -->
-<!-- pdac:cite id="UC-REPERTOIRES" digest="sha256:282d54489055a7d95fc9eb2ee5516b7872e304e9a5171d8643e22c350c358049" -->
-<!-- pdac:cite id="UC-SONGS" digest="sha256:a1e0a3c0e6ef1573fb12557f4916af5b0f457628040dc5529a4db42891be3780" -->
+<!-- pdac:cite id="UC-REPERTOIRES" digest="sha256:a4029a0536cb5625adbc26301cb71c6e057ead00282f7a00e416d34ddb5aae1f" -->
+<!-- pdac:cite id="UC-SONGS" digest="sha256:9230de84fe0d6cbbe62e7f5bc23c9118bf5e425dcda62bfd8b9c9312cd81e4c5" -->
 
 ## Goals / Non-Goals
 

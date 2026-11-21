@@ -24,8 +24,8 @@ The product MUST keep anonymous device preference separate from each authenticat
 - **WHEN** one principal acknowledges a notation change and signs in in a clean browser
 - **THEN** only that principal's choice is recovered and other preferences and music remain unchanged.
 
-<!-- pdac:cite id="BR-ACCESS" digest="sha256:fcc173c80ae4a5903dbeb2e11c141cb6ee8d03382c812ebc527d5065347b72c9" -->
-<!-- pdac:cite id="BR-DURABILITY" digest="sha256:6b075527861da086b9571e8d117c7844348a437e363423bca46f60cc83b02e0b" -->
+<!-- pdac:cite id="BR-ACCESS" digest="sha256:9b679c2f86bdff7fc86ae00f0669e3a76023c3579895249dd21bbb3d617494a9" -->
+<!-- pdac:cite id="BR-DURABILITY" digest="sha256:d822f18f163b8685937ae5a3137dc04ef4a2d5947ab7a9954245bd965b72fa45" -->
 
 #### Scenario: Failed preference save
 

@@ -6,13 +6,17 @@ description: Mutation, failure and recovery interactions
 
 # 6. Runtime view
 
-A mutation is admitted only in edit mode, produces a valid candidate and is serialized with other local mutations. The IndexedDB transaction compares the expected revision and atomically writes the next snapshot. The UI acknowledges success after commit. Storage failure or conflict preserves the previous durable revision and exposes a recovery/export path; unreadable storage is never overwritten during startup.
+In the anonymous browser realization, a mutation is admitted only in edit mode, produces a valid candidate and is serialized with other local mutations. The IndexedDB transaction compares the expected revision and atomically writes the next snapshot. The UI acknowledges success after commit. Storage failure or conflict preserves the previous durable revision and exposes a recovery/export path; unreadable storage is never overwritten during startup.
 
-<!-- pdac:cite id="BR-DURABILITY" digest="sha256:6b075527861da086b9571e8d117c7844348a437e363423bca46f60cc83b02e0b" -->
+<!-- pdac:cite id="BR-DURABILITY" digest="sha256:d822f18f163b8685937ae5a3137dc04ef4a2d5947ab7a9954245bd965b72fa45" -->
 
-Opening the application reads and validates the stored envelope. A first use with no record produces a valid empty library. Performance mode permits musical navigation while all musical content commands remain guarded. PDF page memory belongs to the deferred PDF capability.
+Opening that browser application reads and validates the stored envelope. A first use with no record produces a valid empty library. Performance mode permits musical navigation while all musical content commands remain guarded. Browser PDF page memory belongs to its deferred PDF capability; this does not waive the native target's complete required PDF storage/transfer boundary.
 
 <!-- pdac:cite id="BR-EDIT-GUARD" digest="sha256:20e678c4743404c64a51c01e4446026ac95811827d2f5e1c641839291ad32718" -->
+
+## Native Android runtime target
+
+[ADR-0010](../09-architecture-decisions/ADR-0010-build-a-separate-native-android-application.md) selects installation-local operation without login or backend. [Android target](../05-building-block-view/android-target.md) owns the planned local acknowledgement, retained song/set history, recoverable deletion, separate purge and complete selected-graph file activation mechanics. Native mutations retain edit-mode, expected-revision and complete domain-validity guards; local acknowledgement must not imply service save. These runtime paths need actual implementation and host/device verification; the existing IndexedDB and private-service interactions are separate realizations.
 
 ## Private application: one authorized commit
 

@@ -10,7 +10,7 @@ This directory owns ScoreMap architecture decision records, following the instal
 
 | Decision | ADR | Status | Date | Affected architecture |
 | --- | --- | --- | --- | --- |
-| Build a separate native Android application | [ADR-0010](ADR-0010-build-a-separate-native-android-application.md) | Proposed | 2026-11-21 | Native target under src/android; existing runtime and accepted product unchanged |
+| Build a separate native Android application | [ADR-0010](ADR-0010-build-a-separate-native-android-application.md) | Accepted | 2026-11-21 | Owner-selected Kotlin/Compose target under src/android; product apply, implementation and device acceptance remain separate |
 | Commit validated library snapshots atomically | [ADR-0002](ADR-0002-commit-validated-library-snapshots-atomically.md) | Proposed | 2026-11-15 | Persistence and recovery |
 | Enforce feature and layer boundaries with executable checks | [ADR-0004](ADR-0004-enforce-feature-and-layer-boundaries-with-executable-checks.md) | Accepted | 2026-11-15 | Domain/module boundaries, Roslyn and CI gates, development/production separation integrated in PR #37 |
 | Keep versioned music validation at domain boundaries | [ADR-0009](ADR-0009-keep-versioned-music-validation-at-domain-boundaries.md) | Proposed | 2026-11-20 | Partial HTTP contract, musical validation and version compatibility |

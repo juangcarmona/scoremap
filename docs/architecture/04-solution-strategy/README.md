@@ -10,7 +10,11 @@ The browser source boundary is `src/features/library/`: pure domain types and co
 
 <!-- pdac:cite id="BR-EDIT-GUARD" digest="sha256:20e678c4743404c64a51c01e4446026ac95811827d2f5e1c641839291ad32718" -->
 
-The anonymous application retains local persistence under [ADR-0001](../09-architecture-decisions/ADR-0001-use-a-local-first-browser-runtime.md). The private application uses TanStack Query for session-scoped server reads and explicit application mutation operations. Transient musical selection and interaction drafts remain local React state.
+The anonymous browser application retains local persistence under [ADR-0001](../09-architecture-decisions/ADR-0001-use-a-local-first-browser-runtime.md). The private application uses TanStack Query for session-scoped server reads and explicit application mutation operations. Transient musical selection and interaction drafts remain local React state.
+
+## Native Android strategy
+
+[ADR-0010](../09-architecture-decisions/ADR-0010-build-a-separate-native-android-application.md) selects Kotlin, Jetpack Compose and Room/SQLite in a separate `src/android` build. [Android target](../05-building-block-view/android-target.md) owns capability slices, pure musical rules, application contracts and local storage/file adapters. Reuse accepted domain semantics and independently expected synthetic fixtures; do not make the existing TypeScript runtime, service authentication or .NET module/analyzer conventions prerequisites of native editing. Native implementation and [gate activation](../10-quality-requirements/android-enforcement.md) remain pending.
 
 ## Private application strategy
 

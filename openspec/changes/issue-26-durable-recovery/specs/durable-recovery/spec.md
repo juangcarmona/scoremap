@@ -1,7 +1,7 @@
 <!-- pdac-scope: cited -->
-<!-- pdac:cite id="BR-SESSION" digest="sha256:a8c63526b6fe52375791a737ed14280609d00938808928153d49fd2627416326" -->
-<!-- pdac:cite id="BR-DURABILITY" digest="sha256:6b075527861da086b9571e8d117c7844348a437e363423bca46f60cc83b02e0b" -->
-<!-- pdac:cite id="FR-PERSIST" digest="sha256:5f901e669e39923921cd1d28302b3f308460a72bda3bce53d83ffa7255934cd4" -->
+<!-- pdac:cite id="BR-SESSION" digest="sha256:ef810362632ea22983eed6cfcdb6adfafb1d37497623582d64c0bc7c349e7bc2" -->
+<!-- pdac:cite id="BR-DURABILITY" digest="sha256:d822f18f163b8685937ae5a3137dc04ef4a2d5947ab7a9954245bd965b72fa45" -->
+<!-- pdac:cite id="FR-PERSIST" digest="sha256:19c3bdee25cf34e4b6c6742a5da9a3c8905ba657d9056227fa0180474ed9b5e3" -->
 
 ## ADDED Requirements
 
@@ -21,7 +21,7 @@ A reopened private library MUST retain its prior encrypted command and prevent s
 - **WHEN** the same principal explicitly retries that protected command after reopening and current authorization
 - **THEN** its original receipt acknowledges the existing revision without duplicating events/history, and only that pending record is removed.
 
-<!-- pdac:cite id="BR-BACKUP" digest="sha256:0ca300361becac0a9858d098ab1e029b5bc1dfe41a06a58ecc40408fee32ed3b" -->
+<!-- pdac:cite id="BR-BACKUP" digest="sha256:6e01f0285df7783f48eb0c482fa31f490f09e97e0f67a3a5fb3261dc1d1ed29c" -->
 
 ### Requirement: Explicit independent recovery copies
 The musician MUST be able to explicitly save one authorized pending song as a separate private copy under current permission and edit admission. The complete owned identity graph MUST be remapped consistently while external personal-resource provenance remains descriptive. Existing music/history and the original protected ciphertext MUST be preserved; copying MUST NOT silently merge or overwrite them.

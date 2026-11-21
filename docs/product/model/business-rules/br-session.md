@@ -9,6 +9,8 @@ uses-terms: [TERM-PRINCIPAL, TERM-SONG]
 
 ## Rule
 
+This protected-session and online lease policy governs existing authenticated private-service work, not the standalone Android local library. Native local read, history inspection, guarded edits, history restore, recoverable delete and confirmed purge require no login, backend or eight-hour online authorization lease. They never unlock retained private-service records or import account authority. Existing service-session protection is preserved unchanged.
+
 Use established identity integration with real login, secure session lifecycle and protected server-mediated browser sessions; do not expose provider access/refresh tokens to browser storage. Session/anti-forgery checks and current resource authorization are independent. A development identity graph is not Production qualification.
 
 Voluntary logout/switch warns about pending work and offers save/sync, explicit export while authorized and explicit discard. Failed save/export defaults to protected retention; never force plaintext export, silently discard or prevent session termination. End the old account context before switching; the next principal cannot display/import/export/replay its drafts.
@@ -23,12 +25,12 @@ At expiry lock usable plaintext and authorized operations, preserving protected 
 
 ## Rationale
 
-Allow safe session termination and bounded rehearsal access without trading privacy for hidden data loss.
+Allow safe session termination and bounded service-owned rehearsal access without trading privacy for hidden data loss or imposing service authority on independent local music.
 
 ## Examples
 
-At the exact eight-hour boundary a disconnected private view locks. A new account cannot recover the old account's retained draft. Reauthentication by the original principal still refuses exposure after permission revocation.
+At the exact eight-hour boundary a disconnected private view locks. A new account cannot recover the old account's retained draft. Reauthentication by the original principal still refuses exposure after permission revocation. Native local history remains usable without a service authorization lease.
 
 ## Exceptions
 
-Anonymous offline content remains separate. The initial private checkpoint requires connectivity and does not claim qualified private offline behavior.
+Anonymous browser offline content and native local content remain separate from protected private-service work. The initial private checkpoint requires connectivity and does not claim qualified private offline behavior.

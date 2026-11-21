@@ -17,4 +17,6 @@ This directory contains the system's canonical architecture documentation in Mar
 11. [Risks and technical debt](11-risks-and-technical-debt/README.md)
 12. [Glossary](12-glossary/README.md)
 
+The implemented browser and private-service realizations coexist with the owner-selected [native Android target](05-building-block-view/android-target.md) under [ADR-0010](09-architecture-decisions/ADR-0010-build-a-separate-native-android-application.md). A selected technical target does not establish product-change application, implemented modules, activated checks or device acceptance.
+
 Keep Markdown as the source of truth. Separate known implementation evidence from assumptions and open questions; do not treat an inferred decision as accepted.

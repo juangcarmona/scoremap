@@ -1,0 +1,157 @@
+{
+  "schemaVersion": 1,
+  "repository": "juangcarmona/scoremap",
+  "repositoryId": 1458674261,
+  "baselineRevision": "30d4d7d88f27e6d390ffbc2d80ac27a5e8fc5a8e",
+  "changeId": "CHG-ANDROID-NATIVE-LOCAL",
+  "changeName": "issue-79-product-change",
+  "candidateSha256": "43a786461f318efdb95c9dafcba0c53adf90c9e4e454e11b4d53494e8a2bedc6",
+  "proposedArtifacts": [
+    {
+      "id": "SB-NATIVE-COPY-IMPORT",
+      "file": "openspec/changes/issue-79-product-change/product-change/proposed/behaviours/sb-native-copy-import.md",
+      "digest": "sha256:b7edc6bb732117e937cf69b2e89ae49dcc7bd165fb3aa546dcb3cfc1555d47b9"
+    },
+    {
+      "id": "SB-NATIVE-SONG-CREATE",
+      "file": "openspec/changes/issue-79-product-change/product-change/proposed/behaviours/sb-native-song-create.md",
+      "digest": "sha256:52e0a783f04ce368bd2ad7386a21b3fe19197774c922aa30e5665f08bda84545"
+    },
+    {
+      "id": "SB-NATIVE-SONG-DELETE",
+      "file": "openspec/changes/issue-79-product-change/product-change/proposed/behaviours/sb-native-song-delete.md",
+      "digest": "sha256:d7a501ae15b77b376d58d0d0eccbe4c77ff5f2afb33d4d1eca0c54626ed089bd"
+    },
+    {
+      "id": "SB-NATIVE-SONG-RESTORE",
+      "file": "openspec/changes/issue-79-product-change/product-change/proposed/behaviours/sb-native-song-restore.md",
+      "digest": "sha256:54dca733a71bb892ad6d39f734f654c1aacbdcb67e9cf650172853b55f189209"
+    },
+    {
+      "id": "BR-ACCESS",
+      "file": "openspec/changes/issue-79-product-change/product-change/proposed/business-rules/br-access.md",
+      "digest": "sha256:9b679c2f86bdff7fc86ae00f0669e3a76023c3579895249dd21bbb3d617494a9"
+    },
+    {
+      "id": "BR-BACKUP",
+      "file": "openspec/changes/issue-79-product-change/product-change/proposed/business-rules/br-backup.md",
+      "digest": "sha256:6e01f0285df7783f48eb0c482fa31f490f09e97e0f67a3a5fb3261dc1d1ed29c"
+    },
+    {
+      "id": "BR-DURABILITY",
+      "file": "openspec/changes/issue-79-product-change/product-change/proposed/business-rules/br-durability.md",
+      "digest": "sha256:d822f18f163b8685937ae5a3137dc04ef4a2d5947ab7a9954245bd965b72fa45"
+    },
+    {
+      "id": "BR-IDENTITY",
+      "file": "openspec/changes/issue-79-product-change/product-change/proposed/business-rules/br-identity.md",
+      "digest": "sha256:d9c6607eb0cc984270a900d1889980f7515f3c1648f31efe56ceb9f3818e0352"
+    },
+    {
+      "id": "BR-SESSION",
+      "file": "openspec/changes/issue-79-product-change/product-change/proposed/business-rules/br-session.md",
+      "digest": "sha256:ef810362632ea22983eed6cfcdb6adfafb1d37497623582d64c0bc7c349e7bc2"
+    },
+    {
+      "id": "BC-RECOVERY",
+      "file": "openspec/changes/issue-79-product-change/product-change/proposed/domain/bounded-contexts/bc-recovery.md",
+      "digest": "sha256:c204b417688c830c0131bd0d4843fae88a2d76880f4fe8d985d67314471cc1a0"
+    },
+    {
+      "id": "LC-LIBRARY",
+      "file": "openspec/changes/issue-79-product-change/product-change/proposed/domain/lifecycles/lc-library.md",
+      "digest": "sha256:87592e7d48ad80b922f219f370fee009668a74146f83cbb2f159e16752fbdda5"
+    },
+    {
+      "id": "TERM-BACKUP",
+      "file": "openspec/changes/issue-79-product-change/product-change/proposed/domain/terms/term-backup.md",
+      "digest": "sha256:2b96703caa8e0dde2824a37f28ceafe715826a8aa4fdd43a55c3b1b64ee79a81"
+    },
+    {
+      "id": "TERM-LIBRARY",
+      "file": "openspec/changes/issue-79-product-change/product-change/proposed/domain/terms/term-library.md",
+      "digest": "sha256:bdb900be33ca4f27b023de6fa19bae13e19ca99c8596ac98a8c7f77def61005a"
+    },
+    {
+      "id": "JRN-PREPARE-PERFORM",
+      "file": "openspec/changes/issue-79-product-change/product-change/proposed/journeys/jrn-prepare-perform.md",
+      "digest": "sha256:5fb58bbe487dcaa26e1b8403a5cfbf7349751924e202b08a2e5cd2b587342aa7"
+    },
+    {
+      "id": "CON-LOCAL-FIRST",
+      "file": "openspec/changes/issue-79-product-change/product-change/proposed/requirements/constraints/con-local-first.md",
+      "digest": "sha256:3dd07ade8d6c189ac4f9b29fcf0e51d7abc3a6fd1a1f6ab7093918f0c4484c0a"
+    },
+    {
+      "id": "CON-PLATFORM",
+      "file": "openspec/changes/issue-79-product-change/product-change/proposed/requirements/constraints/con-platform.md",
+      "digest": "sha256:276120bdea8e88293e6843367e84966dacdad452cd568a124f64f73a24b529d5"
+    },
+    {
+      "id": "CON-SCOPE",
+      "file": "openspec/changes/issue-79-product-change/product-change/proposed/requirements/constraints/con-scope.md",
+      "digest": "sha256:a69dd93c94d43ee6fe15eee09c94b68a5ac6f96cdd6f435627c3f790b707f664"
+    },
+    {
+      "id": "FR-BACKUP",
+      "file": "openspec/changes/issue-79-product-change/product-change/proposed/requirements/functional/fr-backup.md",
+      "digest": "sha256:57286bb21b4c895afe8d7831630bec01797580be96efa5fb5a321e9822dca7e1"
+    },
+    {
+      "id": "FR-PERSIST",
+      "file": "openspec/changes/issue-79-product-change/product-change/proposed/requirements/functional/fr-persist.md",
+      "digest": "sha256:19c3bdee25cf34e4b6c6742a5da9a3c8905ba657d9056227fa0180474ed9b5e3"
+    },
+    {
+      "id": "FR-REPERTOIRES",
+      "file": "openspec/changes/issue-79-product-change/product-change/proposed/requirements/functional/fr-repertoires.md",
+      "digest": "sha256:dcba63d54b9537950221b434cc50236f2aa2e4cdb1e53a229891b757e440f70f"
+    },
+    {
+      "id": "FR-SONGS",
+      "file": "openspec/changes/issue-79-product-change/product-change/proposed/requirements/functional/fr-songs.md",
+      "digest": "sha256:77823d9d26f9d5aa3f2fedb540d015a16b2aadc76c1eb2836824b7bb255ec739"
+    },
+    {
+      "id": "QR-INTEGRITY",
+      "file": "openspec/changes/issue-79-product-change/product-change/proposed/requirements/quality/qr-integrity.md",
+      "digest": "sha256:efafc9b7b32a7ff39fdb822f04ef46def7c7534b84b2e48a606fce99bea603e6"
+    },
+    {
+      "id": "QR-READABILITY",
+      "file": "openspec/changes/issue-79-product-change/product-change/proposed/requirements/quality/qr-readability.md",
+      "digest": "sha256:7139af1523273cf318b98b0f01da8688627c1a747f656b10017dcd3f0424c4af"
+    },
+    {
+      "id": "UC-BACKUP",
+      "file": "openspec/changes/issue-79-product-change/product-change/proposed/use-cases/uc-backup.md",
+      "digest": "sha256:ce5f43fc20dbe7e1482447d0334509c00460c28f84e33b3e8aacfcc2e4cbeb9a"
+    },
+    {
+      "id": "UC-PERSIST",
+      "file": "openspec/changes/issue-79-product-change/product-change/proposed/use-cases/uc-persist.md",
+      "digest": "sha256:ea669e891adfc7641a2cf80bd5cd198d3909ee2fd6424c505a7cf991314c602f"
+    },
+    {
+      "id": "UC-REPERTOIRES",
+      "file": "openspec/changes/issue-79-product-change/product-change/proposed/use-cases/uc-repertoires.md",
+      "digest": "sha256:a4029a0536cb5625adbc26301cb71c6e057ead00282f7a00e416d34ddb5aae1f"
+    },
+    {
+      "id": "UC-SONGS",
+      "file": "openspec/changes/issue-79-product-change/product-change/proposed/use-cases/uc-songs.md",
+      "digest": "sha256:9230de84fe0d6cbbe62e7f5bc23c9118bf5e425dcda62bfd8b9c9312cd81e4c5"
+    }
+  ],
+  "actor": "Codex operator under existing owner delegation",
+  "authority": "Owner delegated implementation, necessary MVP product decisions and integration in this conversation, then explicitly reaffirmed that approval was already granted. This record does not assert personal owner inspection of these unpublished bytes.",
+  "decision": "approve this exact validated Product Change after participating review and coordinator cross-review for explicit owning-provider dry-run and apply",
+  "decidedAt": "2026-11-21T16:24:22.994Z",
+  "decisionSources": [
+    "https://github.com/juangcarmona/scoremap/issues/79#issuecomment-7063466116",
+    "https://github.com/juangcarmona/scoremap/issues/79#issuecomment-7064948674"
+  ],
+  "reviewSha256": "238fadf9f98cd6c03b352cfb523aef6e170e867f2424df585622b58cd60951c8",
+  "nativeProducerRunSucceeded": false,
+  "implementationOrDeviceAcceptance": false
+}

@@ -1,6 +1,6 @@
-# Proposed Android enforcement contract
+# Android target enforcement contract
 
-This contract belongs to the proposed [Android target](../05-building-block-view/android-target.md). No Android module, analyzer or CI gate is implemented by these documents. [Delivery tasks](../../../openspec/changes/android-native-foundation/tasks.md) own activation and executed proof.
+This contract belongs to the accepted [Android target](../05-building-block-view/android-target.md). No Android module, analyzer or CI gate is implemented by these documents. [Delivery tasks](../../../openspec/changes/android-native-foundation/tasks.md) own activation and executed proof.
 
 ## Toolchain and verification entry points
 
@@ -91,16 +91,16 @@ For each delivery slice, derive tests from selected ProductShape SB/LC/FR/BR sta
 Use JVM tests for musical rules/application decisions, coroutine tests for scheduling and state, instrumented Room tests for transactions/migrations, and Compose/device tests for the musician flow. Use independently specified expected music; agreement between two copies of the same algorithm is insufficient. Cover refusal and preservation as well as successful edits. No blanket coverage percentage substitutes for the accepted behavior matrix.
 
 <!-- pdac:cite id="BR-EDIT-GUARD" digest="sha256:20e678c4743404c64a51c01e4446026ac95811827d2f5e1c641839291ad32718" -->
-<!-- pdac:cite id="BR-DURABILITY" digest="sha256:6b075527861da086b9571e8d117c7844348a437e363423bca46f60cc83b02e0b" -->
-<!-- pdac:cite id="BR-IDENTITY" digest="sha256:6b3d38400ae82fdc926ae2b7a9eee5d02e684c50502545f323adc41cea150768" -->
+<!-- pdac:cite id="BR-DURABILITY" digest="sha256:d822f18f163b8685937ae5a3137dc04ef4a2d5947ab7a9954245bd965b72fa45" -->
+<!-- pdac:cite id="BR-IDENTITY" digest="sha256:d9c6607eb0cc984270a900d1889980f7515f3c1648f31efe56ceb9f3818e0352" -->
 <!-- pdac:cite id="BR-STRUCTURE" digest="sha256:db3410bd8a3fe7f3da94e63ee8804b1c75f03b8f7dd1e7858cfd05aed03a0686" -->
 <!-- pdac:cite id="LC-STRUCTURE" digest="sha256:31caaa7320486ab3a837e8b0f3ac2b14f6e5623b664f131cb85af1ce030a24ef" -->
-<!-- pdac:cite id="QR-INTEGRITY" digest="sha256:ab546fccd5704db577b5005460adc8c643dc6adb9173cf2ee750e7f1e6e0ae3e" -->
+<!-- pdac:cite id="QR-INTEGRITY" digest="sha256:efafc9b7b32a7ff39fdb822f04ef46def7c7534b84b2e48a606fce99bea603e6" -->
 
 Release acceptance includes an actual install/update on the target tablet, create/edit/save/reopen, performance-mode refusal, export/import into an independent installation, preservation of unrelated destination content, failed/unsupported import and readable touch operation at landscape/narrow widths and enlarged text. Hardware acceptance is not inferred from emulator screenshots. MIDI/audio remains separately scoped.
 
-<!-- pdac:cite id="FR-BACKUP" digest="sha256:26a789dde39b92764b10fe30b3840c614626a63d96a933bae0a87322cac9f066" -->
-<!-- pdac:cite id="QR-READABILITY" digest="sha256:fd18e2b171a6c15b68dc256acc88c7cf32f0376d723faf7a662a374ce49a9f5f" -->
+<!-- pdac:cite id="FR-BACKUP" digest="sha256:57286bb21b4c895afe8d7831630bec01797580be96efa5fb5a321e9822dca7e1" -->
+<!-- pdac:cite id="QR-READABILITY" digest="sha256:7139af1523273cf318b98b0f01da8688627c1a747f656b10017dcd3f0424c4af" -->
 
 Retain reports for authored behavior coverage, actual host/device execution, deliberate rule violations, independent review, merged revision, distributed artifact and physical musician acceptance as separate observations. A green aggregate does not attest a review or physical installation.
 

@@ -8,8 +8,8 @@
 
 The foundation SHALL place its independently invokable build under `src/android`, retaining root ProductShape/OpenSpec/ArcShape authorities and existing implementations.
 
-<!-- pdac:cite id="CON-PLATFORM" digest="sha256:635e50e18ab13a558ff7fb34323fb9c54c651858935b841272e22ce860067fbb" -->
-<!-- pdac:cite id="CON-LOCAL-FIRST" digest="sha256:a2cd6293106ac4e7a464b7ded96b8670d1de7480624260ba8c49a1400dbc824d" -->
+<!-- pdac:cite id="CON-PLATFORM" digest="sha256:276120bdea8e88293e6843367e84966dacdad452cd568a124f64f73a24b529d5" -->
+<!-- pdac:cite id="CON-LOCAL-FIRST" digest="sha256:3dd07ade8d6c189ac4f9b29fcf0e51d7abc3a6fd1a1f6ab7093918f0c4484c0a" -->
 
 #### Scenario: Bootstrap a new client without moving the old application
 
@@ -20,8 +20,8 @@ The foundation SHALL place its independently invokable build under `src/android`
 
 Delivery SHALL require an overlay-validated, approved and applied Product Change before implementing native local authority or additive song/set import.
 
-<!-- pdac:cite id="FR-PERSIST" digest="sha256:5f901e669e39923921cd1d28302b3f308460a72bda3bce53d83ffa7255934cd4" -->
-<!-- pdac:cite id="FR-BACKUP" digest="sha256:26a789dde39b92764b10fe30b3840c614626a63d96a933bae0a87322cac9f066" -->
+<!-- pdac:cite id="FR-PERSIST" digest="sha256:19c3bdee25cf34e4b6c6742a5da9a3c8905ba657d9056227fa0180474ed9b5e3" -->
+<!-- pdac:cite id="FR-BACKUP" digest="sha256:57286bb21b4c895afe8d7831630bec01797580be96efa5fb5a321e9822dca7e1" -->
 
 #### Scenario: Plan before product application
 
@@ -33,7 +33,7 @@ Delivery SHALL require an overlay-validated, approved and applied Product Change
 The foundation SHALL enforce section 05/10 dependencies and rule IDs with allowed/forbidden fixtures, evaluated references and compiled checks. Compilation-based rules SHALL prove actual rejection.
 
 <!-- pdac:cite id="BR-EDIT-GUARD" digest="sha256:20e678c4743404c64a51c01e4446026ac95811827d2f5e1c641839291ad32718" -->
-<!-- pdac:cite id="BR-DURABILITY" digest="sha256:6b075527861da086b9571e8d117c7844348a437e363423bca46f60cc83b02e0b" -->
+<!-- pdac:cite id="BR-DURABILITY" digest="sha256:d822f18f163b8685937ae5a3137dc04ef4a2d5947ab7a9954245bd965b72fa45" -->
 
 #### Scenario: New module attempts to bypass quality conventions
 
@@ -61,7 +61,7 @@ Slices SHALL record meaningful red/green/refactor evidence for the selected acce
 
 Room/device qualification SHALL prove transaction failure preserves the prior complete revision and cannot produce a success acknowledgement.
 
-<!-- pdac:cite id="BR-DURABILITY" digest="sha256:6b075527861da086b9571e8d117c7844348a437e363423bca46f60cc83b02e0b" -->
+<!-- pdac:cite id="BR-DURABILITY" digest="sha256:d822f18f163b8685937ae5a3137dc04ef4a2d5947ab7a9954245bd965b72fa45" -->
 <!-- pdac:cite id="SB-PERSIST-FAILURE" digest="sha256:31db2bb51e3c0495ac05dc1b53938c2de756eef9176e3ba747f6b877ee014357" -->
 
 #### Scenario: A failed save cannot report success
@@ -73,7 +73,7 @@ Room/device qualification SHALL prove transaction failure preserves the prior co
 
 Release acceptance SHALL record physical-tablet musician use separately from host/emulator results and source review.
 
-<!-- pdac:cite id="QR-READABILITY" digest="sha256:fd18e2b171a6c15b68dc256acc88c7cf32f0376d723faf7a662a374ce49a9f5f" -->
+<!-- pdac:cite id="QR-READABILITY" digest="sha256:7139af1523273cf318b98b0f01da8688627c1a747f656b10017dcd3f0424c4af" -->
 
 #### Scenario: Automated tests pass without a physical trial
 
@@ -85,7 +85,7 @@ Release acceptance SHALL record physical-tablet musician use separately from hos
 The required CI result SHALL include applicable host/device checks and sanitized evidence. Missing/skipped suites, disabled rules and zero-test execution SHALL fail their gates.
 
 <!-- pdac:cite id="CON-CONTENT" digest="sha256:5c08415cc8047dfc3161440d4a427675c191cd7bfecef5d3c7bb139fe0a9752e" -->
-<!-- pdac:cite id="QR-INTEGRITY" digest="sha256:ab546fccd5704db577b5005460adc8c643dc6adb9173cf2ee750e7f1e6e0ae3e" -->
+<!-- pdac:cite id="QR-INTEGRITY" digest="sha256:efafc9b7b32a7ff39fdb822f04ef46def7c7534b84b2e48a606fce99bea603e6" -->
 
 #### Scenario: Checks are omitted from an apparently green pipeline
 

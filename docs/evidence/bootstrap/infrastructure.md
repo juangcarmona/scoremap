@@ -137,3 +137,82 @@ Unattended policy remains `enabled=false`, `merge=false`. The newer refinement
 publisher can retain visual evidence with `contents: write`; its agent and
 preparation jobs retain `contents: read`. This upgrade changes no operator
 configuration, worker image, production application or Android implementation.
+
+## Product preparation recovery — 2026-11-21
+
+The first native attempt after the transport upgrade,
+[44917673212](https://github.com/juangcarmona/scoremap/actions/runs/44917673212),
+reached the ProductShape catalog and returned a retention-policy question.
+The owner-delegated answer selects recoverable local song/set deletion and a
+separate explicit purge; it does not approve an unpublished exact delta.
+
+[44919719884](https://github.com/juangcarmona/scoremap/actions/runs/44919719884)
+failed before agent execution at the SDK's global local-recovery retention
+limit. The operator reversibly archived four exact stopped ScoreMap attempts
+with no candidate changes, retaining complete bundles and ownership records
+outside Git with verified hashes under the shared engine mutex. Capacity
+changed from 32 to 28 bundles; other repositories and the hard limits were
+preserved. This is local recovery housekeeping, not epic acceptance evidence.
+
+The next attempt,
+[44920581717](https://github.com/juangcarmona/scoremap/actions/runs/44920581717),
+failed during evidence collection at the SDK's fixed ten-minute planning
+execution budget. Outer workflow and admission deadlines do not extend that
+inner budget. A completed patch event contained a nineteen-file proposal, but
+there was no finalized native envelope, publication or approval/apply receipt.
+The operator recovered the proposal as untrusted data, then ran the pinned
+ProductShape 0.6.6 OpenSpec integration and independent semantic review. The
+initial overlay lacked structured impact accounting; review also found missing
+native contexts in persistence/song flows, library restoration and integrity
+qualification. The operator-hosted Product Change records those corrections
+and its actual validation/decision/apply evidence separately. Failed native
+attempts remain failures. The parent requires fresh refinement against the
+resulting integrated product baseline before native children are created.
+
+## Android CI admission before the epic source freeze
+
+The operator-owned CI now has Android host and device jobs on Ubuntu 24.04.
+The existing required `Verify ScoreMap` job retains its commands and uses an
+`always()` dependency gate requiring both native job results to be successful;
+failed, cancelled or skipped native jobs cannot satisfy it. An absent
+`src/android` is reported explicitly as outside the current source scope.
+Once any Android directory exists, the executable pinned wrapper, root
+`verify:android` and actual Gradle Managed Device `verifyDevice` route are
+required. AND-01 supplies their baseline runners; AND-02/AND-03 expand the
+complete production and refusal-suite inventories.
+
+[scripts/android-ci-toolchain.mjs](../../../scripts/android-ci-toolchain.mjs)
+uses the public [qualified pins](../../../scripts/android-ci-toolchain-pins.json).
+Its hosted environment requires Node 24, Python 3, Docker, curl and network
+access to the pinned official distributions/SDK metadata. The device job also
+requires an accessible KVM character device and emulator runtime libraries.
+The installer extracts the JDK from its immutable official image, verifies the
+command-line tools checksum and SDK metadata/archive/revision pins, then checks
+installed revisions. It exports isolated runner-local SDK/JDK/cache paths;
+signing credentials and physical USB devices are not involved.
+
+The hosted installer is not a native-worker prerequisite. The qualified
+Lighthouse sandbox image lacks Python 3; a direct run of the new Python-backed
+CI fixture checks there failed three cases with ENOENT. A separate independent
+execution using the image's exact extracted Node 24.22.1 binary and the host's
+Python passed all six offline checks, including checksum/revision drift,
+missing or fake KVM, incomplete source scope and missing/stale/empty/skipped/
+failed JUnit results. That execution changed neither the worker image nor its
+operator selection.
+
+The generic CI report guard proves fresh nonempty host/device results and
+rejects skipped/failed cases. It is not the complete per-module suite inventory
+or an executed Gradle Managed Device qualification. AND-01 through AND-03 still
+own those real builds, expected-suite checks and actual injected CI failures.
+An installed SDK, passing preparation fixtures and an absent-source CI pass do
+not establish a ScoreMap APK or native product acceptance.
+
+A clean operator-host installation through this exact installer subsequently
+completed with exit zero: the pinned JDK executed, the command-line ZIP passed
+its checksum, current official metadata matched the selected pins, licences and
+host SDK packages installed, installed revisions matched and adb reported
+37.0.3. Device-package pins were compared with official metadata and the
+previously qualified SDK. No new managed-device task, ScoreMap APK or hosted
+Actions SDK installation was exercised by that smoke. Independent review found
+no P1/P2 in the final four CI preparation files and independently reran all six
+offline tests with Node 24.22.1 plus Python.
