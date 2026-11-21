@@ -72,3 +72,7 @@ flowchart LR
 Source: [API host](../../../src/root/ScoreMap.Api/Program.cs), [module composition](../../../src/modules/ScoreMap.Modules.Library/LibraryModule.cs), [domain validation](../../../src/modules/ScoreMap.Modules.Library/Domain/LibraryDocument.cs), [transaction adapter](../../../src/modules/ScoreMap.Modules.Library/Infrastructure/LibraryRepository.cs). These components are integrated through PR37. The environment-specific deployment and current artifact qualification remain separate facts.
 
 <!-- pdac:cite id="FR-PERSIST" digest="sha256:5f901e669e39923921cd1d28302b3f308460a72bda3bce53d83ffa7255934cd4" -->
+
+## Proposed Android evolution
+
+[Android building blocks](android-target.md) records the proposed ADR-0010 target. It is planning material; Android implementation, product alignment and gate activation are pending. Existing implementation evidence above retains its scope.
