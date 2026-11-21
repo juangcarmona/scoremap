@@ -26,3 +26,6 @@ deployment/output/
 
 # Python qualification interpreter caches.
 __pycache__/
+
+# SDK candidates install the locked Playwright browser in this disposable cache.
+/.cache/ms-playwright/
