@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "repository": "juangcarmona/scoremap",
+  "issue": 79,
+  "runId": "ac881cd324f12f1dc411fc3cd238cae9195f03e543ac914a6b9aeeead0ce11de",
+  "workflowRunId": "44931555735",
+  "attempt": 1,
+  "stage": "refine",
+  "sourceRevision": "ccdcafb8b983818a2d65d7f4d0254e172d4cdd6a",
+  "candidateTree": null,
+  "assessmentSha256": "09ef2054e3c9f63817ac606a88ec8845c644a2c2a3ce583368fb9ffbb551b53d",
+  "status": "provided",
+  "reason": "New native phone library, import and tablet consultation change user-facing screens and interaction states; these are planning examples, not actual Compose captures.",
+  "items": [
+    {
+      "id": "library-phone-empty",
+      "kind": "proposal",
+      "view": "Native library",
+      "state": "Empty library with separate create and import actions",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "path": "evidence/visual/7705413698dd28f0d443c1f1c28223333e13d45471d4886388c4d1abefc7070e.png",
+      "sha256": "7705413698dd28f0d443c1f1c28223333e13d45471d4886388c4d1abefc7070e",
+      "bytes": 19725,
+      "producer": "isolated proposed-design renderer",
+      "htmlSha256": "1ae970d41e19c5b1f42915ae7636e64a2fcb6d638aa4d39a3edde89fa8256549"
+    },
+    {
+      "id": "consult-tablet",
+      "kind": "proposal",
+      "view": "Native song consultation",
+      "state": "Protected consultation with expanded musical sheet",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "path": "evidence/visual/8ea8fb206e0e3059cc8850b0f6529804ef2499bf0a98155d52a6c47707d2e924.png",
+      "sha256": "8ea8fb206e0e3059cc8850b0f6529804ef2499bf0a98155d52a6c47707d2e924",
+      "bytes": 43701,
+      "producer": "isolated proposed-design renderer",
+      "htmlSha256": "c62bb00c8ddc121dc89f5de44f5e5c5986aedfd711c2b214eac06b0c440c11ba"
+    },
+    {
+      "id": "import-phone-preview",
+      "kind": "proposal",
+      "view": "Native import",
+      "state": "Preview independent copy and preserve existing music",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "path": "evidence/visual/3a9f3cf339664a2049de62734e618e8886e718b1169c36f7b8b876feac341b54.png",
+      "sha256": "3a9f3cf339664a2049de62734e618e8886e718b1169c36f7b8b876feac341b54",
+      "bytes": 25293,
+      "producer": "isolated proposed-design renderer",
+      "htmlSha256": "a8e18dee75d16afb8056639ace3cc8d0c9bd1311ceb5a2587d940bd13213009e"
+    }
+  ]
+}
