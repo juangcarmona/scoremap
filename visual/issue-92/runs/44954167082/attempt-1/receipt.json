@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "repository": "juangcarmona/scoremap",
+  "issue": 92,
+  "runId": "a048e025b13d5cf42b56ef6a20cf052f95b07570d2eba230b6b0ef8c84c84e6e",
+  "workflowRunId": "44954167082",
+  "attempt": 1,
+  "stage": "refine",
+  "sourceRevision": "39e3ee8f6dc72e29a04a93da36991d3eeb653ea8",
+  "candidateTree": null,
+  "assessmentSha256": "98a325bcefc6b9e1a2b9fdedfc7afa4f4800cdd6ee0fd3db400d5b5066599463",
+  "status": "provided",
+  "reason": "Planning proposals illustrate new phone and tablet interaction states; these are not product captures or visual approval.",
+  "items": [
+    {
+      "id": "phone-library-empty",
+      "kind": "proposal",
+      "view": "Native library",
+      "state": "Empty offline library in edit mode",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "path": "evidence/visual/25ad971f377be89d4f273d09687550430ce086013bb89ed6f0af7432e49a522f.png",
+      "sha256": "25ad971f377be89d4f273d09687550430ce086013bb89ed6f0af7432e49a522f",
+      "bytes": 23166,
+      "producer": "isolated proposed-design renderer",
+      "htmlSha256": "a908f2324c12dbaaa2729960c67e779cd29ccfe5d26892e9bbf602ccfa1a4669"
+    },
+    {
+      "id": "phone-import-preview",
+      "kind": "proposal",
+      "view": "Import",
+      "state": "Validated set preview before confirmation",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "path": "evidence/visual/85b893e34751cf0e3074c6da1b9f7430b4fd536690142fada9132c85686448c8.png",
+      "sha256": "85b893e34751cf0e3074c6da1b9f7430b4fd536690142fada9132c85686448c8",
+      "bytes": 22680,
+      "producer": "isolated proposed-design renderer",
+      "htmlSha256": "90f43a1792360d9e0967bb1f02a4de44666e300ebaebe3d957e58ee417221c20"
+    },
+    {
+      "id": "tablet-protected-sheet",
+      "kind": "proposal",
+      "view": "Song sheet",
+      "state": "Protected consultation",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "path": "evidence/visual/3c2edc76feacc080367c774ca5292f930c33f1d5064573e1c61816c0dcd55b12.png",
+      "sha256": "3c2edc76feacc080367c774ca5292f930c33f1d5064573e1c61816c0dcd55b12",
+      "bytes": 41124,
+      "producer": "isolated proposed-design renderer",
+      "htmlSha256": "fa43d434ce5def48b183ea099d5f3a3b310c3fd17a6f6c8111c1e9dbaa889a7d"
+    }
+  ]
+}
