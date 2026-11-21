@@ -10,13 +10,13 @@
   "slices": [
     {
       "id": "AND-00",
-      "title": "Align native local product intent",
+      "title": "Verify native local product alignment",
       "acceptance": [
         "no unresolved product-semantic decisions for the selected first native journey; the accepted baseline describes the operation to be implemented."
       ],
       "dependencies": [],
       "scope": [
-        "- [ ] Prepare a separate Product Change for native Android installation, no-login device-local authority, editable song/set import/export and preservation of existing musical outcomes.\n- [ ] Resolve same-identity import/copy/update, history retention/transfer, independently owned resource transfer, attachment milestones and coexistence with the existing private service. Reclassify affected account/session/retention rules; no blanket deletion from the current product.\n- [ ] Validate the overlay; obtain product approval; apply through ProductShape; re-ground impacted OpenSpec/ArcShape citations. Record exact change/commit and keep product application separate from implementation approval."
+        "- [ ] Verify the integrated CHG-ANDROID-NATIVE-LOCAL baseline, exact operator decision under existing owner delegation, provider overlay/dry-run/apply receipts and affected OpenSpec/ArcShape citation bindings.\n- [ ] Confirm the resolved always-independent-copy import, current-content export without private history, complete PDF/dependency transfer, history without expiry, recoverable song/set deletion, separate confirmed purge and existing private-service coexistence in the accepted artifacts.\n- [ ] Derive the native SB/LC and preserved complete musical acceptance traceability for later TDD; report any actual semantic gap without modifying the accepted model or treating a successful tool invocation as product approval."
       ],
       "labels": [
         "enhancement"
@@ -30,7 +30,7 @@
       ],
       "dependencies": [],
       "scope": [
-        "- [ ] Add `src/android` Gradle Wrapper/Kotlin DSL/settings/catalog and build-logic. Select and prove the supported stable toolchain; lock dependencies/plugins and wrapper checksum. Keep existing paths in place.\n- [ ] Establish the section 05 module boundaries with the smallest compiling public surfaces and a Compose shell. Configure Kotlin warnings as errors, explicit API discipline, a pinned formatter, Detekt and debug/release Android Lint.\n- [ ] Add JVM/coroutine and instrumented Room/Compose runners plus one meaningful failing-then-passing harness fixture. Do not count a dummy assertion as musician coverage.\n- [ ] Audit TS, formatting, frontend-boundary, security and .NET discovery over `src`; record exact ownership of Kotlin/Gradle/resources and prove existing sources are still verified."
+        "- [ ] Add `src/android` Gradle Wrapper/Kotlin DSL/settings/catalog and build-logic. Select and prove the supported stable toolchain; lock dependencies/plugins and wrapper checksum. Keep existing paths in place.\n- [ ] Establish the section 05 module boundaries with the smallest compiling public surfaces and a Compose shell. Configure Kotlin warnings as errors, explicit API discipline, a pinned formatter, Detekt and debug/release Android Lint.\n- [ ] Add JVM/coroutine and instrumented Room/Compose runners plus one meaningful failing-then-passing harness fixture. Provide runnable baseline `verifyHost`, root `verify:android` invoking that host aggregate, and Gradle-Managed-Device `verifyDevice` entry points from the first Android source commit, producing nonempty host/device JUnit reports without skipped tests for the delivered scope. AND-02/AND-03 expand these aggregates; do not count a dummy assertion as musician coverage.\n- [ ] Audit TS, formatting, frontend-boundary, security and .NET discovery over `src`; record exact ownership of Kotlin/Gradle/resources and prove existing sources are still verified."
       ],
       "labels": [
         "enhancement"
@@ -87,16 +87,16 @@
     },
     {
       "id": "AND-05",
-      "title": "Deliver one local create/save/reopen vertical slice",
+      "title": "Deliver local music, sets and recoverable history",
       "acceptance": [
-        "install the exact candidate, create/edit/save, restart and reopen synthetic music without login or network. AND-G06 executed, including edit-guard rejection outside visible controls."
+        "install the exact candidate; create/edit/save/restart/reopen complete synthetic songs and ordered sets, inspect/restore history, recoverably delete/restore and separately confirm purge without login or network, including real atomic refusal/failure/retry preservation. AND-G06 executed, including edit-guard rejection outside visible controls."
       ],
       "dependencies": [
         "AND-03",
         "AND-04"
       ],
       "scope": [
-        "- [ ] Start with failing application and real Room tests for expected revision, whole-aggregate rollback, duplicate command retry, storage failure and restart/reopen; implement the local adapter and receipt boundary.\n- [ ] Deliver Compose library/create/edit and protected consultation screens through the same application API. Reorder identified sections without losing associated content. Show failed versus acknowledged save states clearly.\n- [ ] Prove cancellation and failure preserve durable data, process recreation does not erase acknowledged content, stale responses do not replace newer drafts and supported schema upgrades preserve a recovery copy."
+        "- [ ] Start with failing application and real Room tests for expected revision, whole-aggregate rollback, duplicate command retry, storage failure and restart/reopen; implement the local adapter and receipt boundary.\n- [ ] Deliver Compose library/create/edit and protected consultation screens through the same application API. Reorder identified sections without losing associated content. Show failed versus acknowledged save states clearly.\n- [ ] Prove cancellation and failure preserve durable data, process recreation does not erase acknowledged content, stale responses do not replace newer drafts and supported schema upgrades preserve a recovery copy.\n- [ ] Use meaningful red/green/refactor tests and actual Room/PDF boundaries for song and ordered-set creation/editing, read-only history inspection, revision restore, recoverable delete, deleted-item restore and separate confirmed purge. Preserve all acknowledged revisions without expiry, validate current dependencies, keep independent resources and songs on set deletion/purge, never recreate former song memberships and retain non-content anti-resurrection receipts.\n- [ ] Test direct performance-mode rejection, invalid/missing dependency restore, stale revisions, retry after ambiguous acknowledgement, cancelled/failed purge, crash/restart and low-storage failure for those song/set/history commands. Independently compare complete retained music, PDF bytes, set order and intervening revisions; no partial success or stale resurrection is allowed."
       ],
       "labels": [
         "enhancement"
@@ -112,7 +112,7 @@
         "AND-05"
       ],
       "scope": [
-        "- [ ] Write failing codec/application/device tests for the approved transfer policy. Distinguish song versus set scope, complete dependencies/attachments, format version, source revision and destination identity mapping.\n- [ ] Implement export, Android Sharesheet, document selection and incoming-file handling. Import validates and previews complete content before the selected atomic commit; existing unrelated songs remain as specified by AND-00.\n- [ ] Test malformed/unknown/truncated/oversized input, duplicate IDs, dangling references, unsupported content, cancellation, repeated import and storage exhaustion. Preserve original files and prior database on refusal. Qualify attachment staging/crash cleanup if attachments enter this milestone.\n- [ ] On two independent installations, export a synthetic song and complete ordered set from A, deliver through an available messaging/email document route, import into B with pre-existing unrelated music, edit there, re-export and reopen. Record unavailable external-app routes honestly."
+        "- [ ] Write failing codec/application/device tests for the approved transfer policy. Distinguish song versus set scope, complete dependencies/attachments, format version, source revision and destination identity mapping.\n- [ ] Implement export, Android Sharesheet, document selection and incoming-file handling. Import validates and previews complete content before the selected atomic commit; existing unrelated songs remain as specified by AND-00.\n- [ ] Test malformed/unknown/truncated/oversized input, duplicate IDs, dangling references, unsupported content, cancellation, repeated import and storage exhaustion. Preserve original files and prior database on refusal. Qualify required owned PDF staging, publication, crash cleanup and low-storage preservation; complete supported PDF transfer is mandatory.\n- [ ] On two independent installations, export a synthetic song and complete ordered set from A, deliver through an available messaging/email document route, import into B with pre-existing unrelated music, edit there, re-export and reopen. Record unavailable external-app routes honestly."
       ],
       "labels": [
         "enhancement"

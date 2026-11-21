@@ -1,0 +1,75 @@
+{
+  "jdkImage": "eclipse-temurin:21-jdk-noble@sha256:a09e64f4976df9c4f2029c6abe64fc26f069a342ec9a7f147dce7b1933ebda16",
+  "javaVersion": "21.0.13.1+2-LTS",
+  "commandLineTools": {
+    "version": "22.0",
+    "url": "https://dl.google.com/android/repository/commandlinetools-linux-15859902_latest.zip",
+    "sha256": "4e4c464f145a7512b57d088ac6c278c03c9eea610886b35a5e0804e74eedf583"
+  },
+  "gradle": {
+    "version": "9.7.0",
+    "url": "https://services.gradle.org/distributions/gradle-9.7.0-bin.zip",
+    "sha256": "84fbba45c7f4c64abc77460e1c00f541e9f960e3c7ed2538f1ede19eacd873ae",
+    "wrapperJarSha256": "7a9ce74cff467ca1bf60a4fcd9f05185acceda4d0f382434d393e17864262c5d"
+  },
+  "repositories": {
+    "sdk": "https://dl.google.com/android/repository/repository2-3.xml",
+    "image": "https://dl.google.com/android/repository/sys-img/android/sys-img2-3.xml"
+  },
+  "packages": [
+    {
+      "id": "platforms;android-37.0",
+      "revision": "2.0.0",
+      "archive": "platform-37.0_r02.zip",
+      "checksum": "ed8ebf7f8822a4de5686d427f237d2fa30ff7410",
+      "checksumType": "sha1",
+      "repository": "sdk",
+      "scope": "device"
+    },
+    {
+      "id": "build-tools;36.0.0",
+      "revision": "36.0.0",
+      "archive": "build-tools_r36_linux.zip",
+      "checksum": "b0b6376977657e8ad9b969bacf4093601da2c6fb",
+      "checksumType": "sha1",
+      "repository": "sdk",
+      "scope": "host"
+    },
+    {
+      "id": "platform-tools",
+      "revision": "37.0.3",
+      "archive": "platform-tools_r37.0.3-linux.zip",
+      "checksum": "e1579b288a7ae4e9bc28dedec6a154d78b3c04ed",
+      "checksumType": "sha1",
+      "repository": "sdk",
+      "scope": "host"
+    },
+    {
+      "id": "emulator",
+      "revision": "37.3.10",
+      "archive": "emulator-linux_x64-16970787.zip",
+      "checksum": "5f7314368fc6c05c937f6991bb4106214dc389e7",
+      "checksumType": "sha1",
+      "repository": "sdk",
+      "scope": "device"
+    },
+    {
+      "id": "system-images;android-37.0;default;x86_64",
+      "revision": "6.0.0",
+      "archive": "x86_64-37.0_r06.zip",
+      "checksum": "8842a57a6b146423debb46c1496a9c0986aa1b9e",
+      "checksumType": "sha1",
+      "repository": "image",
+      "scope": "device"
+    },
+    {
+      "id": "platforms;android-37.1",
+      "revision": "1.0.0",
+      "archive": "platform-37.1_r01.zip",
+      "checksum": "62aeba1ec09c2b1fdf888e79549daf678fa0d75f",
+      "checksumType": "sha1",
+      "repository": "sdk",
+      "scope": "host"
+    }
+  ]
+}

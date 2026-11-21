@@ -6,9 +6,11 @@ description: Storage, backup, update and trust mechanisms
 
 # 8. Cross-cutting concepts
 
-The anonymous envelope initially used schema version 1; the application accepts versions 1 and 2 with a monotonic revision and explicit legacy migration. Load and import validate complete content and associations; future migrations must be explicit and atomic. Unknown versions stop without writes. Anonymous import is confirmed replacement; private import preserves existing songs and uses explicit independently owned copies. IDs are opaque stable browser-generated UUIDs.
+The mechanisms below describe the existing anonymous browser and private-service realizations. The separate [Android target](../05-building-block-view/android-target.md) under [ADR-0010](../09-architecture-decisions/ADR-0010-build-a-separate-native-android-application.md) owns planned native local commits, history and independent-copy file activation without service authentication. Native realization and qualification are pending; existing browser/service evidence does not establish them.
 
-<!-- pdac:cite id="BR-BACKUP" digest="sha256:0ca300361becac0a9858d098ab1e029b5bc1dfe41a06a58ecc40408fee32ed3b" -->
+The anonymous browser envelope initially used schema version 1; the application accepts versions 1 and 2 with a monotonic revision and explicit legacy migration. Load and import validate complete content and associations; future migrations must be explicit and atomic. Unknown versions stop without writes. Anonymous import is confirmed replacement; private import preserves existing songs and uses explicit independently owned copies. IDs are opaque stable browser-generated UUIDs.
+
+<!-- pdac:cite id="BR-BACKUP" digest="sha256:6e01f0285df7783f48eb0c482fa31f490f09e97e0f67a3a5fb3261dc1d1ed29c" -->
 
 External URLs accept only HTTP(S), text uses React escaping, and no application code is loaded from imported content. App-shell caching is separate from personal data. A waiting service worker updates only after an explicit user action, avoiding an unexpected performance interruption.
 
@@ -28,7 +30,7 @@ The accepted account-library commit aggregate is server-authoritative after tran
 
 These mechanisms carry the acknowledged-durability rule across the new persistence boundary. Device protection and the server aggregate commit are separate transactions, with explicit recovery and no cross-boundary atomicity claim.
 
-<!-- pdac:cite id="BR-DURABILITY" digest="sha256:6b075527861da086b9571e8d117c7844348a437e363423bca46f60cc83b02e0b" -->
+<!-- pdac:cite id="BR-DURABILITY" digest="sha256:d822f18f163b8685937ae5a3137dc04ef4a2d5947ab7a9954245bd965b72fa45" -->
 
 The BFF retains provider tokens server-side and uses protected HttpOnly session cookies, production-appropriate Secure/SameSite settings and CSRF protection. Logout, expiry and account switch have explicit private-cache/queue behavior; the service worker must not cache private API data as application assets. Production identity remains a separate integration choice, not an obligation to deploy a new identity server. See [section 07](../07-deployment-view/README.md) for trusted ingress and private configuration boundaries.
 
@@ -41,9 +43,9 @@ The current private adapter derives the stable principal from validated OIDC iss
 
 Principal-bound recovery keys are protected on the server; browser pending records contain AES-GCM ciphertext and opaque references. Successful commits bind the covered song identities into the retained key scope. Unlock requires the same principal and fresh resource checks, with explicit export/comparison and no automatic replay. Private offline preparation defaults to disabled; explicit configuration and protected scoped admission can enable it for a bounded interval. The earlier provider/session deadline still wins, and restart requires fresh authenticated unlock. These mechanisms belong to the [library module](../../../src/modules/ScoreMap.Modules.Library/LibraryModule.cs); their tested behavior and remaining qualification are recorded in delivery evidence.
 
-<!-- pdac:cite id="BR-DURABILITY" digest="sha256:6b075527861da086b9571e8d117c7844348a437e363423bca46f60cc83b02e0b" -->
-<!-- pdac:cite id="BR-ACCESS" digest="sha256:fcc173c80ae4a5903dbeb2e11c141cb6ee8d03382c812ebc527d5065347b72c9" -->
-<!-- pdac:cite id="BR-SESSION" digest="sha256:a8c63526b6fe52375791a737ed14280609d00938808928153d49fd2627416326" -->
+<!-- pdac:cite id="BR-DURABILITY" digest="sha256:d822f18f163b8685937ae5a3137dc04ef4a2d5947ab7a9954245bd965b72fa45" -->
+<!-- pdac:cite id="BR-ACCESS" digest="sha256:9b679c2f86bdff7fc86ae00f0669e3a76023c3579895249dd21bbb3d617494a9" -->
+<!-- pdac:cite id="BR-SESSION" digest="sha256:ef810362632ea22983eed6cfcdb6adfafb1d37497623582d64c0bc7c349e7bc2" -->
 
 
 ## Notation and preference acknowledgement
@@ -56,7 +58,7 @@ Anonymous preference uses an independent device key. Signed-in preference reads 
 
 The interactive application keeps played-note previews separate from acknowledged library content. Its apply command compares the selected voicing and part occurrences to their opening snapshot, validates the complete graph and preserves occurrence identity/timing. Undo replaces the prior complete arrangement only when its current value still matches the acknowledged post-edit arrangement. Unrelated or conflicting updates cannot be overwritten by an old undo. Cancel and view changes produce no content command. Before leaving an unapplied preview the UI offers a deliberate discard decision; applied-but-unacknowledged private content uses the existing encrypted pending-work boundary.
 
-The piano reuses chromatic geometry while marking theoretical classes and exact performed occurrences separately. Individual editable native key targets remain at least 48 CSS pixels; bounded horizontal scrolling preserves geometry on small or enlarged-text views. Pitches outside the selected octave span remain named. Spelling plus written octave determines absolute pitch; the absolute 0..127 bound does not impose an additional unsupported written-octave restriction on enharmonic spelling. Identification orders octave-bearing pitches by actual register and proposes identities without changing their source notes.
+The piano reuses chromatic geometry while marking theoretical classes and exact performed occurrences separately. Individual editable browser key targets remain at least 48 CSS pixels; bounded horizontal scrolling preserves geometry on small or enlarged-text views. Pitches outside the selected octave span remain named. Spelling plus written octave determines absolute pitch; the absolute 0..127 bound does not impose an additional unsupported written-octave restriction on enharmonic spelling. Identification orders octave-bearing pitches by actual register and proposes identities without changing their source notes.
 
 Reusable voicings have independently scoped content and conditional revisions. Anonymous presets use a separate IndexedDB database; private presets use principal-keyed PostgreSQL records and metadata-only retry receipts through typed application handlers. Applying a named version creates a new independent arrangement voicing and note occurrences with copied provenance. Updating or deleting the personal resource leaves every song copy unchanged. The song grant confers no personal-resource access.
 

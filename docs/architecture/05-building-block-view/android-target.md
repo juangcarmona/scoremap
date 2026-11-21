@@ -1,6 +1,6 @@
-# Proposed Android building blocks
+# Android target building blocks
 
-This is the proposed target of [ADR-0010](../09-architecture-decisions/ADR-0010-build-a-separate-native-android-application.md), not a description of existing Android implementation. The canonical current system remains in the [section document](README.md). The owner supplied the Android/local-file direction on 2026-11-21; product alignment and implementation are pending.
+This is the accepted target of [ADR-0010](../09-architecture-decisions/ADR-0010-build-a-separate-native-android-application.md), not a description of existing Android implementation. The canonical current system remains in the [section document](README.md). The owner supplied the Android/local-file direction on 2026-11-21; the Product Change and implementation retain their separate validation and integration gates.
 
 ## Repository boundary
 
@@ -53,8 +53,8 @@ Kotlin declarations are `internal` or `private` by default under the project rul
 All mutations enter an application command that checks edit mode and complete domain validity before asking storage to commit. The storage port accepts a validated mutation plus expected revision and stable command identity, rather than arbitrary SQL or a mutable entity. A returned acknowledgement identifies the committed revision; cancellation/failure/conflict cannot construct a success result. UI, file intents, autosave and later hardware inputs use this same application admission path.
 
 <!-- pdac:cite id="BR-EDIT-GUARD" digest="sha256:20e678c4743404c64a51c01e4446026ac95811827d2f5e1c641839291ad32718" -->
-<!-- pdac:cite id="BR-DURABILITY" digest="sha256:6b075527861da086b9571e8d117c7844348a437e363423bca46f60cc83b02e0b" -->
-<!-- pdac:cite id="BR-IDENTITY" digest="sha256:6b3d38400ae82fdc926ae2b7a9eee5d02e684c50502545f323adc41cea150768" -->
+<!-- pdac:cite id="BR-DURABILITY" digest="sha256:d822f18f163b8685937ae5a3137dc04ef4a2d5947ab7a9954245bd965b72fa45" -->
+<!-- pdac:cite id="BR-IDENTITY" digest="sha256:d9c6607eb0cc984270a900d1889980f7515f3c1648f31efe56ceb9f3818e0352" -->
 <!-- pdac:cite id="SB-SECTION-REORDER" digest="sha256:610413c7eae977e5760aa413f58ec499375fdafe0952dca8cbc7591cbda639e5" -->
 
 ## State and persistence
@@ -63,15 +63,15 @@ Compose renders immutable screen state and emits user actions. Screen-scoped Vie
 
 Room/SQLite is the authority for acknowledged device-local content. JSON is a portable representation, not an independently writable second master. Content revision, database schema, transfer format and application release are separate versions. A commit atomically validates expected revision, saves complete accepted content and records its receipt. Serialize writes or use conditional updates so stale drafts cannot overwrite newer acknowledged revisions. Preserve unsaved interaction state after failed writes and identify it separately from saved content.
 
-<!-- pdac:cite id="BR-DURABILITY" digest="sha256:6b075527861da086b9571e8d117c7844348a437e363423bca46f60cc83b02e0b" -->
+<!-- pdac:cite id="BR-DURABILITY" digest="sha256:d822f18f163b8685937ae5a3137dc04ef4a2d5947ab7a9954245bd965b72fa45" -->
 <!-- pdac:cite id="SB-PERSIST-FAILURE" digest="sha256:31db2bb51e3c0495ac05dc1b53938c2de756eef9176e3ba747f6b877ee014357" -->
 
 For attachments, a SQLite transaction does not make filesystem writes atomic. Stage and validate complete bytes, publish immutable content-addressed files before committing database references, and acknowledge only after the files and transaction satisfy the qualified durability contract. A crash may leave unreferenced staged files; cleanup must not remove referenced files. Failed import never activates missing attachments or replaces existing music. Native filesystem durability and low-storage behavior require device tests.
 
-Portable import/export supports the new musician journey only after Product Change alignment. Parse untrusted input into transport DTOs, validate the whole declared graph and supported capabilities, preview destination changes, then commit the selected atomic boundary. Keep schema-version dispatch explicit. Unknown future content is preserved and refused, rather than silently truncated. Do not infer an identity collision policy, history-retention policy or automatic merge from this architecture.
+Portable import/export supports the new musician journey only after Product Change alignment. Parse untrusted input into transport DTOs, validate the whole declared graph and supported capabilities, preview destination changes, then commit the selected atomic boundary. Keep schema-version dispatch explicit. Unknown future content is preserved and refused, rather than silently truncated. The hosted native Product Change selects always-independent copies, complete current-revision transfer, no implicit private-history export, local history without expiry, recoverable song/set deletion and separate confirmed purge. Apply that validated policy before feature delivery; no automatic merge or browser replacement is authorized.
 
-<!-- pdac:cite id="BR-BACKUP" digest="sha256:0ca300361becac0a9858d098ab1e029b5bc1dfe41a06a58ecc40408fee32ed3b" -->
-<!-- pdac:cite id="FR-BACKUP" digest="sha256:26a789dde39b92764b10fe30b3840c614626a63d96a933bae0a87322cac9f066" -->
+<!-- pdac:cite id="BR-BACKUP" digest="sha256:6e01f0285df7783f48eb0c482fa31f490f09e97e0f67a3a5fb3261dc1d1ed29c" -->
+<!-- pdac:cite id="FR-BACKUP" digest="sha256:57286bb21b4c895afe8d7831630bec01797580be96efa5fb5a321e9822dca7e1" -->
 
 ## Reuse and future integrations
 

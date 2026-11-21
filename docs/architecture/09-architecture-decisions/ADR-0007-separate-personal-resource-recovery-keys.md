@@ -13,8 +13,8 @@ tags: [security, recovery, personal-resources]
 
 Note-name preferences, reusable voicings and device configurations have independent principal ownership and acknowledgement boundaries. A song grant does not grant access to these resources. Existing song recovery keys are deliberately bound to the covered song identities and require current resource access before unlocking. Reusing those keys for independent personal settings would couple their recovery to unrelated song grants; using an unrestricted personal key for song drafts would bypass that protection.
 
-<!-- pdac:cite id="BR-DURABILITY" digest="sha256:6b075527861da086b9571e8d117c7844348a437e363423bca46f60cc83b02e0b" -->
-<!-- pdac:cite id="BR-ACCESS" digest="sha256:fcc173c80ae4a5903dbeb2e11c141cb6ee8d03382c812ebc527d5065347b72c9" -->
+<!-- pdac:cite id="BR-DURABILITY" digest="sha256:d822f18f163b8685937ae5a3137dc04ef4a2d5947ab7a9954245bd965b72fa45" -->
+<!-- pdac:cite id="BR-ACCESS" digest="sha256:9b679c2f86bdff7fc86ae00f0669e3a76023c3579895249dd21bbb3d617494a9" -->
 
 ## Decision
 

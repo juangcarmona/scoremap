@@ -6,9 +6,9 @@ description: Responsibilities and dependency direction
 
 # 5. Building block view
 
-The UI invokes application commands; commands apply pure domain operations and commit complete validated snapshots through the storage adapter. Musical parsing and geometry are independent of rendered components. The PWA worker caches application assets, never library records. The optional PDF renderer is planned in issue #13 and is not implemented in this build. Backups containing PDFs are rejected explicitly until that capability can be verified.
+In the existing anonymous browser realization, the UI invokes application commands; commands apply pure domain operations and commit complete validated snapshots through the storage adapter. Musical parsing and geometry are independent of rendered components. The PWA worker caches application assets, never library records. The optional PDF renderer is planned in issue #13 and is not implemented in this build. Browser backups containing PDFs are rejected explicitly until that capability can be verified; this limitation does not waive required owned-PDF handling in the separate Android target.
 
-<!-- pdac:cite id="BR-IDENTITY" digest="sha256:6b3d38400ae82fdc926ae2b7a9eee5d02e684c50502545f323adc41cea150768" -->
+<!-- pdac:cite id="BR-IDENTITY" digest="sha256:d9c6607eb0cc984270a900d1889980f7515f3c1648f31efe56ceb9f3818e0352" -->
 
 ```mermaid
 flowchart TD
@@ -49,7 +49,7 @@ flowchart TD
   AppHost[Aspire composition] --> Host
 ```
 
-Modules follow the installed Lighthouse naming/activation contract: implementation assembly family `<Root>.Modules.<Name>`, optional separately consumed `.Contracts` assemblies, analyzer-only references and `LighthouseModule=true`. Feature slices may keep logical domain/application/infrastructure namespaces in one module assembly; semantic checks must enforce those internal boundaries. Do not name separate layer assemblies as sibling module implementations and then disable LH1002 to make them compile. A different physical layout requires an explicit compatibility decision and equivalent rejection tests before adoption.
+The .NET modules follow the installed Lighthouse naming/activation contract: implementation assembly family `<Root>.Modules.<Name>`, optional separately consumed `.Contracts` assemblies, analyzer-only references and `LighthouseModule=true`. Feature slices may keep logical domain/application/infrastructure namespaces in one module assembly; semantic checks must enforce those internal boundaries. Do not name separate layer assemblies as sibling module implementations and then disable LH1002 to make them compile. A different physical layout requires an explicit compatibility decision and equivalent rejection tests before adoption.
 
 The API host may compose all modules, but one module may reference another only through its explicit contracts. Approved base dependencies and public exports form an allowlist, not a broad wildcard. Shared code is small and demonstrably shared, not a back door around module ownership. Cross-module changes use explicit application operations within the accepted commit aggregate; no direct foreign-table writes. Separate DbContexts/schemas are justified by actual ownership, not mandated per noun. [Section 10](../10-quality-requirements/README.md) requires source, evaluated project and compiled-boundary checks because none alone proves all these rules.
 
@@ -71,8 +71,8 @@ flowchart LR
 
 Source: [API host](../../../src/root/ScoreMap.Api/Program.cs), [module composition](../../../src/modules/ScoreMap.Modules.Library/LibraryModule.cs), [domain validation](../../../src/modules/ScoreMap.Modules.Library/Domain/LibraryDocument.cs), [transaction adapter](../../../src/modules/ScoreMap.Modules.Library/Infrastructure/LibraryRepository.cs). These components are integrated through PR37. The environment-specific deployment and current artifact qualification remain separate facts.
 
-<!-- pdac:cite id="FR-PERSIST" digest="sha256:5f901e669e39923921cd1d28302b3f308460a72bda3bce53d83ffa7255934cd4" -->
+<!-- pdac:cite id="FR-PERSIST" digest="sha256:19c3bdee25cf34e4b6c6742a5da9a3c8905ba657d9056227fa0180474ed9b5e3" -->
 
-## Proposed Android evolution
+## Native Android target
 
-[Android building blocks](android-target.md) records the proposed ADR-0010 target. It is planning material; Android implementation, product alignment and gate activation are pending. Existing implementation evidence above retains its scope.
+[Android building blocks](android-target.md) records the owner-selected Kotlin/Compose target under [ADR-0010](../09-architecture-decisions/ADR-0010-build-a-separate-native-android-application.md). Its Gradle modules have their own dependency and export rules; the .NET naming/analyzer contract above applies to the private-service realization. Native implementation, product-change application, gate activation and device acceptance require separate evidence. Existing implementation evidence above retains its scope.

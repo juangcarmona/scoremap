@@ -7,11 +7,87 @@ on:
 permissions:
   contents: read
 jobs:
+  android_host:
+    name: Android host
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: node --test tests/deployment/android-ci-toolchain.test.mjs
+      - id: scope
+        run: node scripts/android-ci-toolchain.mjs scope
+      - name: Provision pinned Android host toolchain
+        if: steps.scope.outputs.present == 'true'
+        run: node scripts/android-ci-toolchain.mjs install host
+      - if: steps.scope.outputs.present == 'true'
+        run: npx --yes --package=npm@10.9.4 -- npm ci --ignore-scripts
+      - name: Verify Android host
+        if: steps.scope.outputs.present == 'true'
+        run: node scripts/android-ci-toolchain.mjs run host
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.scope.outputs.present == 'true'
+        with:
+          name: scoremap-android-host
+          path: |
+            test-results/android-ci/
+            src/android/**/build/reports/
+            src/android/**/build/test-results/
+            src/android/app/build/outputs/apk/**/*.apk
+          retention-days: 30
+  android_device:
+    name: Android device
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: node --test tests/deployment/android-ci-toolchain.test.mjs
+      - id: scope
+        run: node scripts/android-ci-toolchain.mjs scope
+      - name: Prepare hosted emulator acceleration
+        if: steps.scope.outputs.present == 'true'
+        shell: bash
+        run: |
+          test -c /dev/kvm
+          # This permission applies only to the disposable GitHub-hosted runner.
+          sudo chmod 0666 /dev/kvm
+          test -r /dev/kvm && test -w /dev/kvm
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libasound2t64 libdbus-1-3 libfontconfig1 libgl1 libglu1-mesa libnss3 libpulse0 libx11-6 libxcb1 libxcomposite1 libxcursor1 libxi6 libxrandr2 libxrender1 libxtst6 libxkbcommon0
+      - name: Provision pinned Android device toolchain
+        if: steps.scope.outputs.present == 'true'
+        run: node scripts/android-ci-toolchain.mjs install device
+      - if: steps.scope.outputs.present == 'true'
+        run: npx --yes --package=npm@10.9.4 -- npm ci --ignore-scripts
+      - name: Verify Android managed device
+        if: steps.scope.outputs.present == 'true'
+        run: node scripts/android-ci-toolchain.mjs run device
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.scope.outputs.present == 'true'
+        with:
+          name: scoremap-android-device
+          path: |
+            test-results/android-ci/
+            src/android/**/build/reports/
+            src/android/**/build/outputs/androidTest-results/
+          retention-days: 30
   verify:
     name: Verify ScoreMap
+    needs: [android_host, android_device]
+    if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
+      - name: Require Android prerequisite results
+        env:
+          ANDROID_HOST_RESULT: ${{ needs.android_host.result }}
+          ANDROID_DEVICE_RESULT: ${{ needs.android_device.result }}
+        run: test "$ANDROID_HOST_RESULT" = success && test "$ANDROID_DEVICE_RESULT" = success
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
@@ -20,6 +96,11 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           global-json-file: global.json
+      - id: android_scope
+        run: node scripts/android-ci-toolchain.mjs scope
+      - name: Prepare Android toolchain for the root aggregate
+        if: steps.android_scope.outputs.present == 'true'
+        run: node scripts/android-ci-toolchain.mjs install host
       - run: npx --yes --package=npm@10.9.4 -- npm ci --ignore-scripts
       - run: npx --no-install playwright install --with-deps chromium
       - name: Connected private-library qualification

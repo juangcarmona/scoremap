@@ -4,27 +4,34 @@
 
 All items are planned and unimplemented. [Epic #79](https://github.com/juangcarmona/scoremap/issues/79) owns this backlog. AND identifiers are slice keys; native child issue numbers will be assigned by the trusted controller. No item is completed. Each row below is a reviewable implementation slice with its own relevant checks and acceptance evidence. The [design](design.md) and [enforcement contract](../../../docs/architecture/10-quality-requirements/android-enforcement.md) define their boundaries.
 
-## AND-00: align native local product intent
+## AND-00: verify native local product alignment
 
-- [ ] Prepare a separate Product Change for native Android installation, no-login device-local authority, editable song/set import/export and preservation of existing musical outcomes.
-- [ ] Resolve same-identity import/copy/update, history retention/transfer, independently owned resource transfer, attachment milestones and coexistence with the existing private service. Reclassify affected account/session/retention rules; no blanket deletion from the current product.
-- [ ] Validate the overlay; obtain product approval; apply through ProductShape; re-ground impacted OpenSpec/ArcShape citations. Record exact change/commit and keep product application separate from implementation approval.
+The operator-hosted `issue-79-product-change` is a prerequisite, with its own exact-candidate decision, owning-provider apply and integration evidence. This native child verifies the resulting accepted baseline; it cannot author a second Product Change or alter canonical product files through ordinary implementation.
+
+- [ ] Verify the integrated CHG-ANDROID-NATIVE-LOCAL baseline, exact operator decision under existing owner delegation, provider overlay/dry-run/apply receipts and affected OpenSpec/ArcShape citation bindings.
+- [ ] Confirm the resolved always-independent-copy import, current-content export without private history, complete PDF/dependency transfer, history without expiry, recoverable song/set deletion, separate confirmed purge and existing private-service coexistence in the accepted artifacts.
+- [ ] Derive the native SB/LC and preserved complete musical acceptance traceability for later TDD; report any actual semantic gap without modifying the accepted model or treating a successful tool invocation as product approval.
 
 Acceptance: no unresolved product-semantic decisions for the selected first native journey; the accepted baseline describes the operation to be implemented. Dependencies: none. Blocks changed musician behavior; architecture documentation can be reviewed now.
 
-<!-- pdac:cite id="CON-PLATFORM" digest="sha256:635e50e18ab13a558ff7fb34323fb9c54c651858935b841272e22ce860067fbb" -->
-<!-- pdac:cite id="CON-LOCAL-FIRST" digest="sha256:a2cd6293106ac4e7a464b7ded96b8670d1de7480624260ba8c49a1400dbc824d" -->
-<!-- pdac:cite id="CON-SCOPE" digest="sha256:2934fbcf8f42cd477a77c5f9fb3fecc17beca485b243c2031279056347655216" -->
-<!-- pdac:cite id="FR-PERSIST" digest="sha256:5f901e669e39923921cd1d28302b3f308460a72bda3bce53d83ffa7255934cd4" -->
-<!-- pdac:cite id="FR-BACKUP" digest="sha256:26a789dde39b92764b10fe30b3840c614626a63d96a933bae0a87322cac9f066" -->
-<!-- pdac:cite id="BR-BACKUP" digest="sha256:0ca300361becac0a9858d098ab1e029b5bc1dfe41a06a58ecc40408fee32ed3b" -->
-<!-- pdac:cite id="LC-LIBRARY" digest="sha256:40aaed3bcc086823445f840db9aa19d0e7bdf28ac94bd8ebfa8848b5702c711f" -->
+<!-- pdac:cite id="CON-PLATFORM" digest="sha256:276120bdea8e88293e6843367e84966dacdad452cd568a124f64f73a24b529d5" -->
+<!-- pdac:cite id="CON-LOCAL-FIRST" digest="sha256:3dd07ade8d6c189ac4f9b29fcf0e51d7abc3a6fd1a1f6ab7093918f0c4484c0a" -->
+<!-- pdac:cite id="CON-SCOPE" digest="sha256:a69dd93c94d43ee6fe15eee09c94b68a5ac6f96cdd6f435627c3f790b707f664" -->
+<!-- pdac:cite id="FR-PERSIST" digest="sha256:19c3bdee25cf34e4b6c6742a5da9a3c8905ba657d9056227fa0180474ed9b5e3" -->
+<!-- pdac:cite id="FR-BACKUP" digest="sha256:57286bb21b4c895afe8d7831630bec01797580be96efa5fb5a321e9822dca7e1" -->
+<!-- pdac:cite id="BR-BACKUP" digest="sha256:6e01f0285df7783f48eb0c482fa31f490f09e97e0f67a3a5fb3261dc1d1ed29c" -->
+<!-- pdac:cite id="LC-LIBRARY" digest="sha256:87592e7d48ad80b922f219f370fee009668a74146f83cbb2f159e16752fbdda5" -->
+
+<!-- pdac:cite id="SB-NATIVE-SONG-CREATE" digest="sha256:52e0a783f04ce368bd2ad7386a21b3fe19197774c922aa30e5665f08bda84545" -->
+<!-- pdac:cite id="SB-NATIVE-SONG-DELETE" digest="sha256:d7a501ae15b77b376d58d0d0eccbe4c77ff5f2afb33d4d1eca0c54626ed089bd" -->
+<!-- pdac:cite id="SB-NATIVE-SONG-RESTORE" digest="sha256:54dca733a71bb892ad6d39f734f654c1aacbdcb67e9cf650172853b55f189209" -->
+<!-- pdac:cite id="SB-NATIVE-COPY-IMPORT" digest="sha256:b7edc6bb732117e937cf69b2e89ae49dcc7bd165fb3aa546dcb3cfc1555d47b9" -->
 
 ## AND-01: bootstrap isolated Android build and TDD runners
 
 - [ ] Add `src/android` Gradle Wrapper/Kotlin DSL/settings/catalog and build-logic. Select and prove the supported stable toolchain; lock dependencies/plugins and wrapper checksum. Keep existing paths in place.
 - [ ] Establish the section 05 module boundaries with the smallest compiling public surfaces and a Compose shell. Configure Kotlin warnings as errors, explicit API discipline, a pinned formatter, Detekt and debug/release Android Lint.
-- [ ] Add JVM/coroutine and instrumented Room/Compose runners plus one meaningful failing-then-passing harness fixture. Do not count a dummy assertion as musician coverage.
+- [ ] Add JVM/coroutine and instrumented Room/Compose runners plus one meaningful failing-then-passing harness fixture. Provide runnable baseline `verifyHost`, root `verify:android` invoking that host aggregate, and Gradle-Managed-Device `verifyDevice` entry points from the first Android source commit, producing nonempty host/device JUnit reports without skipped tests for the delivered scope. AND-02/AND-03 expand these aggregates; do not count a dummy assertion as musician coverage.
 - [ ] Audit TS, formatting, frontend-boundary, security and .NET discovery over `src`; record exact ownership of Kotlin/Gradle/resources and prove existing sources are still verified.
 
 Acceptance: clean-checkout build and a synthetic shell run on the declared emulator; host tests need no emulator. New source has an owning verifier. No musical feature or permission is claimed. Dependencies: architecture target review; AND-00 before any changed product behavior.
@@ -62,7 +69,7 @@ Acceptance: required CI reports a demonstrated injected failure and a subsequent
 Acceptance: meaningful red/green/refactor receipt and native domain/application tests for admitted, refused and boundary outcomes. Dependencies: AND-00, AND-01.
 
 <!-- pdac:cite id="BR-EDIT-GUARD" digest="sha256:20e678c4743404c64a51c01e4446026ac95811827d2f5e1c641839291ad32718" -->
-<!-- pdac:cite id="BR-IDENTITY" digest="sha256:6b3d38400ae82fdc926ae2b7a9eee5d02e684c50502545f323adc41cea150768" -->
+<!-- pdac:cite id="BR-IDENTITY" digest="sha256:d9c6607eb0cc984270a900d1889980f7515f3c1648f31efe56ceb9f3818e0352" -->
 <!-- pdac:cite id="BR-STRUCTURE" digest="sha256:db3410bd8a3fe7f3da94e63ee8804b1c75f03b8f7dd1e7858cfd05aed03a0686" -->
 <!-- pdac:cite id="BR-CHORDS" digest="sha256:543566a20181aa25eab6cc446d8ac467b1ca911632744dd957a0ab3388e9d55c" -->
 <!-- pdac:cite id="LC-STRUCTURE" digest="sha256:31caaa7320486ab3a837e8b0f3ac2b14f6e5623b664f131cb85af1ce030a24ef" -->
@@ -71,33 +78,35 @@ Acceptance: meaningful red/green/refactor receipt and native domain/application 
 <!-- pdac:cite id="FR-PIANO-SCORE" digest="sha256:c7090b853deaf69a52df30a9a1ae62d24b51a0cb620dcb38a272ec1e0856cde5" -->
 <!-- pdac:cite id="FR-PHRASE-REFERENCE" digest="sha256:16c20f0819f52467b0ac1ba823db8ac5defc7c6c01fd44ad310bdcf15fb35e5b" -->
 
-## AND-05: deliver one local create/save/reopen vertical slice
+## AND-05: deliver local music, sets and recoverable history
 
 - [ ] Start with failing application and real Room tests for expected revision, whole-aggregate rollback, duplicate command retry, storage failure and restart/reopen; implement the local adapter and receipt boundary.
 - [ ] Deliver Compose library/create/edit and protected consultation screens through the same application API. Reorder identified sections without losing associated content. Show failed versus acknowledged save states clearly.
 - [ ] Prove cancellation and failure preserve durable data, process recreation does not erase acknowledged content, stale responses do not replace newer drafts and supported schema upgrades preserve a recovery copy.
+- [ ] Use meaningful red/green/refactor tests and actual Room/PDF boundaries for song and ordered-set creation/editing, read-only history inspection, revision restore, recoverable delete, deleted-item restore and separate confirmed purge. Preserve all acknowledged revisions without expiry, validate current dependencies, keep independent resources and songs on set deletion/purge, never recreate former song memberships and retain non-content anti-resurrection receipts.
+- [ ] Test direct performance-mode rejection, invalid/missing dependency restore, stale revisions, retry after ambiguous acknowledgement, cancelled/failed purge, crash/restart and low-storage failure for those song/set/history commands. Independently compare complete retained music, PDF bytes, set order and intervening revisions; no partial success or stale resurrection is allowed.
 
-Acceptance: install the exact candidate, create/edit/save, restart and reopen synthetic music without login or network. AND-G06 executed, including edit-guard rejection outside visible controls. Dependencies: AND-03, AND-04.
+Acceptance: install the exact candidate; create/edit/save/restart/reopen complete synthetic songs and ordered sets, inspect/restore history, recoverably delete/restore and separately confirm purge without login or network, including real atomic refusal/failure/retry preservation. AND-G06 executed, including edit-guard rejection outside visible controls. Dependencies: AND-03, AND-04.
 
 <!-- pdac:cite id="BR-EDIT-GUARD" digest="sha256:20e678c4743404c64a51c01e4446026ac95811827d2f5e1c641839291ad32718" -->
-<!-- pdac:cite id="BR-DURABILITY" digest="sha256:6b075527861da086b9571e8d117c7844348a437e363423bca46f60cc83b02e0b" -->
+<!-- pdac:cite id="BR-DURABILITY" digest="sha256:d822f18f163b8685937ae5a3137dc04ef4a2d5947ab7a9954245bd965b72fa45" -->
 <!-- pdac:cite id="SB-PERSIST-FAILURE" digest="sha256:31db2bb51e3c0495ac05dc1b53938c2de756eef9176e3ba747f6b877ee014357" -->
-<!-- pdac:cite id="QR-INTEGRITY" digest="sha256:ab546fccd5704db577b5005460adc8c643dc6adb9173cf2ee750e7f1e6e0ae3e" -->
+<!-- pdac:cite id="QR-INTEGRITY" digest="sha256:efafc9b7b32a7ff39fdb822f04ef46def7c7534b84b2e48a606fce99bea603e6" -->
 <!-- pdac:cite id="QR-OFFLINE" digest="sha256:a3c8b14e8eb2c0b1a419ec1a266cf50ff4d0b739936b2f6cf0c0cdfc7db38827" -->
 
 ## AND-06: deliver complete editable song/set transfer
 
 - [ ] Write failing codec/application/device tests for the approved transfer policy. Distinguish song versus set scope, complete dependencies/attachments, format version, source revision and destination identity mapping.
 - [ ] Implement export, Android Sharesheet, document selection and incoming-file handling. Import validates and previews complete content before the selected atomic commit; existing unrelated songs remain as specified by AND-00.
-- [ ] Test malformed/unknown/truncated/oversized input, duplicate IDs, dangling references, unsupported content, cancellation, repeated import and storage exhaustion. Preserve original files and prior database on refusal. Qualify attachment staging/crash cleanup if attachments enter this milestone.
+- [ ] Test malformed/unknown/truncated/oversized input, duplicate IDs, dangling references, unsupported content, cancellation, repeated import and storage exhaustion. Preserve original files and prior database on refusal. Qualify required owned PDF staging, publication, crash cleanup and low-storage preservation; complete supported PDF transfer is mandatory.
 - [ ] On two independent installations, export a synthetic song and complete ordered set from A, deliver through an available messaging/email document route, import into B with pre-existing unrelated music, edit there, re-export and reopen. Record unavailable external-app routes honestly.
 
 Acceptance: reconstructed values are independently compared, not only accepted by a decoder. Both installations can edit their own local result. AND-G07 executed; sharing files does not imply live synchronization. Dependencies: AND-05.
 
-<!-- pdac:cite id="BR-BACKUP" digest="sha256:0ca300361becac0a9858d098ab1e029b5bc1dfe41a06a58ecc40408fee32ed3b" -->
-<!-- pdac:cite id="BR-DURABILITY" digest="sha256:6b075527861da086b9571e8d117c7844348a437e363423bca46f60cc83b02e0b" -->
-<!-- pdac:cite id="FR-BACKUP" digest="sha256:26a789dde39b92764b10fe30b3840c614626a63d96a933bae0a87322cac9f066" -->
-<!-- pdac:cite id="FR-REPERTOIRES" digest="sha256:0aee3aeb1d99cd55e0c9a52b1e4d95b11fca2a94dea44975e27a62afb581a927" -->
+<!-- pdac:cite id="BR-BACKUP" digest="sha256:6e01f0285df7783f48eb0c482fa31f490f09e97e0f67a3a5fb3261dc1d1ed29c" -->
+<!-- pdac:cite id="BR-DURABILITY" digest="sha256:d822f18f163b8685937ae5a3137dc04ef4a2d5947ab7a9954245bd965b72fa45" -->
+<!-- pdac:cite id="FR-BACKUP" digest="sha256:57286bb21b4c895afe8d7831630bec01797580be96efa5fb5a321e9822dca7e1" -->
+<!-- pdac:cite id="FR-REPERTOIRES" digest="sha256:dcba63d54b9537950221b434cc50236f2aa2e4cdb1e53a229891b757e440f70f" -->
 <!-- pdac:cite id="FR-MEMBERSHIP" digest="sha256:5616e543703cb1206e49a200d319d27a6bd55c401c3374b9ed3564583aab6b3e" -->
 
 ## AND-07: qualify rehearsal use and native feature parity
@@ -109,7 +118,7 @@ Acceptance: reconstructed values are independently compared, not only accepted b
 
 Acceptance: owner exercises the selected musical journeys on the target device; remaining capabilities and unperformed acceptance are explicit. Dependencies: AND-06 and the selected feature slices.
 
-<!-- pdac:cite id="QR-READABILITY" digest="sha256:fd18e2b171a6c15b68dc256acc88c7cf32f0376d723faf7a662a374ce49a9f5f" -->
+<!-- pdac:cite id="QR-READABILITY" digest="sha256:7139af1523273cf318b98b0f01da8688627c1a747f656b10017dcd3f0424c4af" -->
 <!-- pdac:cite id="CON-CONTENT" digest="sha256:5c08415cc8047dfc3161440d4a427675c191cd7bfecef5d3c7bb139fe0a9752e" -->
 
 ## Delivery dependencies

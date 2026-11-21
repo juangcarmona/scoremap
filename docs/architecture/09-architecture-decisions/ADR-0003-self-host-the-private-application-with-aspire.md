@@ -19,11 +19,11 @@ The owner has chosen a private, self-hosted deployment for the evolution tracked
 
 The accepted alpha product definition still constrains the runtime to the browser. That constraint must evolve through the validated Product Change route before the new backend behavior is implemented. ADR-0001 remains the description of the current alpha strategy until the accepted Product Change and implementation replace it; this record does not rewrite that history.
 
-<!-- pdac:cite id="CON-LOCAL-FIRST" digest="sha256:a2cd6293106ac4e7a464b7ded96b8670d1de7480624260ba8c49a1400dbc824d" -->
+<!-- pdac:cite id="CON-LOCAL-FIRST" digest="sha256:3dd07ade8d6c189ac4f9b29fcf0e51d7abc3a6fd1a1f6ab7093918f0c4484c0a" -->
 
 Complete commits, explicit acknowledgement and recovery remain necessary regardless of who operates the database.
 
-<!-- pdac:cite id="BR-DURABILITY" digest="sha256:6b075527861da086b9571e8d117c7844348a437e363423bca46f60cc83b02e0b" -->
+<!-- pdac:cite id="BR-DURABILITY" digest="sha256:d822f18f163b8685937ae5a3137dc04ef4a2d5947ab7a9954245bd965b72fa45" -->
 
 ## Decision
 
