@@ -35,3 +35,59 @@ then retain each refinement, implementation, readiness and owner acceptance
 receipt. Activation and a responding runner do not prove native delivery. The
 Android compiler/emulator and physical tablet qualification remain explicit
 AND-01/AND-03/AND-07 work; no APK, device test or epic acceptance is claimed here.
+
+## Android build environment qualification — 2026-11-21
+
+A temporary Compose/Room application passed all 47 `assembleDebug` and
+`lintDebug` tasks from a cold project with seeded public dependencies in 194
+seconds using the generated wrapper. Its distribution checksum and URL
+validation were enabled. The candidate extension of the existing .NET worker
+image ran with a read-only root, 4 GiB memory, two CPUs
+and a 2 GiB writable `/tmp`, with networking disabled and no KVM, Docker socket
+or USB access. Peak cgroup memory was 4,132,765,696 bytes, close to the 4 GiB
+limit. This qualifies that temporary build under the worker limits; the complete
+ScoreMap module graph, architecture rejection fixtures and required pipeline
+still need measurement.
+
+The tested versions are JDK 21.0.13.1+2, Gradle 9.7.0, AGP 9.3.1, Kotlin and
+Compose compiler 2.4.21, Compose BOM 2026.11.01, Activity Compose 1.13.0, Room
+2.8.5, KSP 2.3.14 and Build Tools 36.0.0. Compose dependency metadata requires
+compile SDK 37.1; the attempted compile SDK 37.0 build was refused. Target SDK
+37 is separate. The temporary application's minimum SDK 26 does not establish
+ScoreMap's supported device floor. Existing Node 24, Git, Chromium, OpenCode,
+.NET 10 and Aspire prerequisites remained usable in the extended image.
+
+For AND-01, commit the standard generated Gradle wrapper, including its JAR and
+executable shell script. Pin the distribution URL and SHA-256:
+
+```properties
+distributionUrl=https\://services.gradle.org/distributions/gradle-9.7.0-bin.zip
+distributionSha256Sum=84fbba45c7f4c64abc77460e1c00f541e9f960e3c7ed2538f1ede19eacd873ae
+```
+
+The candidate worker provides ordinary `JAVA_HOME`, `ANDROID_HOME` and
+`ANDROID_SDK_ROOT` variables and the tools on `PATH`. Its `scoremap-android`
+helper invokes the project wrapper, seeds public dependency artifacts and
+keeps writable caches under the already ignored `.runtime/android` directory.
+From `src/android`, the worker invocation is
+`scoremap-android ./gradlew --console=plain verifyHost`. The project must also
+support the standard wrapper on an independently provisioned developer or CI
+host. Keep persistent Gradle caches out of the per-command `/tmp`.
+
+The bounded invocation uses a maximum Gradle heap of 2 GiB, two workers and
+in-process Kotlin compilation. Bound nested fixture builds as well. AGP 9 uses
+built-in Kotlin: do not also apply `org.jetbrains.kotlin.android`. The tested
+build selects Kotlin 2.4.21 explicitly and applies its matching Compose plugin.
+The installed JDK is 21; Android bytecode was targeted to 17. Pure JVM modules
+can use toolchain 21 with an explicit bytecode target instead of requesting an
+unprovisioned JDK 17. Add Android output/cache ignore rules before the first
+project build; retain the wrapper JAR and dependency verification metadata.
+
+A separate Android 17/API 37 tablet emulator booted and installed the temporary
+APK. Its Compose screen appeared only after a synthetic Room insert/read
+assertion succeeded. Neither this experiment nor the host build proves ScoreMap
+feature coverage, durability, migration, file exchange or physical tablet
+acceptance. The operator must select the qualified immutable worker image
+outside Git before Android implementation; repository policy continues to use
+the supported `dotnet` environment profile. Signing keys and operator runtime
+configuration remain outside the repository.
