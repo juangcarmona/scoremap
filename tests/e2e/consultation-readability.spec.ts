@@ -82,6 +82,20 @@ test("switching songs and events never leaves stale notes on three keyboards", a
   await expect(padNotes).toHaveCount(1);
   await expect(padNotes.first()).toHaveAttribute("data-midi", "60");
   await expectKeyboards([60]);
+  await expect(
+    page
+      .locator(
+        '.keyboard-view .performed-key[data-midi="36"][data-performed="true"]',
+      )
+      .first(),
+  ).toHaveCSS("background-color", "rgb(184, 215, 238)");
+  await expect(
+    page
+      .locator(
+        '.keyboard-view .performed-key[data-midi="64"][data-performed="true"]',
+      )
+      .first(),
+  ).toHaveCSS("background-color", "rgb(200, 230, 189)");
   await event.selectOption(second.ids.get("h2")!);
   await event.selectOption(second.ids.get("h1")!);
   await event.selectOption(second.ids.get("h2")!);
@@ -279,6 +293,10 @@ test("SB-KEYBOARD: flat notes on black keys retain their complete dual labels at
     '.keyboard-view .played-black[data-performed="true"]',
   );
   await expect(blackKeys).toHaveCount(2);
+  await expect(blackKeys.first()).toHaveCSS(
+    "background-color",
+    "rgb(39, 102, 152)",
+  );
   await expect(blackKeys.nth(0).locator(".key-pitch")).toHaveText("Re♭2 (D♭2)");
   await expect(blackKeys.nth(1).locator(".key-pitch")).toHaveText("La♭2 (A♭2)");
   for (const key of await blackKeys.all()) {

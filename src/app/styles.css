@@ -13,6 +13,24 @@
   --lh-key-mark: #edbd69;
   --lh-key-black-mark: #1d708a;
   --lh-key-mark-text: #151d28;
+  /* Approved octave palette: docs/design/piano-octave-colors.md */
+  --lh-octave-0-white: #d8bce9;
+  --lh-octave-0-black: #704190;
+  --lh-octave-1-white: #c9c6ed;
+  --lh-octave-1-black: #51479c;
+  --lh-octave-2-white: #b8d7ee;
+  --lh-octave-2-black: #276698;
+  --lh-octave-3-white: #aee0df;
+  --lh-octave-3-black: #116d6e;
+  --lh-octave-4-white: #c8e6bd;
+  --lh-octave-4-black: #4d7e39;
+  --lh-octave-5-white: #f4e2a4;
+  --lh-octave-5-black: #8e7021;
+  --lh-octave-6-white: #f5ceaa;
+  --lh-octave-6-black: #a45d25;
+  --lh-octave-7-white: #edbdc1;
+  --lh-octave-7-black: #9a4552;
+  --lh-octave-8-white: #e2c6da;
   --lh-on-action: #ffffff;
   --lh-danger-text: #9e2424;
   --lh-error-surface: #fce9e7;
@@ -994,13 +1012,48 @@ dialog h2 {
   cursor: default;
 }
 .performed-key.played-white[data-performed="true"] {
-  background: var(--lh-key-mark);
+  background: var(--lh-piano-octave-white, var(--lh-key-mark));
   color: var(--lh-key-mark-text);
 }
 .performed-key.played-black[data-performed="true"] {
-  background: var(--lh-key-black-mark);
+  background: var(--lh-piano-octave-black, var(--lh-key-black-mark));
   color: var(--lh-key-white);
   border: 2px solid var(--lh-key-white);
+}
+.performed-key[data-octave="0"] {
+  --lh-piano-octave-white: var(--lh-octave-0-white);
+  --lh-piano-octave-black: var(--lh-octave-0-black);
+}
+.performed-key[data-octave="1"] {
+  --lh-piano-octave-white: var(--lh-octave-1-white);
+  --lh-piano-octave-black: var(--lh-octave-1-black);
+}
+.performed-key[data-octave="2"] {
+  --lh-piano-octave-white: var(--lh-octave-2-white);
+  --lh-piano-octave-black: var(--lh-octave-2-black);
+}
+.performed-key[data-octave="3"] {
+  --lh-piano-octave-white: var(--lh-octave-3-white);
+  --lh-piano-octave-black: var(--lh-octave-3-black);
+}
+.performed-key[data-octave="4"] {
+  --lh-piano-octave-white: var(--lh-octave-4-white);
+  --lh-piano-octave-black: var(--lh-octave-4-black);
+}
+.performed-key[data-octave="5"] {
+  --lh-piano-octave-white: var(--lh-octave-5-white);
+  --lh-piano-octave-black: var(--lh-octave-5-black);
+}
+.performed-key[data-octave="6"] {
+  --lh-piano-octave-white: var(--lh-octave-6-white);
+  --lh-piano-octave-black: var(--lh-octave-6-black);
+}
+.performed-key[data-octave="7"] {
+  --lh-piano-octave-white: var(--lh-octave-7-white);
+  --lh-piano-octave-black: var(--lh-octave-7-black);
+}
+.performed-key[data-octave="8"] {
+  --lh-piano-octave-white: var(--lh-octave-8-white);
 }
 .performed-key:focus-visible {
   outline-offset: -4px;

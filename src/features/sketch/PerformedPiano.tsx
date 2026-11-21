@@ -118,6 +118,7 @@ export function PerformedPiano({
                     type="button"
                     className={`performed-key ${black ? "played-black" : "played-white"}`}
                     data-midi={key.midi}
+                    data-octave={Math.floor(key.midi / 12) - 1}
                     data-theoretical={theoretical}
                     data-performed={!!exact}
                     data-physical={physical}
