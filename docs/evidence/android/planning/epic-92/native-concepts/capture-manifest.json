@@ -1,0 +1,141 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Static native planning concepts only; no production implementation or acceptance claim",
+  "capturedAtUtc": "2026-11-21T21:46:22.204979+00:00",
+  "applicationId": "com.scoremap.planning92",
+  "buildCommand": "./gradlew --no-daemon --max-workers=2 --console=plain assembleDebug",
+  "buildResult": "BUILD SUCCESSFUL",
+  "captureCommand": "adb -s emulator-5554 exec-out screencap -p",
+  "startup": "adb shell am start -W; settle 5 seconds before capture",
+  "operatorImageDigest": "sha256:7abbb7b9a459bcfa00a362a7203eb40a46100f93722d2ef39494976d92e81fed",
+  "pins": {
+    "jdk": "21.0.13.1+2",
+    "gradle": "9.7.0",
+    "agp": "9.3.1",
+    "kotlinAndComposeCompiler": "2.4.21",
+    "composeBom": "2026.11.01",
+    "activityCompose": "1.13.0",
+    "compileSdk": "37.1 revision 1",
+    "targetSdk": 37,
+    "buildTools": "36.0.0",
+    "emulator": "37.3.10",
+    "systemImage": "system-images;android-37.0;default;x86_64 revision 6"
+  },
+  "device": {
+    "profile": "pixel_tablet",
+    "androidApi": 37,
+    "androidRelease": "17",
+    "buildFingerprint": "Android/sdk_phone64_x86_64/emu64x:17/CE2A.260420.051.A3/16571990:userdebug/test-keys",
+    "fontScale": 1.0,
+    "densityDpi": 160,
+    "rendering": "headless KVM, swiftshader_indirect",
+    "displayIncludes": "Native Android status/navigation/taskbar; content uses window insets"
+  },
+  "resources": {
+    "memoryLimitGiB": 10,
+    "cpus": 4,
+    "pidsLimit": 1024,
+    "rootFilesystem": "read-only",
+    "tmpfsGiB": 2,
+    "kvm": true,
+    "usbOrDockerSocket": false
+  },
+  "captures": [
+    {
+      "view": "library",
+      "file": "01-phone-library.png",
+      "requestedWidthDp": 390,
+      "requestedHeightDp": 844,
+      "densityDpi": 160,
+      "fontScale": 1.0,
+      "pixelWidth": 390,
+      "pixelHeight": 844,
+      "sha256": "bbb307febe32b890863f163bed3f20fee42c7039d9226641f578cbc44c1df43d",
+      "bytes": 34801,
+      "buildId": "original"
+    },
+    {
+      "view": "import",
+      "file": "04-phone-import-preview.png",
+      "requestedWidthDp": 390,
+      "requestedHeightDp": 844,
+      "densityDpi": 160,
+      "fontScale": 1.0,
+      "pixelWidth": 390,
+      "pixelHeight": 844,
+      "sha256": "b1898880b0e8c0dd7eb200176397d57a553cf9fe0018d6efa0dd1d0d5f695005",
+      "bytes": 44085,
+      "buildId": "original"
+    },
+    {
+      "view": "error",
+      "file": "05-phone-import-error.png",
+      "requestedWidthDp": 390,
+      "requestedHeightDp": 844,
+      "densityDpi": 160,
+      "fontScale": 1.0,
+      "pixelWidth": 390,
+      "pixelHeight": 844,
+      "sha256": "1b4c16152025f9e530d4002c4ffa2d528642611cd7ef2d265f03375e31e434e5",
+      "bytes": 32532,
+      "buildId": "errorCopyFix"
+    },
+    {
+      "view": "editor",
+      "file": "02-tablet-editor.png",
+      "requestedWidthDp": 1280,
+      "requestedHeightDp": 800,
+      "densityDpi": 160,
+      "fontScale": 1.0,
+      "pixelWidth": 1280,
+      "pixelHeight": 800,
+      "sha256": "e4bf795e2b832f01554ca144bfdedf33f9728c4c7bfb524197b06e89bcd9fe3b",
+      "bytes": 68555,
+      "buildId": "original"
+    },
+    {
+      "view": "consult",
+      "file": "03-tablet-protected-consultation.png",
+      "requestedWidthDp": 1280,
+      "requestedHeightDp": 800,
+      "densityDpi": 160,
+      "fontScale": 1.0,
+      "pixelWidth": 1280,
+      "pixelHeight": 800,
+      "sha256": "fc9241949734865415d278bbdfcc0ff3f031c89410976bb869167f45c46e61d7",
+      "bytes": 59903,
+      "buildId": "original"
+    }
+  ],
+  "publishedSourceSha256": {
+    "source/AndroidManifest.xml": "349f3a6268b913b60073be6762a0490575c5975ed78d21312a69a98be8cc07f4",
+    "source/MainActivity.kt": "858c48de6d8a60c89f0c9d19e5fd60e02da2419631d01d3b2ab58486acf18c28",
+    "source/app.build.gradle.kts": "146573cc979edff73a943a0fe1e5e9a73ac55947f1d5532b7cecd00b7d2384a7",
+    "source/build.gradle.kts": "1142091de95bf37bc30251cb6b3500de825c6991ba8abb7019dacae167278155",
+    "source/gradle-wrapper.properties": "da66a5ffe08e2edfed40553bb83548943a0b522603a833852bce317699e6fa9c",
+    "source/gradle.properties": "268e939679772b2b26a073c6b488312856ae7c824100f98d39db13186b1a5701",
+    "source/settings.gradle.kts": "61b0300327479c26abe5e8dd7d173caf83168c11191f86374940bad6a3991671"
+  },
+  "renderAppBuildScriptSha256": "c562b9039b6d6ec41e82ee1730a69142f5dae698cb2e1607aed4466511780ec1",
+  "sourcePublicationDifference": "Only external private debug-signing override omitted from published app.build.gradle.kts; Kotlin and manifest identical to rendered sources",
+  "limits": [
+    "All names, files and pitches are synthetic",
+    "Buttons/fields inert; no library, persistence, import/export, PDF rendering or music playback implemented",
+    "No interaction, accessibility, font-scale, physical-tablet or production acceptance claim",
+    "Piano keys are static visualization, not qualified touch targets",
+    "Parent reviewer owns visual review; author has not approved these concepts"
+  ],
+  "captureBuilds": {
+    "original": {
+      "apkSha256": "9a0d53a1a87cb320bde7ac1f07960d858182d7bcd7cb63db723a7f8ac9ce2c37",
+      "mainActivitySha256": "877c16fe3d86674434b72b2c1447fc0659cd2f191d84f5d90a231648519d5b96"
+    },
+    "errorCopyFix": {
+      "apkSha256": "613ad068d3e9b8a1734a3e997f1d6ea5ef9e278262c328c69a68030f49bd245b",
+      "mainActivitySha256": "858c48de6d8a60c89f0c9d19e5fd60e02da2419631d01d3b2ab58486acf18c28",
+      "difference": "Only error heading literal changed from Your library / unchanged to Your library / is unchanged; other four PNGs were not recaptured"
+    }
+  },
+  "finalPrototypeApkSha256": "613ad068d3e9b8a1734a3e997f1d6ea5ef9e278262c328c69a68030f49bd245b",
+  "manifestFinalizedAtUtc": "2026-11-21T21:50:54.490455+00:00"
+}

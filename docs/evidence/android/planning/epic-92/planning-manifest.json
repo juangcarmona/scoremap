@@ -1,0 +1,154 @@
+{
+  "schemaVersion": 1,
+  "kind": "operator-planning-prerequisites-not-refinement-or-native-acceptance",
+  "repository": "juangcarmona/scoremap",
+  "repositoryId": 1458674261,
+  "parent": 92,
+  "sourceRevision": "39e3ee8f6dc72e29a04a93da36991d3eeb653ea8",
+  "sourceTree": "4e53a0772c880cb8b93d4024fdb4a399e9d4af02",
+  "reviewedAtUtc": "2026-11-21T21:52:13.333200+00:00",
+  "actualBlockedRefineRun": 44951351257,
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 2486,
+      "sha256": "0ac24772636bbd5feabf5bd16f4585a6a98f23f0f16f31fe2e6271d11524582f"
+    },
+    {
+      "path": "current-trace/architecture-citations.json",
+      "bytes": 17657,
+      "sha256": "b6094eaa5213bf174a8b03a0de11fe1b74f3f9c13031564f797eda29c6ed8a3c"
+    },
+    {
+      "path": "current-trace/artifact-provenance.json",
+      "bytes": 479,
+      "sha256": "f0815c0b9733bc5d863e51485fd4ae4b365647cc433017e14227ecfe6b7f176e"
+    },
+    {
+      "path": "current-trace/independent-review.md",
+      "bytes": 4761,
+      "sha256": "a2f94fd3fa49bb719a08b2517db83c45c280337bd99d004ee025178aaed8b408"
+    },
+    {
+      "path": "current-trace/issue-comment.md",
+      "bytes": 27850,
+      "sha256": "7ecba55c91992499632df988fc89108d7922d9fb6d2eb40287eabf264e05c55a"
+    },
+    {
+      "path": "current-trace/openspec-citations.json",
+      "bytes": 248364,
+      "sha256": "7789c35092ff5634ba0866f6ab4ddac6502e8b4ed0d463da4b64012bea24d5ac"
+    },
+    {
+      "path": "current-trace/postmerge-ci-addendum.json",
+      "bytes": 1504,
+      "sha256": "58fdfff269434e9bb78bb79bd39f57013ada7c489eb41b00125a564ecf81b69e"
+    },
+    {
+      "path": "current-trace/provider-model.json",
+      "bytes": 205864,
+      "sha256": "d18497fa33cb811ac975bd839802449534ad57f309e3297ad73a77a39e23868c"
+    },
+    {
+      "path": "current-trace/public-manifest.json",
+      "bytes": 2462,
+      "sha256": "898e095e2376ee68ba42fdbb6ff7e0b96ae8ae98433163ff43ff1a08d0d0e0fb"
+    },
+    {
+      "path": "current-trace/source-assertions.json",
+      "bytes": 123993,
+      "sha256": "c504ffc3d688d28cb091c8ed7fae750627e23697635890ecdffb6bd8d20f5907"
+    },
+    {
+      "path": "current-trace/source-binding.json",
+      "bytes": 92040,
+      "sha256": "0bdf2f3b54c6cc525bc5225abb556b3bf2fb58e649107ad6335293fb1476f6af"
+    },
+    {
+      "path": "current-trace/trace.json",
+      "bytes": 283983,
+      "sha256": "a6962dbd628bf7681f49fed287342412bb7bb6a5d11366aad2a3264c0427f00d"
+    },
+    {
+      "path": "native-concepts/README.md",
+      "bytes": 3356,
+      "sha256": "be3734c8a09a82db4b07961bc67b0dfeed606fbf5e229f94eafa409b73546606"
+    },
+    {
+      "path": "native-concepts/capture-manifest.json",
+      "bytes": 5696,
+      "sha256": "d62b7ae137912f64c814ca78eacfbbc93c2b1b36e02d66fd02d6396d1cee6aee"
+    },
+    {
+      "path": "native-concepts/captures/01-phone-library.png",
+      "bytes": 34801,
+      "sha256": "bbb307febe32b890863f163bed3f20fee42c7039d9226641f578cbc44c1df43d"
+    },
+    {
+      "path": "native-concepts/captures/02-tablet-editor.png",
+      "bytes": 68555,
+      "sha256": "e4bf795e2b832f01554ca144bfdedf33f9728c4c7bfb524197b06e89bcd9fe3b"
+    },
+    {
+      "path": "native-concepts/captures/03-tablet-protected-consultation.png",
+      "bytes": 59903,
+      "sha256": "fc9241949734865415d278bbdfcc0ff3f031c89410976bb869167f45c46e61d7"
+    },
+    {
+      "path": "native-concepts/captures/04-phone-import-preview.png",
+      "bytes": 44085,
+      "sha256": "b1898880b0e8c0dd7eb200176397d57a553cf9fe0018d6efa0dd1d0d5f695005"
+    },
+    {
+      "path": "native-concepts/captures/05-phone-import-error.png",
+      "bytes": 32532,
+      "sha256": "1b4c16152025f9e530d4002c4ffa2d528642611cd7ef2d265f03375e31e434e5"
+    },
+    {
+      "path": "native-concepts/rendered-review.md",
+      "bytes": 5169,
+      "sha256": "9cc8df53d56cf80b034715371ed7e9b6aac263825ff5960e59e79f35c0311e80"
+    },
+    {
+      "path": "native-concepts/source/AndroidManifest.xml",
+      "bytes": 457,
+      "sha256": "349f3a6268b913b60073be6762a0490575c5975ed78d21312a69a98be8cc07f4"
+    },
+    {
+      "path": "native-concepts/source/MainActivity.kt",
+      "bytes": 13177,
+      "sha256": "858c48de6d8a60c89f0c9d19e5fd60e02da2419631d01d3b2ab58486acf18c28"
+    },
+    {
+      "path": "native-concepts/source/app.build.gradle.kts",
+      "bytes": 730,
+      "sha256": "146573cc979edff73a943a0fe1e5e9a73ac55947f1d5532b7cecd00b7d2384a7"
+    },
+    {
+      "path": "native-concepts/source/build.gradle.kts",
+      "bytes": 341,
+      "sha256": "1142091de95bf37bc30251cb6b3500de825c6991ba8abb7019dacae167278155"
+    },
+    {
+      "path": "native-concepts/source/gradle-wrapper.properties",
+      "bytes": 368,
+      "sha256": "da66a5ffe08e2edfed40553bb83548943a0b522603a833852bce317699e6fa9c"
+    },
+    {
+      "path": "native-concepts/source/gradle.properties",
+      "bytes": 207,
+      "sha256": "268e939679772b2b26a073c6b488312856ae7c824100f98d39db13186b1a5701"
+    },
+    {
+      "path": "native-concepts/source/settings.gradle.kts",
+      "bytes": 296,
+      "sha256": "61b0300327479c26abe5e8dd7d173caf83168c11191f86374940bad6a3991671"
+    }
+  ],
+  "limits": [
+    "The blocked refine result remains unchanged; a new genuine refinement decides readiness.",
+    "Existing web/private execution is distinct from native execution; native behavior executed=0.",
+    "Native captures show a separate static planning app with inert handlers and synthetic content.",
+    "Independent trace review and delegated root rendered review do not assert personal owner inspection or implementation acceptance."
+  ]
+}

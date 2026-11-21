@@ -1,0 +1,506 @@
+{
+  "schema": "product-definition-as-code/citations/v1alpha1",
+  "targets": [
+    "docs/architecture"
+  ],
+  "citations": [
+    {
+      "id": "CON-SCOPE",
+      "digest": "sha256:a69dd93c94d43ee6fe15eee09c94b68a5ac6f96cdd6f435627c3f790b707f664",
+      "source": "docs/architecture/01-introduction-and-goals/README.md",
+      "line": 15,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "QR-READABILITY",
+      "digest": "sha256:7139af1523273cf318b98b0f01da8688627c1a747f656b10017dcd3f0424c4af",
+      "source": "docs/architecture/01-introduction-and-goals/README.md",
+      "line": 21,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "CON-LOCAL-FIRST",
+      "digest": "sha256:3dd07ade8d6c189ac4f9b29fcf0e51d7abc3a6fd1a1f6ab7093918f0c4484c0a",
+      "source": "docs/architecture/02-constraints/README.md",
+      "line": 11,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "CON-SCOPE",
+      "digest": "sha256:a69dd93c94d43ee6fe15eee09c94b68a5ac6f96cdd6f435627c3f790b707f664",
+      "source": "docs/architecture/02-constraints/README.md",
+      "line": 15,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "CON-CONTENT",
+      "digest": "sha256:5c08415cc8047dfc3161440d4a427675c191cd7bfecef5d3c7bb139fe0a9752e",
+      "source": "docs/architecture/03-context-and-scope/README.md",
+      "line": 11,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "FR-OFFLINE",
+      "digest": "sha256:f39bedc59d2b0506bd49854b84996662f18997159a708d204b54ddecc3c910c1",
+      "source": "docs/architecture/03-context-and-scope/README.md",
+      "line": 24,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "BR-EDIT-GUARD",
+      "digest": "sha256:20e678c4743404c64a51c01e4446026ac95811827d2f5e1c641839291ad32718",
+      "source": "docs/architecture/04-solution-strategy/README.md",
+      "line": 11,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "BR-IDENTITY",
+      "digest": "sha256:d9c6607eb0cc984270a900d1889980f7515f3c1648f31efe56ceb9f3818e0352",
+      "source": "docs/architecture/05-building-block-view/README.md",
+      "line": 11,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "FR-PERSIST",
+      "digest": "sha256:19c3bdee25cf34e4b6c6742a5da9a3c8905ba657d9056227fa0180474ed9b5e3",
+      "source": "docs/architecture/05-building-block-view/README.md",
+      "line": 74,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "BR-EDIT-GUARD",
+      "digest": "sha256:20e678c4743404c64a51c01e4446026ac95811827d2f5e1c641839291ad32718",
+      "source": "docs/architecture/05-building-block-view/android-target.md",
+      "line": 55,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "BR-DURABILITY",
+      "digest": "sha256:d822f18f163b8685937ae5a3137dc04ef4a2d5947ab7a9954245bd965b72fa45",
+      "source": "docs/architecture/05-building-block-view/android-target.md",
+      "line": 56,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "BR-IDENTITY",
+      "digest": "sha256:d9c6607eb0cc984270a900d1889980f7515f3c1648f31efe56ceb9f3818e0352",
+      "source": "docs/architecture/05-building-block-view/android-target.md",
+      "line": 57,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "SB-SECTION-REORDER",
+      "digest": "sha256:610413c7eae977e5760aa413f58ec499375fdafe0952dca8cbc7591cbda639e5",
+      "source": "docs/architecture/05-building-block-view/android-target.md",
+      "line": 58,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "BR-DURABILITY",
+      "digest": "sha256:d822f18f163b8685937ae5a3137dc04ef4a2d5947ab7a9954245bd965b72fa45",
+      "source": "docs/architecture/05-building-block-view/android-target.md",
+      "line": 66,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "SB-PERSIST-FAILURE",
+      "digest": "sha256:31db2bb51e3c0495ac05dc1b53938c2de756eef9176e3ba747f6b877ee014357",
+      "source": "docs/architecture/05-building-block-view/android-target.md",
+      "line": 67,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "BR-BACKUP",
+      "digest": "sha256:6e01f0285df7783f48eb0c482fa31f490f09e97e0f67a3a5fb3261dc1d1ed29c",
+      "source": "docs/architecture/05-building-block-view/android-target.md",
+      "line": 73,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "FR-BACKUP",
+      "digest": "sha256:57286bb21b4c895afe8d7831630bec01797580be96efa5fb5a321e9822dca7e1",
+      "source": "docs/architecture/05-building-block-view/android-target.md",
+      "line": 74,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "BR-CHORDS",
+      "digest": "sha256:543566a20181aa25eab6cc446d8ac467b1ca911632744dd957a0ab3388e9d55c",
+      "source": "docs/architecture/05-building-block-view/android-target.md",
+      "line": 80,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "BR-STRUCTURE",
+      "digest": "sha256:db3410bd8a3fe7f3da94e63ee8804b1c75f03b8f7dd1e7858cfd05aed03a0686",
+      "source": "docs/architecture/05-building-block-view/android-target.md",
+      "line": 81,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "FR-SONG-SHEET",
+      "digest": "sha256:d1601737decd8d10473cdbbb1a417f4a33fa58c70f272f7378b44a7b78d9139c",
+      "source": "docs/architecture/05-building-block-view/android-target.md",
+      "line": 82,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "FR-PIANO-SCORE",
+      "digest": "sha256:c7090b853deaf69a52df30a9a1ae62d24b51a0cb620dcb38a272ec1e0856cde5",
+      "source": "docs/architecture/05-building-block-view/android-target.md",
+      "line": 83,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "FR-PHRASE-REFERENCE",
+      "digest": "sha256:16c20f0819f52467b0ac1ba823db8ac5defc7c6c01fd44ad310bdcf15fb35e5b",
+      "source": "docs/architecture/05-building-block-view/android-target.md",
+      "line": 84,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "CON-CONTENT",
+      "digest": "sha256:5c08415cc8047dfc3161440d4a427675c191cd7bfecef5d3c7bb139fe0a9752e",
+      "source": "docs/architecture/05-building-block-view/android-target.md",
+      "line": 85,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "BR-DURABILITY",
+      "digest": "sha256:d822f18f163b8685937ae5a3137dc04ef4a2d5947ab7a9954245bd965b72fa45",
+      "source": "docs/architecture/06-runtime-view/README.md",
+      "line": 11,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "BR-EDIT-GUARD",
+      "digest": "sha256:20e678c4743404c64a51c01e4446026ac95811827d2f5e1c641839291ad32718",
+      "source": "docs/architecture/06-runtime-view/README.md",
+      "line": 15,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "CON-PLATFORM",
+      "digest": "sha256:276120bdea8e88293e6843367e84966dacdad452cd568a124f64f73a24b529d5",
+      "source": "docs/architecture/07-deployment-view/README.md",
+      "line": 13,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "BR-SESSION",
+      "digest": "sha256:ef810362632ea22983eed6cfcdb6adfafb1d37497623582d64c0bc7c349e7bc2",
+      "source": "docs/architecture/07-deployment-view/README.md",
+      "line": 49,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "BR-BACKUP",
+      "digest": "sha256:6e01f0285df7783f48eb0c482fa31f490f09e97e0f67a3a5fb3261dc1d1ed29c",
+      "source": "docs/architecture/08-crosscutting-concepts/README.md",
+      "line": 13,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "BR-REFERENCES",
+      "digest": "sha256:f6c63aa91b8cd5dc754520d4015424c3c56811d90a886f62a895c9db99ce9ce3",
+      "source": "docs/architecture/08-crosscutting-concepts/README.md",
+      "line": 17,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "BR-EDIT-GUARD",
+      "digest": "sha256:20e678c4743404c64a51c01e4446026ac95811827d2f5e1c641839291ad32718",
+      "source": "docs/architecture/08-crosscutting-concepts/README.md",
+      "line": 27,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "BR-DURABILITY",
+      "digest": "sha256:d822f18f163b8685937ae5a3137dc04ef4a2d5947ab7a9954245bd965b72fa45",
+      "source": "docs/architecture/08-crosscutting-concepts/README.md",
+      "line": 33,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "BR-DURABILITY",
+      "digest": "sha256:d822f18f163b8685937ae5a3137dc04ef4a2d5947ab7a9954245bd965b72fa45",
+      "source": "docs/architecture/08-crosscutting-concepts/README.md",
+      "line": 46,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "BR-ACCESS",
+      "digest": "sha256:9b679c2f86bdff7fc86ae00f0669e3a76023c3579895249dd21bbb3d617494a9",
+      "source": "docs/architecture/08-crosscutting-concepts/README.md",
+      "line": 47,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "BR-SESSION",
+      "digest": "sha256:ef810362632ea22983eed6cfcdb6adfafb1d37497623582d64c0bc7c349e7bc2",
+      "source": "docs/architecture/08-crosscutting-concepts/README.md",
+      "line": 48,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "CON-LOCAL-FIRST",
+      "digest": "sha256:3dd07ade8d6c189ac4f9b29fcf0e51d7abc3a6fd1a1f6ab7093918f0c4484c0a",
+      "source": "docs/architecture/09-architecture-decisions/ADR-0001-use-a-local-first-browser-runtime.md",
+      "line": 19,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "CON-PLATFORM",
+      "digest": "sha256:276120bdea8e88293e6843367e84966dacdad452cd568a124f64f73a24b529d5",
+      "source": "docs/architecture/09-architecture-decisions/ADR-0001-use-a-local-first-browser-runtime.md",
+      "line": 20,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "BR-DURABILITY",
+      "digest": "sha256:d822f18f163b8685937ae5a3137dc04ef4a2d5947ab7a9954245bd965b72fa45",
+      "source": "docs/architecture/09-architecture-decisions/ADR-0002-commit-validated-library-snapshots-atomically.md",
+      "line": 18,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "BR-BACKUP",
+      "digest": "sha256:6e01f0285df7783f48eb0c482fa31f490f09e97e0f67a3a5fb3261dc1d1ed29c",
+      "source": "docs/architecture/09-architecture-decisions/ADR-0002-commit-validated-library-snapshots-atomically.md",
+      "line": 19,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "CON-LOCAL-FIRST",
+      "digest": "sha256:3dd07ade8d6c189ac4f9b29fcf0e51d7abc3a6fd1a1f6ab7093918f0c4484c0a",
+      "source": "docs/architecture/09-architecture-decisions/ADR-0003-self-host-the-private-application-with-aspire.md",
+      "line": 22,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "BR-DURABILITY",
+      "digest": "sha256:d822f18f163b8685937ae5a3137dc04ef4a2d5947ab7a9954245bd965b72fa45",
+      "source": "docs/architecture/09-architecture-decisions/ADR-0003-self-host-the-private-application-with-aspire.md",
+      "line": 26,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "BR-DURABILITY",
+      "digest": "sha256:d822f18f163b8685937ae5a3137dc04ef4a2d5947ab7a9954245bd965b72fa45",
+      "source": "docs/architecture/09-architecture-decisions/ADR-0006-retain-protected-drafts-by-editing-context.md",
+      "line": 12,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "BR-SESSION",
+      "digest": "sha256:ef810362632ea22983eed6cfcdb6adfafb1d37497623582d64c0bc7c349e7bc2",
+      "source": "docs/architecture/09-architecture-decisions/ADR-0006-retain-protected-drafts-by-editing-context.md",
+      "line": 13,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "BR-DURABILITY",
+      "digest": "sha256:d822f18f163b8685937ae5a3137dc04ef4a2d5947ab7a9954245bd965b72fa45",
+      "source": "docs/architecture/09-architecture-decisions/ADR-0007-separate-personal-resource-recovery-keys.md",
+      "line": 16,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "BR-ACCESS",
+      "digest": "sha256:9b679c2f86bdff7fc86ae00f0669e3a76023c3579895249dd21bbb3d617494a9",
+      "source": "docs/architecture/09-architecture-decisions/ADR-0007-separate-personal-resource-recovery-keys.md",
+      "line": 17,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "CON-PLATFORM",
+      "digest": "sha256:276120bdea8e88293e6843367e84966dacdad452cd568a124f64f73a24b529d5",
+      "source": "docs/architecture/09-architecture-decisions/ADR-0010-build-a-separate-native-android-application.md",
+      "line": 18,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "CON-LOCAL-FIRST",
+      "digest": "sha256:3dd07ade8d6c189ac4f9b29fcf0e51d7abc3a6fd1a1f6ab7093918f0c4484c0a",
+      "source": "docs/architecture/09-architecture-decisions/ADR-0010-build-a-separate-native-android-application.md",
+      "line": 19,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "FR-BACKUP",
+      "digest": "sha256:57286bb21b4c895afe8d7831630bec01797580be96efa5fb5a321e9822dca7e1",
+      "source": "docs/architecture/09-architecture-decisions/ADR-0010-build-a-separate-native-android-application.md",
+      "line": 20,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "FR-PERSIST",
+      "digest": "sha256:19c3bdee25cf34e4b6c6742a5da9a3c8905ba657d9056227fa0180474ed9b5e3",
+      "source": "docs/architecture/09-architecture-decisions/ADR-0010-build-a-separate-native-android-application.md",
+      "line": 21,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "QR-INTEGRITY",
+      "digest": "sha256:efafc9b7b32a7ff39fdb822f04ef46def7c7534b84b2e48a606fce99bea603e6",
+      "source": "docs/architecture/10-quality-requirements/README.md",
+      "line": 11,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "QR-OFFLINE",
+      "digest": "sha256:a3c8b14e8eb2c0b1a419ec1a266cf50ff4d0b739936b2f6cf0c0cdfc7db38827",
+      "source": "docs/architecture/10-quality-requirements/README.md",
+      "line": 15,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "FR-PERSIST",
+      "digest": "sha256:19c3bdee25cf34e4b6c6742a5da9a3c8905ba657d9056227fa0180474ed9b5e3",
+      "source": "docs/architecture/10-quality-requirements/README.md",
+      "line": 49,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "CON-CONTENT",
+      "digest": "sha256:5c08415cc8047dfc3161440d4a427675c191cd7bfecef5d3c7bb139fe0a9752e",
+      "source": "docs/architecture/10-quality-requirements/android-enforcement.md",
+      "line": 85,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "BR-EDIT-GUARD",
+      "digest": "sha256:20e678c4743404c64a51c01e4446026ac95811827d2f5e1c641839291ad32718",
+      "source": "docs/architecture/10-quality-requirements/android-enforcement.md",
+      "line": 93,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "BR-DURABILITY",
+      "digest": "sha256:d822f18f163b8685937ae5a3137dc04ef4a2d5947ab7a9954245bd965b72fa45",
+      "source": "docs/architecture/10-quality-requirements/android-enforcement.md",
+      "line": 94,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "BR-IDENTITY",
+      "digest": "sha256:d9c6607eb0cc984270a900d1889980f7515f3c1648f31efe56ceb9f3818e0352",
+      "source": "docs/architecture/10-quality-requirements/android-enforcement.md",
+      "line": 95,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "BR-STRUCTURE",
+      "digest": "sha256:db3410bd8a3fe7f3da94e63ee8804b1c75f03b8f7dd1e7858cfd05aed03a0686",
+      "source": "docs/architecture/10-quality-requirements/android-enforcement.md",
+      "line": 96,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "LC-STRUCTURE",
+      "digest": "sha256:31caaa7320486ab3a837e8b0f3ac2b14f6e5623b664f131cb85af1ce030a24ef",
+      "source": "docs/architecture/10-quality-requirements/android-enforcement.md",
+      "line": 97,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "QR-INTEGRITY",
+      "digest": "sha256:efafc9b7b32a7ff39fdb822f04ef46def7c7534b84b2e48a606fce99bea603e6",
+      "source": "docs/architecture/10-quality-requirements/android-enforcement.md",
+      "line": 98,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "FR-BACKUP",
+      "digest": "sha256:57286bb21b4c895afe8d7831630bec01797580be96efa5fb5a321e9822dca7e1",
+      "source": "docs/architecture/10-quality-requirements/android-enforcement.md",
+      "line": 102,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "QR-READABILITY",
+      "digest": "sha256:7139af1523273cf318b98b0f01da8688627c1a747f656b10017dcd3f0424c4af",
+      "source": "docs/architecture/10-quality-requirements/android-enforcement.md",
+      "line": 103,
+      "form": "inline",
+      "status": "current"
+    },
+    {
+      "id": "BR-DURABILITY",
+      "digest": "sha256:d822f18f163b8685937ae5a3137dc04ef4a2d5947ab7a9954245bd965b72fa45",
+      "source": "docs/architecture/11-risks-and-technical-debt/README.md",
+      "line": 11,
+      "form": "inline",
+      "status": "current"
+    }
+  ],
+  "diagnostics": [],
+  "summary": {
+    "total": 61,
+    "current": 61,
+    "stale": 0,
+    "tampered": 0,
+    "unresolved": 0,
+    "errors": 0,
+    "warnings": 0
+  }
+}
