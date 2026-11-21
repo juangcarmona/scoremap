@@ -42,3 +42,5 @@ Make B03's register separation concrete using the requested C2/G2/E4/B4 voicing.
 ## Boundaries
 
 This is a successful single-note octave edit on existing content, not an inversion, preset application, detection selection, cancel or undo command. Those have separate FR-CHORDS examples and obligations. No section insertion/modification/removal or library-presence transition is claimed: section identity, label and repeat count are untouched, as are song retention and form. A failed commit, incompatible tone, stale revision or out-of-range edit must refuse under the governing rules and cannot reuse this success example as evidence. Authoring does not prove real piano interaction, durable reconstruction or server execution.
+
+The focused song-sheet and full-range piano direction preserves this existing scenario and its edit, identity, permission and durability boundaries.

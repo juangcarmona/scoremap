@@ -66,3 +66,7 @@ Verification MUST compare complete independent source and reconstructed values a
 ## Rationale
 
 Portability must preserve the musician's complete work without granting imported authority, erasing a source before recovery is verified or confusing device-only replacement with private service recovery.
+
+## Song-sheet and phrase content
+
+Portable transfer MUST preserve the declared song key, lyric text and its explicit chord associations, section cues and prepared phrase data, including exact pitches, order, timing when present and hand ownership. An unsupported version or content capability MUST be refused before activation rather than silently discarding these fields. Existing supported exports and imports MUST retain their documented migration and recovery guarantees.

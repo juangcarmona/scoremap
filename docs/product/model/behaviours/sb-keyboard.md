@@ -39,3 +39,5 @@ Preserve the accepted chromatic geometry and spelled triad reference while makin
 ## Boundaries
 
 This is one read of an existing two-octave reference. It does not place notes, transpose content, qualify all notation modes or demonstrate three-octave range controls. Those remain FR-CHORDS obligations. Black-key position and harmonic spelling are separate: a physical chromatic key does not force a sharp spelling. No content or presence/retention transition is asserted. Actual rendering, accessible interaction and enlarged-text evidence remain later verification.
+
+The full-range orientation and octave palette extend, rather than replace, the exact-pitch and theoretical-reference distinction in this scenario. White and black selected key surfaces follow the documented octave mapping, with accessible pitch and hand labels.

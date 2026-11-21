@@ -62,3 +62,11 @@ Stale revisions refuse rather than overwrite; transaction failure preserves prio
 ## Postconditions
 
 The requested preview, presentation change or acknowledged musical edit is observable with accurate spelling and played octaves. Only deliberately edited content changes. Stable event/time/part references and independent arrangements remain intact; cancelled/refused/failed operations create no false success or lifecycle transition. Navigation, view range, notation and save status are not musical publishing states. The use case introduces no audio, hardware control, transcription or other-instrument visualizer.
+
+## Full-range chord preparation and notation
+
+The musician can see the standard 88-key extent A0 through C8 and choose a legible, touch-operable enlarged range anywhere within it. The overview and enlarged range preserve exact pitch and octave, including partial end octaves; changing range never changes stored notes. The musician chooses left or right hand and selects or removes actual keys, reviews both hands together, and explicitly saves or cancels. Each hand retains its separate ownership and notes outside the current viewport remain identifiable. Existing separately assigned parts and their independent authorization and commit boundaries continue to apply.
+
+A compact grand staff beside the enlarged keyboard immediately shows the selected exact notes, the appropriate clefs and the song's known key signature; distinguish hands and show necessary accidentals and ledger lines or explicit octave indicators accurately. Octave color follows the approved reference in both score and piano and is supplemented by note and hand labels. Do not imply rhythm or a key signature that the musician has not supplied. The selected chord does not consume a full-width empty staff.
+
+The musician may prepare a melodic passage as an ordered sequence of exact piano notes and, where known, explicit durations and rests for its hand or part. They can review, edit, save or cancel the sequence under the same guarded and acknowledged boundary; missing timing is not invented. The synchronized score-and-piano reference can subsequently locate each prepared note.

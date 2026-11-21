@@ -36,6 +36,10 @@ describe("Exact performed piano", () => {
     const key = screen.getByRole("button", {
       name: "A♭4 · performed · theoretical tone",
     });
+    expect(key).toHaveAttribute("data-octave", "4");
+    expect(
+      screen.getByRole("button", { name: "F3 · performed · theoretical tone" }),
+    ).toHaveAttribute("data-octave", "3");
     key.focus();
     await userEvent.keyboard("{Enter}");
     expect(toggle).toHaveBeenCalledWith(pitches[2]);

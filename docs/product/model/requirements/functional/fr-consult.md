@@ -46,3 +46,11 @@ Private consultation MUST require current resource-scoped read authority and obe
 ## Rationale
 
 A musician must see the intended pitches across all instruments at the same musical moment without accidentally editing them. Readability, consistent context and explicit authority make consultation trustworthy on tablet, phone and desktop.
+
+## Focused song sheet and phrase reference
+
+The product MUST offer a focused vertically scrollable song sheet with title, known key, ordered sections, chords, declared repeats and optional lyrics and notes; persistent application chrome MUST NOT dominate the tablet performance view. Chord changes MUST align with their associated lyric positions where supplied. Repeated harmonic loops and varying lyrics MUST be representable without inventing musical structure. The musician MUST be able to reveal exact performed piano positions for a chord and identify both hands, actual pitches and octaves without conflating them with theoretical harmony. Wide keyboards MUST preserve note identity outside the viewport, and use the approved octave palette on complete selected white and black key surfaces.
+
+For prepared melodic phrases, the product MUST offer a synchronized staff and piano reference where selecting a represented note identifies its exact pitch and octave on the piano and in the staff, with consistent octave colors and accessible non-color labels. The product MUST NOT claim score content or a transcription exists when it is unavailable.
+
+The musician MUST be able to prepare and edit a known song key, lyrics, explicit chord-to-lyric associations, section cues, and repeated-loop structure in edit mode. Lyrics and associations remain optional; missing data MUST remain visibly unknown or absent. Save and transfer MUST retain these values and their stable song, section and event associations subject to existing guards, revision and durable acknowledgement.

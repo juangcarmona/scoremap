@@ -37,3 +37,5 @@ Make B01 concrete: changing the primary representation changes labels and the mu
 ## Boundaries
 
 This is one successful switch to Latin-primary dual notation with a separate successful preference acknowledgement. Latin-only, Anglo-American-only, reversed dual primary and invalid preference commands are distinct acceptance examples in FR-CHORDS. This command neither edits the song nor changes library presence, section presence or song retention, so no covers-transition link is asserted. A preference acknowledgement does not attest a musical save, and access to this song does not authorize changes to another principal's preference. Runtime execution and accessibility inspection remain separate evidence.
+
+The focused song-sheet and full-range piano direction preserves this existing scenario and its edit, identity, permission and durability boundaries.
