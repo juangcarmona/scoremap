@@ -18,6 +18,7 @@ plugins {
     alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.kotlin.compose) apply false
     alias(libs.plugins.ksp) apply false
+    id("scoremap.graph")
 }
 
 val verificationStartedAt = System.currentTimeMillis()
@@ -108,7 +109,7 @@ tasks.register("verifyHost") {
     group = "verification"
     description = "Builds the synthetic shell and checks its bootstrap contract without an emulator."
     dependsOn(
-        ":quality:test", ":quality:verifyKotlinConventions", ":app:verifyAndroidConventions",
+        "verifyProjectGraph", ":quality:test", ":quality:verifyKotlinConventions", ":app:verifyAndroidConventions",
         ":app:testDebugUnitTest", ":app:assembleDebug", ":app:assembleRelease", ":app:assembleDebugAndroidTest",
         ":app:lintDebug", ":app:lintRelease",
         gradle.includedBuild("build-logic").task(":verifyConventions"),
@@ -121,6 +122,7 @@ tasks.register("verifyHost") {
             mapOf(
                 "quality/build/test-results/test/TEST-scoremap.quality.ReleaseContractTest.xml" to 8,
                 "build-logic/build/test-results/test/TEST-scoremap.buildlogic.ConventionContractTest.xml" to 5,
+                "build-logic/build/test-results/test/TEST-scoremap.buildlogic.ProjectGraphContractTest.xml" to 5,
             ),
             listOf("quality/build/test-results/test", "build-logic/build/test-results/test", "app/build/test-results"),
         )
