@@ -1,23 +1,19 @@
 # Tasks
 
-## 1. Isolated build and dependency integrity
+<!-- pdac-scope: none reason="These tasks establish build and test infrastructure without changing product behavior." -->
 
-- [ ] 1.1 Add the standalone Android wrapper, settings, version catalog, and module scaffolding using the accepted architecture; verify wrapper distribution checksum and a clean-checkout configuration/build.
-- [ ] 1.2 Pin the mutually qualified stable toolchain and dependencies; resolve and commit strict locks and separately scoped root/included-build verification metadata; verify ordinary locked resolution succeeds without metadata-generation flags.
+## 1. Isolated build foundation
 
-## 2. Convention and architecture enforcement
+- [ ] 1.1 Add ignored Android build/cache outputs and the official pinned wrapper; verify wrapper checksum and executable wrapper startup.
+- [ ] 1.2 Add the isolated Gradle settings, version catalog, minimal compiling Compose shell, and pinned dependency verification; verify clean configuration/build and resolved dependency integrity.
+- [ ] 1.3 Add nonempty host and managed-device test runners that refuse absent/zero expected suites; verify host tests without an emulator and execute device suite on declared managed device.
 
-- [ ] 2.1 Implement Android and pure-Kotlin convention plugins with strict compiler, formatter, Detekt, Compose/Lint and task/source inventories; verify every expected task/input is present and failures propagate.
-- [ ] 2.2 Implement evaluated graph and compiled architecture policies for accepted module edges and public surfaces; verify positive fixtures pass and forbidden graph/type/signature fixtures fail for the intended diagnostic.
-- [ ] 2.3 Wire quality and TestKit suites into `verifyHost`; verify nonzero unskipped results, bounded nested builds, release/debug Lint, and refusal of missing or newly unclassified modules.
+## 2. Root integration and inventory
 
-## 3. Root integration and runtime suites
+- [ ] 2.1 Add `verify:android` and append it to root `verify` without removing/changing existing checks; verify root command executes host aggregate and propagates failures.
+- [ ] 2.2 Extend security scanning to Kotlin/Gradle/build artifacts while retaining legacy inventory and rejection rules; verify synthetic credential refusal and safe fixture acceptance.
+- [ ] 2.3 Add genuine source-ownership and build-policy regression tests; verify expected source inventory, host/device test counts, and deliberate failure behavior.
 
-- [ ] 3.1 Add a strict root Android verification adapter and preserve existing root checks; verify root `verify` invokes Android `verifyHost` and fails on Android failure.
-- [ ] 3.2 Add a real managed-device synthetic-shell suite and `verifyDevice` aggregate; verify the expected Room/Compose suite executes with nonzero unskipped tests on the declared device runner.
-- [ ] 3.3 Audit source discovery and credential/security scanning for native paths; verify Android sources are intentionally classified by language tooling and remain included in security inventory.
+## 3. Candidate verification
 
-## 4. Integrated qualification
-
-- [ ] 4.1 Demonstrate meaningful assertion-level red/green evidence for a foundation contract and retain exact source, command, exit status, and outcomes; verify setup/compiler failures are not counted as assertion-red evidence.
-- [ ] 4.2 Run the complete declared root install, verification, E2E, and strict implementation-plan checks on the final candidate; record all completed results and outstanding independent review/device acceptance separately.
+- [ ] 3.1 Run clean npm install, full existing `npm run verify`, browser E2E, and strict implementation-plan validation; retain exact completed results and report unavailable native device qualification.

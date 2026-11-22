@@ -1,26 +1,29 @@
 # Proposal
 
+<!-- pdac-scope: none reason="This proposal changes build and verification tooling only; it defines no product behavior." -->
+
 ## Why
 
-The repository has an accepted standalone Android architecture but no Android build foundation in this checkout. A reproducible build and test entry point is needed so native work can be checked without weakening or bypassing existing web and backend verification.
+The repository has an accepted native Android target but no isolated Gradle build or native test runners. A pinned, independently verifiable foundation is needed before later slices can add musical behavior without weakening the existing web and backend checks.
 
 ## What Changes
 
-- Establish a self-contained `src/android` Gradle build using the accepted module boundaries and pinned, integrity-checked toolchain/dependencies.
-- Add strict convention and quality checks plus meaningful host and managed-device test entry points.
-- Integrate Android host verification into the existing root verification chain while retaining all existing checks and security/source-discovery coverage.
-- Keep this slice limited to foundation and synthetic shell behavior; it does not claim musical functionality or device/product acceptance.
+- Add a standalone Android Gradle build and official checksummed wrapper under `src/android`.
+- Add pinned toolchain/dependency policy and host plus managed-device verification entry points.
+- Connect root verification to the Android host gate while preserving every existing verifier.
+- Make native source ownership explicit in security and build/source discovery.
+- Establish synthetic runner coverage only; do not claim delivered musical features.
 
 ## Capabilities
 
 ### New Capabilities
 
-None. This is build, verification, and architecture-enforcement infrastructure; it introduces no new product behavior.
+None.
 
 ### Modified Capabilities
 
-None.
+None. This is build and verification tooling; it changes no product-visible behavior.
 
 ## Impact
 
-The intended implementation affects `src/android`, root verification/security inventory, package scripts and tests, and the Android architecture enforcement documentation. Existing web/backend commands, product authorities, and their security checks remain in force.
+Adds Gradle/Kotlin/Android build configuration and test sources in `src/android`, a root npm script, and narrowly scoped security/source verification updates. It does not modify canonical product artifacts or the existing application runtime.

@@ -1,39 +1,35 @@
 # Design
 
+<!-- pdac-scope: none reason="This design selects build-tooling implementation details and changes no product semantics." -->
+
 ## Context
 
-See `proposal.md` for the motivation. The accepted target is a standalone Gradle build under `src/android`; section 05 defines module responsibilities, ADR-0010 selects Kotlin/Compose, and section 10 defines the required enforcement and aggregate entry points. The current checkout has no `src/android` tree, so implementation-specific versions, resolved locks, verification hashes, and test results must be produced from an actual candidate rather than inferred.
+See proposal.md. The accepted architecture requires an isolated `src/android` Gradle build and preservation of the root web/backend paths. The repository's bootstrap evidence qualifies a stable version set for a temporary Compose/Room app, but does not qualify the complete ScoreMap graph or its managed-device tests.
 
 ## Goals / Non-Goals
 
-**Goals:**
-- Make the Android build self-contained and reproducible with the official wrapper, exact stable pins, resolved dependency locks, and dependency verification for both root and included builds.
-- Enforce accepted module boundaries and strict Kotlin/format/analyzer/Lint checks, with nonempty host and managed-device test execution.
-- Make root verification invoke Android host verification without dropping existing verifier coverage; keep security scanning inclusive of `src/android`.
+**Goals:** establish a reproducible Android build boundary, strict host test task, and a managed-device verification entry point; keep all root verification gates active.
 
-**Non-Goals:**
-- Implement native musical editing, library persistence behavior, import/export features, or production release/signing.
-- Treat prior operator-reported runs as this implementation's execution evidence or as acceptance.
+**Non-Goals:** implement native music features, claim full AND-02 architecture enforcement, certify physical tablet acceptance, or change existing product semantics.
 
 ## Decisions
 
-1. **Keep Gradle isolated under `src/android`.** This matches ADR-0010 and prevents Android plugin resolution from changing the existing web/backend build. Root scripts call the native adapter explicitly; alternatives such as moving existing sources or coupling native verification into unrelated toolchains add avoidable churn.
-2. **Use only qualified, exact dependency/toolchain versions and generated integrity data.** Versions and locks must come from a successful resolution/build using approved public repositories. Do not fabricate metadata or use write-lock/verification modes as a passing check. This is safer than guessing a compatible matrix.
-3. **Enforce architecture through complementary evaluated-graph and compiled-code checks.** Gradle graph checks catch unused/forbidden project edges; compiled rules and bounded invalid-build fixtures exercise type/signature leaks and enforcement behavior. Import/path regexes alone are insufficient for Kotlin aliases and compiled visibility.
-4. **Separate host and managed-device aggregates.** Host tests remain emulator-independent; device verification runs real instrumented suites and fails when expected suites are absent, skipped, or empty. A source inventory or successful APK build is not a substitute for executed tests.
-5. **Preserve the existing root verifier and security inventory.** Add the Android invocation without conditional-success paths or source exclusions. TypeScript tooling may classify Kotlin intentionally, but credential/security scanning must continue to cover the native tree.
+- Use the repository-qualified JDK 21 / Gradle 9.7 / AGP 9.3.1 / Kotlin 2.4.21 set and official Gradle distribution SHA-256, rather than independently guessing versions.
+- Keep Android configuration isolated under `src/android`; root Node verification invokes its host aggregate, not internal Gradle tasks piecemeal.
+- Separate host JVM checks from managed-device checks. Device tests must fail when the device target or expected instrumentation suite is absent; a host-only pass cannot stand in for device evidence.
+- Use the official generated wrapper and artifact verification metadata. Dependency locks/checksums must be generated from actual resolutions, never fabricated.
+- Preserve native code in credential inventory while allowing TypeScript-specific discovery to continue classifying its own file types.
 
 ## Risks / Trade-offs
 
-- [Stable plugin compatibility and cold dependency resolution may be costly] → qualify the exact pinned set and resolve against approved public repositories before committing locks or checksums.
-- [Nested TestKit builds can exceed worker memory] → bound outer, test-fork, and nested JVMs independently and run nested fixtures sequentially.
-- [A green host suite can miss device-only behavior] → retain a distinct real managed-device suite and report host/device outcomes separately.
-- [Broad architecture rules can create false positives or loopholes] → use accepted module policy, positive and negative fixtures, and intended-diagnostic assertions.
+- [Risk] Qualified AGP/SDK artifacts or a managed device may be unavailable in this worker → report failed/unavailable qualification and do not represent it as a passing build.
+- Strict Kotlin compilation, formatting, Detekt, debug/release Lint and finite synthetic host/device suites belong to this foundation. Full AND-02 graph, compiled-boundary and rejected-architecture matrices remain owned by the next slice; no placeholders count as their execution.
+- [Risk] Root verification increases build time → invoke one bounded Android host aggregate and preserve the prior command chain unchanged.
 
 ## Migration Plan
 
-No existing application migration is required. Add the isolated native build and root invocation while preserving current commands. Rollback consists of reverting the issue's scoped Android and root-verification changes; it must not remove existing checks or alter canonical product intent.
+No data migration. The wrapper and root verification entry point are additive. Rollback consists of removing the isolated build and its root invocation; no existing runtime data or application paths are changed.
 
 ## Open Questions
 
-None. Exact tool versions and dependency metadata are implementation outputs that must be established by the qualified build, not deferred product decisions.
+None for this tooling-only slice. Actual managed-device availability is an execution result, not a product decision.
