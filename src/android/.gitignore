@@ -1,0 +1,8 @@
+.gradle/
+.runtime/
+**/build/
+local.properties
+captures/
+.kotlin/
+# Generated empty local-file catalog record; dependency locks remain tracked.
+/build-logic/settings-gradle.lockfile
