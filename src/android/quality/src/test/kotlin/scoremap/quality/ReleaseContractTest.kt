@@ -66,7 +66,8 @@ public class ReleaseContractTest {
             """
             import assert from 'node:assert/strict';
             import { pathToFileURL } from 'node:url';
-            import { mkdtempSync, mkdirSync, writeFileSync, rmSync, symlinkSync } from 'node:fs';
+            import { mkdtempSync, mkdirSync, readFileSync, writeFileSync, rmSync, symlinkSync } from 'node:fs';
+            import { spawnSync } from 'node:child_process';
             import { tmpdir } from 'node:os';
             import path from 'node:path';
             const { gradleInvocation, verifyLocalCatalogLock } = await import(pathToFileURL(process.env.SCOREMAP_ADAPTER_TEST_FILE));
@@ -97,6 +98,59 @@ public class ReleaseContractTest {
               assert.throws(() => verifyLocalCatalogLock(fixture), /must be a regular file/);
             } finally {
               rmSync(fixture, { recursive: true, force: true });
+            }
+
+            const repository = path.resolve(path.dirname(process.env.SCOREMAP_ADAPTER_TEST_FILE), '../../..');
+            const pkg = JSON.parse(readFileSync(path.join(repository, 'package.json'), 'utf8'));
+            const prettierCli = path.join(repository, 'node_modules/prettier/bin/prettier.cjs');
+            const formatFixture = mkdtempSync(path.join(tmpdir(), 'scoremap-format-ownership-'));
+            const formattedCss = 'a {\n  color: red;\n}\n';
+            const unformattedCss = 'a{color:red}\n';
+            const generated = 'src/android/app/build/reports/test/style.css';
+            const legacy = 'src/legacy/build/retained.css';
+            const native = 'src/android/app/src/main/assets/retained.css';
+            const tokenize = command => [...command.matchAll(/"([^"]*)"|(\S+)/g)].map(match => match[1] ?? match[2]);
+            function writeFormat(relative, content) {
+              const file = path.join(formatFixture, relative);
+              mkdirSync(path.dirname(file), { recursive: true });
+              writeFileSync(file, content);
+            }
+            function runFormat(name) {
+              const [program, ...args] = tokenize(pkg.scripts[name]);
+              assert.equal(program, 'prettier');
+              const result = spawnSync(process.execPath, [prettierCli, ...args], {
+                cwd: formatFixture, encoding: 'utf8', timeout: 5000,
+              });
+              assert.ifError(result.error);
+              return result;
+            }
+            try {
+              writeFormat(generated, unformattedCss);
+              writeFormat(legacy, formattedCss);
+              writeFormat(native, formattedCss);
+              writeFormat('tests/fixture.test.ts', 'export {};\n');
+              writeFormat('fixture.config.ts', 'export {};\n');
+              const valid = runFormat('format:check');
+              assert.equal(valid.status, 0, 'Generated Android report CSS must be ignored: ' + valid.stdout + valid.stderr);
+              for (const authored of [legacy, native]) {
+                writeFormat(authored, unformattedCss);
+                const refused = runFormat('format:check');
+                assert.equal(refused.status, 1, 'Malformed authored CSS must fail: ' + authored);
+                assert.ok((refused.stdout + refused.stderr).includes(authored));
+                writeFormat(authored, formattedCss);
+              }
+              for (const authored of [legacy, native]) writeFormat(authored, unformattedCss);
+              const written = runFormat('format');
+              assert.equal(written.status, 0, written.stdout + written.stderr);
+              for (const authored of [legacy, native]) {
+                assert.equal(readFileSync(path.join(formatFixture, authored), 'utf8'), formattedCss);
+              }
+              assert.equal(readFileSync(path.join(formatFixture, generated), 'utf8'), unformattedCss);
+              const patterns = ['src/**/*.{ts,tsx,css}', 'tests/**/*.{ts,tsx}', '*.config.{ts,js}', '!src/android/**/build/**'];
+              assert.deepEqual(tokenize(pkg.scripts['format:check']), ['prettier', '--check', ...patterns]);
+              assert.deepEqual(tokenize(pkg.scripts.format), ['prettier', '--write', ...patterns]);
+            } finally {
+              rmSync(formatFixture, { recursive: true, force: true });
             }
             """.trimIndent()
         val builder = ProcessBuilder("node", "--input-type=module", "-e", script).redirectErrorStream(true)

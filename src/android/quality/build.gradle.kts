@@ -33,6 +33,8 @@ tasks.test {
         rootProject.file("app/src/main/AndroidManifest.xml"),
         rootProject.file("scripts/verify-android.mjs"),
         rootProject.file("../../scripts/verify-security.mjs"),
+        rootProject.file("../../package.json"),
+        rootProject.file("../../node_modules/prettier/bin/prettier.cjs"),
         rootProject.file("app/gradle.lockfile"),
         rootProject.file("quality/gradle.lockfile"),
         rootProject.file("build-logic/gradle.lockfile"),

@@ -5,6 +5,8 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.AndroidComposeTestRule
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.room.Dao
 import androidx.room.Database
 import androidx.room.Entity
@@ -18,6 +20,7 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -72,8 +75,10 @@ public class OfflineRecreationTest {
         }
 
         compose.onNodeWithText("ScoreMap Android build shell").assertIsDisplayed()
+        assertShellBelowSystemBars("before recreation")
         compose.activityRule.scenario.recreate()
         compose.onNodeWithText("ScoreMap Android build shell").assertIsDisplayed()
+        assertShellBelowSystemBars("after recreation")
 
         val reopened = Room.databaseBuilder(context, BootstrapDatabase::class.java, databaseName).build()
         try {
@@ -84,5 +89,24 @@ public class OfflineRecreationTest {
         } finally {
             reopened.close()
         }
+    }
+
+    private fun assertShellBelowSystemBars(phase: String) {
+        val textTop =
+            compose
+                .onNodeWithText("ScoreMap Android build shell")
+                .fetchSemanticsNode()
+                .boundsInWindow.top
+        val systemBarsTop =
+            compose.runOnIdle {
+                requireNotNull(ViewCompat.getRootWindowInsets(compose.activity.window.decorView))
+                    .getInsets(WindowInsetsCompat.Type.systemBars())
+                    .top
+            }
+        assertTrue("The test device must expose a visible top system bar", systemBarsTop > 0)
+        assertTrue(
+            "Shell overlaps system bars ($phase): textTop=$textTop, systemBarsTop=$systemBarsTop",
+            textTop >= systemBarsTop.toFloat(),
+        )
     }
 }
