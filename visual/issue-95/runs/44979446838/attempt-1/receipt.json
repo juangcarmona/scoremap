@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "repository": "juangcarmona/scoremap",
+  "issue": 95,
+  "runId": "dad68c484a2204ec15a5d7621c13a8f0b2a3026afae6800a265ea22cc9de1620",
+  "workflowRunId": "44979446838",
+  "attempt": 1,
+  "stage": "refine",
+  "sourceRevision": "3b516bac3927ca79825f0cb72550af2882548a13",
+  "candidateTree": null,
+  "assessmentSha256": "98b85f1c90f16d94f9ca449419a739e1914ea8aca794d1d757c0d5ab5efdcd1c",
+  "status": "provided",
+  "reason": "The new synthetic Compose shell has a visible tablet surface. This is a proposed example, not a product screenshot or a musical feature.",
+  "items": [
+    {
+      "id": "synthetic-shell-tablet",
+      "kind": "proposal",
+      "view": "Android foundation shell",
+      "state": "Initial synthetic shell, no musical content or modal",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "path": "evidence/visual/332acb89141dabf24dd0563533a4a9f55b04d09621e07ae807e964ccd8f46813.png",
+      "sha256": "332acb89141dabf24dd0563533a4a9f55b04d09621e07ae807e964ccd8f46813",
+      "bytes": 22916,
+      "producer": "isolated proposed-design renderer",
+      "htmlSha256": "b5cf6a1f01819574de69e1560de487e13cab2a2b263e4307b07ae6a4cfbb4b4a"
+    }
+  ]
+}
