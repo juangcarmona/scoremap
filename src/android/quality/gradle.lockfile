@@ -2,6 +2,7 @@
 # Manual edits can break the build and are not advised.
 # This file is expected to be part of source control.
 # To regenerate this file, run: ./gradlew :quality:dependencies --write-locks
+com.tngtech.archunit:archunit:1.5.1=testCompileClasspath,testRuntimeClasspath
 dev.drewhamilton.poko:poko-annotations-jvm:0.17.1=detekt
 dev.drewhamilton.poko:poko-annotations:0.17.1=detekt
 io.github.davidburstrom.contester:contester-breakpoint:0.2.0=detekt
@@ -76,5 +77,6 @@ org.jetbrains.kotlinx:kotlinx-serialization-core:1.4.1=detekt
 org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.4.1=detekt
 org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1=detekt
 org.jetbrains:annotations:13.0=compileClasspath,detekt,kotlinAbiValidationCompatClasspath,kotlinBuildToolsApiClasspath,kotlinCompilerClasspath,kotlinCompilerPluginClasspathMain,kotlinCompilerPluginClasspathTest,kotlinKlibCommonizerClasspath,runtimeClasspath,testCompileClasspath,testRuntimeClasspath
+org.slf4j:slf4j-api:2.0.19=testCompileClasspath,testRuntimeClasspath
 org.snakeyaml:snakeyaml-engine:2.7=detekt
 empty=annotationProcessor,detektPlugins,implementationDependenciesMetadata,kotlinCompilerPluginClasspath,kotlinNativeCompilerPluginClasspath,kotlinScriptDefExtensions,testAnnotationProcessor,testImplementationDependenciesMetadata,testKotlinScriptDefExtensions

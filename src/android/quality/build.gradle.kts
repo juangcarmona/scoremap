@@ -15,7 +15,12 @@ java {
     targetCompatibility = JavaVersion.VERSION_17
 }
 
-dependencies { testImplementation(libs.junit) }
+dependencies {
+    testImplementation(libs.junit)
+    testImplementation(libs.archunit)
+    testImplementation(project(":music"))
+    testImplementation(project(":library"))
+}
 
 tasks.test {
     useJUnit()

@@ -87,6 +87,10 @@ gradlePlugin {
             id = "scoremap.graph"
             implementationClass = "ScoremapProjectGraphPlugin"
         }
+        register("scoremapPure") {
+            id = "scoremap.pure"
+            implementationClass = "ScoremapPureKotlinConventionPlugin"
+        }
         register("scoremapKotlin") {
             id = "scoremap.kotlin"
             implementationClass = "ScoremapKotlinConventionPlugin"
