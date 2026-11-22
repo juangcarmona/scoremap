@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "repository": "juangcarmona/scoremap",
+  "issue": 95,
+  "runId": "5128ec81935e97be64587573d5945dab11b708f65505a13238d809bd4127d68a",
+  "workflowRunId": "44965500147",
+  "attempt": 1,
+  "stage": "refine",
+  "sourceRevision": "3b516bac3927ca79825f0cb72550af2882548a13",
+  "candidateTree": null,
+  "assessmentSha256": "01e8ec0d5339382661f699f3ef0cd1fb555c56ed9d4bc6c6a86e53f3fc9cda63",
+  "status": "provided",
+  "reason": "The requested synthetic Compose shell introduces a visible placeholder, but no musical screen or interaction. This example is proposed only; it is not a screenshot or approved product design.",
+  "items": [
+    {
+      "id": "synthetic-shell",
+      "kind": "proposal",
+      "view": "Android synthetic foundation shell",
+      "state": "Placeholder with no musical features",
+      "viewport": {
+        "width": 800,
+        "height": 600
+      },
+      "path": "evidence/visual/9e96bb65af1d024c128d9a0b522dd8181432cb1f2213e743a928ca4957fa9979.png",
+      "sha256": "9e96bb65af1d024c128d9a0b522dd8181432cb1f2213e743a928ca4957fa9979",
+      "bytes": 15953,
+      "producer": "isolated proposed-design renderer",
+      "htmlSha256": "16669177811c8b6bf92c4240bbb160429b03a686c5b64f860f50a6d4ff62eb4e"
+    }
+  ]
+}
