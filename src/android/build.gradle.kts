@@ -109,6 +109,7 @@ tasks.register("verifyHost") {
     description = "Builds the synthetic shell and checks its bootstrap contract without an emulator."
     dependsOn(
         ":quality:test", ":quality:verifyKotlinConventions", ":app:verifyAndroidConventions",
+        ":music:test", ":library:test", ":music:verifyKotlinConventions", ":library:verifyKotlinConventions",
         ":app:testDebugUnitTest", ":app:assembleDebug", ":app:assembleRelease", ":app:assembleDebugAndroidTest",
         ":app:lintDebug", ":app:lintRelease",
         gradle.includedBuild("build-logic").task(":verifyConventions"),
@@ -121,8 +122,13 @@ tasks.register("verifyHost") {
             mapOf(
                 "quality/build/test-results/test/TEST-scoremap.quality.ReleaseContractTest.xml" to 8,
                 "build-logic/build/test-results/test/TEST-scoremap.buildlogic.ConventionContractTest.xml" to 5,
+                "music/build/test-results/test/TEST-scoremap.music.MusicContractTest.xml" to 22,
+                "library/build/test-results/test/TEST-scoremap.library.LibraryCommandsTest.xml" to 13,
             ),
-            listOf("quality/build/test-results/test", "build-logic/build/test-results/test", "app/build/test-results"),
+            listOf(
+                "quality/build/test-results/test", "build-logic/build/test-results/test", "app/build/test-results",
+                "music/build/test-results/test", "library/build/test-results/test",
+            ),
         )
     }
 }
