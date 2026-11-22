@@ -123,6 +123,7 @@ tasks.register("verifyHost") {
                 "quality/build/test-results/test/TEST-scoremap.quality.ReleaseContractTest.xml" to 8,
                 "build-logic/build/test-results/test/TEST-scoremap.buildlogic.ConventionContractTest.xml" to 5,
                 "music/build/test-results/test/TEST-scoremap.music.MusicContractTest.xml" to 22,
+            "music/build/test-results/test/TEST-scoremap.music.MusicMetadataContractTest.xml" to 10,
                 "library/build/test-results/test/TEST-scoremap.library.LibraryCommandsTest.xml" to 13,
             ),
             listOf(

@@ -624,6 +624,275 @@ public class MusicContractTest {
     }
 }
 
+public class MusicMetadataContractTest {
+    @Test
+    public fun explicitEventScopeChecksOnlySelectedPlayedNotes() {
+        val song = scopedSong(listOf(id("high-event")), PitchRange(60, 80))
+        val binding =
+            song.arrangements
+                .single()
+                .bindings
+                .single()
+        assertEquals(listOf(id("high-event")), binding.eventIds)
+        assertEquals("Upper layer", binding.layer)
+        assertEquals(
+            listOf(36, 72),
+            song.arrangements
+                .single()
+                .parts
+                .single()
+                .events
+                .flatMap {
+                    it.notes
+                }.map { it.pitch.absolute },
+        )
+    }
+
+    @Test
+    public fun absentAndExplicitlyEmptyBindingScopeRemainDifferent() {
+        assertThrows(IllegalArgumentException::class.java) { scopedSong(null, PitchRange(60, 80)) }
+        val empty = scopedSong(emptyList(), PitchRange(60, 80))
+        assertEquals(
+            emptyList<MusicId>(),
+            empty.arrangements
+                .single()
+                .bindings
+                .single()
+                .eventIds,
+        )
+        assertEquals(
+            null,
+            scopedSong(null)
+                .arrangements
+                .single()
+                .bindings
+                .single()
+                .eventIds,
+        )
+    }
+
+    @Test
+    public fun bindingScopesRefuseMissingAndDuplicateEvents() {
+        listOf(listOf(id("missing")), listOf(id("high-event"), id("high-event")))
+            .forEach { scope ->
+                assertThrows(IllegalArgumentException::class.java) { scopedSong(scope) }
+            }
+        assertThrows(IllegalArgumentException::class.java) { scopedSong(null, deviceScope = emptyList()) }
+        assertThrows(IllegalArgumentException::class.java) { scopedSong(null, deviceScope = listOf(id("missing"))) }
+    }
+
+    @Test
+    public fun knownOtherPartEventAndVoicingCannotBeBorrowedByAnAssignment() {
+        val foreign =
+            Part(
+                id("foreign-part"),
+                PartProfile("Other"),
+                events =
+                    listOf(
+                        PerformedEvent(
+                            id("foreign-event"),
+                            id("m"),
+                            Timing(Rational.of(0), Rational.of(1)),
+                            listOf(note("foreign-note", Letter.C, 4, 60)),
+                        ),
+                    ),
+                voicings =
+                    listOf(
+                        Voicing(id("foreign-voicing"), emptyList(), harmonicEventId = id("h"), custom = false),
+                    ),
+            )
+        assertThrows(IllegalArgumentException::class.java) {
+            scopedSong(listOf(id("foreign-event")), otherPart = foreign)
+        }
+        assertThrows(IllegalArgumentException::class.java) {
+            scopedSong(null, voicing = ScopedVoicing(eventVoicing = id("foreign-voicing")), otherPart = foreign)
+        }
+    }
+
+    @Test
+    public fun aKnownDeviceOutsideTheDeclaredArrangementScopeStillRefuses() {
+        val source = scopedSong(null)
+        val original = source.arrangements.single()
+        val binding = LayerBinding(id("replacement-binding"), id("part"), id("other-device"), PitchRange(21, 108))
+        val arrangement =
+            Arrangement(
+                original.id,
+                original.label,
+                original.parts,
+                listOf(binding),
+                original.voicings,
+                listOf(id("device")),
+            )
+        assertThrows(IllegalArgumentException::class.java) {
+            Song(
+                source.id,
+                source.header,
+                source.sections,
+                listOf(arrangement),
+                source.devices +
+                    Device(id("other-device"), "Other", PitchRange(21, 108), "Organ"),
+            )
+        }
+    }
+
+    @Test
+    public fun exactOccurrenceEditPreservesVoicingOwnershipInstrumentAndDeclaredDefault() {
+        val source = scopedSong(null)
+        val arrangement = source.arrangements.single()
+        val changed =
+            arrangement.replaceNote(
+                id("part"),
+                id("high-event"),
+                id("high-note"),
+                Pitch(Spelling(Letter.C), 6, 84),
+            )
+        val part = changed.parts.single()
+        assertEquals("both / optional split", part.profile.declaredHand)
+        assertEquals(id("voicing"), part.events[1].voicingId)
+        assertEquals(
+            84,
+            part.events[1]
+                .notes
+                .single()
+                .pitch.absolute,
+        )
+        assertEquals(
+            Hand.RIGHT,
+            part.events[1]
+                .notes
+                .single()
+                .hand,
+        )
+        assertEquals(
+            36,
+            part.events[0]
+                .notes
+                .single()
+                .pitch.absolute,
+        )
+        assertEquals(listOf(id("device")), changed.deviceIds)
+        val voicing = changed.voicings.single()
+        assertEquals("C major snapshot", voicing.label)
+        assertEquals(id("h"), voicing.harmonicEventId)
+        assertEquals(false, voicing.custom)
+        assertEquals("Saved C major", requireNotNull(voicing.provenance).name)
+        assertEquals("Piano", source.devices.single().instrument)
+        assertEquals(
+            72,
+            source.arrangements
+                .single()
+                .parts
+                .single()
+                .events[1]
+                .notes
+                .single()
+                .pitch.absolute,
+        )
+    }
+
+    @Test
+    public fun headerEditPreservesTheCompleteOpaqueMusicalGraph() {
+        val source = scopedSong(null)
+        val updated = source.withHeader(source.header.copy(title = "Renamed", artist = "Authored artist"))
+        assertEquals("Renamed", updated.title)
+        assertEquals("Authored artist", updated.artist)
+        assertEquals(Key.Unknown, updated.key)
+        assertEquals("Scoped", source.title)
+        assertSame(source.sections.single(), updated.sections.single())
+        assertSame(source.arrangements.single(), updated.arrangements.single())
+        assertSame(source.devices.single(), updated.devices.single())
+        assertEquals(
+            "Saved C major",
+            updated.arrangements
+                .single()
+                .voicings
+                .single()
+                .provenance
+                ?.name,
+        )
+    }
+
+    @Test
+    public fun addedScopeAndArrangementMetadataOwnTheirListsAndIdentities() {
+        val scope = mutableListOf(id("high-event"))
+        val devices = mutableListOf(id("device"))
+        val song = scopedSong(scope, deviceScope = devices)
+        scope.clear()
+        devices.clear()
+        val arrangement = song.arrangements.single()
+        assertEquals(listOf(id("high-event")), arrangement.bindings.single().eventIds)
+        assertEquals(listOf(id("device")), arrangement.deviceIds)
+        assertTrue(id("voicing") in song.identities)
+        assertFalse(id("external-preset") in song.identities)
+        assertThrows(UnsupportedOperationException::class.java) { (arrangement.deviceIds as MutableList).clear() }
+        assertThrows(UnsupportedOperationException::class.java) {
+            (arrangement.bindings.single().eventIds as MutableList).clear()
+        }
+        val declarations = arrangement.voicings.toMutableList()
+        val copied =
+            Arrangement(
+                arrangement.id,
+                arrangement.label,
+                arrangement.parts,
+                arrangement.bindings,
+                declarations,
+                arrangement.deviceIds,
+            )
+        declarations.clear()
+        assertEquals("C major snapshot", copied.voicings.single().label)
+        assertThrows(UnsupportedOperationException::class.java) { (arrangement.voicings as MutableList).clear() }
+    }
+
+    @Test
+    public fun untimedHarmonyRetainsOrderLyricsAndIdentityWithoutInventingAMeasure() {
+        val symbols = mutableListOf(HarmonicSymbol(id("untimed"), major7))
+        val section =
+            Section
+                .untimed(
+                    id("verse"),
+                    "Verse",
+                    symbols,
+                    lyrics = listOf(LyricLine(id("lyric"), "exact lyric", listOf(LyricAnchor(id("untimed"), 0)))),
+                ).withCue("authored cue")
+        symbols.clear()
+        val song = Song(id("song"), SongHeader("Untimed"), listOf(section))
+        assertEquals(listOf(id("song"), id("verse"), id("untimed"), id("lyric")), song.identities)
+        val unchanged = section.reorderMeasures(emptyList())
+        assertEquals(emptyList<Measure>(), unchanged.measures)
+        assertEquals(id("untimed"), unchanged.untimedHarmony.single().id)
+        assertSame(major7, unchanged.untimedHarmony.single().chord)
+        assertEquals("exact lyric", unchanged.lyrics.single().text)
+        assertEquals("authored cue", unchanged.cue)
+        assertThrows(UnsupportedOperationException::class.java) { (unchanged.untimedHarmony as MutableList).clear() }
+    }
+
+    @Test
+    public fun voicingAssociationRequiresOwnedHarmonyAndExplicitNonChordReconciliation() {
+        assertThrows(IllegalArgumentException::class.java) {
+            scopedSong(null, voicing = ScopedVoicing(harmonyId = id("missing")))
+        }
+        assertThrows(IllegalArgumentException::class.java) {
+            scopedSong(null, voicing = ScopedVoicing(eventVoicing = id("missing")))
+        }
+        assertThrows(IllegalArgumentException::class.java) {
+            scopedSong(null, voicing = ScopedVoicing(highPitch = Pitch(Spelling(Letter.D, -1), 5, 73)))
+        }
+        val reconciled =
+            scopedSong(null, voicing = ScopedVoicing(highPitch = Pitch(Spelling(Letter.D, -1), 5, 73), custom = true))
+        assertEquals(
+            73,
+            reconciled.arrangements
+                .single()
+                .parts
+                .single()
+                .events[1]
+                .notes
+                .single()
+                .pitch.absolute,
+        )
+    }
+}
+
 internal fun id(value: String): MusicId = MusicId(value)
 
 internal val major7: Chord = Chord(Spelling(Letter.C), ChordQuality.MAJOR7)
@@ -848,6 +1117,89 @@ internal fun independentPart(): Part =
                     id("measure"),
                     Timing(Rational.of(0), Rational.of(4)),
                     listOf(note("independent-b", Letter.B, 4, 71, Hand.RIGHT)),
+                ),
+            ),
+    )
+
+private fun scopedSong(
+    scope: List<MusicId>?,
+    range: PitchRange = PitchRange(21, 108),
+    deviceScope: List<MusicId>? = listOf(id("device")),
+    voicing: ScopedVoicing = ScopedVoicing(),
+    otherPart: Part? = null,
+): Song {
+    val events =
+        listOf(
+            PerformedEvent(
+                id("low-event"),
+                id("m"),
+                Timing(Rational.of(0), Rational.of(1)),
+                listOf(note("low-note", Letter.C, 2, 36, Hand.LEFT)),
+                voicingId = voicing.eventVoicing,
+            ),
+            PerformedEvent(
+                id("high-event"),
+                id("m"),
+                Timing(Rational.of(1), Rational.of(1)),
+                listOf(NoteOccurrence(id("high-note"), voicing.highPitch, Hand.RIGHT)),
+                voicingId = voicing.eventVoicing,
+            ),
+        )
+    val part = Part(id("part"), PartProfile("Keys", "Main", "both / optional split"), events)
+    val snapshot =
+        Voicing(
+            id("voicing"),
+            emptyList(),
+            PresetReference(id("external-preset"), 3, "Saved C major"),
+            "C major snapshot",
+            voicing.harmonyId,
+            voicing.custom,
+        )
+    val binding =
+        LayerBinding.scoped(
+            id("binding"),
+            part.id,
+            id("device"),
+            range,
+            BindingScope("Upper layer", scope, "Piano"),
+        )
+    val arrangement =
+        Arrangement(
+            id("a"),
+            "Main",
+            listOf(part) + listOfNotNull(otherPart),
+            listOf(binding),
+            listOf(snapshot),
+            deviceScope,
+        )
+    return Song(
+        id("scoped-song"),
+        SongHeader("Scoped"),
+        listOf(scopedSection()),
+        listOf(arrangement),
+        listOf(Device(id("device"), "88-key", PitchRange(21, 108), "Piano")),
+    )
+}
+
+private data class ScopedVoicing(
+    val harmonyId: MusicId = id("h"),
+    val eventVoicing: MusicId = id("voicing"),
+    val highPitch: Pitch = Pitch(Spelling(Letter.C), 5, 72),
+    val custom: Boolean = false,
+)
+
+private fun scopedSection(): Section =
+    Section(
+        id("section"),
+        "Verse",
+        measures =
+            listOf(
+                Measure(
+                    id("m"),
+                    harmony =
+                        listOf(
+                            HarmonicEvent(id("h"), Timing(Rational.of(0), Rational.of(4)), major7),
+                        ),
                 ),
             ),
     )

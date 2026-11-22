@@ -6,10 +6,11 @@ internal fun validateSong(song: Song): List<MusicId> {
     val parts = song.arrangements.flatMap { it.parts }
     val events = parts.flatMap { it.events }
     val phrases = parts.flatMap { it.phrases }
-    val voicings = parts.flatMap { it.voicings }
+    val voicings = parts.flatMap { it.voicings } + song.arrangements.flatMap { it.voicings }
     val identities =
         listOf(song.id) + sections.map { it.id } + measures.map { it.id } +
-            measures.flatMap { it.harmony }.map { it.id } + sections.flatMap { it.lyrics }.map { it.id } +
+            measures.flatMap { it.harmony }.map { it.id } + sections.flatMap { it.untimedHarmony }.map { it.id } +
+            sections.flatMap { it.lyrics }.map { it.id } +
             song.arrangements.map { it.id } + parts.map { it.id } + events.map { it.id } +
             phrases.map { it.id } + voicings.map { it.id } + song.devices.map { it.id } +
             song.arrangements.flatMap { it.bindings }.map { it.id } +
@@ -24,6 +25,7 @@ internal fun validateSong(song: Song): List<MusicId> {
     }
     song.arrangements.forEach { validateBindings(it, song.devices) }
     parts.forEach { validateTies(it, measures) }
+    validateVoicingAssociations(song)
     return owned(identities)
 }
 
@@ -33,14 +35,23 @@ private fun validateBindings(
 ) {
     val parts = arrangement.parts.associateBy { it.id }
     val instruments = devices.associateBy { it.id }
+    require(arrangement.deviceIds == null || arrangement.deviceIds.all(instruments::containsKey)) {
+        "Missing arrangement device."
+    }
     arrangement.bindings.forEach { binding ->
         val part = requireNotNull(parts[binding.partId]) { "Dangling binding part." }
         val device = requireNotNull(instruments[binding.deviceId]) { "Dangling binding device." }
+        require(arrangement.deviceIds == null || binding.deviceId in arrangement.deviceIds) {
+            "Binding uses another arrangement device."
+        }
         require(binding.range.low >= device.range.low && binding.range.high <= device.range.high) {
             "Binding range exceeds its device."
         }
-        val notes =
-            part.events.flatMap { it.notes } + part.phrases.flatMap { it.notes } + part.voicings.flatMap { it.notes }
+        val byId = part.events.associateBy { it.id }
+        val events =
+            binding.eventIds?.map { requireNotNull(byId[it]) { "Missing or other-part binding event." } }
+                ?: part.events
+        val notes = events.flatMap { it.notes }
         require(notes.all { it.pitch in binding.range }) { "Binding excludes authored performed pitches." }
     }
 }

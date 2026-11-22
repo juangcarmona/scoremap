@@ -18,6 +18,11 @@ public class RepeatCount private constructor(
     }
 }
 
+public data class HarmonicSymbol(
+    public val id: MusicId,
+    public val chord: Chord,
+)
+
 public data class HarmonicEvent(
     public val id: MusicId,
     public val timing: Timing,
@@ -64,22 +69,32 @@ public class LyricLine(
     }
 }
 
-public class Section(
+public class Section private constructor(
     public val id: MusicId,
     public val label: String,
-    public val repeats: RepeatCount = RepeatCount.of(1),
-    measures: List<Measure> = emptyList(),
-    lyrics: List<LyricLine> = emptyList(),
-    public val cue: String? = null,
+    public val repeats: RepeatCount,
+    content: SectionContent,
+    public val cue: String?,
 ) {
-    public val measures: List<Measure> = owned(measures)
-    public val lyrics: List<LyricLine> = owned(lyrics)
+    public val measures: List<Measure> = owned(content.measures)
+    public val lyrics: List<LyricLine> = owned(content.lyrics)
+    public val untimedHarmony: List<HarmonicSymbol> = owned(content.harmony)
+
+    public constructor(
+        id: MusicId,
+        label: String,
+        repeats: RepeatCount = RepeatCount.of(1),
+        measures: List<Measure> = emptyList(),
+        lyrics: List<LyricLine> = emptyList(),
+        cue: String? = null,
+    ) : this(id, label, repeats, SectionContent(measures, lyrics, emptyList()), cue)
 
     init {
         require(label.isNotBlank()) { "A section label must be nonblank." }
+        requireUnique(untimedHarmony) { it.id }
         requireUnique(measures) { it.id }
         requireUnique(lyrics) { it.id }
-        val events = measures.flatMap { it.harmony }.map { it.id }.toSet()
+        val events = (measures.flatMap { it.harmony }.map { it.id } + untimedHarmony.map { it.id }).toSet()
         require(lyrics.flatMap { it.anchors }.all { it.eventId in events }) { "Dangling harmonic lyric anchor." }
     }
 
@@ -87,15 +102,36 @@ public class Section(
         require(
             order.size == measures.size && order.distinct().size == order.size &&
                 order.toSet() == measures.map { it.id }.toSet(),
-        ) {
-            "Measure order must be an exact identity permutation."
-        }
+        ) { "Measure order must be an exact identity permutation." }
         val byId = measures.associateBy { it.id }
-        return Section(id, label, repeats, order.map { byId.getValue(it) }, lyrics, cue)
+        return if (untimedHarmony.isEmpty()) {
+            Section(id, label, repeats, order.map { byId.getValue(it) }, lyrics, cue)
+        } else {
+            untimed(id, label, untimedHarmony, repeats, lyrics).withCue(cue)
+        }
     }
 
+    public fun withCue(cue: String?): Section =
+        Section(id, label, repeats, SectionContent(measures, lyrics, untimedHarmony), cue)
+
     public fun occurrences(): List<SectionOccurrence> = owned((1..repeats.value).map { SectionOccurrence(id, it) })
+
+    public companion object {
+        public fun untimed(
+            id: MusicId,
+            label: String,
+            harmony: List<HarmonicSymbol>,
+            repeats: RepeatCount = RepeatCount.of(1),
+            lyrics: List<LyricLine> = emptyList(),
+        ): Section = Section(id, label, repeats, SectionContent(emptyList(), lyrics, harmony), null)
+    }
 }
+
+private class SectionContent(
+    val measures: List<Measure>,
+    val lyrics: List<LyricLine>,
+    val harmony: List<HarmonicSymbol>,
+)
 
 public data class SectionOccurrence(
     public val sectionId: MusicId,
@@ -135,6 +171,8 @@ public class Song(
         require(title.isNotBlank()) { "A song title must be nonblank." }
         identities = validateSong(this)
     }
+
+    public fun withHeader(header: SongHeader): Song = Song(id, header, sections, arrangements, devices)
 
     public fun reorderSections(order: List<MusicId>): Song {
         require(
