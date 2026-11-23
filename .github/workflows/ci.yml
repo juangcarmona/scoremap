@@ -21,6 +21,16 @@ jobs:
       - run: node --test tests/deployment/android-ci-toolchain.test.mjs
       - id: scope
         run: node scripts/android-ci-toolchain.mjs scope
+      - name: Restore Android host caches
+        if: steps.scope.outputs.present == 'true'
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ runner.temp }}/scoremap-android-host/sdk
+            .runtime/android-ci/host
+          key: android-host-${{ hashFiles('scripts/android-ci-toolchain-pins.json', 'src/android/**/gradle.lockfile', 'src/android/gradle/verification-metadata.xml', 'src/android/gradle/wrapper/gradle-wrapper.properties', 'src/android/gradle/libs.versions.toml') }}
+          restore-keys: |
+            android-host-
       - name: Provision pinned Android host toolchain
         if: steps.scope.outputs.present == 'true'
         run: node scripts/android-ci-toolchain.mjs install host
@@ -63,6 +73,16 @@ jobs:
           test -r /dev/kvm && test -w /dev/kvm
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends libasound2t64 libdbus-1-3 libfontconfig1 libgl1 libglu1-mesa libnss3 libpulse0 libx11-6 libxcb1 libxcomposite1 libxcursor1 libxi6 libxrandr2 libxrender1 libxtst6 libxkbcommon0
+      - name: Restore Android device caches
+        if: steps.scope.outputs.present == 'true'
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ runner.temp }}/scoremap-android-device/sdk
+            .runtime/android-ci/device
+          key: android-device-${{ hashFiles('scripts/android-ci-toolchain-pins.json', 'src/android/**/gradle.lockfile', 'src/android/gradle/verification-metadata.xml', 'src/android/gradle/wrapper/gradle-wrapper.properties', 'src/android/gradle/libs.versions.toml') }}
+          restore-keys: |
+            android-device-
       - name: Provision pinned Android device toolchain
         if: steps.scope.outputs.present == 'true'
         run: node scripts/android-ci-toolchain.mjs install device
@@ -80,18 +100,11 @@ jobs:
             src/android/**/build/reports/
             src/android/**/build/outputs/androidTest-results/
           retention-days: 30
-  verify:
-    name: Verify ScoreMap
-    needs: [android_host, android_device]
-    if: always()
+  verify_core:
+    name: Verify delivery evidence
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
-      - name: Require Android prerequisite results
-        env:
-          ANDROID_HOST_RESULT: ${{ needs.android_host.result }}
-          ANDROID_DEVICE_RESULT: ${{ needs.android_device.result }}
-        run: test "$ANDROID_HOST_RESULT" = success && test "$ANDROID_DEVICE_RESULT" = success
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.sha }}
@@ -102,32 +115,37 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           global-json-file: global.json
-      - id: android_scope
-        run: node scripts/android-ci-toolchain.mjs scope
-      - name: Prepare Android toolchain for the root aggregate
-        if: steps.android_scope.outputs.present == 'true'
-        run: node scripts/android-ci-toolchain.mjs install host
       - run: npx --yes --package=npm@10.9.4 -- npm ci --ignore-scripts
       - run: npx --no-install playwright install --with-deps chromium
       - name: Connected private-library qualification
         shell: bash
         run: |
+          started=$SECONDS
           npm run build:private
+          echo "::notice title=Timing::build:private took $((SECONDS - started))s"
           node --input-type=module -e 'import fs from "node:fs"; const c=JSON.parse(fs.readFileSync("config/application.example.json","utf8")); c.Application.PrivateOfflineMinutes=1; fs.writeFileSync(process.env.RUNNER_TEMP+"/scoremap-application.private.json",JSON.stringify(c),{mode:0o600});'
           setsid npm run dev:private -- "$RUNNER_TEMP/scoremap-application.private.json" config/development-users.example.json > "$RUNNER_TEMP/scoremap-connected.log" 2>&1 &
           scoremap_bootstrap_group=$!
           trap 'kill -- -"$scoremap_bootstrap_group" 2>/dev/null || true' EXIT
+          started=$SECONDS
           for attempt in $(seq 1 90); do
             if curl --fail --silent http://localhost:5280/health/ready >/dev/null; then break; fi
             sleep 2
           done
           curl --fail --silent http://localhost:5280/health/ready >/dev/null
+          echo "::notice title=Timing::private server became ready after $((SECONDS - started))s"
+          started=$SECONDS
           npm run verify:connected
+          echo "::notice title=Timing::verify:connected took $((SECONDS - started))s"
       - name: Prepare sanitized connected journey report
         if: always()
         run: |
           if [ -f scripts/connected-report.mjs ]; then node scripts/connected-report.mjs; fi
-      - run: npm run verify:delivery
+      - name: Verify delivery
+        env:
+          # verifyHost runs in the Android host job on this SHA; the final gate requires its success.
+          SCOREMAP_ANDROID_HOST_PROVEN_BY_GATE: '1'
+        run: npm run verify:delivery
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -137,3 +155,16 @@ jobs:
             test-results/
             playwright-report/
           retention-days: 30
+  verify:
+    name: Verify ScoreMap
+    needs: [android_host, android_device, verify_core]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Require every verification result
+        env:
+          ANDROID_HOST_RESULT: ${{ needs.android_host.result }}
+          ANDROID_DEVICE_RESULT: ${{ needs.android_device.result }}
+          DELIVERY_RESULT: ${{ needs.verify_core.result }}
+        run: test "$ANDROID_HOST_RESULT" = success && test "$ANDROID_DEVICE_RESULT" = success && test "$DELIVERY_RESULT" = success
