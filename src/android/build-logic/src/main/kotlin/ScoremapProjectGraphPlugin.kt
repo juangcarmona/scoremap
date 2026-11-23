@@ -6,10 +6,13 @@ import org.gradle.api.artifacts.ProjectDependency
 public class ScoremapProjectGraphPlugin : Plugin<Project> {
     public override fun apply(target: Project) {
         check(target == target.rootProject) { "scoremap.graph belongs to the root project." }
+        registerGateIntegrity(target)
         target.tasks.register("verifyProjectGraph") { task ->
             task.group = "verification"
             task.description = "Rejects project edges, modules and conventions outside the section 05 graph."
             task.notCompatibleWithConfigurationCache("Verification inspects every evaluated project configuration.")
+            // Anything that reaches the graph check also reaches the integrity check.
+            task.dependsOn("verifyGateIntegrity")
             task.doLast {
                 val modules = target.allprojects.filter { it != target }
                 val edges = modules.associate { it.path to productionEdges(it) }
@@ -22,6 +25,61 @@ public class ScoremapProjectGraphPlugin : Plugin<Project> {
                 check(problems.isEmpty()) { "Project graph violations:\n" + problems.joinToString("\n") { "- $it" } }
             }
         }
+    }
+
+    private fun registerGateIntegrity(root: Project) {
+        root.tasks.register("verifyGateIntegrity") { task ->
+            task.group = "verification"
+            task.description = "Rejects suppressions, downgraded checks and aggregate-task omissions."
+            task.notCompatibleWithConfigurationCache("Verification inspects the evaluated root aggregate.")
+            task.doLast {
+                val problems = mutableListOf<String>()
+                for (module in root.allprojects) {
+                    val files =
+                        module.fileTree(module.projectDir) { tree ->
+                            tree.include("**/*.kt", "**/*.kts", "**/*.yml", "**/*.xml")
+                            tree.exclude("build/**", ".gradle/**", ".runtime/**", "src/main/res/**", "**/src/*/res/**")
+                            tree.exclude("**/build/**", "build-logic/**")
+                        }
+                    for (file in files.files) {
+                        val name = file.relativeTo(root.rootDir).invariantSeparatorsPath
+                        if (file.name.contains("baseline") || file.name == "lint.xml") {
+                            problems += "$name is a baseline that hides findings."
+                        } else if (file.extension == "kt") {
+                            problems += GateIntegrityPolicy.suppressionViolations(name, file.readText())
+                        } else if (file.extension != "xml") {
+                            problems += GateIntegrityPolicy.downgradeViolations(name, file.readText())
+                        }
+                    }
+                }
+                root.tasks.findByName("verifyHost")?.let { host ->
+                    val actual = host.dependsOn.filterIsInstance<String>().toSet()
+                    problems += GateIntegrityPolicy.missingAggregateTasks(requiredHostTasks(root), actual)
+                }
+                check(problems.isEmpty()) { "Gate integrity violations:\n" + problems.joinToString("\n") { "- $it" } }
+            }
+        }
+    }
+
+    /** Every module that applies a convention must stay reachable from the root verifier. */
+    private fun requiredHostTasks(root: Project): Set<String> {
+        val perModule =
+            root.subprojects.flatMap { module ->
+                listOf("verifyKotlinConventions", "verifyPureClasspath", "verifyAndroidConventions")
+                    .filter { module.tasks.findByName(it) != null }
+                    .map { "${module.path}:$it" }
+            }
+        val app = root.findProject(":app")
+        val appTasks =
+            if (app == null) {
+                emptyList()
+            } else {
+                listOf("testDebugUnitTest", "assembleDebug", "assembleRelease", "assembleDebugAndroidTest")
+                    .plus(listOf("lintDebug", "lintRelease"))
+                    .map { ":app:$it" }
+            }
+        val quality = if (root.findProject(":quality") == null) emptyList() else listOf(":quality:test")
+        return (listOf("verifyProjectGraph") + perModule + appTasks + quality).toSet()
     }
 
     private fun productionEdges(project: Project): Set<String> =
