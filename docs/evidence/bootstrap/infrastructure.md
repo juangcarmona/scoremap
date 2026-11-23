@@ -172,9 +172,15 @@ resulting integrated product baseline before native children are created.
 ## Android CI admission before the epic source freeze
 
 The operator-owned CI now has Android host and device jobs on Ubuntu 24.04.
-The existing required `Verify ScoreMap` job retains its commands and uses an
-`always()` dependency gate requiring both native job results to be successful;
-failed, cancelled or skipped native jobs cannot satisfy it. An absent
+The required `Verify ScoreMap` check is a final `always()` gate over three
+parallel jobs: Android host, Android device and `Verify delivery evidence`
+(the former aggregate commands). It requires all three results to be
+successful; failed, cancelled or skipped jobs cannot satisfy it. The delivery
+job sets `SCOREMAP_ANDROID_HOST_PROVEN_BY_GATE=1`, so its `verify:android`
+repeats only the static wrapper and lock checks inside Actions; `verifyHost`
+itself runs once, in the Android host job on the same SHA. Android host and
+device jobs restore caches for the Gradle user home, SDK packages and the
+managed-device state; package pins are re-verified on every run. An absent
 `src/android` is reported explicitly as outside the current source scope.
 Once any Android directory exists, the executable pinned wrapper, root
 `verify:android` and actual Gradle Managed Device `verifyDevice` route are
