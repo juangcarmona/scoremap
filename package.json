@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Your sheet music, mapped out.",
   "engines": {
-    "node": ">=24"
+    "node": ">=26"
   },
   "repository": {
     "type": "git",
