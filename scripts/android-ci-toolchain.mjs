@@ -95,15 +95,15 @@ async function install(kind) {
     const unpack = path.join(state, 'unpack');
     await fs.mkdir(unpack, { recursive: true });
     python(`import pathlib,sys,zipfile
-  root=pathlib.Path(sys.argv[2]).resolve()
-  with zipfile.ZipFile(sys.argv[1]) as archive:
-   for member in archive.infolist():
-    target=(root/member.filename).resolve()
-    if not target.is_relative_to(root): raise SystemExit('Unsafe command-line tools archive path')
-    archive.extract(member,root)
-    mode=(member.external_attr>>16)&0o777
-    if mode: target.chmod(mode)
-  `, archive, unpack);
+root=pathlib.Path(sys.argv[2]).resolve()
+with zipfile.ZipFile(sys.argv[1]) as archive:
+ for member in archive.infolist():
+  target=(root/member.filename).resolve()
+  if not target.is_relative_to(root): raise SystemExit('Unsafe command-line tools archive path')
+  archive.extract(member,root)
+  mode=(member.external_attr>>16)&0o777
+  if mode: target.chmod(mode)
+`, archive, unpack);
     await fs.mkdir(path.join(sdk, 'cmdline-tools'), { recursive: true });
     await fs.rename(path.join(unpack, 'cmdline-tools'), path.join(sdk, 'cmdline-tools', pins.commandLineTools.version));
   }
