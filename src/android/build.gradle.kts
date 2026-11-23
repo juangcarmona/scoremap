@@ -124,6 +124,7 @@ tasks.register("verifyHost") {
             mapOf(
                 "quality/build/test-results/test/TEST-scoremap.quality.ReleaseContractTest.xml" to 8,
                 "quality/build/test-results/test/TEST-scoremap.quality.PureLayerRulesTest.xml" to 3,
+                "quality/build/test-results/test/TEST-scoremap.quality.StorageOwnershipRulesTest.xml" to 4,
                 "build-logic/build/test-results/test/TEST-scoremap.buildlogic.ConventionContractTest.xml" to 5,
                 "build-logic/build/test-results/test/TEST-scoremap.buildlogic.ProjectGraphContractTest.xml" to 5,
             ),
