@@ -1,7 +1,6 @@
 import org.gradle.api.artifacts.dsl.LockMode
 import org.gradle.api.artifacts.ExternalModuleDependency
-import javax.xml.XMLConstants
-import javax.xml.parsers.DocumentBuilderFactory
+import SuiteInventoryPolicy
 
 buildscript {
     configurations.classpath {
@@ -72,36 +71,8 @@ allprojects {
 }
 
 fun verifySuites(expected: Map<String, Int>, directories: List<String>) {
-    val found = directories.flatMap { directory ->
-        fileTree(directory) { include("**/TEST-*.xml") }.files
-    }.map { it.relativeTo(rootDir).invariantSeparatorsPath }.toSet()
-    check(found == expected.keys) { "JUnit suite inventory differs: expected=${expected.keys}, actual=$found" }
-    val factory = DocumentBuilderFactory.newInstance().apply {
-        setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true)
-        setFeature("http://apache.org/xml/features/disallow-doctype-decl", true)
-        setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "")
-        setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "")
-    }
-    for ((path, count) in expected) {
-        val report = file(path)
-        check(report.lastModified() >= verificationStartedAt) { "Stale JUnit report: $path" }
-        val suite = factory.newDocumentBuilder().parse(report).documentElement
-        check(suite.tagName in setOf("testsuite", "testsuites")) { "Expected JUnit suites: $path" }
-        check(suite.getAttribute("tests").toInt() == count && suite.getElementsByTagName("testcase").length == count) {
-            "Expected $count actual cases in $path"
-        }
-        for (attribute in listOf("failures", "errors", "skipped")) {
-            check(suite.getAttribute(attribute).toInt() == 0) { "JUnit $attribute must be zero: $path" }
-        }
-        check(suite.getElementsByTagName("skipped").length == 0) { "Skipped JUnit case: $path" }
-        val cases = suite.getElementsByTagName("testcase")
-        for (index in 0 until cases.length) {
-            val case = cases.item(index) as org.w3c.dom.Element
-            check(case.getElementsByTagName("failure").length == 0 && case.getElementsByTagName("error").length == 0) {
-                "Failed JUnit case: $path"
-            }
-        }
-    }
+    val problems = SuiteInventoryPolicy.problems(rootDir, expected, directories, verificationStartedAt)
+    check(problems.isEmpty()) { "JUnit evidence differs from the inventory:\n" + problems.joinToString("\n") { "- $it" } }
 }
 
 tasks.register("verifyHost") {
@@ -127,6 +98,8 @@ tasks.register("verifyHost") {
                 "quality/build/test-results/test/TEST-scoremap.quality.StorageOwnershipRulesTest.xml" to 4,
                 "build-logic/build/test-results/test/TEST-scoremap.buildlogic.ConventionContractTest.xml" to 5,
                 "build-logic/build/test-results/test/TEST-scoremap.buildlogic.ProjectGraphContractTest.xml" to 5,
+                "build-logic/build/test-results/test/TEST-scoremap.buildlogic.GateIntegrityContractTest.xml" to 5,
+                "build-logic/build/test-results/test/TEST-scoremap.buildlogic.SuiteInventoryContractTest.xml" to 4,
             ),
             listOf("quality/build/test-results/test", "build-logic/build/test-results/test", "app/build/test-results"),
         )
