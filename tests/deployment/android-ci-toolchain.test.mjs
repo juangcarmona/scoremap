@@ -87,6 +87,28 @@ test('all CI jobs check out the immutable event SHA for verification pushes', as
   for (const checkout of checkouts) assert.match(checkout[1], /with:\s+ref: \$\{\{ github\.sha \}\}/);
 });
 
+test('the required gate waits for every verification job while the jobs run in parallel', async () => {
+  const workflow = await fs.readFile(new URL('../../.github/workflows/ci.yml', import.meta.url), 'utf8');
+  const jobs = workflow.slice(workflow.indexOf('\njobs:\n')).split(/^  (?=[a-z_]+:\n)/m).slice(1);
+  const byName = Object.fromEntries(jobs.map(job => [job.slice(0, job.indexOf(':')), job]));
+  assert.deepEqual(Object.keys(byName), ['android_host', 'android_device', 'verify_core', 'verify']);
+  for (const name of ['android_host', 'android_device', 'verify_core']) assert.doesNotMatch(byName[name], /\n    needs:/);
+  assert.match(byName.verify, /name: Verify ScoreMap/);
+  assert.match(byName.verify, /needs: \[android_host, android_device, verify_core\]/);
+  assert.match(byName.verify, /if: always\(\)/);
+  for (const result of ['ANDROID_HOST_RESULT', 'ANDROID_DEVICE_RESULT', 'DELIVERY_RESULT']) {
+    assert.match(byName.verify, new RegExp(`"\\$${result}" = success`));
+  }
+});
+
+test('the aggregate skips the duplicate Gradle run only inside Actions and still checks the static Android inputs', async () => {
+  const script = await fs.readFile(new URL('../../src/android/scripts/verify-android.mjs', import.meta.url), 'utf8');
+  const skip = script.indexOf("SCOREMAP_ANDROID_HOST_PROVEN_BY_GATE === '1'");
+  assert.ok(skip > script.indexOf('Unexpected official wrapper JAR.'), 'wrapper and lock checks must run before the skip');
+  assert.match(script.slice(skip - 60, skip), /GITHUB_ACTIONS === 'true'/);
+  assert.ok(skip < script.indexOf("spawnSync('java'"));
+});
+
 test('technical verification refs require a detached checkout while named branch rules remain enforced', async t => {
   const directory = await fixture(t);
   const git = args => execFileSync('git', args, { cwd: directory, stdio: 'pipe' });

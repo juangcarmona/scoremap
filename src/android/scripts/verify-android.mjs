@@ -97,6 +97,11 @@ function main() {
   const jar = readFileSync(path.join(androidRoot, 'gradle/wrapper/gradle-wrapper.jar'));
   assert.equal(createHash('sha256').update(jar).digest('hex'), wrapperSha, 'Unexpected official wrapper JAR.');
 
+  if (process.env.GITHUB_ACTIONS === 'true' && process.env.SCOREMAP_ANDROID_HOST_PROVEN_BY_GATE === '1') {
+    // The final "Verify ScoreMap" gate requires the sibling "Android host" job, which runs verifyHost on this same SHA.
+    console.log('Static Android checks passed; verifyHost is proven by the Android host job and enforced by the final gate.');
+    return;
+  }
   const java = spawnSync('java', ['-version'], { encoding: 'utf8' });
   assert.ok(!java.error && java.status === 0 && /version "21\./.test(`${java.stdout}${java.stderr}`), 'Android build requires JDK 21.');
   const cacheRoot = process.env.SCOREMAP_ANDROID_CACHE_ROOT ?? path.resolve(androidRoot, '../../.runtime/android');
