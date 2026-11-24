@@ -67,7 +67,15 @@ public class ScoremapProjectGraphPlugin : Plugin<Project> {
             root.subprojects.flatMap { module ->
                 listOf("verifyKotlinConventions", "verifyPureClasspath", "verifyAndroidConventions")
                     .filter { module.tasks.findByName(it) != null }
-                    .map { "${module.path}:$it" }
+                    .map { "${module.path}:$it" } +
+                    // A pure module's own domain tests are part of the host gate.
+                    if (module.tasks.findByName("verifyPureClasspath") !=
+                        null
+                    ) {
+                        listOf("${module.path}:test")
+                    } else {
+                        emptyList()
+                    }
             }
         val app = root.findProject(":app")
         val appTasks =
