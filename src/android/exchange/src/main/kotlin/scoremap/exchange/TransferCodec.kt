@@ -12,6 +12,9 @@ public const val TRANSFER_VERSION: Int = 1
 /** Packages that carry PDF bytes use this version; plain song and set packages stay on version 1. */
 public const val TRANSFER_VERSION_WITH_PDFS: Int = 2
 
+/** Packages that also carry the song key, lyrics and cues use this version; it may carry PDFs too. */
+public const val TRANSFER_VERSION_WITH_SHEET: Int = 3
+
 private const val DEFAULT_MAX_CHARACTERS = 64 * 1024 * 1024
 private const val DEFAULT_MAX_SONGS = 500
 private const val DEFAULT_MAX_SECTIONS = 500
@@ -52,7 +55,12 @@ public sealed interface DecodeOutcome {
 public object TransferCodec {
     public fun encode(graph: TransferGraph): String {
         val withPdfs = graph.songs.any { it.attachments.isNotEmpty() }
-        val version = if (withPdfs) TRANSFER_VERSION_WITH_PDFS else TRANSFER_VERSION
+        val version =
+            when {
+                graph.songs.any(::hasSheet) -> TRANSFER_VERSION_WITH_SHEET
+                withPdfs -> TRANSFER_VERSION_WITH_PDFS
+                else -> TRANSFER_VERSION
+            }
         val songs = graph.songs.joinToString(",", "[", "]") { encodeSong(it) }
         val set =
             graph.set
@@ -63,11 +71,18 @@ public object TransferCodec {
         return "{\"format\":\"$TRANSFER_FORMAT\",\"version\":$version,\"songs\":$songs$set}"
     }
 
+    private fun hasSheet(song: GraphSong): Boolean =
+        song.songKey != null || song.sections.any { it.lyrics.isNotEmpty() || it.cue.isNotEmpty() }
+
+    private fun encodeSection(section: GraphSection): String {
+        val lyrics = if (section.lyrics.isEmpty()) "" else ",\"lyrics\":${JsonWriter.quote(section.lyrics)}"
+        val cue = if (section.cue.isEmpty()) "" else ",\"cue\":${JsonWriter.quote(section.cue)}"
+        return "{\"name\":${JsonWriter.quote(section.name)},\"repeats\":${section.repeats}$lyrics$cue}"
+    }
+
     private fun encodeSong(song: GraphSong): String {
-        val sections =
-            song.sections.joinToString(",", "[", "]") {
-                "{\"name\":${JsonWriter.quote(it.name)},\"repeats\":${it.repeats}}"
-            }
+        val sections = song.sections.joinToString(",", "[", "]") { encodeSection(it) }
+        val songKey = song.songKey?.let { ",\"songKey\":${JsonWriter.quote(it)}" }.orEmpty()
         val attachments =
             if (song.attachments.isEmpty()) {
                 ""
@@ -77,7 +92,7 @@ public object TransferCodec {
                     "{\"name\":${JsonWriter.quote(it.name)},\"data\":${JsonWriter.quote(data)}}"
                 }
             }
-        return "{\"key\":${JsonWriter.quote(song.key)},\"name\":${JsonWriter.quote(song.name)}," +
+        return "{\"key\":${JsonWriter.quote(song.key)},\"name\":${JsonWriter.quote(song.name)}$songKey," +
             "\"sections\":$sections$attachments}"
     }
 

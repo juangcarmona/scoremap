@@ -54,7 +54,7 @@ public class TransferPdfCodecTest {
         val asVersionOne = literal.replace("\"version\":2", "\"version\":1")
         assertEquals(DecodeOutcome.Rejected(Rejection.INVALID_STRUCTURE), TransferCodec.decode(asVersionOne))
         val unsupported = DecodeOutcome.Rejected(Rejection.UNSUPPORTED_VERSION)
-        assertEquals(unsupported, TransferCodec.decode(literal.replace("\"version\":2", "\"version\":3")))
+        assertEquals(unsupported, TransferCodec.decode(literal.replace("\"version\":2", "\"version\":4")))
         assertEquals(unsupported, TransferCodec.decode(literal.replace("\"version\":2", "\"version\":0")))
     }
 

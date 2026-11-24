@@ -67,7 +67,7 @@ public object SheetCommands {
         }
 
     /** Line endings become `\n`; surrounding blank space is dropped, so blank text is absent. */
-    private fun normalised(raw: String): String = raw.replace("\r\n", "\n").replace('\r', '\n').trim()
+    internal fun normalised(raw: String): String = raw.replace("\r\n", "\n").replace('\r', '\n').trim()
 
     private fun guarded(
         mode: Mode,
