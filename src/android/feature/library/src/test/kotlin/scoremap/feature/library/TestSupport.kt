@@ -40,3 +40,40 @@ internal class MemoryStore : LibraryStore {
             CommitOutcome.Committed(stored.revision)
         }
 }
+
+/** Reads a tiny stand-in format: "%PDF" followed by one byte holding the page count. */
+internal class FakeInspector : scoremap.library.PdfInspector {
+    override fun inspect(bytes: ByteArray): scoremap.library.PdfFacts? {
+        val header = "%PDF".toByteArray()
+        val valid = bytes.size > header.size && bytes.copyOfRange(0, header.size).contentEquals(header)
+        val pages = if (valid) bytes[header.size].toInt() else 0
+        val digest =
+            java.security.MessageDigest
+                .getInstance("SHA-256")
+                .digest(bytes)
+                .joinToString("") { "%02x".format(it) }
+        return if (valid && pages > 0) scoremap.library.PdfFacts(digest, bytes.size.toLong(), pages) else null
+    }
+}
+
+internal class FakeBlobs : scoremap.library.BlobStore {
+    private val files = mutableMapOf<String, ByteArray>()
+
+    fun count(): Int = files.size
+
+    override fun put(
+        sha256: String,
+        bytes: ByteArray,
+    ): Boolean {
+        files[sha256] = bytes
+        return true
+    }
+
+    override fun read(sha256: String): ByteArray? = files[sha256]
+
+    override fun retainOnly(digests: Set<String>) {
+        files.keys.retainAll(digests)
+    }
+}
+
+internal fun pdfBytes(pages: Int): ByteArray = "%PDF".toByteArray() + byteArrayOf(pages.toByte()) + ByteArray(64)

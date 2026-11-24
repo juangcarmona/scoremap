@@ -86,6 +86,9 @@ public class AttachmentService(
     ): AttachResult =
         result(library.execute(commandId) { AttachmentCommands.rememberPage(it, songId, attachmentId, page) })
 
+    /** The stored bytes behind an attachment, or null when they are missing. */
+    public fun bytes(sha256: String): ByteArray? = blobs.read(sha256)
+
     /** Deletes stored bytes that no active or recoverably deleted song references. */
     public fun cleanup(): Unit = blobs.retainOnly(AttachmentCommands.referencedDigests(library.current().library))
 

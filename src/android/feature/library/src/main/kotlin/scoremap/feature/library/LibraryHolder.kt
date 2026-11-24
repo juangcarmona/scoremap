@@ -14,6 +14,7 @@ public class LibraryModels(
     public val songs: LibraryScreenModel,
     public val sets: SetsScreenModel,
     public val detail: SongDetailModel,
+    public val attachments: AttachmentsModel,
 )
 
 /**
@@ -29,6 +30,7 @@ internal class LibraryHolder(
     var sets by mutableStateOf<SetsScreenState?>(null)
     var detail by mutableStateOf<SongDetailState?>(null)
     var openSongId by mutableStateOf<String?>(null)
+    var viewing by mutableStateOf<AttachmentItem?>(null)
     var notice by mutableStateOf<Notice?>(null)
 
     val mode: Mode get() = if (editMode) Mode.EDIT else Mode.PERFORMANCE
