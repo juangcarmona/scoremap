@@ -4,3 +4,5 @@ package scoremap.music
 public object MusicModule {
     public const val NAME: String = "music"
 }
+
+internal object   Broken{internal fun x():String="x"}
