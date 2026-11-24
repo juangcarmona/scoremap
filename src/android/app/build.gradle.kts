@@ -68,6 +68,7 @@ dependencies {
     androidTestImplementation(libs.androidx.test.core)
     androidTestImplementation(libs.androidx.compose.ui.test.junit)
     // Synthetic test-only database; no product persistence is introduced by the shell.
+    androidTestImplementation(project(":data:local"))
     androidTestImplementation(libs.androidx.room.runtime)
     add("kspAndroidTest", libs.androidx.room.compiler)
 }

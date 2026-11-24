@@ -16,4 +16,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "ScoreMapAndroid"
-include(":app", ":quality", ":music", ":library")
+include(":app", ":quality", ":music", ":library", ":data:local")
