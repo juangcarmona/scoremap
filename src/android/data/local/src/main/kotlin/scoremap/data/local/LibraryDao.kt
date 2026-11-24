@@ -41,6 +41,9 @@ internal interface ReadDao {
 
     @Query("SELECT id FROM purged")
     fun purged(): List<String>
+
+    @Query("SELECT * FROM attachments ORDER BY songId, position")
+    fun attachments(): List<AttachmentRow>
 }
 
 @Dao
@@ -65,6 +68,9 @@ internal interface ClearDao {
 
     @Query("DELETE FROM purged")
     fun clearPurged()
+
+    @Query("DELETE FROM attachments")
+    fun clearAttachments()
 }
 
 @Dao
@@ -89,4 +95,7 @@ internal interface InsertDao {
 
     @Insert
     fun insertPurged(rows: List<PurgedRow>)
+
+    @Insert
+    fun insertAttachments(rows: List<AttachmentRow>)
 }

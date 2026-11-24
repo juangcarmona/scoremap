@@ -6,10 +6,10 @@ import androidx.room.RoomDatabase
 @Database(
     entities = [
         MetaRow::class, ReceiptRow::class, SongRow::class, SectionRow::class, SetRow::class,
-        SetMemberRow::class, RevisionRow::class, RevisionSectionRow::class, PurgedRow::class,
+        SetMemberRow::class, RevisionRow::class, RevisionSectionRow::class, PurgedRow::class, AttachmentRow::class,
     ],
-    version = 1,
-    exportSchema = false,
+    version = 2,
+    exportSchema = true,
 )
 internal abstract class LibraryDatabase : RoomDatabase() {
     abstract fun meta(): MetaDao

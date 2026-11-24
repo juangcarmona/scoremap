@@ -70,3 +70,15 @@ internal data class RevisionSectionRow(
 internal data class PurgedRow(
     @PrimaryKey val id: String,
 )
+
+@Entity(tableName = "attachments", primaryKeys = ["songId", "position"])
+internal data class AttachmentRow(
+    val songId: String,
+    val position: Int,
+    val id: String,
+    val name: String,
+    val sha256: String,
+    val bytes: Long,
+    val pages: Int,
+    val lastPage: Int,
+)

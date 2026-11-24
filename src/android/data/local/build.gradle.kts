@@ -32,6 +32,9 @@ kotlin {
     }
 }
 
+// Exported schemas are the reviewed record of every database version and the input of migration tests.
+ksp { arg("room.schemaLocation", "$projectDir/schemas") }
+
 dependencies {
     api(project(":library"))
     implementation(libs.androidx.room.runtime)
