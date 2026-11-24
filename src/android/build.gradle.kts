@@ -106,6 +106,7 @@ tasks.register("verifyHost") {
                 "music/build/test-results/test/TEST-scoremap.music.HarmonyRulesTest.xml" to 4,
                 "music/build/test-results/test/TEST-scoremap.music.PerformedPitchTest.xml" to 3,
                 "library/build/test-results/test/TEST-scoremap.library.LibraryRulesTest.xml" to 9,
+                "library/build/test-results/test/TEST-scoremap.library.LibraryLifecycleTest.xml" to 8,
                 "build-logic/build/test-results/test/TEST-scoremap.buildlogic.ConventionContractTest.xml" to 5,
                 "build-logic/build/test-results/test/TEST-scoremap.buildlogic.ProjectGraphContractTest.xml" to 5,
                 "build-logic/build/test-results/test/TEST-scoremap.buildlogic.ReleaseReceiptContractTest.xml" to 5,
