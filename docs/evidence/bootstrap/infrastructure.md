@@ -180,7 +180,11 @@ job sets `SCOREMAP_ANDROID_HOST_PROVEN_BY_GATE=1`, so its `verify:android`
 repeats only the static wrapper and lock checks inside Actions; `verifyHost`
 itself runs once, in the Android host job on the same SHA. Android host and
 device jobs restore caches for the Gradle user home, SDK packages and the
-managed-device state; package pins are re-verified on every run. An absent
+managed-device state; package pins are re-verified on every run. A failing
+job uploads its evidence and then cancels the run, so the sibling jobs stop
+spending compute and the gate cannot pass; a newer push to the same pull
+request supersedes the earlier run, while pushes and manual runs are never
+cancelled by another run. An absent
 `src/android` is reported explicitly as outside the current source scope.
 Once any Android directory exists, the executable pinned wrapper, root
 `verify:android` and actual Gradle Managed Device `verifyDevice` route are

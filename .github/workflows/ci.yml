@@ -6,11 +6,19 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+# A newer push to the same pull request supersedes the running verification.
+# Pushes and manual runs keep a unique group, so evidence for a SHA is never cancelled.
+concurrency:
+  group: ci-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   android_host:
     name: Android host
     runs-on: ubuntu-24.04
     timeout-minutes: 60
+    permissions:
+      contents: read
+      actions: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -49,10 +57,19 @@ jobs:
             src/android/**/build/test-results/
             src/android/app/build/outputs/apk/**/*.apk
           retention-days: 30
+      - name: Stop the sibling jobs after a failure
+        if: failure()
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run cancel "$GITHUB_RUN_ID" --repo "$GITHUB_REPOSITORY"
   android_device:
     name: Android device
     runs-on: ubuntu-24.04
     timeout-minutes: 60
+    permissions:
+      contents: read
+      actions: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -100,10 +117,19 @@ jobs:
             src/android/**/build/reports/
             src/android/**/build/outputs/androidTest-results/
           retention-days: 30
+      - name: Stop the sibling jobs after a failure
+        if: failure()
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run cancel "$GITHUB_RUN_ID" --repo "$GITHUB_REPOSITORY"
   verify_core:
     name: Verify delivery evidence
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    permissions:
+      contents: read
+      actions: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -155,6 +181,12 @@ jobs:
             test-results/
             playwright-report/
           retention-days: 30
+      - name: Stop the sibling jobs after a failure
+        if: failure()
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run cancel "$GITHUB_RUN_ID" --repo "$GITHUB_REPOSITORY"
   verify:
     name: Verify ScoreMap
     needs: [android_host, android_device, verify_core]
