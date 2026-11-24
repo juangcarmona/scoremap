@@ -57,6 +57,8 @@ kotlin {
 dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
+    implementation(project(":feature:library"))
+    implementation(project(":data:local"))
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.material3)
     debugImplementation(libs.androidx.compose.ui.tooling)

@@ -129,7 +129,14 @@ private fun SongRow(
 ) {
     Row(Modifier.fillMaxWidth().heightIn(min = MinTarget), verticalAlignment = Alignment.CenterVertically) {
         Text(name, Modifier.weight(1f))
-        Button(onClick = onClick, modifier = Modifier.heightIn(min = MinTarget).semantics { contentDescription = description }) {
+        Button(
+            onClick = onClick,
+            modifier =
+                Modifier.heightIn(min = MinTarget).semantics {
+                    contentDescription =
+                        description
+                },
+        ) {
             Text(action)
         }
     }

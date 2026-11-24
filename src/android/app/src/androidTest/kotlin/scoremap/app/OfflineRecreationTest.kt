@@ -74,10 +74,10 @@ public class OfflineRecreationTest {
             database.close()
         }
 
-        compose.onNodeWithText("ScoreMap Android build shell").assertIsDisplayed()
+        compose.onNodeWithText("ScoreMap").assertIsDisplayed()
         assertShellBelowSystemBars("before recreation")
         compose.activityRule.scenario.recreate()
-        compose.onNodeWithText("ScoreMap Android build shell").assertIsDisplayed()
+        compose.onNodeWithText("ScoreMap").assertIsDisplayed()
         assertShellBelowSystemBars("after recreation")
 
         val reopened = Room.databaseBuilder(context, BootstrapDatabase::class.java, databaseName).build()
@@ -94,7 +94,7 @@ public class OfflineRecreationTest {
     private fun assertShellBelowSystemBars(phase: String) {
         val textTop =
             compose
-                .onNodeWithText("ScoreMap Android build shell")
+                .onNodeWithText("ScoreMap")
                 .fetchSemanticsNode()
                 .boundsInWindow.top
         val systemBarsTop =
