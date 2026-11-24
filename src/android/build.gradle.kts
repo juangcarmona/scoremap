@@ -88,7 +88,7 @@ tasks.register("verifyHost") {
     dependsOn(
         "verifyProjectGraph", ":quality:test", ":quality:verifyKotlinConventions",
         ":music:verifyKotlinConventions", ":library:verifyKotlinConventions",
-        ":music:verifyPureClasspath", ":library:verifyPureClasspath", ":music:test", ":library:test", ":data:local:verifyAndroidConventions", ":app:verifyAndroidConventions",
+        ":music:verifyPureClasspath", ":library:verifyPureClasspath", ":music:test", ":library:test", ":exchange:verifyKotlinConventions", ":exchange:verifyPureClasspath", ":exchange:test", ":data:local:verifyAndroidConventions", ":app:verifyAndroidConventions",
         ":app:testDebugUnitTest", ":app:assembleDebug", ":app:assembleRelease", ":app:assembleDebugAndroidTest",
         ":app:lintDebug", ":app:lintRelease", ":app:verifyReleaseArtifact",
         gradle.includedBuild("build-logic").task(":verifyConventions"),
@@ -109,6 +109,9 @@ tasks.register("verifyHost") {
                 "library/build/test-results/test/TEST-scoremap.library.LibraryRulesTest.xml" to 9,
                 "library/build/test-results/test/TEST-scoremap.library.LibraryLifecycleTest.xml" to 8,
                 "library/build/test-results/test/TEST-scoremap.library.LibraryServiceTest.xml" to 6,
+                "library/build/test-results/test/TEST-scoremap.library.TransferImportTest.xml" to 5,
+                "exchange/build/test-results/test/TEST-scoremap.exchange.TransferCodecTest.xml" to 6,
+                "exchange/build/test-results/test/TEST-scoremap.exchange.TransferFlowTest.xml" to 5,
                 "build-logic/build/test-results/test/TEST-scoremap.buildlogic.ConventionContractTest.xml" to 5,
                 "build-logic/build/test-results/test/TEST-scoremap.buildlogic.ProjectGraphContractTest.xml" to 5,
                 "build-logic/build/test-results/test/TEST-scoremap.buildlogic.ReleaseReceiptContractTest.xml" to 5,
@@ -117,7 +120,7 @@ tasks.register("verifyHost") {
             ),
             listOf(
                 "quality/build/test-results/test", "build-logic/build/test-results/test", "app/build/test-results",
-                "music/build/test-results/test", "library/build/test-results/test",
+                "music/build/test-results/test", "library/build/test-results/test", "exchange/build/test-results/test",
             ),
         )
     }
