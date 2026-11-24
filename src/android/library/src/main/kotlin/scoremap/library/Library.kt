@@ -35,6 +35,7 @@ public data class Song(
     val name: String,
     val sections: List<Section>,
     val revision: Long = 1,
+    val attachments: List<Attachment> = emptyList(),
 )
 
 /** An ordered set of active songs; each song appears at most once. */
@@ -110,7 +111,7 @@ public data class Library internal constructor(
     internal fun identityInUse(id: String): Boolean =
         songs.any { it.id.value == id } || deletedSongs.any { it.id.value == id } ||
             sets.any { it.id.value == id } || deletedSets.any { it.id.value == id } ||
-            songs.any { song -> song.sections.any { it.id.value == id } }
+            songs.any { song -> song.sections.any { it.id.value == id } || song.attachments.any { it.id.value == id } }
 
     public companion object {
         public fun empty(): Library =
@@ -141,6 +142,10 @@ public enum class Refusal {
     DUPLICATE_ID,
     DUPLICATE_MEMBER,
     DUPLICATE_KEY,
+    PDF_TOO_LARGE,
+    PDF_UNSUPPORTED,
+    INVALID_PAGE,
+    UNKNOWN_ATTACHMENT,
     DANGLING_REFERENCE,
     STALE_REVISION,
     NOT_DELETED,

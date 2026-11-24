@@ -28,6 +28,9 @@ public class LibraryService(
 ) {
     public fun current(): StoredLibrary = store.load()
 
+    /** The store revision that acknowledged [commandId], if that command was ever committed. */
+    public fun acknowledged(commandId: String): Long? = store.acknowledged(commandId)
+
     /** [commandId] makes a retry idempotent; the command itself carries the edit-mode guard. */
     public fun execute(
         commandId: String,
