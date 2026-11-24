@@ -52,7 +52,6 @@ public fun LibraryScreen(
             LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 songsSection(holder)
                 songDetailSection(holder)
-                attachmentsSection(holder)
                 setsSection(holder)
             }
         }

@@ -152,21 +152,9 @@ public class PdfViewerTest {
         waitForText("Editing: $name")
     }
 
-    private fun click(description: String) {
-        compose.waitUntil(TIMEOUT_MILLIS) {
-            compose.onAllNodes(hasContentDescription(description)).fetchSemanticsNodes().isNotEmpty() ||
-                compose.onAllNodesWithText(description).fetchSemanticsNodes().isNotEmpty()
-        }
-        if (compose.onAllNodes(hasContentDescription(description)).fetchSemanticsNodes().isNotEmpty()) {
-            compose.onNodeWithContentDescription(description).performClick()
-        } else {
-            compose.onNodeWithText(description).performClick()
-        }
-    }
+    private fun click(description: String) = compose.clickControl(description)
 
-    private fun waitForText(text: String) {
-        compose.waitUntil(TIMEOUT_MILLIS) { compose.onAllNodesWithText(text).fetchSemanticsNodes().isNotEmpty() }
-    }
+    private fun waitForText(text: String) = compose.waitForText(text)
 
     private companion object {
         const val TIMEOUT_MILLIS = 10_000L

@@ -98,11 +98,7 @@ public class LibraryScreenTest {
         waitForText(name)
     }
 
-    private fun waitForText(text: String) {
-        compose.waitUntil(timeoutMillis = TIMEOUT_MILLIS) {
-            compose.onAllNodesWithText(text).fetchSemanticsNodes().isNotEmpty()
-        }
-    }
+    private fun waitForText(text: String) = compose.waitForText(text)
 
     private companion object {
         const val TIMEOUT_MILLIS = 10_000L
