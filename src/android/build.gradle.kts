@@ -110,6 +110,8 @@ tasks.register("verifyHost") {
                 "library/build/test-results/test/TEST-scoremap.library.LibraryLifecycleTest.xml" to 8,
                 "library/build/test-results/test/TEST-scoremap.library.LibraryServiceTest.xml" to 6,
                 "library/build/test-results/test/TEST-scoremap.library.TransferImportTest.xml" to 5,
+                "library/build/test-results/test/TEST-scoremap.library.AttachmentRulesTest.xml" to 7,
+                "library/build/test-results/test/TEST-scoremap.library.AttachmentServiceTest.xml" to 9,
                 "exchange/build/test-results/test/TEST-scoremap.exchange.TransferCodecTest.xml" to 6,
                 "exchange/build/test-results/test/TEST-scoremap.exchange.TransferFlowTest.xml" to 5,
                 "feature/library/build/test-results/testDebugUnitTest/TEST-scoremap.feature.library.LibraryScreenModelTest.xml" to 7,
