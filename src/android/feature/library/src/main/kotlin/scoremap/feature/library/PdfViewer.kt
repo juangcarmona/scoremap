@@ -68,6 +68,12 @@ internal fun PdfViewer(
     }
     Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text("${attachment.name}: page $page of ${attachment.pages}")
+        // The controls come first so they stay on screen however tall the page image is.
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Button(onClick = { go(page - 1) }, enabled = page > 1) { Text("Previous page") }
+            Button(onClick = { go(page + 1) }, enabled = page < attachment.pages) { Text("Next page") }
+            Button(onClick = onClose) { Text("Close PDF") }
+        }
         if (unreadable) {
             Text("This PDF cannot be shown. Your song and its other data are safe.")
         } else {
@@ -79,11 +85,6 @@ internal fun PdfViewer(
                     modifier = Modifier.fillMaxWidth().swipeToTurn(page) { go(page + it) },
                 )
             }
-        }
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Button(onClick = { go(page - 1) }, enabled = page > 1) { Text("Previous page") }
-            Button(onClick = { go(page + 1) }, enabled = page < attachment.pages) { Text("Next page") }
-            Button(onClick = onClose) { Text("Close PDF") }
         }
     }
 }
