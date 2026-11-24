@@ -14,3 +14,19 @@ internal val Migration1To2: Migration =
             )
         }
     }
+
+private const val VERSION_TWO = 2
+private const val VERSION_THREE = 3
+
+/** Version 3 adds the song key, section lyrics and cues; existing rows keep an unknown key and no text. */
+internal val Migration2To3: Migration =
+    object : Migration(VERSION_TWO, VERSION_THREE) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL("ALTER TABLE `songs` ADD COLUMN `songKey` TEXT")
+            db.execSQL("ALTER TABLE `revisions` ADD COLUMN `songKey` TEXT")
+            for (table in listOf("sections", "revision_sections")) {
+                db.execSQL("ALTER TABLE `$table` ADD COLUMN `lyrics` TEXT NOT NULL DEFAULT ''")
+                db.execSQL("ALTER TABLE `$table` ADD COLUMN `cue` TEXT NOT NULL DEFAULT ''")
+            }
+        }
+    }

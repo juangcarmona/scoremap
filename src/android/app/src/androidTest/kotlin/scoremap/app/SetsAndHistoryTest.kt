@@ -78,6 +78,33 @@ public class SetsAndHistoryTest {
     }
 
     @Test
+    public fun theKeyLyricsAndCueAreSavedPerSectionAndSurviveARestart() {
+        val first = launch()
+        create("Song name", "Create song", "Autumn Leaves")
+        click("Open Autumn Leaves")
+        create("Section name", "Add section", "Verse", shows = "Section: Verse x1")
+        waitForText("Key: not set")
+        waitForText("Lyrics: not entered")
+        compose.onNodeWithText("Song key").performTextInput("F# minor")
+        click("Save key: Song key")
+        waitForText("Key: F# minor")
+        compose.onNodeWithText("Lyrics for Verse").performTextInput("Autumn leaves")
+        click("Save lyrics: Lyrics for Verse")
+        waitForText("Lyrics: Autumn leaves")
+        compose.onNodeWithText("Cue for Verse").performTextInput("Softly")
+        click("Save cue: Cue for Verse")
+        waitForText("Cue: Softly")
+        first.close()
+        ScoreMapStores.close(databaseName)
+        launch().use {
+            click("Open Autumn Leaves")
+            waitForText("Key: F# minor")
+            waitForText("Lyrics: Autumn leaves")
+            waitForText("Cue: Softly")
+        }
+    }
+
+    @Test
     public fun performanceModeRefusesToCreateASet() {
         launch().use {
             waitForText("Set name")

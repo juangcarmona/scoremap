@@ -1,5 +1,6 @@
 package scoremap.data.local
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -22,6 +23,7 @@ internal data class SongRow(
     val name: String,
     val revision: Long,
     val deleted: Boolean,
+    val songKey: String?,
 )
 
 @Entity(tableName = "sections", primaryKeys = ["songId", "position"])
@@ -31,6 +33,8 @@ internal data class SectionRow(
     val id: String,
     val name: String,
     val repeats: Int,
+    @ColumnInfo(defaultValue = "") val lyrics: String,
+    @ColumnInfo(defaultValue = "") val cue: String,
 )
 
 @Entity(tableName = "sets")
@@ -54,6 +58,7 @@ internal data class RevisionRow(
     val songId: String,
     val number: Long,
     val name: String,
+    val songKey: String?,
 )
 
 @Entity(tableName = "revision_sections", primaryKeys = ["songId", "number", "position"])
@@ -64,6 +69,8 @@ internal data class RevisionSectionRow(
     val id: String,
     val name: String,
     val repeats: Int,
+    @ColumnInfo(defaultValue = "") val lyrics: String,
+    @ColumnInfo(defaultValue = "") val cue: String,
 )
 
 @Entity(tableName = "purged")

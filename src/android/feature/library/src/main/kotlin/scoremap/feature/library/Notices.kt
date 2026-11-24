@@ -20,6 +20,7 @@ private fun refusalNotice(refusal: Refusal): Notice =
         Refusal.PERFORMANCE_MODE -> Notice.EDIT_MODE_REQUIRED
         Refusal.INVALID_NAME -> Notice.INVALID_NAME
         Refusal.MISSING_DEPENDENCY -> Notice.MISSING_DEPENDENCY
+        Refusal.TEXT_TOO_LONG -> Notice.TEXT_TOO_LONG
         Refusal.STALE_REVISION -> Notice.CONFLICT
         else -> Notice.FAILED
     }

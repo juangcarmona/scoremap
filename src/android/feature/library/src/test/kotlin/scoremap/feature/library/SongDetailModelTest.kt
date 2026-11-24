@@ -66,6 +66,48 @@ public class SongDetailModelTest {
     }
 
     @Test
+    public fun theKeyIsReadFromTextAndEmptyTextClearsIt() {
+        val keyed = requireNotNull(detail.setKey(id, " F# minor ", Mode.EDIT))
+        assertEquals(Notice.SHEET_SAVED, keyed.notice)
+        assertEquals("F# minor", keyed.key)
+        assertEquals(Notice.INVALID_KEY, requireNotNull(detail.setKey(id, "H major", Mode.EDIT)).notice)
+        assertEquals("F# minor", requireNotNull(detail.load(id)).key)
+        val cleared = requireNotNull(detail.setKey(id, "  ", Mode.EDIT))
+        assertNull(cleared.key)
+        assertEquals(Notice.SHEET_SAVED, cleared.notice)
+    }
+
+    @Test
+    public fun lyricsAndCuesAreSavedPerSectionAndShownAsAbsentUntilEntered() {
+        val added = requireNotNull(detail.addSection(id, "Verse", Mode.EDIT))
+        val section = added.sections.single()
+        assertEquals("", section.lyrics)
+        assertEquals("", section.cue)
+        detail.setLyrics(id, section.id, "Line one\nLine two", Mode.EDIT)
+        val state = requireNotNull(detail.setCue(id, section.id, "Softly", Mode.EDIT))
+        assertEquals(Notice.SHEET_SAVED, state.notice)
+        assertEquals("Line one\nLine two", state.sections.single().lyrics)
+        assertEquals("Softly", state.sections.single().cue)
+        val tooLong = requireNotNull(detail.setLyrics(id, section.id, "x".repeat(5000), Mode.EDIT))
+        assertEquals(Notice.TEXT_TOO_LONG, tooLong.notice)
+        assertEquals("Line one\nLine two", tooLong.sections.single().lyrics)
+    }
+
+    @Test
+    public fun sheetEditsAreRefusedInPerformanceMode() {
+        val section = requireNotNull(detail.addSection(id, "Verse", Mode.EDIT)).sections.single()
+        val commits = store.commits
+        for (state in listOf(
+            detail.setKey(id, "C major", Mode.PERFORMANCE),
+            detail.setLyrics(id, section.id, "la", Mode.PERFORMANCE),
+            detail.setCue(id, section.id, "la", Mode.PERFORMANCE),
+        )) {
+            assertEquals(Notice.EDIT_MODE_REQUIRED, requireNotNull(state).notice)
+        }
+        assertEquals(commits, store.commits)
+    }
+
+    @Test
     public fun unknownRevisionIsRefusedAndAStorageFailureKeepsTheSong() {
         assertEquals(Notice.FAILED, requireNotNull(detail.restoreRevision(id, 9, Mode.EDIT)).notice)
         store.failNext = true

@@ -20,6 +20,9 @@ import scoremap.library.Outcome
 import scoremap.library.Refusal
 import scoremap.library.RetentionCommands
 import scoremap.library.ServiceResult
+import scoremap.library.SheetCommands
+import scoremap.library.SongKey
+import scoremap.music.SpelledNote
 import java.util.UUID
 
 /** Real Room on the managed device: durability, atomicity, idempotent retry and the edit guard. */
@@ -57,6 +60,52 @@ public class RoomLibraryStoreTest {
         assertEquals(before.library, reopened.library)
         assertEquals(listOf(songId), reopened.library.deletedSongs.map { it.id })
         assertEquals(listOf(1L, 2L), RetentionCommands.history(reopened.library, songId).map { it.number })
+    }
+
+    @Test
+    public fun keyLyricsAndCuesSurviveReopenInTheSongAndItsHistory() {
+        val first = open()
+        val service = LibraryService(first)
+        service.execute("a") { LibraryCommands.createSong(it, Mode.EDIT, "Song", ids) }
+        val songId =
+            service
+                .current()
+                .library.songs
+                .single()
+                .id
+        service.execute("b") { LibraryCommands.insertSection(it, Mode.EDIT, songId, "Verse", ids) }
+        val sectionId =
+            service
+                .current()
+                .library.songs
+                .single()
+                .sections
+                .single()
+                .id
+        val key = SongKey(SpelledNote.parseRoot("F#"), minor = true)
+        service.execute("c") { SheetCommands.setKey(it, Mode.EDIT, songId, key) }
+        service.execute("d") { SheetCommands.setLyrics(it, Mode.EDIT, songId, sectionId, "Line one\nLine two") }
+        service.execute("e") { SheetCommands.setCue(it, Mode.EDIT, songId, sectionId, "Tacet first time") }
+        val before = service.current()
+        first.close()
+
+        val reopened = LibraryService(open()).current()
+        assertEquals(before.library, reopened.library)
+        val song = reopened.library.songs.single()
+        assertEquals(key, song.key)
+        assertEquals("Line one\nLine two", song.sections.single().lyrics)
+        assertEquals("Tacet first time", song.sections.single().cue)
+        val kept = RetentionCommands.history(reopened.library, songId)
+        assertNull(kept.first { it.number == 2L }.key)
+        assertEquals(key, kept.last().key)
+        assertEquals(
+            "Line one\nLine two",
+            kept
+                .last()
+                .sections
+                .single()
+                .lyrics,
+        )
     }
 
     @Test

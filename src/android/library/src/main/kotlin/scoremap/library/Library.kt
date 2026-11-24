@@ -1,5 +1,8 @@
 package scoremap.library
 
+import scoremap.music.MusicRuleViolation
+import scoremap.music.SpelledNote
+
 /** Opaque, stable identity of a song. */
 @JvmInline
 public value class SongId(
@@ -28,7 +31,33 @@ public data class Section(
     val id: SectionId,
     val name: String,
     val repeats: Int,
+    /** Optional lyric text; empty means absent, never an empty claim. */
+    val lyrics: String = "",
+    /** Optional performance cue; empty means absent. */
+    val cue: String = "",
 )
+
+/** A declared song key: a root with at most one accidental, major or minor. */
+public data class SongKey(
+    val tonic: SpelledNote,
+    val minor: Boolean,
+) {
+    init {
+        if (kotlin.math.abs(tonic.accidentals) > 1) throw MusicRuleViolation("A key root has at most one accidental.")
+    }
+
+    public val label: String get() = "$tonic ${if (minor) "minor" else "major"}"
+
+    public companion object {
+        /** Reads a [label] back; null for anything else, so a corrupt value reads as an unknown key. */
+        public fun parse(text: String?): SongKey? {
+            val parts = text?.split(' ').orEmpty()
+            val minor = parts.getOrNull(1) == "minor"
+            val tonic = if (parts.size == 2 && (minor || parts[1] == "major")) parts[0] else null
+            return tonic?.let { runCatching { SpelledNote.parseRoot(it) }.getOrNull() }?.let { SongKey(it, minor) }
+        }
+    }
+}
 
 public data class Song(
     val id: SongId,
@@ -36,6 +65,8 @@ public data class Song(
     val sections: List<Section>,
     val revision: Long = 1,
     val attachments: List<Attachment> = emptyList(),
+    /** The declared key, or null while it is unknown. */
+    val key: SongKey? = null,
 )
 
 /** An ordered set of active songs; each song appears at most once. */
@@ -51,6 +82,7 @@ public data class SongRevision(
     val number: Long,
     val name: String,
     val sections: List<Section>,
+    val key: SongKey? = null,
 )
 
 /** LC-LIBRARY active song presence. */
@@ -101,12 +133,10 @@ public data class Library internal constructor(
         return recordRevision(revised).copy(songs = songs.map { if (it.id == song.id) revised else it })
     }
 
-    internal fun recordRevision(song: Song): Library =
-        copy(
-            histories =
-                histories +
-                    (song.id to histories[song.id].orEmpty() + SongRevision(song.revision, song.name, song.sections)),
-        )
+    internal fun recordRevision(song: Song): Library {
+        val revision = SongRevision(song.revision, song.name, song.sections, song.key)
+        return copy(histories = histories + (song.id to histories[song.id].orEmpty() + revision))
+    }
 
     internal fun identityInUse(id: String): Boolean =
         songs.any { it.id.value == id } || deletedSongs.any { it.id.value == id } ||
@@ -138,6 +168,7 @@ public enum class Refusal {
     UNKNOWN_SET,
     UNKNOWN_REVISION,
     INVALID_REPEATS,
+    TEXT_TOO_LONG,
     NOT_A_PERMUTATION,
     DUPLICATE_ID,
     DUPLICATE_MEMBER,

@@ -43,6 +43,9 @@ public enum class Notice(
     PDF_UNREADABLE("This PDF cannot be read. Your song was not changed."),
     PDF_TOO_LARGE("This PDF is too large. Your song was not changed."),
     PDF_REMOVED("PDF removed from the song."),
+    SHEET_SAVED("Saved."),
+    INVALID_KEY("Enter a key such as F# minor or Bb major, or leave it empty to clear it."),
+    TEXT_TOO_LONG("That text is too long. Nothing was saved."),
 }
 
 /** Immutable screen state: only values, no storage handles and no platform types. */

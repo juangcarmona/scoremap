@@ -8,7 +8,7 @@ import androidx.room.RoomDatabase
         MetaRow::class, ReceiptRow::class, SongRow::class, SectionRow::class, SetRow::class,
         SetMemberRow::class, RevisionRow::class, RevisionSectionRow::class, PurgedRow::class, AttachmentRow::class,
     ],
-    version = 2,
+    version = 3,
     exportSchema = true,
 )
 internal abstract class LibraryDatabase : RoomDatabase() {
