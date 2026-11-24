@@ -14,4 +14,17 @@ java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
 }
-dependencies { api(project(":music")) }
+
+dependencies {
+    api(project(":music"))
+    testImplementation(libs.junit)
+}
+
+tasks.test {
+    useJUnit()
+    maxHeapSize = "256m"
+    failOnNoDiscoveredTests.set(true)
+    outputs.upToDateWhen { false }
+    outputs.cacheIf { false }
+    doFirst { delete(layout.buildDirectory.dir("test-results/test")) }
+}

@@ -87,7 +87,7 @@ tasks.register("verifyHost") {
     dependsOn(
         "verifyProjectGraph", ":quality:test", ":quality:verifyKotlinConventions",
         ":music:verifyKotlinConventions", ":library:verifyKotlinConventions",
-        ":music:verifyPureClasspath", ":library:verifyPureClasspath", ":app:verifyAndroidConventions",
+        ":music:verifyPureClasspath", ":library:verifyPureClasspath", ":music:test", ":library:test", ":app:verifyAndroidConventions",
         ":app:testDebugUnitTest", ":app:assembleDebug", ":app:assembleRelease", ":app:assembleDebugAndroidTest",
         ":app:lintDebug", ":app:lintRelease", ":app:verifyReleaseArtifact",
         gradle.includedBuild("build-logic").task(":verifyConventions"),
@@ -102,13 +102,20 @@ tasks.register("verifyHost") {
                 "quality/build/test-results/test/TEST-scoremap.quality.ReleaseContractTest.xml" to 8,
                 "quality/build/test-results/test/TEST-scoremap.quality.PureLayerRulesTest.xml" to 3,
                 "quality/build/test-results/test/TEST-scoremap.quality.StorageOwnershipRulesTest.xml" to 4,
+                "music/build/test-results/test/TEST-scoremap.music.HarmonyFixtureTest.xml" to 2,
+                "music/build/test-results/test/TEST-scoremap.music.HarmonyRulesTest.xml" to 4,
+                "music/build/test-results/test/TEST-scoremap.music.PerformedPitchTest.xml" to 3,
+                "library/build/test-results/test/TEST-scoremap.library.LibraryRulesTest.xml" to 9,
                 "build-logic/build/test-results/test/TEST-scoremap.buildlogic.ConventionContractTest.xml" to 5,
                 "build-logic/build/test-results/test/TEST-scoremap.buildlogic.ProjectGraphContractTest.xml" to 5,
                 "build-logic/build/test-results/test/TEST-scoremap.buildlogic.ReleaseReceiptContractTest.xml" to 5,
                 "build-logic/build/test-results/test/TEST-scoremap.buildlogic.GateIntegrityContractTest.xml" to 5,
                 "build-logic/build/test-results/test/TEST-scoremap.buildlogic.SuiteInventoryContractTest.xml" to 4,
             ),
-            listOf("quality/build/test-results/test", "build-logic/build/test-results/test", "app/build/test-results"),
+            listOf(
+                "quality/build/test-results/test", "build-logic/build/test-results/test", "app/build/test-results",
+                "music/build/test-results/test", "library/build/test-results/test",
+            ),
         )
     }
 }
