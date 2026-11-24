@@ -17,8 +17,10 @@ public object LibraryCommands {
         guarded(mode) {
             val name = validName(rawName) ?: return@guarded refused(Refusal.INVALID_NAME)
             val id = ids.next()
-            if (library.songs.any { it.id.value == id }) return@guarded refused(Refusal.DUPLICATE_ID)
-            accepted(library.with(library.songs + Song(SongId(id), name, emptyList())))
+            if (id in library.purged) return@guarded refused(Refusal.PURGED)
+            if (library.identityInUse(id)) return@guarded refused(Refusal.DUPLICATE_ID)
+            val created = Song(SongId(id), name, emptyList())
+            accepted(library.recordRevision(created).copy(songs = library.songs + created))
         }
 
     public fun insertSection(
@@ -32,13 +34,9 @@ public object LibraryCommands {
             val song = library.songs.firstOrNull { it.id == songId } ?: return@guarded refused(Refusal.UNKNOWN_SONG)
             val name = validName(rawName) ?: return@guarded refused(Refusal.INVALID_NAME)
             val id = ids.next()
-            if (library.songs.any { s ->
-                    s.sections.any { it.id.value == id }
-                }
-            ) {
-                return@guarded refused(Refusal.DUPLICATE_ID)
-            }
-            accepted(replace(library, song.copy(sections = song.sections + Section(SectionId(id), name, MIN_REPEATS))))
+            if (id in library.purged) return@guarded refused(Refusal.PURGED)
+            if (library.identityInUse(id)) return@guarded refused(Refusal.DUPLICATE_ID)
+            accepted(library.revise(song.copy(sections = song.sections + Section(SectionId(id), name, MIN_REPEATS))))
         }
 
     public fun setRepeats(
@@ -53,7 +51,7 @@ public object LibraryCommands {
             if (song.sections.none { it.id == sectionId }) return@guarded refused(Refusal.UNKNOWN_SECTION)
             if (repeats !in MIN_REPEATS..MAX_REPEATS) return@guarded refused(Refusal.INVALID_REPEATS)
             val sections = song.sections.map { if (it.id == sectionId) it.copy(repeats = repeats) else it }
-            accepted(replace(library, song.copy(sections = sections)))
+            accepted(library.revise(song.copy(sections = sections)))
         }
 
     /** Reordering changes position only: identity, content and repeats of each section are retained. */
@@ -71,7 +69,7 @@ public object LibraryCommands {
             ) {
                 return@guarded refused(Refusal.NOT_A_PERMUTATION)
             }
-            accepted(replace(library, song.copy(sections = order.map { current.getValue(it) })))
+            accepted(library.revise(song.copy(sections = order.map { current.getValue(it) })))
         }
 
     private fun guarded(
@@ -84,11 +82,6 @@ public object LibraryCommands {
             it.isNotEmpty() &&
                 it.any { c -> !c.isWhitespace() }
         }
-
-    private fun replace(
-        library: Library,
-        song: Song,
-    ): Library = library.with(library.songs.map { if (it.id == song.id) song else it })
 
     private fun accepted(library: Library): Outcome<Library> = Outcome.Accepted(library)
 
