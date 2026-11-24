@@ -88,7 +88,7 @@ tasks.register("verifyHost") {
     dependsOn(
         "verifyProjectGraph", ":quality:test", ":quality:verifyKotlinConventions",
         ":music:verifyKotlinConventions", ":library:verifyKotlinConventions",
-        ":music:verifyPureClasspath", ":library:verifyPureClasspath", ":music:test", ":library:test", ":exchange:verifyKotlinConventions", ":exchange:verifyPureClasspath", ":exchange:test", ":data:local:verifyAndroidConventions", ":app:verifyAndroidConventions",
+        ":music:verifyPureClasspath", ":library:verifyPureClasspath", ":music:test", ":library:test", ":exchange:verifyKotlinConventions", ":exchange:verifyPureClasspath", ":exchange:test", ":feature:library:verifyAndroidConventions", ":feature:library:testDebugUnitTest", ":data:local:verifyAndroidConventions", ":app:verifyAndroidConventions",
         ":app:testDebugUnitTest", ":app:assembleDebug", ":app:assembleRelease", ":app:assembleDebugAndroidTest",
         ":app:lintDebug", ":app:lintRelease", ":app:verifyReleaseArtifact",
         gradle.includedBuild("build-logic").task(":verifyConventions"),
@@ -112,6 +112,7 @@ tasks.register("verifyHost") {
                 "library/build/test-results/test/TEST-scoremap.library.TransferImportTest.xml" to 5,
                 "exchange/build/test-results/test/TEST-scoremap.exchange.TransferCodecTest.xml" to 6,
                 "exchange/build/test-results/test/TEST-scoremap.exchange.TransferFlowTest.xml" to 5,
+                "feature/library/build/test-results/testDebugUnitTest/TEST-scoremap.feature.library.LibraryScreenModelTest.xml" to 7,
                 "build-logic/build/test-results/test/TEST-scoremap.buildlogic.ConventionContractTest.xml" to 5,
                 "build-logic/build/test-results/test/TEST-scoremap.buildlogic.ProjectGraphContractTest.xml" to 5,
                 "build-logic/build/test-results/test/TEST-scoremap.buildlogic.ReleaseReceiptContractTest.xml" to 5,
@@ -120,7 +121,7 @@ tasks.register("verifyHost") {
             ),
             listOf(
                 "quality/build/test-results/test", "build-logic/build/test-results/test", "app/build/test-results",
-                "music/build/test-results/test", "library/build/test-results/test", "exchange/build/test-results/test",
+                "music/build/test-results/test", "library/build/test-results/test", "exchange/build/test-results/test", "feature/library/build/test-results/testDebugUnitTest",
             ),
         )
     }
@@ -136,7 +137,7 @@ tasks.register("verifyDevice") {
         val reports = fileTree(directory) { include("**/TEST-*.xml") }.files
         // The managed device writes one report for the whole run; the declared classes and their case counts
         // are checked inside it, and the usual inventory checks bind that report to this run.
-        val expectedClasses = mapOf("OfflineRecreationTest" to 1, "RoomLibraryStoreTest" to 6)
+        val expectedClasses = mapOf("OfflineRecreationTest" to 1, "RoomLibraryStoreTest" to 6, "LibraryScreenTest" to 4)
         check(reports.size == 1) { "Expected one managed-device report, found ${reports.map { it.name }}." }
         val report = reports.single()
         val perClass = expectedClasses.mapValues { (name, _) -> Regex("classname=\"[^\"]*\\.$name\"").findAll(report.readText()).count() }
