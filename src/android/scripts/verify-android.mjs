@@ -48,11 +48,14 @@ export function verifyLocalCatalogLock(root) {
   assert.deepEqual(entries, ['empty=incomingCatalogForLibs0'], 'The ignored local catalog record cannot contain module dependencies or additional state.');
 }
 
-export function gradleInvocation(useHelper, cacheRoot) {
+export const aggregates = ['verifyHost', 'verifyDevice', 'verifyRelease'];
+
+export function gradleInvocation(useHelper, cacheRoot, aggregate = 'verifyHost') {
+  assert.ok(aggregates.includes(aggregate), `Unknown Android aggregate: ${aggregate}`);
   if (useHelper) {
     return {
       program: 'scoremap-android',
-      args: ['./gradlew', '--console=plain', '-Dorg.gradle.jvmargs=-Xmx768m -XX:MaxMetaspaceSize=768m -Dfile.encoding=UTF-8', 'verifyHost'],
+      args: ['./gradlew', '--console=plain', '-Dorg.gradle.jvmargs=-Xmx768m -XX:MaxMetaspaceSize=768m -Dfile.encoding=UTF-8', aggregate],
     };
   }
   return {
@@ -63,7 +66,7 @@ export function gradleInvocation(useHelper, cacheRoot) {
       '-Dorg.gradle.jvmargs=-Xmx2g -Dfile.encoding=UTF-8',
       '-Pkotlin.compiler.execution.strategy=in-process',
       `-Pkotlin.project.persistent.dir=${path.join(cacheRoot, 'kotlin')}`,
-      '-Pandroid.builder.sdkDownload=false', '--console=plain', 'verifyHost',
+      '-Pandroid.builder.sdkDownload=false', '--console=plain', aggregate,
     ],
   };
 }
@@ -84,6 +87,12 @@ function verifyProjectLockVersions() {
   }
 }
 
+export function aggregateFromArguments(args) {
+  const names = { host: 'verifyHost', device: 'verifyDevice', release: 'verifyRelease' };
+  assert.ok(args.length <= 1 && (args.length === 0 || args[0] in names), 'Expected no argument, or one of host, device, release.');
+  return args.length === 0 ? 'verifyHost' : names[args[0]];
+}
+
 function main() {
   verifyProjectLockVersions();
   verifyLocalCatalogLock(androidRoot);
@@ -97,7 +106,7 @@ function main() {
   const jar = readFileSync(path.join(androidRoot, 'gradle/wrapper/gradle-wrapper.jar'));
   assert.equal(createHash('sha256').update(jar).digest('hex'), wrapperSha, 'Unexpected official wrapper JAR.');
 
-  if (process.env.GITHUB_ACTIONS === 'true' && process.env.SCOREMAP_ANDROID_HOST_PROVEN_BY_GATE === '1') {
+  if (process.argv.length <= 2 && process.env.GITHUB_ACTIONS === 'true' && process.env.SCOREMAP_ANDROID_HOST_PROVEN_BY_GATE === '1') {
     // The final "Verify ScoreMap" gate requires the sibling "Android host" job, which runs verifyHost on this same SHA.
     console.log('Static Android checks passed; verifyHost is proven by the Android host job and enforced by the final gate.');
     return;
@@ -115,7 +124,7 @@ function main() {
   for (const directory of [env.GRADLE_USER_HOME, env.ANDROID_USER_HOME, ...['project-cache', 'kotlin', 'user-home'].map(name => path.join(cacheRoot, name))]) {
     mkdirSync(directory, { recursive: true });
   }
-  const invocation = gradleInvocation(helperAvailable(), cacheRoot);
+  const invocation = gradleInvocation(helperAvailable(), cacheRoot, aggregateFromArguments(process.argv.slice(2)));
   const result = spawnSync(invocation.program, invocation.args, { cwd: androidRoot, env, stdio: 'inherit' });
   if (result.error) throw result.error;
   verifyProjectLockVersions();

@@ -1,5 +1,7 @@
 import org.gradle.api.artifacts.dsl.LockMode
 import org.gradle.api.artifacts.ExternalModuleDependency
+import NativeReceiptPolicy
+import SourceRevision
 import SuiteInventoryPolicy
 
 buildscript {
@@ -70,9 +72,12 @@ allprojects {
     }
 }
 
-fun verifySuites(expected: Map<String, Int>, directories: List<String>) {
+fun verifySuites(gate: String, expected: Map<String, Int>, directories: List<String>) {
     val problems = SuiteInventoryPolicy.problems(rootDir, expected, directories, verificationStartedAt)
     check(problems.isEmpty()) { "JUnit evidence differs from the inventory:\n" + problems.joinToString("\n") { "- $it" } }
+    val revision = SourceRevision.of(rootDir)
+    val receipt = NativeReceiptPolicy.executionReceipt(gate, revision.sha, revision.dirty, expected, rootDir)
+    file("build/receipts/$gate-execution.json").apply { parentFile.mkdirs() }.writeText(receipt + "\n")
 }
 
 tasks.register("verifyHost") {
@@ -84,7 +89,7 @@ tasks.register("verifyHost") {
         ":music:verifyKotlinConventions", ":library:verifyKotlinConventions",
         ":music:verifyPureClasspath", ":library:verifyPureClasspath", ":app:verifyAndroidConventions",
         ":app:testDebugUnitTest", ":app:assembleDebug", ":app:assembleRelease", ":app:assembleDebugAndroidTest",
-        ":app:lintDebug", ":app:lintRelease",
+        ":app:lintDebug", ":app:lintRelease", ":app:verifyReleaseArtifact",
         gradle.includedBuild("build-logic").task(":verifyConventions"),
     )
     doLast {
@@ -92,12 +97,14 @@ tasks.register("verifyHost") {
             "Declare new app JVM suites in the expected inventory before acceptance."
         }
         verifySuites(
+            "host",
             mapOf(
                 "quality/build/test-results/test/TEST-scoremap.quality.ReleaseContractTest.xml" to 8,
                 "quality/build/test-results/test/TEST-scoremap.quality.PureLayerRulesTest.xml" to 3,
                 "quality/build/test-results/test/TEST-scoremap.quality.StorageOwnershipRulesTest.xml" to 4,
                 "build-logic/build/test-results/test/TEST-scoremap.buildlogic.ConventionContractTest.xml" to 5,
                 "build-logic/build/test-results/test/TEST-scoremap.buildlogic.ProjectGraphContractTest.xml" to 5,
+                "build-logic/build/test-results/test/TEST-scoremap.buildlogic.ReleaseReceiptContractTest.xml" to 5,
                 "build-logic/build/test-results/test/TEST-scoremap.buildlogic.GateIntegrityContractTest.xml" to 5,
                 "build-logic/build/test-results/test/TEST-scoremap.buildlogic.SuiteInventoryContractTest.xml" to 4,
             ),
@@ -115,7 +122,7 @@ tasks.register("verifyDevice") {
         val directory = "app/build/outputs/androidTest-results/managedDevice/debug/pixelTabletApi37"
         val reports = fileTree(directory) { include("**/TEST-*.xml") }.files
         check(reports.size == 1) { "Expected one actual bootstrap device suite." }
-        verifySuites(mapOf(reports.single().relativeTo(rootDir).invariantSeparatorsPath to 1), listOf(directory))
+        verifySuites("device", mapOf(reports.single().relativeTo(rootDir).invariantSeparatorsPath to 1), listOf(directory))
     }
 }
 
@@ -123,6 +130,27 @@ project(":app").tasks.configureEach {
     if (name == "pixelTabletApi37DebugAndroidTest") {
         outputs.upToDateWhen { false }
         outputs.cacheIf { false }
+    }
+}
+
+tasks.register("verifyRelease") {
+    notCompatibleWithConfigurationCache("Release verification compares the receipts of this very run.")
+    group = "verification"
+    description = "Host and device gates plus source-bound artifact receipts. Upgrade/rollback refusal and release " +
+        "performance measurements are not implemented yet and remain pending."
+    dependsOn("verifyHost", "verifyDevice")
+    doLast {
+        val revision = SourceRevision.of(rootDir)
+        val receipts = listOf(
+            "build/receipts/host-execution.json", "build/receipts/device-execution.json",
+            "app/build/receipts/debug.json", "app/build/receipts/release.json",
+        )
+        val problems = receipts.flatMap { path ->
+            val receipt = file(path)
+            if (!receipt.isFile || receipt.lastModified() < verificationStartedAt) listOf("Missing or stale receipt: $path")
+            else NativeReceiptPolicy.receiptViolations(receipt.readText(), revision.sha).map { "$path: $it" }
+        }
+        check(problems.isEmpty()) { "Release receipts are not acceptable:\n" + problems.joinToString("\n") { "- $it" } }
     }
 }
 

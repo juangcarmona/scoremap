@@ -111,6 +111,8 @@
     "verify:private-api-types": "node scripts/generate-private-api-types.mjs --check",
     "generate:private-api-client": "node scripts/generate-private-api-client.mjs",
     "verify:private-api-client": "node scripts/generate-private-api-client.mjs --check && node --test tests/contract/generated-client-drift.test.mjs",
-    "verify:android": "node src/android/scripts/verify-android.mjs"
+    "verify:android": "node src/android/scripts/verify-android.mjs",
+    "verify:android:device": "node src/android/scripts/verify-android.mjs device",
+    "verify:android:release": "node src/android/scripts/verify-android.mjs release"
   }
 }
