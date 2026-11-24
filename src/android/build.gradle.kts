@@ -16,6 +16,7 @@ buildscript {
 
 plugins {
     alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.android.library) apply false
     alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.kotlin.compose) apply false
     alias(libs.plugins.ksp) apply false
@@ -87,7 +88,7 @@ tasks.register("verifyHost") {
     dependsOn(
         "verifyProjectGraph", ":quality:test", ":quality:verifyKotlinConventions",
         ":music:verifyKotlinConventions", ":library:verifyKotlinConventions",
-        ":music:verifyPureClasspath", ":library:verifyPureClasspath", ":music:test", ":library:test", ":app:verifyAndroidConventions",
+        ":music:verifyPureClasspath", ":library:verifyPureClasspath", ":music:test", ":library:test", ":data:local:verifyAndroidConventions", ":app:verifyAndroidConventions",
         ":app:testDebugUnitTest", ":app:assembleDebug", ":app:assembleRelease", ":app:assembleDebugAndroidTest",
         ":app:lintDebug", ":app:lintRelease", ":app:verifyReleaseArtifact",
         gradle.includedBuild("build-logic").task(":verifyConventions"),
@@ -107,6 +108,7 @@ tasks.register("verifyHost") {
                 "music/build/test-results/test/TEST-scoremap.music.PerformedPitchTest.xml" to 3,
                 "library/build/test-results/test/TEST-scoremap.library.LibraryRulesTest.xml" to 9,
                 "library/build/test-results/test/TEST-scoremap.library.LibraryLifecycleTest.xml" to 8,
+                "library/build/test-results/test/TEST-scoremap.library.LibraryServiceTest.xml" to 6,
                 "build-logic/build/test-results/test/TEST-scoremap.buildlogic.ConventionContractTest.xml" to 5,
                 "build-logic/build/test-results/test/TEST-scoremap.buildlogic.ProjectGraphContractTest.xml" to 5,
                 "build-logic/build/test-results/test/TEST-scoremap.buildlogic.ReleaseReceiptContractTest.xml" to 5,
@@ -129,8 +131,19 @@ tasks.register("verifyDevice") {
     doLast {
         val directory = "app/build/outputs/androidTest-results/managedDevice/debug/pixelTabletApi37"
         val reports = fileTree(directory) { include("**/TEST-*.xml") }.files
-        check(reports.size == 1) { "Expected one actual bootstrap device suite." }
-        verifySuites("device", mapOf(reports.single().relativeTo(rootDir).invariantSeparatorsPath to 1), listOf(directory))
+        // The expected device suites are declared by class name; their report paths are discovered per run.
+        val expectedClasses = mapOf("OfflineRecreationTest" to 1, "RoomLibraryStoreTest" to 6)
+        val byClass = reports.associateBy { report -> expectedClasses.keys.singleOrNull { report.name.contains(it) } }
+        check(reports.size == expectedClasses.size && byClass.keys == expectedClasses.keys) {
+            "Expected exactly the declared device suites ${expectedClasses.keys}, found ${reports.map { it.name }}."
+        }
+        verifySuites(
+            "device",
+            expectedClasses.entries.associate { (name, count) ->
+                byClass.getValue(name).relativeTo(rootDir).invariantSeparatorsPath to count
+            },
+            listOf(directory),
+        )
     }
 }
 

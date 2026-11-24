@@ -69,6 +69,16 @@ public sealed interface Confirmation {
     ) : Confirmation
 }
 
+/** Everything an adapter persists for a library, read back in one piece. */
+public data class DurableState(
+    val songs: List<Song>,
+    val sets: List<MusicSet>,
+    val deletedSongs: List<Song>,
+    val deletedSets: List<MusicSet>,
+    val purged: Set<String>,
+    val histories: Map<SongId, List<SongRevision>>,
+)
+
 /**
  * The local library: active songs and sets, recoverably deleted items with their retained history, and
  * anti-resurrection receipts that carry identities only.
@@ -80,7 +90,7 @@ public data class Library internal constructor(
     public val deletedSongs: List<Song>,
     public val deletedSets: List<MusicSet>,
     public val purged: Set<String>,
-    internal val histories: Map<SongId, List<SongRevision>>,
+    public val histories: Map<SongId, List<SongRevision>>,
 ) {
     public val state: LibraryState get() = if (songs.isEmpty()) LibraryState.EMPTY else LibraryState.POPULATED
 
@@ -105,6 +115,17 @@ public data class Library internal constructor(
     public companion object {
         public fun empty(): Library =
             Library(emptyList(), emptyList(), emptyList(), emptyList(), emptySet(), emptyMap())
+
+        /** Rebuilds a library from durable state that an adapter has read back; it carries no new decisions. */
+        public fun restore(state: DurableState): Library =
+            Library(
+                state.songs,
+                state.sets,
+                state.deletedSongs,
+                state.deletedSets,
+                state.purged,
+                state.histories,
+            )
     }
 }
 
