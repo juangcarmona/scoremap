@@ -23,6 +23,20 @@ public object LibraryCommands {
             accepted(library.recordRevision(created).copy(songs = library.songs + created))
         }
 
+    public fun renameSong(
+        library: Library,
+        mode: Mode,
+        songId: SongId,
+        rawName: String,
+        expectedRevision: Long,
+    ): Outcome<Library> =
+        guarded(mode) {
+            val song = library.songs.firstOrNull { it.id == songId } ?: return@guarded refused(Refusal.UNKNOWN_SONG)
+            val name = validName(rawName) ?: return@guarded refused(Refusal.INVALID_NAME)
+            if (song.revision != expectedRevision) return@guarded refused(Refusal.STALE_REVISION)
+            accepted(library.revise(song.copy(name = name)))
+        }
+
     public fun insertSection(
         library: Library,
         mode: Mode,

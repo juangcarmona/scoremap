@@ -9,8 +9,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import scoremap.data.local.RoomLibraryStore
+import scoremap.feature.library.LibraryModels
 import scoremap.feature.library.LibraryScreen
 import scoremap.feature.library.LibraryScreenModel
+import scoremap.feature.library.SetsScreenModel
+import scoremap.feature.library.SongDetailModel
 import scoremap.library.IdSource
 import scoremap.library.LibraryService
 import java.util.UUID
@@ -29,10 +32,16 @@ public class MainActivity : ComponentActivity() {
             )
         store = opened
         val random = IdSource { UUID.randomUUID().toString() }
-        val model = LibraryScreenModel(LibraryService(opened), random, random)
+        val service = LibraryService(opened)
+        val models =
+            LibraryModels(
+                LibraryScreenModel(service, random, random),
+                SetsScreenModel(service, random, random),
+                SongDetailModel(service, random, random),
+            )
         setContent {
             MaterialTheme {
-                Surface { LibraryScreen(model, Modifier.safeDrawingPadding()) }
+                Surface { LibraryScreen(models, Modifier.safeDrawingPadding()) }
             }
         }
     }
