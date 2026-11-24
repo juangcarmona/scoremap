@@ -6,11 +6,29 @@ public data class GraphSection(
     val repeats: Int,
 )
 
+/** PDF bytes with content equality, so packages can be compared value by value. */
+public class PdfBytes(
+    public val bytes: ByteArray,
+) {
+    override fun equals(other: Any?): Boolean = other is PdfBytes && bytes.contentEquals(other.bytes)
+
+    override fun hashCode(): Int = bytes.contentHashCode()
+
+    override fun toString(): String = "PdfBytes(${bytes.size} bytes)"
+}
+
+/** A PDF attached to a song inside a package: its name and its complete bytes. */
+public data class GraphAttachment(
+    val name: String,
+    val pdf: PdfBytes,
+)
+
 /** A song as carried by a transfer package. [key] only links set members inside the package. */
 public data class GraphSong(
     val key: String,
     val name: String,
     val sections: List<GraphSection>,
+    val attachments: List<GraphAttachment> = emptyList(),
 )
 
 public data class GraphSet(
