@@ -21,6 +21,8 @@ internal fun LazyListScope.songDetailSection(holder: LibraryHolder) {
         detail.sections,
         key = { "section-${it.id}" },
     ) { section -> Text("Section: ${section.name} x${section.repeats}") }
+    // The PDFs come before the long history so they stay within reach on a small screen.
+    attachmentsSection(holder)
     item { Text("History", style = MaterialTheme.typography.titleMedium) }
     items(detail.revisions.reversed(), key = { "revision-${it.number}" }) { revision ->
         NamedRow("Revision ${revision.number}: ${revision.name}, ${revision.sectionCount} sections") {

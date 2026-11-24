@@ -20,6 +20,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import scoremap.android.MainActivity
+import scoremap.android.ScoreMapStores
 import java.util.UUID
 
 /** Ordered sets and retained history on the real screen, backed by real Room on the managed device. */
@@ -52,6 +53,7 @@ public class SetsAndHistoryTest {
         click("Restore set Friday")
         waitForText("1. Blue Bossa")
         first.close()
+        ScoreMapStores.close(databaseName)
         launch().use {
             waitForText("1. Blue Bossa")
             compose.onNodeWithText("2. Autumn Leaves").assertIsDisplayed()
@@ -104,24 +106,11 @@ public class SetsAndHistoryTest {
         waitForText(shows)
     }
 
-    private fun click(description: String) {
-        compose.waitUntil(TIMEOUT_MILLIS) {
-            compose.onAllNodesWithContentDescriptionCompat(description)
-        }
-        compose.onNodeWithContentDescription(description).performClick()
-    }
+    private fun click(description: String) = compose.clickControl(description)
 
-    private fun waitForText(text: String) {
-        compose.waitUntil(TIMEOUT_MILLIS) { compose.onAllNodesWithText(text).fetchSemanticsNodes().isNotEmpty() }
-    }
+    private fun waitForText(text: String) = compose.waitForText(text)
 
     private companion object {
         const val TIMEOUT_MILLIS = 10_000L
     }
 }
-
-private fun ComposeTestRule.onAllNodesWithContentDescriptionCompat(description: String): Boolean =
-    onAllNodes(
-        androidx.compose.ui.test
-            .hasContentDescription(description),
-    ).fetchSemanticsNodes().isNotEmpty()

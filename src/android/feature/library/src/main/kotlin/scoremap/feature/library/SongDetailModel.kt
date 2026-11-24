@@ -22,12 +22,22 @@ public data class RevisionItem(
     val sectionCount: Int,
 )
 
+/** A PDF attached to the song, with the page the musician last viewed. */
+public data class AttachmentItem(
+    val id: String,
+    val name: String,
+    val pages: Int,
+    val lastPage: Int,
+    val sha256: String,
+)
+
 public data class SongDetailState(
     val id: String,
     val name: String,
     val revision: Long,
     val sections: List<SectionItem>,
     val revisions: List<RevisionItem>,
+    val attachments: List<AttachmentItem>,
     val notice: Notice?,
 )
 
@@ -50,6 +60,7 @@ public class SongDetailModel(
             song.revision,
             song.sections.map { SectionItem(it.id.value, it.name, it.repeats) },
             RetentionCommands.history(library, song.id).map { RevisionItem(it.number, it.name, it.sections.size) },
+            song.attachments.map { AttachmentItem(it.id.value, it.name, it.pages, it.lastPage, it.sha256) },
             notice,
         )
     }

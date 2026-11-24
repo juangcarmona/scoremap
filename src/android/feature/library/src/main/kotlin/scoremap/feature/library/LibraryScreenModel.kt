@@ -39,6 +39,10 @@ public enum class Notice(
     RENAMED("Song renamed."),
     SECTION_ADDED("Section added."),
     REVISION_RESTORED("Revision restored as a new one."),
+    PDF_ATTACHED("PDF attached."),
+    PDF_UNREADABLE("This PDF cannot be read. Your song was not changed."),
+    PDF_TOO_LARGE("This PDF is too large. Your song was not changed."),
+    PDF_REMOVED("PDF removed from the song."),
 }
 
 /** Immutable screen state: only values, no storage handles and no platform types. */

@@ -62,7 +62,7 @@ public class PdfStorageTest {
                 .id
         assertEquals(
             AttachResult.Attached(revision = 8, replay = false),
-            attachments.attach("a", Mode.EDIT, songId, "Score", pdf(2)),
+            attachments.attach("a", Mode.EDIT, songId, "Score", testPdf(2)),
         )
         store.close()
         val reopened = service(open())
@@ -92,7 +92,7 @@ public class PdfStorageTest {
         val service = LibraryService(store)
         val attachments = attachments(service)
         val songId = createSong(service)
-        val bytes = pdf(3)
+        val bytes = testPdf(3)
         attachments.attach("a", Mode.EDIT, songId, "Score", bytes)
         val attachment = attachments.current(songId).single()
         attachments.rememberPage("turn", songId, attachment.id, 3)
@@ -112,7 +112,7 @@ public class PdfStorageTest {
         val service = LibraryService(store)
         val attachments = attachments(service)
         val songId = createSong(service)
-        for (bytes in listOf("not a pdf".toByteArray(), pdf(2).copyOf(40), ByteArray(0))) {
+        for (bytes in listOf("not a pdf".toByteArray(), testPdf(2).copyOf(40), ByteArray(0))) {
             assertEquals(
                 AttachResult.Rejected,
                 attachments.attach("bad-${bytes.size}", Mode.EDIT, songId, "Score", bytes),
@@ -128,7 +128,7 @@ public class PdfStorageTest {
         val service = LibraryService(store)
         val attachments = attachments(service)
         val songId = createSong(service)
-        val big = pdf(1) + ByteArray(PdfLimits.MAX_BYTES.toInt())
+        val big = testPdf(1) + ByteArray(PdfLimits.MAX_BYTES.toInt())
         assertEquals(
             AttachResult.Refused(Refusal.PDF_TOO_LARGE),
             attachments.attach("big", Mode.EDIT, songId, "Score", big),
@@ -144,7 +144,7 @@ public class PdfStorageTest {
         val attachments = attachments(service)
         val songId = createSong(service)
         fail = true
-        val result = attachments.attach("f", Mode.EDIT, songId, "Score", pdf(2))
+        val result = attachments.attach("f", Mode.EDIT, songId, "Score", testPdf(2))
         assertTrue(result.toString(), result is AttachResult.StorageFailed)
         assertEquals(emptyList<Any>(), attachments.current(songId))
         assertEquals(0, directory.listFiles { file -> file.isFile }.orEmpty().size)
@@ -157,7 +157,7 @@ public class PdfStorageTest {
         val service = LibraryService(store)
         val attachments = attachments(service)
         val songId = createSong(service)
-        attachments.attach("a", Mode.EDIT, songId, "Score", pdf(2))
+        attachments.attach("a", Mode.EDIT, songId, "Score", testPdf(2))
         val attachment = attachments.current(songId).single()
         assertEquals(1, directory.listFiles { file -> file.isFile }.orEmpty().size)
         service.execute("d") { AttachmentCommands.detach(it, Mode.EDIT, songId, attachment.id) }
@@ -200,25 +200,6 @@ public class PdfStorageTest {
             db.execSQL("INSERT INTO store_meta VALUES (1, 7)")
             db.version = 1
         }
-    }
-
-    /** A small, valid PDF with [pages] blank pages, built with exact cross-reference offsets. */
-    private fun pdf(pages: Int): ByteArray {
-        val out = StringBuilder("%PDF-1.4\n")
-        val offsets = mutableListOf<Int>()
-
-        fun obj(body: String) {
-            offsets += out.length
-            out.append("${offsets.size} 0 obj\n$body\nendobj\n")
-        }
-        obj("<< /Type /Catalog /Pages 2 0 R >>")
-        obj("<< /Type /Pages /Kids [" + (0 until pages).joinToString(" ") { "${3 + it} 0 R" } + "] /Count $pages >>")
-        repeat(pages) { obj("<< /Type /Page /Parent 2 0 R /MediaBox [0 0 200 200] >>") }
-        val xref = out.length
-        out.append("xref\n0 ${offsets.size + 1}\n0000000000 65535 f \n")
-        offsets.forEach { out.append("%010d 00000 n \n".format(it)) }
-        out.append("trailer\n<< /Size ${offsets.size + 1} /Root 1 0 R >>\nstartxref\n$xref\n%%EOF\n")
-        return out.toString().toByteArray(Charsets.ISO_8859_1)
     }
 
     private companion object {
