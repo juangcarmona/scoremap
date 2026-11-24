@@ -62,8 +62,10 @@ public fun LibraryScreen(
         Text("ScoreMap", style = MaterialTheme.typography.headlineMedium)
         EditModeRow(editMode) { editMode = it }
         NameRow(draft, onChange = { draft = it }) {
-            act { model.createSong(draft, mode) }
+            // Capture the text now: the action runs later, after the field has been cleared.
+            val name = draft
             draft = ""
+            act { model.createSong(name, mode) }
         }
         state?.notice?.let { Text(message(it), Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
         SongList(state, mode, ::act, model)
