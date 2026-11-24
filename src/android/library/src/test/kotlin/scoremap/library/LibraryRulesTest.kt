@@ -180,6 +180,24 @@ public class LibraryRulesTest {
         )
     }
 
+    @Test
+    public fun renamingASongTrimsTheNameAndIsARevisionOfItsHistory() {
+        var library = accepted(LibraryCommands.createSong(Library.empty(), Mode.EDIT, "Old", ids))
+        val songId = library.songs.single().id
+        library = accepted(LibraryCommands.renameSong(library, Mode.EDIT, songId, "  New title ", expectedRevision = 1))
+        assertEquals("New title", library.songs.single().name)
+        assertEquals(2L, library.songs.single().revision)
+        assertEquals(listOf("Old", "New title"), RetentionCommands.history(library, songId).map { it.name })
+        assertEquals(Refusal.STALE_REVISION, refusal(LibraryCommands.renameSong(library, Mode.EDIT, songId, "X", 1)))
+        assertEquals(Refusal.INVALID_NAME, refusal(LibraryCommands.renameSong(library, Mode.EDIT, songId, "  ", 2)))
+        assertEquals(Refusal.UNKNOWN_SONG, refusal(LibraryCommands.renameSong(library, Mode.EDIT, SongId("x"), "X", 2)))
+        assertEquals(
+            Refusal.PERFORMANCE_MODE,
+            refusal(LibraryCommands.renameSong(library, Mode.PERFORMANCE, songId, "X", 2)),
+        )
+        assertEquals("New title", library.songs.single().name)
+    }
+
     private fun accepted(outcome: Outcome<Library>): Library =
         (outcome as? Outcome.Accepted)?.value ?: error("Expected acceptance but got $outcome")
 

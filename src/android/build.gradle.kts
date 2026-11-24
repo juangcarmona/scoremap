@@ -106,13 +106,15 @@ tasks.register("verifyHost") {
                 "music/build/test-results/test/TEST-scoremap.music.HarmonyFixtureTest.xml" to 2,
                 "music/build/test-results/test/TEST-scoremap.music.HarmonyRulesTest.xml" to 4,
                 "music/build/test-results/test/TEST-scoremap.music.PerformedPitchTest.xml" to 3,
-                "library/build/test-results/test/TEST-scoremap.library.LibraryRulesTest.xml" to 9,
+                "library/build/test-results/test/TEST-scoremap.library.LibraryRulesTest.xml" to 10,
                 "library/build/test-results/test/TEST-scoremap.library.LibraryLifecycleTest.xml" to 8,
                 "library/build/test-results/test/TEST-scoremap.library.LibraryServiceTest.xml" to 6,
                 "library/build/test-results/test/TEST-scoremap.library.TransferImportTest.xml" to 5,
                 "exchange/build/test-results/test/TEST-scoremap.exchange.TransferCodecTest.xml" to 6,
                 "exchange/build/test-results/test/TEST-scoremap.exchange.TransferFlowTest.xml" to 5,
                 "feature/library/build/test-results/testDebugUnitTest/TEST-scoremap.feature.library.LibraryScreenModelTest.xml" to 7,
+                "feature/library/build/test-results/testDebugUnitTest/TEST-scoremap.feature.library.SetsScreenModelTest.xml" to 6,
+                "feature/library/build/test-results/testDebugUnitTest/TEST-scoremap.feature.library.SongDetailModelTest.xml" to 5,
                 "build-logic/build/test-results/test/TEST-scoremap.buildlogic.ConventionContractTest.xml" to 5,
                 "build-logic/build/test-results/test/TEST-scoremap.buildlogic.ProjectGraphContractTest.xml" to 5,
                 "build-logic/build/test-results/test/TEST-scoremap.buildlogic.ReleaseReceiptContractTest.xml" to 5,
@@ -137,7 +139,7 @@ tasks.register("verifyDevice") {
         val reports = fileTree(directory) { include("**/TEST-*.xml") }.files
         // The managed device writes one report for the whole run; the declared classes and their case counts
         // are checked inside it, and the usual inventory checks bind that report to this run.
-        val expectedClasses = mapOf("OfflineRecreationTest" to 1, "RoomLibraryStoreTest" to 6, "LibraryScreenTest" to 4)
+        val expectedClasses = mapOf("OfflineRecreationTest" to 1, "RoomLibraryStoreTest" to 6, "LibraryScreenTest" to 4, "SetsAndHistoryTest" to 3)
         check(reports.size == 1) { "Expected one managed-device report, found ${reports.map { it.name }}." }
         val report = reports.single()
         val perClass = expectedClasses.mapValues { (name, _) -> Regex("classname=\"[^\"]*\\.$name\"").findAll(report.readText()).count() }

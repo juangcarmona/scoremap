@@ -1,0 +1,127 @@
+package scoremap.app
+
+import android.content.Context
+import android.content.Intent
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.isToggleable
+import androidx.compose.ui.test.junit4.ComposeTestRule
+import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextInput
+import androidx.test.core.app.ActivityScenario
+import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import org.junit.After
+import org.junit.Assert.assertEquals
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
+import scoremap.android.MainActivity
+import java.util.UUID
+
+/** Ordered sets and retained history on the real screen, backed by real Room on the managed device. */
+@RunWith(AndroidJUnit4::class)
+public class SetsAndHistoryTest {
+    @get:Rule
+    public val compose: ComposeTestRule = createEmptyComposeRule()
+
+    private val context: Context = ApplicationProvider.getApplicationContext()
+    private val databaseName = "and07-sets-${UUID.randomUUID()}.db"
+
+    @After
+    public fun removeOnlyTheOwnedDatabase() {
+        context.deleteDatabase(databaseName)
+    }
+
+    @Test
+    public fun anOrderedSetSurvivesReorderingDeletionRestoreAndARestart() {
+        val first = launch()
+        create("Song name", "Create song", "Autumn Leaves")
+        create("Song name", "Create song", "Blue Bossa")
+        create("Set name", "Create set", "Friday")
+        click("Add Autumn Leaves to Friday")
+        click("Add Blue Bossa to Friday")
+        waitForText("2. Blue Bossa")
+        click("Move up Blue Bossa in Friday")
+        waitForText("1. Blue Bossa")
+        click("Delete set Friday")
+        waitForText("Recently deleted sets")
+        click("Restore set Friday")
+        waitForText("1. Blue Bossa")
+        first.close()
+        launch().use {
+            waitForText("1. Blue Bossa")
+            compose.onNodeWithText("2. Autumn Leaves").assertIsDisplayed()
+        }
+    }
+
+    @Test
+    public fun everyRetainedRevisionCanBeInspectedAndRestoredAsANewOne() {
+        launch().use {
+            create("Song name", "Create song", "Old title")
+            click("Open Old title")
+            create("New name", "Rename", "New title")
+            waitForText("Editing: New title")
+            create("Section name", "Add section", "Verse", shows = "Section: Verse x1")
+            waitForText("Revision 3: New title, 1 sections")
+            waitForText("Revision 1: Old title, 0 sections")
+            click("Restore revision 1")
+            waitForText("Editing: Old title")
+            waitForText("Revision 4: Old title, 0 sections")
+            waitForText("Revision 2: New title, 0 sections")
+        }
+    }
+
+    @Test
+    public fun performanceModeRefusesToCreateASet() {
+        launch().use {
+            waitForText("Set name")
+            compose.onNode(isToggleable()).performClick()
+            compose.onNodeWithText("Set name").performTextInput("Refused")
+            compose.onNodeWithText("Create set").performClick()
+            waitForText("Turn on edit mode to change songs.")
+            assertEquals(0, compose.onAllNodesWithText("Refused").fetchSemanticsNodes().size)
+        }
+    }
+
+    private fun launch(): ActivityScenario<MainActivity> =
+        ActivityScenario.launch(
+            Intent(context, MainActivity::class.java).putExtra(MainActivity.EXTRA_DATABASE, databaseName),
+        )
+
+    private fun create(
+        label: String,
+        button: String,
+        text: String,
+        shows: String = text,
+    ) {
+        waitForText(label)
+        compose.onNodeWithText(label).performTextInput(text)
+        compose.onNodeWithText(button).performClick()
+        waitForText(shows)
+    }
+
+    private fun click(description: String) {
+        compose.waitUntil(TIMEOUT_MILLIS) {
+            compose.onAllNodesWithContentDescriptionCompat(description)
+        }
+        compose.onNodeWithContentDescription(description).performClick()
+    }
+
+    private fun waitForText(text: String) {
+        compose.waitUntil(TIMEOUT_MILLIS) { compose.onAllNodesWithText(text).fetchSemanticsNodes().isNotEmpty() }
+    }
+
+    private companion object {
+        const val TIMEOUT_MILLIS = 10_000L
+    }
+}
+
+private fun ComposeTestRule.onAllNodesWithContentDescriptionCompat(description: String): Boolean =
+    onAllNodes(
+        androidx.compose.ui.test
+            .hasContentDescription(description),
+    ).fetchSemanticsNodes().isNotEmpty()

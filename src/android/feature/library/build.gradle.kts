@@ -41,3 +41,9 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     testImplementation(libs.junit)
 }
+
+// A verification run must execute its tests; an up-to-date or cached result is not fresh evidence.
+tasks.withType<Test>().configureEach {
+    outputs.upToDateWhen { false }
+    outputs.cacheIf { false }
+}
