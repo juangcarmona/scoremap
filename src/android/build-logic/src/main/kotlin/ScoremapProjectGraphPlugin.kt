@@ -75,7 +75,7 @@ public class ScoremapProjectGraphPlugin : Plugin<Project> {
                 emptyList()
             } else {
                 listOf("testDebugUnitTest", "assembleDebug", "assembleRelease", "assembleDebugAndroidTest")
-                    .plus(listOf("lintDebug", "lintRelease"))
+                    .plus(listOf("lintDebug", "lintRelease", "verifyReleaseArtifact"))
                     .map { ":app:$it" }
             }
         val quality = if (root.findProject(":quality") == null) emptyList() else listOf(":quality:test")

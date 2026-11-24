@@ -27,6 +27,7 @@ public class ScoremapAndroidConventionPlugin : Plugin<Project> {
                 task.description = "Checks the Android compiler, formatter, analyzer and both Lint variants."
                 task.dependsOn(required)
             }
+            ReleaseArtifactTask.register(this)
             afterEvaluate {
                 check(
                     pluginManager.hasPlugin("com.android.application") ||
