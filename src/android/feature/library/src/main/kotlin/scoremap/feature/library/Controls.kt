@@ -79,3 +79,33 @@ internal fun NamedRow(
         content()
     }
 }
+
+/** A saved-value editor: it starts from [initial], keeps the text after saving and follows later stored values. */
+@Composable
+internal fun SheetEntry(
+    label: String,
+    initial: String,
+    button: String,
+    multiline: Boolean,
+    onSave: (String) -> Unit,
+) {
+    var text by rememberSaveable(label, initial) { mutableStateOf(initial) }
+    Row(
+        Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        OutlinedTextField(
+            value = text,
+            onValueChange = { text = it },
+            label = { Text(label) },
+            singleLine = !multiline,
+            minLines = if (multiline) 2 else 1,
+            modifier = Modifier.weight(1f),
+        )
+        Button(
+            onClick = { onSave(text) },
+            modifier = Modifier.heightIn(min = MinTarget).semantics { contentDescription = "$button: $label" },
+        ) { Text(button) }
+    }
+}

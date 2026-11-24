@@ -15,6 +15,7 @@ import scoremap.library.SectionId
 import scoremap.library.SetId
 import scoremap.library.Song
 import scoremap.library.SongId
+import scoremap.library.SongKey
 import scoremap.library.SongRevision
 import scoremap.library.StoredLibrary
 
@@ -37,7 +38,13 @@ public class RoomLibraryStore internal constructor(
             beforeCommit: () -> Unit = {},
         ): RoomLibraryStore =
             RoomLibraryStore(
-                Room.databaseBuilder(context, LibraryDatabase::class.java, name).addMigrations(Migration1To2).build(),
+                Room
+                    .databaseBuilder(
+                        context,
+                        LibraryDatabase::class.java,
+                        name,
+                    ).addMigrations(Migration1To2, Migration2To3)
+                    .build(),
                 beforeCommit,
             )
     }
@@ -98,7 +105,7 @@ internal object LibraryRows {
                 index,
                 (song, deleted),
                 ->
-                SongRow(song.id.value, index, song.name, song.revision, deleted)
+                SongRow(song.id.value, index, song.name, song.revision, deleted, song.key?.label)
             },
         )
         dao.insertSections(
@@ -107,7 +114,7 @@ internal object LibraryRows {
                     i,
                     s,
                     ->
-                    SectionRow(song.id.value, i, s.id.value, s.name, s.repeats)
+                    SectionRow(song.id.value, i, s.id.value, s.name, s.repeats, s.lyrics, s.cue)
                 }
             },
         )
@@ -133,14 +140,14 @@ internal object LibraryRows {
             },
         )
         val revisions = library.histories.flatMap { (songId, list) -> list.map { songId to it } }
-        dao.insertRevisions(revisions.map { (songId, r) -> RevisionRow(songId.value, r.number, r.name) })
+        dao.insertRevisions(revisions.map { (songId, r) -> RevisionRow(songId.value, r.number, r.name, r.key?.label) })
         dao.insertRevisionSections(
             revisions.flatMap { (songId, r) ->
                 r.sections.mapIndexed {
                     i,
                     s,
                     ->
-                    RevisionSectionRow(songId.value, r.number, i, s.id.value, s.name, s.repeats)
+                    RevisionSectionRow(songId.value, r.number, i, s.id.value, s.name, s.repeats, s.lyrics, s.cue)
                 }
             },
         )
@@ -167,11 +174,12 @@ internal object LibraryRows {
             Song(
                 SongId(row.id),
                 row.name,
-                sections[row.id].orEmpty().map { Section(SectionId(it.id), it.name, it.repeats) },
+                sections[row.id].orEmpty().map { Section(SectionId(it.id), it.name, it.repeats, it.lyrics, it.cue) },
                 row.revision,
                 attachments[row.id].orEmpty().map {
                     Attachment(AttachmentId(it.id), it.name, it.sha256, it.bytes, it.pages, it.lastPage)
                 },
+                SongKey.parse(row.songKey),
             )
         val members = dao.members().groupBy { it.setId }
         val setRows = dao.sets()
@@ -186,12 +194,9 @@ internal object LibraryRows {
                         r.number,
                         r.name,
                         revisionSections[r.songId to r.number].orEmpty().map {
-                            Section(
-                                SectionId(it.id),
-                                it.name,
-                                it.repeats,
-                            )
+                            Section(SectionId(it.id), it.name, it.repeats, it.lyrics, it.cue)
                         },
+                        SongKey.parse(r.songKey),
                     )
                 }
             }

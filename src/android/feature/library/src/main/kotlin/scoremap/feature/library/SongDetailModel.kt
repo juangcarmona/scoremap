@@ -7,12 +7,19 @@ import scoremap.library.LibraryService
 import scoremap.library.Mode
 import scoremap.library.Outcome
 import scoremap.library.RetentionCommands
+import scoremap.library.SectionId
+import scoremap.library.SheetCommands
 import scoremap.library.SongId
+import scoremap.library.SongKey
 
 public data class SectionItem(
     val id: String,
     val name: String,
     val repeats: Int,
+    /** Empty when no lyrics were entered. */
+    val lyrics: String = "",
+    /** Empty when no cue was entered. */
+    val cue: String = "",
 )
 
 /** One retained revision of the song, as listed in its history. */
@@ -39,6 +46,8 @@ public data class SongDetailState(
     val revisions: List<RevisionItem>,
     val attachments: List<AttachmentItem>,
     val notice: Notice?,
+    /** The declared key such as "F# minor"; null while unknown. */
+    val key: String? = null,
 )
 
 /** One song's structure and retained history: rename, add sections and restore any earlier revision. */
@@ -58,12 +67,42 @@ public class SongDetailModel(
             song.id.value,
             song.name,
             song.revision,
-            song.sections.map { SectionItem(it.id.value, it.name, it.repeats) },
+            song.sections.map { SectionItem(it.id.value, it.name, it.repeats, it.lyrics, it.cue) },
             RetentionCommands.history(library, song.id).map { RevisionItem(it.number, it.name, it.sections.size) },
             song.attachments.map { AttachmentItem(it.id.value, it.name, it.pages, it.lastPage, it.sha256) },
             notice,
+            song.key?.label,
         )
     }
+
+    /** Empty text clears the key; text that is not a key is refused without changing the song. */
+    public fun setKey(
+        songId: String,
+        text: String,
+        mode: Mode,
+    ): SongDetailState? {
+        val key = SongKey.parse(text.trim())
+        if (text.isNotBlank() && key == null) return load(songId, Notice.INVALID_KEY)
+        return run(songId, Notice.SHEET_SAVED) { SheetCommands.setKey(it, mode, SongId(songId), key) }
+    }
+
+    public fun setLyrics(
+        songId: String,
+        sectionId: String,
+        text: String,
+        mode: Mode,
+    ): SongDetailState? =
+        run(songId, Notice.SHEET_SAVED) {
+            SheetCommands.setLyrics(it, mode, SongId(songId), SectionId(sectionId), text)
+        }
+
+    public fun setCue(
+        songId: String,
+        sectionId: String,
+        text: String,
+        mode: Mode,
+    ): SongDetailState? =
+        run(songId, Notice.SHEET_SAVED) { SheetCommands.setCue(it, mode, SongId(songId), SectionId(sectionId), text) }
 
     public fun rename(
         songId: String,
