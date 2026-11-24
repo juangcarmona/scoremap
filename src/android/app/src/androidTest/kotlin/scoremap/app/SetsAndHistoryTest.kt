@@ -65,7 +65,7 @@ public class SetsAndHistoryTest {
             click("Open Old title")
             create("New name", "Rename", "New title")
             waitForText("Editing: New title")
-            create("Section name", "Add section", "Verse")
+            create("Section name", "Add section", "Verse", shows = "Section: Verse x1")
             waitForText("Revision 3: New title, 1 sections")
             waitForText("Revision 1: Old title, 0 sections")
             click("Restore revision 1")
@@ -96,11 +96,12 @@ public class SetsAndHistoryTest {
         label: String,
         button: String,
         text: String,
+        shows: String = text,
     ) {
         waitForText(label)
         compose.onNodeWithText(label).performTextInput(text)
         compose.onNodeWithText(button).performClick()
-        waitForText(text)
+        waitForText(shows)
     }
 
     private fun click(description: String) {
