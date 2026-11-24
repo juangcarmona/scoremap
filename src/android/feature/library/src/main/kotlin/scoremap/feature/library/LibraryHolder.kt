@@ -6,6 +6,8 @@ import androidx.compose.runtime.setValue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import scoremap.library.Mode
 
@@ -35,21 +37,34 @@ internal class LibraryHolder(
 
     val mode: Mode get() = if (editMode) Mode.EDIT else Mode.PERFORMANCE
 
-    /** Runs [action] with the current mode, then reloads the screen; the action returns what to tell the musician. */
+    private val order = Mutex()
+
+    /**
+     * Runs [action] with the current mode, then reloads the screen; the action returns what to tell the musician.
+     * Actions run one at a time in the order they were requested, so a slow earlier reload can never overwrite
+     * the result of a later action.
+     */
     fun act(action: (Mode) -> Notice?) {
         val current = mode
-        val open = openSongId
         scope.launch {
-            val loaded =
-                withContext(Dispatchers.IO) {
-                    val result = action(current)
-                    Loaded(result, models.songs.load(current), models.sets.load(), open?.let { models.detail.load(it) })
-                }
-            notice = loaded.notice
-            songs = loaded.songs
-            sets = loaded.sets
-            detail = loaded.detail
-            if (loaded.detail == null) openSongId = null
+            order.withLock {
+                val open = openSongId
+                val loaded =
+                    withContext(Dispatchers.IO) {
+                        val result = action(current)
+                        Loaded(
+                            result,
+                            models.songs.load(current),
+                            models.sets.load(),
+                            open?.let { models.detail.load(it) },
+                        )
+                    }
+                notice = loaded.notice
+                songs = loaded.songs
+                sets = loaded.sets
+                detail = loaded.detail
+                if (loaded.detail == null) openSongId = null
+            }
         }
     }
 

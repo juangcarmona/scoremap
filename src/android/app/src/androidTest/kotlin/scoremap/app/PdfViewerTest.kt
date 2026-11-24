@@ -21,6 +21,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import scoremap.android.MainActivity
+import scoremap.android.ScoreMapStores
 import scoremap.feature.library.LibraryModels
 import scoremap.feature.library.Notice
 import scoremap.library.Mode
@@ -64,6 +65,7 @@ public class PdfViewerTest {
         click("Next page")
         waitForText("Score: page 3 of 3")
         first.close()
+        ScoreMapStores.close(databaseName)
         launch().use {
             click("Open Autumn Leaves")
             click("View Score")

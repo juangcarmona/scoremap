@@ -21,6 +21,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import scoremap.android.MainActivity
+import scoremap.android.ScoreMapStores
 import java.util.UUID
 
 /** The real library screen on the managed device, backed by real Room. */
@@ -44,6 +45,7 @@ public class LibraryScreenTest {
         first.recreate()
         waitForText("Autumn Leaves")
         first.close()
+        ScoreMapStores.close(databaseName)
         launch().use {
             waitForText("Autumn Leaves")
             compose.onNodeWithText("Autumn Leaves").assertIsDisplayed()

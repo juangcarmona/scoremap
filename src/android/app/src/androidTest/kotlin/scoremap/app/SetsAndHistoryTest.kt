@@ -20,6 +20,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import scoremap.android.MainActivity
+import scoremap.android.ScoreMapStores
 import java.util.UUID
 
 /** Ordered sets and retained history on the real screen, backed by real Room on the managed device. */
@@ -52,6 +53,7 @@ public class SetsAndHistoryTest {
         click("Restore set Friday")
         waitForText("1. Blue Bossa")
         first.close()
+        ScoreMapStores.close(databaseName)
         launch().use {
             waitForText("1. Blue Bossa")
             compose.onNodeWithText("2. Autumn Leaves").assertIsDisplayed()

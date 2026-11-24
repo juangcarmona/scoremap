@@ -10,7 +10,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import scoremap.data.local.AndroidPdfInspector
 import scoremap.data.local.FileBlobStore
-import scoremap.data.local.RoomLibraryStore
 import scoremap.feature.library.AttachmentsModel
 import scoremap.feature.library.LibraryModels
 import scoremap.feature.library.LibraryScreen
@@ -24,8 +23,6 @@ import java.util.UUID
 
 /** Composition root: it wires the local Room store and the library service into the screen. */
 public class MainActivity : ComponentActivity() {
-    private var store: RoomLibraryStore? = null
-
     /** The models behind the screen; instrumented tests use them to act below the system document picker. */
     public lateinit var models: LibraryModels
         private set
@@ -33,15 +30,10 @@ public class MainActivity : ComponentActivity() {
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        val opened =
-            RoomLibraryStore.open(
-                applicationContext,
-                intent.getStringExtra(EXTRA_DATABASE) ?: DEFAULT_DATABASE,
-            )
-        store = opened
+        val databaseName = intent.getStringExtra(EXTRA_DATABASE) ?: DEFAULT_DATABASE
+        val opened = ScoreMapStores.open(this, databaseName)
         val random = IdSource { UUID.randomUUID().toString() }
         val service = LibraryService(opened)
-        val databaseName = intent.getStringExtra(EXTRA_DATABASE) ?: DEFAULT_DATABASE
         val blobs = FileBlobStore(java.io.File(filesDir, "attachments-$databaseName"))
         val attachments =
             AttachmentService(service, AndroidPdfInspector(java.io.File(cacheDir, "inspect")), blobs, random)
@@ -57,11 +49,6 @@ public class MainActivity : ComponentActivity() {
                 Surface { LibraryScreen(models, Modifier.safeDrawingPadding()) }
             }
         }
-    }
-
-    public override fun onDestroy() {
-        store?.close()
-        super.onDestroy()
     }
 
     public companion object {
