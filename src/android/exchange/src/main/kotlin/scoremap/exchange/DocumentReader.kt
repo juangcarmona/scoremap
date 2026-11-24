@@ -11,6 +11,7 @@ internal class DocumentReader(
 ) {
     private val attachments = AttachmentReader(limits.attachments)
     private var carriesPdfs = false
+    private var carriesSheet = false
 
     fun read(root: Json.Obj): DecodeOutcome =
         try {
@@ -24,10 +25,11 @@ internal class DocumentReader(
         need(format.value == TRANSFER_FORMAT, Rejection.UNSUPPORTED_FORMAT)
         val version = root.fields["version"] as? Json.Integer ?: invalid()
         need(
-            version.value in TRANSFER_VERSION.toLong()..TRANSFER_VERSION_WITH_PDFS.toLong(),
+            version.value in TRANSFER_VERSION.toLong()..TRANSFER_VERSION_WITH_SHEET.toLong(),
             Rejection.UNSUPPORTED_VERSION,
         )
-        carriesPdfs = version.value == TRANSFER_VERSION_WITH_PDFS.toLong()
+        carriesPdfs = version.value >= TRANSFER_VERSION_WITH_PDFS.toLong()
+        carriesSheet = version.value >= TRANSFER_VERSION_WITH_SHEET.toLong()
         exactly(root, setOf("format", "version", "songs"), optional = setOf("set"))
         val songs = (root.fields["songs"] as? Json.Array ?: invalid()).items
         need(songs.size <= limits.maxSongs, Rejection.OVERSIZED)
@@ -36,7 +38,10 @@ internal class DocumentReader(
 
     private fun song(value: Json): GraphSong {
         val obj = value as? Json.Obj ?: invalid()
-        exactly(obj, setOf("key", "name", "sections"), optional = if (carriesPdfs) setOf("attachments") else emptySet())
+        val optional =
+            (if (carriesPdfs) setOf("attachments") else emptySet()) +
+                (if (carriesSheet) setOf("songKey") else emptySet())
+        exactly(obj, setOf("key", "name", "sections"), optional = optional)
         val sections = (obj.fields["sections"] as? Json.Array ?: invalid()).items
         need(sections.size <= limits.maxSectionsPerSong, Rejection.OVERSIZED)
         return GraphSong(
@@ -44,15 +49,21 @@ internal class DocumentReader(
             text(obj, "name"),
             sections.map(::section),
             obj.fields["attachments"]?.let(attachments::read).orEmpty(),
+            obj.fields["songKey"]?.let { (it as? Json.Text ?: invalid()).value },
         )
     }
 
     private fun section(value: Json): GraphSection {
         val obj = value as? Json.Obj ?: invalid()
-        exactly(obj, setOf("name", "repeats"))
+        exactly(obj, setOf("name", "repeats"), optional = if (carriesSheet) setOf("lyrics", "cue") else emptySet())
         val repeats = obj.fields["repeats"] as? Json.Integer ?: invalid()
         if (repeats.value !in Int.MIN_VALUE..Int.MAX_VALUE) invalid()
-        return GraphSection(text(obj, "name"), repeats.value.toInt())
+        return GraphSection(
+            text(obj, "name"),
+            repeats.value.toInt(),
+            obj.fields["lyrics"]?.let { (it as? Json.Text ?: invalid()).value }.orEmpty(),
+            obj.fields["cue"]?.let { (it as? Json.Text ?: invalid()).value }.orEmpty(),
+        )
     }
 
     private fun set(value: Json): GraphSet {

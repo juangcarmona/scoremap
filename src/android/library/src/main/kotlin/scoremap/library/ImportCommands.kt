@@ -23,8 +23,9 @@ public object ImportCommands {
                     Song(
                         SongId(next()),
                         song.name.trim(),
-                        song.sections.map { Section(SectionId(next()), it.name.trim(), it.repeats) },
+                        song.sections.map { section(it, next()) },
                         attachments = attachments(song, facts[song.key].orEmpty(), next),
+                        key = SongKey.parse(song.songKey),
                     )
                 }
             val keyToId =
@@ -47,6 +48,30 @@ public object ImportCommands {
 
                 else -> accepted(apply(library, songs, set))
             }
+        }
+
+    private fun section(
+        source: GraphSection,
+        id: String,
+    ): Section =
+        Section(
+            SectionId(id),
+            source.name.trim(),
+            source.repeats,
+            SheetCommands.normalised(source.lyrics),
+            SheetCommands.normalised(source.cue),
+        )
+
+    private fun sheetRefusal(song: GraphSong): Refusal? =
+        when {
+            song.songKey != null && SongKey.parse(song.songKey) == null -> Refusal.INVALID_KEY
+
+            song.sections.any {
+                SheetCommands.normalised(it.lyrics).length > SheetCommands.MAX_LYRICS ||
+                    SheetCommands.normalised(it.cue).length > SheetCommands.MAX_CUE
+            } -> Refusal.TEXT_TOO_LONG
+
+            else -> null
         }
 
     private fun attachments(
@@ -84,6 +109,10 @@ public object ImportCommands {
                 s.sections.any { it.repeats !in MIN_REPEATS..MAX_REPEATS }
             } -> {
                 Refusal.INVALID_REPEATS
+            }
+
+            graph.songs.any { sheetRefusal(it) != null } -> {
+                graph.songs.firstNotNullOf { sheetRefusal(it) }
             }
 
             graph.songs.any { pdfRefusal(it, facts[it.key].orEmpty()) != null } -> {

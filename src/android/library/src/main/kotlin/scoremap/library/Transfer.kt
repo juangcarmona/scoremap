@@ -4,6 +4,8 @@ package scoremap.library
 public data class GraphSection(
     val name: String,
     val repeats: Int,
+    val lyrics: String = "",
+    val cue: String = "",
 )
 
 /** PDF bytes with content equality, so packages can be compared value by value. */
@@ -29,6 +31,8 @@ public data class GraphSong(
     val name: String,
     val sections: List<GraphSection>,
     val attachments: List<GraphAttachment> = emptyList(),
+    /** The declared key as text such as "F# minor"; null while unknown. */
+    val songKey: String? = null,
 )
 
 public data class GraphSet(
@@ -56,6 +60,11 @@ public data class TransferGraph(
         }
 
         private fun graphSong(song: Song): GraphSong =
-            GraphSong(song.id.value, song.name, song.sections.map { GraphSection(it.name, it.repeats) })
+            GraphSong(
+                song.id.value,
+                song.name,
+                song.sections.map { GraphSection(it.name, it.repeats, it.lyrics, it.cue) },
+                songKey = song.key?.label,
+            )
     }
 }
