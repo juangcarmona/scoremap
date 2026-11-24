@@ -131,17 +131,16 @@ tasks.register("verifyDevice") {
     doLast {
         val directory = "app/build/outputs/androidTest-results/managedDevice/debug/pixelTabletApi37"
         val reports = fileTree(directory) { include("**/TEST-*.xml") }.files
-        // The expected device suites are declared by class name; their report paths are discovered per run.
+        // The managed device writes one report for the whole run; the declared classes and their case counts
+        // are checked inside it, and the usual inventory checks bind that report to this run.
         val expectedClasses = mapOf("OfflineRecreationTest" to 1, "RoomLibraryStoreTest" to 6)
-        val byClass = reports.associateBy { report -> expectedClasses.keys.singleOrNull { report.name.contains(it) } }
-        check(reports.size == expectedClasses.size && byClass.keys == expectedClasses.keys) {
-            "Expected exactly the declared device suites ${expectedClasses.keys}, found ${reports.map { it.name }}."
-        }
+        check(reports.size == 1) { "Expected one managed-device report, found ${reports.map { it.name }}." }
+        val report = reports.single()
+        val perClass = expectedClasses.mapValues { (name, _) -> Regex("classname=\"[^\"]*\\.$name\"").findAll(report.readText()).count() }
+        check(perClass == expectedClasses) { "Device cases per declared class differ: expected $expectedClasses, found $perClass." }
         verifySuites(
             "device",
-            expectedClasses.entries.associate { (name, count) ->
-                byClass.getValue(name).relativeTo(rootDir).invariantSeparatorsPath to count
-            },
+            mapOf(report.relativeTo(rootDir).invariantSeparatorsPath to expectedClasses.values.sum()),
             listOf(directory),
         )
     }
