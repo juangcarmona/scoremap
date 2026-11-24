@@ -10,9 +10,10 @@ public object ImportCommands {
         mode: Mode,
         graph: TransferGraph,
         ids: IdSource,
+        facts: Map<String, List<PdfFacts>> = emptyMap(),
     ): Outcome<Library> =
         guarded(mode) {
-            validate(graph)?.let { return@guarded refused(it) }
+            validate(graph, facts)?.let { return@guarded refused(it) }
             val fresh = mutableListOf<String>()
             val next = {
                 ids.next().also { fresh += it }
@@ -23,6 +24,7 @@ public object ImportCommands {
                         SongId(next()),
                         song.name.trim(),
                         song.sections.map { Section(SectionId(next()), it.name.trim(), it.repeats) },
+                        attachments = attachments(song, facts[song.key].orEmpty(), next),
                     )
                 }
             val keyToId =
@@ -47,6 +49,15 @@ public object ImportCommands {
             }
         }
 
+    private fun attachments(
+        song: GraphSong,
+        facts: List<PdfFacts>,
+        next: () -> String,
+    ): List<Attachment> =
+        song.attachments.zip(facts) { attachment, fact ->
+            Attachment(AttachmentId(next()), attachment.name.trim(), fact.sha256, fact.bytes, fact.pages, 1)
+        }
+
     private fun apply(
         library: Library,
         songs: List<Song>,
@@ -56,27 +67,58 @@ public object ImportCommands {
         return withHistory.copy(songs = library.songs + songs, sets = library.sets + listOfNotNull(set))
     }
 
-    private fun validate(graph: TransferGraph): Refusal? {
+    private fun validate(
+        graph: TransferGraph,
+        facts: Map<String, List<PdfFacts>>,
+    ): Refusal? {
         val keys = graph.songs.map { it.key }
         val names =
             graph.songs.map { it.name } + graph.songs.flatMap { s -> s.sections.map { it.name } } +
-                listOfNotNull(graph.set?.name)
+                graph.songs.flatMap { s -> s.attachments.map { it.name } } + listOfNotNull(graph.set?.name)
         return when {
-            names.any { it.isBlank() } -> Refusal.INVALID_NAME
+            names.any { it.isBlank() } -> {
+                Refusal.INVALID_NAME
+            }
 
             graph.songs.any { s ->
                 s.sections.any { it.repeats !in MIN_REPEATS..MAX_REPEATS }
-            } -> Refusal.INVALID_REPEATS
+            } -> {
+                Refusal.INVALID_REPEATS
+            }
 
-            keys.toSet().size != keys.size -> Refusal.DUPLICATE_KEY
+            graph.songs.any { pdfRefusal(it, facts[it.key].orEmpty()) != null } -> {
+                graph.songs.firstNotNullOf { pdfRefusal(it, facts[it.key].orEmpty()) }
+            }
 
-            graph.set != null && !keys.containsAll(graph.set.songKeys) -> Refusal.DANGLING_REFERENCE
+            keys.toSet().size != keys.size -> {
+                Refusal.DUPLICATE_KEY
+            }
+
+            graph.set != null && !keys.containsAll(graph.set.songKeys) -> {
+                Refusal.DANGLING_REFERENCE
+            }
 
             graph.set != null && graph.set.songKeys
                 .toSet()
-                .size != graph.set.songKeys.size -> Refusal.DUPLICATE_MEMBER
+                .size != graph.set.songKeys.size -> {
+                Refusal.DUPLICATE_MEMBER
+            }
 
-            else -> null
+            else -> {
+                null
+            }
         }
     }
+
+    /** Every attached PDF needs inspected facts within the same admission limits as a direct attach. */
+    private fun pdfRefusal(
+        song: GraphSong,
+        facts: List<PdfFacts>,
+    ): Refusal? =
+        when {
+            song.attachments.size != facts.size -> Refusal.PDF_UNSUPPORTED
+            facts.any { it.bytes > PdfLimits.MAX_BYTES } -> Refusal.PDF_TOO_LARGE
+            facts.any { it.bytes <= 0 || it.pages !in 1..PdfLimits.MAX_PAGES } -> Refusal.PDF_UNSUPPORTED
+            else -> null
+        }
 }

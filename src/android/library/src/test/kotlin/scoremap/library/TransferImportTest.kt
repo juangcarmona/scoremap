@@ -110,6 +110,42 @@ public class TransferImportTest {
         assertEquals(listOf(b.id.value, a.id.value), set.set?.songKeys)
     }
 
+    @Test
+    public fun importsAttachmentsFromInspectedFactsAndRefusesMissingOrInvalidOnes() {
+        val pdf = GraphAttachment(" Score ", PdfBytes(ByteArray(10)))
+        val withPdf = TransferGraph(listOf(GraphSong("a", "A", emptyList(), listOf(pdf))), null)
+        val good = mapOf("a" to listOf(PdfFacts("c".repeat(64), 10, 4)))
+        val library = ok(ImportCommands.importGraph(Library.empty(), Mode.EDIT, withPdf, ids, good))
+        val attachment =
+            library.songs
+                .single()
+                .attachments
+                .single()
+        assertEquals("Score", attachment.name)
+        assertEquals(listOf(4, 1), listOf(attachment.pages, attachment.lastPage))
+        assertEquals(setOf("c".repeat(64)), AttachmentCommands.referencedDigests(library))
+        val none = emptyMap<String, List<PdfFacts>>()
+        assertEquals(
+            Refusal.PDF_UNSUPPORTED,
+            refusal(ImportCommands.importGraph(Library.empty(), Mode.EDIT, withPdf, ids, none)),
+        )
+        val big = mapOf("a" to listOf(PdfFacts("c".repeat(64), PdfLimits.MAX_BYTES + 1, 1)))
+        assertEquals(
+            Refusal.PDF_TOO_LARGE,
+            refusal(ImportCommands.importGraph(Library.empty(), Mode.EDIT, withPdf, ids, big)),
+        )
+        val pages = mapOf("a" to listOf(PdfFacts("c".repeat(64), 10, 0)))
+        assertEquals(
+            Refusal.PDF_UNSUPPORTED,
+            refusal(ImportCommands.importGraph(Library.empty(), Mode.EDIT, withPdf, ids, pages)),
+        )
+        val blank = withPdf.copy(songs = listOf(GraphSong("a", "A", emptyList(), listOf(pdf.copy(name = " ")))))
+        assertEquals(
+            Refusal.INVALID_NAME,
+            refusal(ImportCommands.importGraph(Library.empty(), Mode.EDIT, blank, ids, good)),
+        )
+    }
+
     private fun ok(outcome: Outcome<Library>): Library =
         (outcome as? Outcome.Accepted)?.value ?: error("Expected acceptance but got $outcome")
 
