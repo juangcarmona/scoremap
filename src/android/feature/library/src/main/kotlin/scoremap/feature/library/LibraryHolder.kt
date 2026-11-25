@@ -26,6 +26,7 @@ public class EditorModels(
     public val parts: PartsModel,
     public val phrases: PhrasesModel,
     public val arrangement: ArrangementModel,
+    public val sheet: SheetModel,
 )
 
 /**
@@ -42,6 +43,7 @@ internal class LibraryHolder(
     var detail by mutableStateOf<SongDetailState?>(null)
     var openSongId by mutableStateOf<String?>(null)
     var viewing by mutableStateOf<AttachmentItem?>(null)
+    var sheetSongId by mutableStateOf<String?>(null)
     internal var editing by mutableStateOf<VoicingEdit?>(null)
     internal var composing by mutableStateOf<PhraseEdit?>(null)
     var notice by mutableStateOf<Notice?>(null)

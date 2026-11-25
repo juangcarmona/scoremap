@@ -33,7 +33,15 @@ internal fun LazyListScope.partsSection(holder: LibraryHolder) {
             NamedRow("${chord.label}: $notes") {
                 ActionButton("Edit voicing", "Edit voicing of ${chord.label} in ${part.name}") {
                     val initial = voicing?.notes?.map { PerformedNote(it.midi, it.hand) }.orEmpty()
-                    holder.editing = VoicingEdit(detail.id, part.id, part.name, chord, PianoEditorModel(initial))
+                    holder.editing =
+                        VoicingEdit(
+                            detail.id,
+                            part.id,
+                            part.name,
+                            chord,
+                            PianoEditorModel(initial),
+                            keySignatureOf(detail.key),
+                        )
                 }
             }
         }
@@ -56,7 +64,14 @@ private fun phraseRows(
         Text("Phrase ${phrase.name}: " + phrase.lines.joinToString("; ").ifEmpty { "no steps yet" })
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             ActionButton("Edit phrase", "Edit phrase ${phrase.name} of ${part.name}") {
-                holder.composing = PhraseEdit(songId, part.id, phrase, PhraseEditorModel(phrase.items))
+                holder.composing =
+                    PhraseEdit(
+                        songId,
+                        part.id,
+                        phrase,
+                        PhraseEditorModel(phrase.items),
+                        keySignatureOf(holder.detail?.key),
+                    )
             }
             ActionButton("Remove phrase", "Remove phrase ${phrase.name} of ${part.name}") {
                 holder.act { mode -> phrases.removePhrase(songId, part.id, phrase.id, mode) }

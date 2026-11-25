@@ -38,6 +38,11 @@ public fun LibraryScreen(
     val holder = remember(models) { LibraryHolder(models, scope) }
     LaunchedEffect(holder) { holder.act { null } }
 
+    val sheetSongId = holder.sheetSongId
+    if (sheetSongId != null) {
+        Column(modifier.padding(16.dp)) { SongSheetScreen(holder, sheetSongId) }
+        return
+    }
     Column(modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text("ScoreMap", style = MaterialTheme.typography.headlineMedium)
         Row(Modifier.heightIn(min = MinTarget), verticalAlignment = Alignment.CenterVertically) {

@@ -145,6 +145,7 @@ public class SetsAndHistoryTest {
         click("Enter right hand")
         click("E4 key")
         waitForText("Selected: C4 (left), E4 (right)")
+        compose.waitForDescription("Staff. Key signature not set. Treble: C4, E4. Bass: none. Durations are not shown.")
         click("Save voicing")
         waitForText("Voicing saved.")
         val summary = "Verse, measure 1: Dm7: C4 (left hand), E4 (right hand)"
@@ -205,6 +206,36 @@ public class SetsAndHistoryTest {
             waitForText("Binding: Melody on Stage piano, C3-C6")
             click("Remove binding of Melody on Stage piano C3-C6")
             waitForText("Saved.")
+        }
+    }
+
+    @Test
+    public fun theSongSheetShowsKeyChordsAndAlignedLyricsInAFocusedView() {
+        launch().use {
+            create("Song name", "Create song", "Autumn Leaves")
+            click("Open Autumn Leaves")
+            create("Section name", "Add section", "Verse", shows = "Section: Verse x1")
+            compose.onNodeWithText("Song key").performTextInput("F# minor")
+            click("Save key: Song key")
+            compose.onNodeWithText("Lyrics for Verse").performTextInput("Autumn leaves")
+            click("Save lyrics: Lyrics for Verse")
+            waitForText("Lyrics: Autumn leaves")
+            create("Meter for a new measure of Verse", "Add measure", "", shows = "Measure 1 (4/4): empty")
+            create("Chord for measure 1 of Verse", "Add chord", "Dm7 2", shows = "Measure 1 (4/4): Dm7 at 0")
+            create("Chord for measure 1 of Verse", "Add chord", "G7 2", shows = "Measure 1 (4/4): Dm7 at 0, G7 at 2")
+            compose.onNodeWithText("Lyric position of Dm7 in measure 1 of Verse").performTextInput("0")
+            click("Save link: Lyric position of Dm7 in measure 1 of Verse")
+            waitForText("Dm7: 2 beats, lyric 0")
+            compose.onNodeWithText("Lyric position of G7 in measure 1 of Verse").performTextInput("7")
+            click("Save link: Lyric position of G7 in measure 1 of Verse")
+            waitForText("G7: 2 beats, lyric 7")
+            click("Open song sheet of Autumn Leaves")
+            waitForText("Key: F# minor")
+            waitForText("Chords: | Dm7 G7 |")
+            waitForText("Dm7    G7")
+            waitForText("Autumn leaves")
+            click("Close song sheet")
+            waitForText("Editing: Autumn Leaves")
         }
     }
 

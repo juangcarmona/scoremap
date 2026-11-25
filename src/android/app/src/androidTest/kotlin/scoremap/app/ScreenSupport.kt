@@ -42,3 +42,15 @@ internal fun ComposeTestRule.clickControl(name: String) {
         onNodeWithText(name).performClick()
     }
 }
+
+/** Waits until a node with exactly this spoken description exists, such as the staff in words. */
+internal fun ComposeTestRule.waitForDescription(description: String) {
+    try {
+        waitUntil(TIMEOUT_MILLIS) { onAllNodes(hasContentDescription(description)).fetchSemanticsNodes().isNotEmpty() }
+    } catch (failure: ComposeTimeoutException) {
+        throw AssertionError(
+            "Description '$description' never appeared. The screen shows:\n" + onRoot().printToString(),
+            failure,
+        )
+    }
+}

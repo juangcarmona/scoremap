@@ -18,6 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import scoremap.library.Hand
+import scoremap.music.KeySignature
 import scoremap.music.Piano
 
 private const val PAGE_WHITE_KEYS = 7
@@ -28,6 +29,7 @@ internal class PhraseEdit(
     val partId: String,
     val phrase: PhraseView,
     val model: PhraseEditorModel,
+    val key: KeySignature? = null,
 )
 
 /**
@@ -71,6 +73,7 @@ internal fun PhraseEditor(
             ActionButton("Highest", "Show the highest keys") { model.piano.jumpTo(Piano.range.upper).also { tick++ } }
         }
         if (tick >= 0) PianoKeyboard(model.keys()) { midi -> change { model.press(midi) } }
+        if (tick >= 0) phraseStaff(model, edit.key)
         model.lines().forEachIndexed { index, line -> stepRow(model, index, line) { tick++ } }
         if (model.items.isEmpty()) Text("No steps yet")
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -107,4 +110,15 @@ private fun stepRow(
         ActionButton("Down", "Move step ${index + 1} down") { model.move(index, 1).also { changed() } }
         ActionButton("Remove", "Remove step ${index + 1}") { model.remove(index).also { changed() } }
     }
+}
+
+@Composable
+private fun phraseStaff(
+    model: PhraseEditorModel,
+    key: KeySignature?,
+) {
+    val columns = model.items.mapNotNull { it.pitch?.midi }.map { staffColumn(listOf(it), key) }
+    val chosen = model.selected?.takeIf { model.items.getOrNull(it)?.pitch != null }
+    val column = chosen?.let { index -> model.items.take(index + 1).count { it.pitch != null } - 1 }
+    StaffCanvas(columns, key, column)
 }

@@ -36,6 +36,7 @@ internal fun LazyListScope.songDetailSection(holder: LibraryHolder) {
     val detail = holder.detail ?: return
     val models = holder.models.detail
     item { Text("Editing: ${detail.name}", style = MaterialTheme.typography.titleMedium) }
+    item { ActionButton("Open song sheet", "Open song sheet of ${detail.name}") { holder.sheetSongId = detail.id } }
     item {
         NameEntry("New name", "Rename") { name -> holder.act { mode -> models.rename(detail.id, name, mode)?.notice } }
     }

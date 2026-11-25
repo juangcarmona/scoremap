@@ -20,6 +20,7 @@ import scoremap.feature.library.LibraryScreenModel
 import scoremap.feature.library.PartsModel
 import scoremap.feature.library.PhrasesModel
 import scoremap.feature.library.SetsScreenModel
+import scoremap.feature.library.SheetModel
 import scoremap.feature.library.SongDetailModel
 import scoremap.library.AttachmentService
 import scoremap.library.IdSource
@@ -53,6 +54,7 @@ public class MainActivity : ComponentActivity() {
                     PartsModel(service, random, random),
                     PhrasesModel(service, random, random),
                     ArrangementModel(service, random, random),
+                    SheetModel(service),
                 ),
             )
         setContent {
