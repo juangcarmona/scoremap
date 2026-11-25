@@ -130,6 +130,51 @@ public class SetsAndHistoryTest {
     }
 
     @Test
+    public fun aVoicingIsPlayedOnTheKeyboardWithHandsAndSurvivesARestart() {
+        val first = launch()
+        create("Song name", "Create song", "Autumn Leaves")
+        click("Open Autumn Leaves")
+        create("Section name", "Add section", "Verse", shows = "Section: Verse x1")
+        create("Meter for a new measure of Verse", "Add measure", "", shows = "Measure 1 (4/4): empty")
+        create("Chord for measure 1 of Verse", "Add chord", "Dm7 4", shows = "Measure 1 (4/4): Dm7 at 0")
+        create("Part name", "Add part", "Right hand", shows = "Part: Right hand")
+        click("Edit voicing of Verse, measure 1: Dm7 in Right hand")
+        waitForText("Voicing: Verse, measure 1: Dm7, part Right hand")
+        click("Enter left hand")
+        click("C4 key")
+        click("Enter right hand")
+        click("E4 key")
+        waitForText("Selected: C4 (left), E4 (right)")
+        click("Save voicing")
+        waitForText("Voicing saved.")
+        val summary = "Verse, measure 1: Dm7: C4 (left hand), E4 (right hand)"
+        waitForText(summary)
+        first.close()
+        ScoreMapStores.close(databaseName)
+        launch().use {
+            click("Open Autumn Leaves")
+            waitForText(summary)
+        }
+    }
+
+    @Test
+    public fun cancellingTheKeyboardLeavesTheStoredVoicingUntouched() {
+        launch().use {
+            create("Song name", "Create song", "Autumn Leaves")
+            click("Open Autumn Leaves")
+            create("Section name", "Add section", "Verse", shows = "Section: Verse x1")
+            create("Meter for a new measure of Verse", "Add measure", "", shows = "Measure 1 (4/4): empty")
+            create("Chord for measure 1 of Verse", "Add chord", "C", shows = "Measure 1 (4/4): C at 0")
+            create("Part name", "Add part", "Pad", shows = "Part: Pad")
+            click("Edit voicing of Verse, measure 1: C in Pad")
+            click("C4 key")
+            waitForText("Selected: C4 (right)")
+            click("Cancel voicing")
+            waitForText("Verse, measure 1: C: not played")
+        }
+    }
+
+    @Test
     public fun performanceModeRefusesToCreateASet() {
         launch().use {
             waitForText("Set name")

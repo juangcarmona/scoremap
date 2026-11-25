@@ -18,16 +18,7 @@ public object ImportCommands {
             val next = {
                 ids.next().also { fresh += it }
             }
-            val songs =
-                graph.songs.map { song ->
-                    Song(
-                        SongId(next()),
-                        song.name.trim(),
-                        song.sections.map { section(it, next) },
-                        attachments = attachments(song, facts[song.key].orEmpty(), next),
-                        key = SongKey.parse(song.songKey),
-                    )
-                }
+            val songs = graph.songs.map { song -> buildSong(song, facts[song.key].orEmpty(), next) }
             val keyToId =
                 graph.songs
                     .map { it.key }
@@ -49,6 +40,36 @@ public object ImportCommands {
                 else -> accepted(apply(library, songs, set))
             }
         }
+
+    private fun buildSong(
+        song: GraphSong,
+        facts: List<PdfFacts>,
+        next: () -> String,
+    ): Song {
+        val sections = song.sections.map { section(it, next) }
+        return Song(
+            SongId(next()),
+            song.name.trim(),
+            sections,
+            attachments = attachments(song, facts, next),
+            key = SongKey.parse(song.songKey),
+            parts = song.parts.map { part(it, sections, next) },
+        )
+    }
+
+    private fun part(
+        source: GraphPart,
+        sections: List<Section>,
+        next: () -> String,
+    ): Part =
+        Part(
+            PartId(next()),
+            source.name.trim(),
+            source.voicings.map { v ->
+                val event = sections[v.at.section].measures[v.at.measure].events[v.at.event]
+                Voicing(event.id, v.notes.distinct().sortedWith(compareBy({ it.midi }, { it.hand })))
+            },
+        )
 
     private fun measure(
         source: GraphMeasure,
@@ -82,7 +103,7 @@ public object ImportCommands {
                     SheetCommands.normalised(it.cue).length > SheetCommands.MAX_CUE
             } -> Refusal.TEXT_TOO_LONG
 
-            else -> song.sections.firstNotNullOfOrNull { FormRules.refusal(it) }
+            else -> song.sections.firstNotNullOfOrNull { FormRules.refusal(it) } ?: PartRules.refusal(song)
         }
 
     private fun attachments(
@@ -110,7 +131,9 @@ public object ImportCommands {
         val keys = graph.songs.map { it.key }
         val names =
             graph.songs.map { it.name } + graph.songs.flatMap { s -> s.sections.map { it.name } } +
-                graph.songs.flatMap { s -> s.attachments.map { it.name } } + listOfNotNull(graph.set?.name)
+                graph.songs.flatMap { s -> s.attachments.map { it.name } } +
+                graph.songs.flatMap { s -> s.parts.map { it.name } } +
+                listOfNotNull(graph.set?.name)
         return when {
             names.any { it.isBlank() } -> {
                 Refusal.INVALID_NAME

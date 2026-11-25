@@ -27,11 +27,23 @@ internal fun formSheet(
             ActionButton("Remove measure", "Remove $where") {
                 holder.act { mode -> form.removeMeasure(songId, section.id, measure.id, mode) }
             }
+            if (measure.events.any { it.voiced }) {
+                ActionButton("Remove measure and voicings", "Remove $where and its voicings") {
+                    holder.act { mode -> form.removeMeasure(songId, section.id, measure.id, mode, reconcile = true) }
+                }
+            }
             measure.events.forEach { event ->
                 val label = "${event.symbol} in $where"
                 NamedRow("${event.symbol}: ${event.duration} beats, lyric ${event.lyricIndex ?: "not linked"}") {
                     ActionButton("Remove chord", "Remove chord $label") {
                         holder.act { mode -> form.removeChord(songId, section.id, event.id, mode) }
+                    }
+                    if (event.voiced) {
+                        ActionButton("Remove chord and voicings", "Remove chord $label and its voicings") {
+                            holder.act { mode ->
+                                form.removeChord(songId, section.id, event.id, mode, reconcile = true)
+                            }
+                        }
                     }
                 }
                 SheetEntry(

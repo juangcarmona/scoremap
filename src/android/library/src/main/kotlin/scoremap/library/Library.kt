@@ -69,6 +69,7 @@ public data class Song(
     val attachments: List<Attachment> = emptyList(),
     /** The declared key, or null while it is unknown. */
     val key: SongKey? = null,
+    val parts: List<Part> = emptyList(),
 )
 
 /** An ordered set of active songs; each song appears at most once. */
@@ -85,6 +86,7 @@ public data class SongRevision(
     val name: String,
     val sections: List<Section>,
     val key: SongKey? = null,
+    val parts: List<Part> = emptyList(),
 )
 
 /** LC-LIBRARY active song presence. */
@@ -136,7 +138,7 @@ public data class Library internal constructor(
     }
 
     internal fun recordRevision(song: Song): Library {
-        val revision = SongRevision(song.revision, song.name, song.sections, song.key)
+        val revision = SongRevision(song.revision, song.name, song.sections, song.key, song.parts)
         return copy(histories = histories + (song.id to histories[song.id].orEmpty() + revision))
     }
 
@@ -186,6 +188,9 @@ public enum class Refusal {
     INVALID_TIME,
     OVERLAP,
     INVALID_LYRIC_LINK,
+    UNKNOWN_PART,
+    IN_USE,
+    INVALID_PITCH,
     NOT_A_PERMUTATION,
     DUPLICATE_ID,
     DUPLICATE_MEMBER,

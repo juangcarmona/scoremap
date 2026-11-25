@@ -18,12 +18,18 @@ public const val TRANSFER_VERSION_WITH_SHEET: Int = 3
 /** Packages that also carry measures and chord events use this version. */
 public const val TRANSFER_VERSION_WITH_FORM: Int = 4
 
+/** Packages that also carry performed parts and voicings use this version. */
+public const val TRANSFER_VERSION_WITH_PARTS: Int = 5
+
 private const val DEFAULT_MAX_CHARACTERS = 64 * 1024 * 1024
 private const val DEFAULT_MAX_SONGS = 500
 private const val DEFAULT_MAX_SECTIONS = 500
 private const val DEFAULT_MAX_DEPTH = 16
 private const val DEFAULT_MAX_MEASURES = 1000
 private const val DEFAULT_MAX_EVENTS = 64
+private const val DEFAULT_MAX_PARTS = 64
+private const val DEFAULT_MAX_VOICINGS = 4096
+private const val DEFAULT_MAX_NOTES = 128
 private const val DEFAULT_MAX_PDF_BYTES = 8 * 1024 * 1024
 private const val DEFAULT_MAX_TOTAL_PDF_BYTES = 32 * 1024 * 1024
 private const val DEFAULT_MAX_PDFS_PER_SONG = 20
@@ -43,6 +49,9 @@ public data class TransferLimits(
     val maxDepth: Int = DEFAULT_MAX_DEPTH,
     val maxMeasuresPerSection: Int = DEFAULT_MAX_MEASURES,
     val maxEventsPerMeasure: Int = DEFAULT_MAX_EVENTS,
+    val maxPartsPerSong: Int = DEFAULT_MAX_PARTS,
+    val maxVoicingsPerPart: Int = DEFAULT_MAX_VOICINGS,
+    val maxNotesPerVoicing: Int = DEFAULT_MAX_NOTES,
     val attachments: AttachmentLimits = AttachmentLimits(),
 )
 
@@ -64,6 +73,7 @@ public object TransferCodec {
         val withPdfs = graph.songs.any { it.attachments.isNotEmpty() }
         val version =
             when {
+                graph.songs.any { it.parts.isNotEmpty() } -> TRANSFER_VERSION_WITH_PARTS
                 graph.songs.any { s -> s.sections.any { it.measures.isNotEmpty() } } -> TRANSFER_VERSION_WITH_FORM
                 graph.songs.any(::hasSheet) -> TRANSFER_VERSION_WITH_SHEET
                 withPdfs -> TRANSFER_VERSION_WITH_PDFS
@@ -108,8 +118,18 @@ public object TransferCodec {
                     "{\"name\":${JsonWriter.quote(it.name)},\"data\":${JsonWriter.quote(data)}}"
                 }
             }
+        val parts =
+            if (song.parts.isEmpty()) {
+                ""
+            } else {
+                song.parts.joinToString(
+                    ",",
+                    ",\"parts\":[",
+                    "]",
+                ) { PartsWriter.part(it) }
+            }
         return "{\"key\":${JsonWriter.quote(song.key)},\"name\":${JsonWriter.quote(song.name)}$songKey," +
-            "\"sections\":$sections$attachments}"
+            "\"sections\":$sections$attachments$parts}"
     }
 
     public fun decode(

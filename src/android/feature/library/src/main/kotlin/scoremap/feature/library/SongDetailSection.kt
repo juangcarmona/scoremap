@@ -54,6 +54,7 @@ internal fun LazyListScope.songDetailSection(holder: LibraryHolder) {
         detail.sections,
         key = { "section-${it.id}" },
     ) { section -> sectionSheet(holder, detail.id, section) }
+    partsSection(holder)
     // The PDFs come before the long history so they stay within reach on a small screen.
     attachmentsSection(holder)
     item { Text("History", style = MaterialTheme.typography.titleMedium) }

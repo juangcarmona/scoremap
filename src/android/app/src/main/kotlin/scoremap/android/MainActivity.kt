@@ -15,6 +15,7 @@ import scoremap.feature.library.FormModel
 import scoremap.feature.library.LibraryModels
 import scoremap.feature.library.LibraryScreen
 import scoremap.feature.library.LibraryScreenModel
+import scoremap.feature.library.PartsModel
 import scoremap.feature.library.SetsScreenModel
 import scoremap.feature.library.SongDetailModel
 import scoremap.library.AttachmentService
@@ -45,6 +46,7 @@ public class MainActivity : ComponentActivity() {
                 SongDetailModel(service, random, random),
                 AttachmentsModel(attachments, service, random),
                 FormModel(service, random, random),
+                PartsModel(service, random, random),
             )
         setContent {
             MaterialTheme {

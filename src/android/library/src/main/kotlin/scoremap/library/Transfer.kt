@@ -13,6 +13,23 @@ public data class GraphMeasure(
     val events: List<GraphEvent> = emptyList(),
 )
 
+/** Where a chord sits inside a song: section, measure and event positions, so no identity is needed. */
+public data class EventPosition(
+    val section: Int,
+    val measure: Int,
+    val event: Int,
+)
+
+public data class GraphVoicing(
+    val at: EventPosition,
+    val notes: List<PerformedNote>,
+)
+
+public data class GraphPart(
+    val name: String,
+    val voicings: List<GraphVoicing> = emptyList(),
+)
+
 /** A section as carried by a transfer package; identities are never imported. */
 public data class GraphSection(
     val name: String,
@@ -47,6 +64,7 @@ public data class GraphSong(
     val attachments: List<GraphAttachment> = emptyList(),
     /** The declared key as text such as "F# minor"; null while unknown. */
     val songKey: String? = null,
+    val parts: List<GraphPart> = emptyList(),
 )
 
 public data class GraphSet(
@@ -93,6 +111,21 @@ public data class TransferGraph(
                     )
                 },
                 songKey = song.key?.label,
+                parts = song.parts.map { graphPart(song, it) },
             )
+
+        private fun graphPart(
+            song: Song,
+            part: Part,
+        ): GraphPart {
+            val positions =
+                song.sections
+                    .flatMapIndexed { s, section ->
+                        section.measures.flatMapIndexed { m, measure ->
+                            measure.events.mapIndexed { e, event -> event.id to EventPosition(s, m, e) }
+                        }
+                    }.toMap()
+            return GraphPart(part.name, part.voicings.map { GraphVoicing(positions.getValue(it.eventId), it.notes) })
+        }
     }
 }

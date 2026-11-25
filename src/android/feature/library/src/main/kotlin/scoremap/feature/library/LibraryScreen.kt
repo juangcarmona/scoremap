@@ -46,7 +46,10 @@ public fun LibraryScreen(
         }
         holder.notice?.let { Text(it.text, Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
         val viewing = holder.viewing
-        if (viewing != null) {
+        val editing = holder.editing
+        if (editing != null) {
+            VoicingEditor(holder, editing)
+        } else if (viewing != null) {
             PdfViewerHost(holder, viewing)
         } else {
             LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
