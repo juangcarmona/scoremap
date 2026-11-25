@@ -9,6 +9,7 @@ public object PartsText {
                 escape(part.name),
                 part.voicings.joinToString(";") { voicing(it) },
                 part.phrases.joinToString("&") { PhraseText.encode(it) },
+                part.hand?.name.orEmpty(),
             ).joinToString("|")
         }
 
@@ -20,7 +21,7 @@ public object PartsText {
             text.split('\n').map { line ->
                 val fields = line.split('|')
                 // Text written before phrases existed has three fields and no phrases.
-                check(fields.size == FIELDS_PER_PART || fields.size == FIELDS_WITH_PHRASES) { "Corrupt part" }
+                check(fields.size in FIELDS_PER_PART..FIELDS_WITH_HAND) { "Corrupt part" }
                 val voicings =
                     if (fields[VOICINGS].isEmpty()) {
                         emptyList()
@@ -41,7 +42,8 @@ public object PartsText {
                     } else {
                         fields[PHRASES].split('&').map(PhraseText::decode)
                     }
-                Part(PartId(unescape(fields[ID])), unescape(fields[NAME]), voicings, phrases)
+                val hand = fields.getOrElse(HAND) { "" }.ifEmpty { null }?.let { HandRole.valueOf(it) }
+                Part(PartId(unescape(fields[ID])), unescape(fields[NAME]), voicings, phrases, hand)
             }
         }
 
@@ -69,7 +71,8 @@ public object PartsText {
     private fun unescape(value: String): String = unescapeText(value)
 
     private const val FIELDS_PER_PART = 3
-    private const val FIELDS_WITH_PHRASES = 4
+    private const val FIELDS_WITH_HAND = 5
+    private const val HAND = 4
     private const val PHRASES = 3
     private const val ID = 0
     private const val NAME = 1

@@ -2,10 +2,12 @@ package scoremap.feature.library
 
 import scoremap.library.EventId
 import scoremap.library.Hand
+import scoremap.library.HandRole
 import scoremap.library.PhraseItem
 import scoremap.library.Section
 import scoremap.library.Song
 import scoremap.music.Piano
+import scoremap.music.PitchRange
 
 /** One exact performed note as listed: its label keeps pitch and octave independent of color. */
 public data class NoteItem(
@@ -29,11 +31,28 @@ public data class PhraseView(
     val lines: List<String>,
 )
 
+/** A part's binding to a device: where it plays and with which sound. */
+public data class BindingItem(
+    val id: String,
+    val device: String,
+    val range: String,
+    val sound: String,
+)
+
+public data class DeviceItem(
+    val id: String,
+    val name: String,
+    val range: String,
+    val bindingCount: Int,
+)
+
 public data class PartItem(
     val id: String,
     val name: String,
     val voicings: List<VoicingItem>,
     val phrases: List<PhraseView> = emptyList(),
+    val hand: HandRole? = null,
+    val bindings: List<BindingItem> = emptyList(),
 )
 
 /** A chord the musician can give a voicing: where it is and its symbol. */
@@ -105,6 +124,26 @@ internal fun partItems(song: Song): List<PartItem> {
                     PhraseEditorModel(p.items).lines(),
                 )
             },
+            part.hand,
+            song.bindings.filter { it.partId == part.id }.map { b ->
+                val device = song.devices.firstOrNull { it.id == b.deviceId }
+                BindingItem(b.id.value, device?.name.orEmpty(), rangeLabel(b.range), b.sound)
+            },
         )
     }
 }
+
+internal fun rangeLabel(range: PitchRange): String = "${Piano.label(range.lower)}-${Piano.label(range.upper)}"
+
+internal fun deviceItems(song: Song): List<DeviceItem> =
+    song.devices.map { d ->
+        DeviceItem(
+            d.id.value,
+            d.name,
+            rangeLabel(d.range),
+            song.bindings.count {
+                it.deviceId ==
+                    d.id
+            },
+        )
+    }

@@ -70,6 +70,8 @@ public data class Song(
     /** The declared key, or null while it is unknown. */
     val key: SongKey? = null,
     val parts: List<Part> = emptyList(),
+    val devices: List<Device> = emptyList(),
+    val bindings: List<Binding> = emptyList(),
 )
 
 /** An ordered set of active songs; each song appears at most once. */
@@ -87,6 +89,8 @@ public data class SongRevision(
     val sections: List<Section>,
     val key: SongKey? = null,
     val parts: List<Part> = emptyList(),
+    val devices: List<Device> = emptyList(),
+    val bindings: List<Binding> = emptyList(),
 )
 
 /** LC-LIBRARY active song presence. */
@@ -138,7 +142,8 @@ public data class Library internal constructor(
     }
 
     internal fun recordRevision(song: Song): Library {
-        val revision = SongRevision(song.revision, song.name, song.sections, song.key, song.parts)
+        val revision =
+            SongRevision(song.revision, song.name, song.sections, song.key, song.parts, song.devices, song.bindings)
         return copy(histories = histories + (song.id to histories[song.id].orEmpty() + revision))
     }
 
@@ -192,6 +197,10 @@ public enum class Refusal {
     IN_USE,
     INVALID_PITCH,
     UNKNOWN_PHRASE,
+    UNKNOWN_DEVICE,
+    UNKNOWN_BINDING,
+    OUT_OF_DEVICE_RANGE,
+    EXCLUDES_NOTES,
     NOT_A_PERMUTATION,
     DUPLICATE_ID,
     DUPLICATE_MEMBER,

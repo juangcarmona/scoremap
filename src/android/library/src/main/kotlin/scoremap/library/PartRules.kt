@@ -14,7 +14,17 @@ internal object PartRules {
                     else -> null
                 }
             }
-        } ?: duplicatedEvent(song) ?: phraseRefusal(song)
+        } ?: duplicatedEvent(song) ?: phraseRefusal(song) ?: bindingRefusal(song)
+
+    private fun bindingRefusal(song: GraphSong): Refusal? =
+        song.bindings.firstNotNullOfOrNull { b ->
+            val device = song.devices.getOrNull(b.device)
+            when {
+                device == null || song.parts.getOrNull(b.part) == null -> Refusal.DANGLING_REFERENCE
+                !b.range.within(device.range) -> Refusal.OUT_OF_DEVICE_RANGE
+                else -> null
+            }
+        }
 
     private fun phraseRefusal(song: GraphSong): Refusal? =
         song.parts.flatMap { it.phrases }.firstNotNullOfOrNull { phrase ->

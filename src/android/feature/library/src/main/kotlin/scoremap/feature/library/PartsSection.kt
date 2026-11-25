@@ -14,6 +14,7 @@ import scoremap.library.PerformedNote
 internal fun LazyListScope.partsSection(holder: LibraryHolder) {
     val detail = holder.detail ?: return
     val parts = holder.models.editors.parts
+    devicesSection(holder)
     item { Text("Parts", style = MaterialTheme.typography.titleMedium) }
     item {
         NameEntry("Part name", "Add part") { name -> holder.act { mode -> parts.addPart(detail.id, name, mode) } }
@@ -37,6 +38,7 @@ internal fun LazyListScope.partsSection(holder: LibraryHolder) {
             }
         }
         phraseRows(holder, detail.id, part)
+        partArrangement(holder, detail.id, part)
     }
 }
 

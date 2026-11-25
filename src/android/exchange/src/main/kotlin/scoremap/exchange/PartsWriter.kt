@@ -10,7 +10,9 @@ import scoremap.library.PhraseItem
 internal object PartsWriter {
     fun part(part: GraphPart): String =
         "{\"name\":${JsonWriter.quote(part.name)},\"voicings\":" +
-            part.voicings.joinToString(",", "[", "]") { voicing(it) } + phrases(part) + "}"
+            part.voicings.joinToString(",", "[", "]") { voicing(it) } + phrases(part) + hand(part) + "}"
+
+    private fun hand(part: GraphPart): String = part.hand?.let { ",\"hand\":\"${it.name}\"" }.orEmpty()
 
     private fun phrases(part: GraphPart): String =
         if (part.phrases.isEmpty()) "" else part.phrases.joinToString(",", ",\"phrases\":[", "]") { phrase(it) }

@@ -78,9 +78,22 @@ public object PartCommands {
         SongEdit.run(library, mode, ref.songId) { song ->
             val part = song.parts.firstOrNull { it.id == ref.partId }
             when {
-                part == null -> refuse(Refusal.UNKNOWN_PART)
-                (part.voicings.isNotEmpty() || part.phrases.isNotEmpty()) && !confirmed -> refuse(Refusal.IN_USE)
-                else -> accept(song.copy(parts = song.parts - part))
+                part == null -> {
+                    refuse(Refusal.UNKNOWN_PART)
+                }
+
+                inUse(song, part) && !confirmed -> {
+                    refuse(Refusal.IN_USE)
+                }
+
+                else -> {
+                    accept(
+                        song.copy(
+                            parts = song.parts - part,
+                            bindings = song.bindings.filterNot { it.partId == part.id },
+                        ),
+                    )
+                }
             }
         }
 
@@ -124,6 +137,11 @@ public object PartCommands {
                 }
             }
         }
+
+    private fun inUse(
+        song: Song,
+        part: Part,
+    ): Boolean = part.voicings.isNotEmpty() || part.phrases.isNotEmpty() || song.bindings.any { it.partId == part.id }
 
     private fun voiced(
         part: Part,

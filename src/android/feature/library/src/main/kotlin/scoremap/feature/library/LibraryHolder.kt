@@ -25,6 +25,7 @@ public class EditorModels(
     public val form: FormModel,
     public val parts: PartsModel,
     public val phrases: PhrasesModel,
+    public val arrangement: ArrangementModel,
 )
 
 /**

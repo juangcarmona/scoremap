@@ -47,13 +47,20 @@ public object ImportCommands {
         next: () -> String,
     ): Song {
         val sections = song.sections.map { section(it, next) }
+        val parts = song.parts.map { part(it, sections, next) }
+        val devices = song.devices.map { Device(DeviceId(next()), it.name.trim(), it.range) }
         return Song(
             SongId(next()),
             song.name.trim(),
             sections,
             attachments = attachments(song, facts, next),
             key = SongKey.parse(song.songKey),
-            parts = song.parts.map { part(it, sections, next) },
+            parts = parts,
+            devices = devices,
+            bindings =
+                song.bindings.map {
+                    Binding(BindingId(next()), parts[it.part].id, devices[it.device].id, it.range, it.sound.trim())
+                },
         )
     }
 
@@ -79,6 +86,7 @@ public object ImportCommands {
                     it.items,
                 )
             },
+            source.hand,
         )
 
     private fun measure(
@@ -143,7 +151,8 @@ public object ImportCommands {
             graph.songs.map { it.name } + graph.songs.flatMap { s -> s.sections.map { it.name } } +
                 graph.songs.flatMap { s -> s.attachments.map { it.name } } +
                 graph.songs.flatMap { s ->
-                    s.parts.map { it.name } + s.parts.flatMap { p -> p.phrases.map { it.name } }
+                    s.parts.map { it.name } + s.parts.flatMap { p -> p.phrases.map { it.name } } +
+                        s.devices.map { it.name }
                 } +
                 listOfNotNull(graph.set?.name)
         return when {

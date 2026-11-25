@@ -67,6 +67,7 @@ public data class SongDetailState(
     /** The declared key such as "F# minor"; null while unknown. */
     val key: String? = null,
     val parts: List<PartItem> = emptyList(),
+    val devices: List<DeviceItem> = emptyList(),
     /** Every chord of the song, so a part's voicing can be chosen for it. */
     val chords: List<ChordChoice> = emptyList(),
 )
@@ -95,6 +96,7 @@ public class SongDetailModel(
             notice,
             song.key?.label,
             partItems(song),
+            deviceItems(song),
             chordChoices(song),
         )
     }

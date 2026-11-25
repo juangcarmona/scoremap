@@ -10,6 +10,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import scoremap.data.local.AndroidPdfInspector
 import scoremap.data.local.FileBlobStore
+import scoremap.feature.library.ArrangementModel
 import scoremap.feature.library.AttachmentsModel
 import scoremap.feature.library.EditorModels
 import scoremap.feature.library.FormModel
@@ -51,6 +52,7 @@ public class MainActivity : ComponentActivity() {
                     FormModel(service, random, random),
                     PartsModel(service, random, random),
                     PhrasesModel(service, random, random),
+                    ArrangementModel(service, random, random),
                 ),
             )
         setContent {

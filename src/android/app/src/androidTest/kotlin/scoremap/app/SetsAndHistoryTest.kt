@@ -188,6 +188,27 @@ public class SetsAndHistoryTest {
     }
 
     @Test
+    public fun devicesHandsAndBindingsAreEditedAndSurviveARestart() {
+        val first = launch()
+        create("Song name", "Create song", "Autumn Leaves")
+        click("Open Autumn Leaves")
+        create("Part name", "Add part", "Melody", shows = "Part: Melody")
+        create("Device name", "Add device", "Stage piano", shows = "Device: Stage piano, range A0-C8")
+        click("Set hand of Melody to left")
+        waitForText("Hand of Melody: left")
+        create("Range of Melody on Stage piano", "Bind", "C3-C6", shows = "Binding: Melody on Stage piano, C3-C6")
+        first.close()
+        ScoreMapStores.close(databaseName)
+        launch().use {
+            click("Open Autumn Leaves")
+            waitForText("Hand of Melody: left")
+            waitForText("Binding: Melody on Stage piano, C3-C6")
+            click("Remove binding of Melody on Stage piano C3-C6")
+            waitForText("Saved.")
+        }
+    }
+
+    @Test
     public fun cancellingTheKeyboardLeavesTheStoredVoicingUntouched() {
         launch().use {
             create("Song name", "Create song", "Autumn Leaves")

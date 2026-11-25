@@ -1,5 +1,8 @@
 package scoremap.library
 
+import scoremap.music.Piano
+import scoremap.music.PitchRange
+
 /** Opaque, stable identity of a performed part. */
 @JvmInline
 public value class PartId(
@@ -27,6 +30,8 @@ public data class Part(
     val name: String,
     val voicings: List<Voicing> = emptyList(),
     val phrases: List<Phrase> = emptyList(),
+    /** Optional hand metadata; null means unassigned. */
+    val hand: HandRole? = null,
 )
 
 /** Opaque, stable identity of a prepared phrase. */
@@ -57,4 +62,38 @@ public data class Phrase(
     /** The section the phrase is prepared for, or null. */
     val section: SectionId? = null,
     val items: List<PhraseItem> = emptyList(),
+)
+
+/** Opaque, stable identity of a keyboard or other playing device. */
+@JvmInline
+public value class DeviceId(
+    public val value: String,
+)
+
+/** Opaque, stable identity of a binding between a part and a device. */
+@JvmInline
+public value class BindingId(
+    public val value: String,
+)
+
+/** Optional metadata about which hand a part is for; a part may leave it unassigned. */
+public enum class HandRole { LEFT, RIGHT, BOTH, CONTEXTUAL }
+
+/** A keyboard with the inclusive pitch range it can play; any number may exist and the default is all 88 keys. */
+public data class Device(
+    val id: DeviceId,
+    val name: String,
+    val range: PitchRange = Piano.range,
+)
+
+/**
+ * A part assigned to a device over an inclusive physical range, with optional sound or layer text. Several parts
+ * may share a device and ranges may overlap (splits and layers); a binding never copies or erases note content.
+ */
+public data class Binding(
+    val id: BindingId,
+    val partId: PartId,
+    val deviceId: DeviceId,
+    val range: PitchRange,
+    val sound: String = "",
 )

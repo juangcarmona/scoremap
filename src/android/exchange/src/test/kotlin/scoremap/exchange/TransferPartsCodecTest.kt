@@ -84,7 +84,7 @@ public class TransferPartsCodecTest {
         }
         assertEquals(
             DecodeOutcome.Rejected(Rejection.UNSUPPORTED_VERSION),
-            TransferCodec.decode(literal.replace("\"version\":5", "\"version\":7")),
+            TransferCodec.decode(literal.replace("\"version\":5", "\"version\":8")),
         )
     }
 

@@ -10,13 +10,17 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import scoremap.data.local.RoomLibraryStore
+import scoremap.library.ArrangementCommands
+import scoremap.library.BindingRequest
 import scoremap.library.ChordCommands
 import scoremap.library.ChordRequest
 import scoremap.library.ChordSpec
 import scoremap.library.CommitOutcome
+import scoremap.library.DeviceSpec
 import scoremap.library.EventId
 import scoremap.library.Fraction
 import scoremap.library.Hand
+import scoremap.library.HandRole
 import scoremap.library.IdSource
 import scoremap.library.Library
 import scoremap.library.LibraryCommands
@@ -39,6 +43,8 @@ import scoremap.library.ServiceResult
 import scoremap.library.SheetCommands
 import scoremap.library.SongKey
 import scoremap.library.Voicing
+import scoremap.music.Piano
+import scoremap.music.PitchRange
 import scoremap.music.SpelledNote
 import java.util.UUID
 
@@ -270,6 +276,57 @@ public class RoomLibraryStoreTest {
                 .parts,
             RetentionCommands.history(reopened.library, ref.songId).last().parts,
         )
+    }
+
+    @Test
+    public fun devicesBindingsAndHandsSurviveReopenAndRestore() {
+        val first = open()
+        val service = LibraryService(first)
+        val (ref, _) = songWithChord(service)
+        service.execute("f") { PartCommands.addPart(it, Mode.EDIT, ref.songId, "Melody", ids) }
+        val part =
+            PartRef(
+                ref.songId,
+                service
+                    .current()
+                    .library.songs
+                    .single()
+                    .parts
+                    .single()
+                    .id,
+            )
+        service.execute("g") { ArrangementCommands.setPartHand(it, Mode.EDIT, part, HandRole.CONTEXTUAL) }
+        service.execute("h") {
+            ArrangementCommands.addDevice(it, Mode.EDIT, ref.songId, DeviceSpec("Stage piano", Piano.range), ids)
+        }
+        service.execute("i") {
+            ArrangementCommands.addDevice(it, Mode.EDIT, ref.songId, DeviceSpec("Mini", PitchRange(48, 84)), ids)
+        }
+        val devices =
+            service
+                .current()
+                .library.songs
+                .single()
+                .devices
+        val request = BindingRequest(part, devices.last().id, PitchRange(48, 72), "Strings | warm")
+        service.execute("j") { ArrangementCommands.addBinding(it, Mode.EDIT, request, ids) }
+        val before = service.current()
+        first.close()
+
+        val reopened = LibraryService(open()).current()
+        assertEquals(before.library, reopened.library)
+        val song = reopened.library.songs.single()
+        assertEquals(
+            listOf("Stage piano" to Piano.range, "Mini" to PitchRange(48, 84)),
+            song.devices.map {
+                it.name to
+                    it.range
+            },
+        )
+        assertEquals(listOf(PitchRange(48, 72) to "Strings | warm"), song.bindings.map { it.range to it.sound })
+        assertEquals(HandRole.CONTEXTUAL, song.parts.single().hand)
+        val kept = RetentionCommands.history(reopened.library, ref.songId).last()
+        assertEquals(listOf(song.devices, song.bindings), listOf(kept.devices, kept.bindings))
     }
 
     private fun songWithChord(service: LibraryService): Pair<SectionRef, EventId> {

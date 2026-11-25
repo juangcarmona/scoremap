@@ -81,7 +81,7 @@ public class TransferPhrasesCodecTest {
         assertEquals(invalid, TransferCodec.decode(literal.replace("\"version\":6", "\"version\":5")))
         assertEquals(
             DecodeOutcome.Rejected(Rejection.UNSUPPORTED_VERSION),
-            TransferCodec.decode(literal.replace("\"version\":6", "\"version\":7")),
+            TransferCodec.decode(literal.replace("\"version\":6", "\"version\":8")),
         )
     }
 

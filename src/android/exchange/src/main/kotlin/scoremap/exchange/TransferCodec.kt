@@ -24,6 +24,9 @@ public const val TRANSFER_VERSION_WITH_PARTS: Int = 5
 /** Packages that also carry prepared phrases use this version. */
 public const val TRANSFER_VERSION_WITH_PHRASES: Int = 6
 
+/** Packages that also carry devices, bindings and part hands use this version. */
+public const val TRANSFER_VERSION_WITH_ARRANGEMENT: Int = 7
+
 private const val DEFAULT_MAX_CHARACTERS = 64 * 1024 * 1024
 private const val DEFAULT_MAX_SONGS = 500
 private const val DEFAULT_MAX_SECTIONS = 500
@@ -35,6 +38,8 @@ private const val DEFAULT_MAX_VOICINGS = 4096
 private const val DEFAULT_MAX_NOTES = 128
 private const val DEFAULT_MAX_PHRASES = 256
 private const val DEFAULT_MAX_ITEMS = 4096
+private const val DEFAULT_MAX_DEVICES = 64
+private const val DEFAULT_MAX_BINDINGS = 1024
 private const val DEFAULT_MAX_PDF_BYTES = 8 * 1024 * 1024
 private const val DEFAULT_MAX_TOTAL_PDF_BYTES = 32 * 1024 * 1024
 private const val DEFAULT_MAX_PDFS_PER_SONG = 20
@@ -59,6 +64,8 @@ public data class TransferLimits(
     val maxNotesPerVoicing: Int = DEFAULT_MAX_NOTES,
     val maxPhrasesPerPart: Int = DEFAULT_MAX_PHRASES,
     val maxItemsPerPhrase: Int = DEFAULT_MAX_ITEMS,
+    val maxDevicesPerSong: Int = DEFAULT_MAX_DEVICES,
+    val maxBindingsPerSong: Int = DEFAULT_MAX_BINDINGS,
     val attachments: AttachmentLimits = AttachmentLimits(),
 )
 
@@ -80,6 +87,7 @@ public object TransferCodec {
         val withPdfs = graph.songs.any { it.attachments.isNotEmpty() }
         val version =
             when {
+                graph.songs.any(::hasArrangement) -> TRANSFER_VERSION_WITH_ARRANGEMENT
                 graph.songs.any { s -> s.parts.any { it.phrases.isNotEmpty() } } -> TRANSFER_VERSION_WITH_PHRASES
                 graph.songs.any { it.parts.isNotEmpty() } -> TRANSFER_VERSION_WITH_PARTS
                 graph.songs.any { s -> s.sections.any { it.measures.isNotEmpty() } } -> TRANSFER_VERSION_WITH_FORM
@@ -96,6 +104,9 @@ public object TransferCodec {
                 }.orEmpty()
         return "{\"format\":\"$TRANSFER_FORMAT\",\"version\":$version,\"songs\":$songs$set}"
     }
+
+    private fun hasArrangement(song: GraphSong): Boolean =
+        song.devices.isNotEmpty() || song.bindings.isNotEmpty() || song.parts.any { it.hand != null }
 
     private fun hasSheet(song: GraphSong): Boolean =
         song.songKey != null || song.sections.any { it.lyrics.isNotEmpty() || it.cue.isNotEmpty() }
@@ -136,8 +147,9 @@ public object TransferCodec {
                     "]",
                 ) { PartsWriter.part(it) }
             }
+        val arrangement = ArrangementWriter.song(song)
         return "{\"key\":${JsonWriter.quote(song.key)},\"name\":${JsonWriter.quote(song.name)}$songKey," +
-            "\"sections\":$sections$attachments$parts}"
+            "\"sections\":$sections$attachments$parts$arrangement}"
     }
 
     public fun decode(
