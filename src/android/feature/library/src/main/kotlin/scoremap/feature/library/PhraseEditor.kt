@@ -74,7 +74,10 @@ internal fun PhraseEditor(
         }
         if (tick >= 0) PianoKeyboard(model.keys()) { midi -> change { model.press(midi) } }
         if (tick >= 0) phraseStaff(model, edit.key)
-        model.lines().forEachIndexed { index, line -> stepRow(model, index, line) { tick++ } }
+        model.lines().forEachIndexed { index, line ->
+            // The marker is part of the text passed in, so a row recomposes when it gains or loses selection.
+            stepRow(model, index, (if (model.selected == index) "> " else "") + line) { tick++ }
+        }
         if (model.items.isEmpty()) Text("No steps yet")
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             ActionButton("Save phrase", "Save phrase") {
@@ -103,8 +106,7 @@ private fun stepRow(
     line: String,
     changed: () -> Unit,
 ) {
-    val marker = if (model.selected == index) "> " else ""
-    NamedRow(marker + line) {
+    NamedRow(line) {
         ActionButton("Select", "Select step ${index + 1}") { model.select(index).also { changed() } }
         ActionButton("Up", "Move step ${index + 1} up") { model.move(index, -1).also { changed() } }
         ActionButton("Down", "Move step ${index + 1} down") { model.move(index, 1).also { changed() } }
