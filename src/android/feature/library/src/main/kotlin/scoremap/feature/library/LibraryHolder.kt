@@ -11,12 +11,13 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import scoremap.library.Mode
 
-/** The three models one screen uses. */
+/** The models one screen uses. */
 public class LibraryModels(
     public val songs: LibraryScreenModel,
     public val sets: SetsScreenModel,
     public val detail: SongDetailModel,
     public val attachments: AttachmentsModel,
+    public val form: FormModel,
 )
 
 /**

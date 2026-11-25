@@ -21,6 +21,9 @@ private fun refusalNotice(refusal: Refusal): Notice =
         Refusal.INVALID_NAME -> Notice.INVALID_NAME
         Refusal.MISSING_DEPENDENCY -> Notice.MISSING_DEPENDENCY
         Refusal.TEXT_TOO_LONG -> Notice.TEXT_TOO_LONG
+        Refusal.INVALID_TIME, Refusal.OVERLAP -> Notice.NO_ROOM
+        Refusal.INVALID_LYRIC_LINK -> Notice.INVALID_LINK
+        Refusal.DANGLING_REFERENCE -> Notice.LINKED_LYRICS
         Refusal.STALE_REVISION -> Notice.CONFLICT
         else -> Notice.FAILED
     }

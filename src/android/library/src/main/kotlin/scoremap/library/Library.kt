@@ -35,6 +35,8 @@ public data class Section(
     val lyrics: String = "",
     /** Optional performance cue; empty means absent. */
     val cue: String = "",
+    /** The shared harmonic form: measures with exact-time chord events; empty is valid. */
+    val measures: List<Measure> = emptyList(),
 )
 
 /** A declared song key: a root with at most one accidental, major or minor. */
@@ -141,7 +143,16 @@ public data class Library internal constructor(
     internal fun identityInUse(id: String): Boolean =
         songs.any { it.id.value == id } || deletedSongs.any { it.id.value == id } ||
             sets.any { it.id.value == id } || deletedSets.any { it.id.value == id } ||
-            songs.any { song -> song.sections.any { it.id.value == id } || song.attachments.any { it.id.value == id } }
+            songs.any { song ->
+                song.sections.any { sectionUses(it, id) } || song.attachments.any { it.id.value == id }
+            }
+
+    private fun sectionUses(
+        section: Section,
+        id: String,
+    ): Boolean =
+        section.id.value == id ||
+            section.measures.any { m -> m.id.value == id || m.events.any { it.id.value == id } }
 
     public companion object {
         public fun empty(): Library =
@@ -170,6 +181,11 @@ public enum class Refusal {
     INVALID_REPEATS,
     TEXT_TOO_LONG,
     INVALID_KEY,
+    UNKNOWN_MEASURE,
+    UNKNOWN_EVENT,
+    INVALID_TIME,
+    OVERLAP,
+    INVALID_LYRIC_LINK,
     NOT_A_PERMUTATION,
     DUPLICATE_ID,
     DUPLICATE_MEMBER,

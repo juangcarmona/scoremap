@@ -111,17 +111,22 @@ tasks.register("verifyHost") {
                 "library/build/test-results/test/TEST-scoremap.library.LibraryServiceTest.xml" to 6,
                 "library/build/test-results/test/TEST-scoremap.library.TransferImportTest.xml" to 6,
                 "library/build/test-results/test/TEST-scoremap.library.SheetImportTest.xml" to 4,
+                "library/build/test-results/test/TEST-scoremap.library.FormImportTest.xml" to 3,
                 "library/build/test-results/test/TEST-scoremap.library.AttachmentRulesTest.xml" to 7,
                 "library/build/test-results/test/TEST-scoremap.library.AttachmentServiceTest.xml" to 9,
                 "library/build/test-results/test/TEST-scoremap.library.SongSheetTest.xml" to 10,
+                "library/build/test-results/test/TEST-scoremap.library.ChordStructureTest.xml" to 5,
+                "library/build/test-results/test/TEST-scoremap.library.ChordCommandsTest.xml" to 10,
                 "exchange/build/test-results/test/TEST-scoremap.exchange.TransferCodecTest.xml" to 6,
                 "exchange/build/test-results/test/TEST-scoremap.exchange.TransferPdfCodecTest.xml" to 5,
                 "exchange/build/test-results/test/TEST-scoremap.exchange.TransferSheetCodecTest.xml" to 4,
+                "exchange/build/test-results/test/TEST-scoremap.exchange.TransferFormCodecTest.xml" to 5,
                 "exchange/build/test-results/test/TEST-scoremap.exchange.TransferPdfFlowTest.xml" to 9,
                 "exchange/build/test-results/test/TEST-scoremap.exchange.TransferFlowTest.xml" to 5,
                 "feature/library/build/test-results/testDebugUnitTest/TEST-scoremap.feature.library.LibraryScreenModelTest.xml" to 7,
                 "feature/library/build/test-results/testDebugUnitTest/TEST-scoremap.feature.library.SetsScreenModelTest.xml" to 6,
                 "feature/library/build/test-results/testDebugUnitTest/TEST-scoremap.feature.library.SongDetailModelTest.xml" to 8,
+                "feature/library/build/test-results/testDebugUnitTest/TEST-scoremap.feature.library.FormModelTest.xml" to 5,
                 "feature/library/build/test-results/testDebugUnitTest/TEST-scoremap.feature.library.AttachmentsModelTest.xml" to 6,
                 "build-logic/build/test-results/test/TEST-scoremap.buildlogic.ConventionContractTest.xml" to 5,
                 "build-logic/build/test-results/test/TEST-scoremap.buildlogic.ProjectGraphContractTest.xml" to 5,
@@ -147,7 +152,7 @@ tasks.register("verifyDevice") {
         val reports = fileTree(directory) { include("**/TEST-*.xml") }.files
         // The managed device writes one report for the whole run; the declared classes and their case counts
         // are checked inside it, and the usual inventory checks bind that report to this run.
-        val expectedClasses = mapOf("OfflineRecreationTest" to 1, "RoomLibraryStoreTest" to 7, "LibraryScreenTest" to 4, "SetsAndHistoryTest" to 4, "PdfStorageTest" to 6, "PdfViewerTest" to 3)
+        val expectedClasses = mapOf("OfflineRecreationTest" to 1, "RoomLibraryStoreTest" to 8, "LibraryScreenTest" to 4, "SetsAndHistoryTest" to 5, "PdfStorageTest" to 6, "PdfViewerTest" to 3)
         check(reports.size == 1) { "Expected one managed-device report, found ${reports.map { it.name }}." }
         val report = reports.single()
         val perClass = expectedClasses.mapValues { (name, _) -> Regex("classname=\"[^\"]*\\.$name\"").findAll(report.readText()).count() }

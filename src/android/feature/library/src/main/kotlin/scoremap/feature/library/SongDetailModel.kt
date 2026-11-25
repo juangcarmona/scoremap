@@ -7,10 +7,26 @@ import scoremap.library.LibraryService
 import scoremap.library.Mode
 import scoremap.library.Outcome
 import scoremap.library.RetentionCommands
+import scoremap.library.Section
 import scoremap.library.SectionId
 import scoremap.library.SheetCommands
 import scoremap.library.SongId
 import scoremap.library.SongKey
+
+/** A chord in a measure: its symbol, exact start and length in beats, and the lyric position it is linked to. */
+public data class EventItem(
+    val id: String,
+    val symbol: String,
+    val start: String,
+    val duration: String,
+    val lyricIndex: Int?,
+)
+
+public data class MeasureItem(
+    val id: String,
+    val meter: String,
+    val events: List<EventItem>,
+)
 
 public data class SectionItem(
     val id: String,
@@ -20,6 +36,7 @@ public data class SectionItem(
     val lyrics: String = "",
     /** Empty when no cue was entered. */
     val cue: String = "",
+    val measures: List<MeasureItem> = emptyList(),
 )
 
 /** One retained revision of the song, as listed in its history. */
@@ -67,13 +84,37 @@ public class SongDetailModel(
             song.id.value,
             song.name,
             song.revision,
-            song.sections.map { SectionItem(it.id.value, it.name, it.repeats, it.lyrics, it.cue) },
+            song.sections.map(::sectionItem),
             RetentionCommands.history(library, song.id).map { RevisionItem(it.number, it.name, it.sections.size) },
             song.attachments.map { AttachmentItem(it.id.value, it.name, it.pages, it.lastPage, it.sha256) },
             notice,
             song.key?.label,
         )
     }
+
+    private fun sectionItem(section: Section): SectionItem =
+        SectionItem(
+            section.id.value,
+            section.name,
+            section.repeats,
+            section.lyrics,
+            section.cue,
+            section.measures.map { m ->
+                MeasureItem(
+                    m.id.value,
+                    m.meter.label,
+                    m.events.map {
+                        EventItem(
+                            it.id.value,
+                            it.chord.symbol,
+                            it.start.toString(),
+                            it.duration.toString(),
+                            it.lyricIndex,
+                        )
+                    },
+                )
+            },
+        )
 
     /** Empty text clears the key; text that is not a key is refused without changing the song. */
     public fun setKey(

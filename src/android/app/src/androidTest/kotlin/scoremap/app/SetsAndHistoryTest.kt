@@ -105,6 +105,31 @@ public class SetsAndHistoryTest {
     }
 
     @Test
+    public fun measuresChordsAndLyricLinksAreEditedAndSurviveARestart() {
+        val first = launch()
+        create("Song name", "Create song", "Autumn Leaves")
+        click("Open Autumn Leaves")
+        create("Section name", "Add section", "Verse", shows = "Section: Verse x1")
+        compose.onNodeWithText("Lyrics for Verse").performTextInput("Autumn leaves")
+        click("Save lyrics: Lyrics for Verse")
+        waitForText("Lyrics: Autumn leaves")
+        create("Meter for a new measure of Verse", "Add measure", "3/4", shows = "Measure 1 (3/4): empty")
+        create("Chord for measure 1 of Verse", "Add chord", "Dm7 2", shows = "Measure 1 (3/4): Dm7 at 0")
+        create("Chord for measure 1 of Verse", "Add chord", "G7", shows = "Measure 1 (3/4): Dm7 at 0, G7 at 2")
+        compose.onNodeWithText("Lyric position of Dm7 in measure 1 of Verse").performTextInput("7")
+        click("Save link: Lyric position of Dm7 in measure 1 of Verse")
+        waitForText("Dm7: 2 beats, lyric 7")
+        first.close()
+        ScoreMapStores.close(databaseName)
+        launch().use {
+            click("Open Autumn Leaves")
+            waitForText("Measure 1 (3/4): Dm7 at 0, G7 at 2")
+            waitForText("Dm7: 2 beats, lyric 7")
+            waitForText("G7: 1 beats, lyric not linked")
+        }
+    }
+
+    @Test
     public fun performanceModeRefusesToCreateASet() {
         launch().use {
             waitForText("Set name")

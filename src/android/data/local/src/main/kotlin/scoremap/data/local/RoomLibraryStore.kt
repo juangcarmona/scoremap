@@ -9,6 +9,7 @@ import scoremap.library.CommitOutcome
 import scoremap.library.DurableState
 import scoremap.library.Library
 import scoremap.library.LibraryStore
+import scoremap.library.MeasuresText
 import scoremap.library.MusicSet
 import scoremap.library.Section
 import scoremap.library.SectionId
@@ -43,7 +44,7 @@ public class RoomLibraryStore internal constructor(
                         context,
                         LibraryDatabase::class.java,
                         name,
-                    ).addMigrations(Migration1To2, Migration2To3)
+                    ).addMigrations(Migration1To2, Migration2To3, Migration3To4)
                     .build(),
                 beforeCommit,
             )
@@ -98,7 +99,16 @@ internal object LibraryRows {
         library: Library,
     ) {
         clear(daos.clear)
-        val dao = daos.insert
+        writeSongs(daos.insert, library)
+        writeSets(daos.insert, library)
+        writeHistory(daos.insert, library)
+        daos.insert.insertPurged(library.purged.map { PurgedRow(it) })
+    }
+
+    private fun writeSongs(
+        dao: InsertDao,
+        library: Library,
+    ) {
         val songs = library.songs.map { it to false } + library.deletedSongs.map { it to true }
         dao.insertSongs(
             songs.mapIndexed {
@@ -114,7 +124,16 @@ internal object LibraryRows {
                     i,
                     s,
                     ->
-                    SectionRow(song.id.value, i, s.id.value, s.name, s.repeats, s.lyrics, s.cue)
+                    SectionRow(
+                        song.id.value,
+                        i,
+                        s.id.value,
+                        s.name,
+                        s.repeats,
+                        s.lyrics,
+                        s.cue,
+                        MeasuresText.encode(s.measures),
+                    )
                 }
             },
         )
@@ -125,6 +144,12 @@ internal object LibraryRows {
                 }
             },
         )
+    }
+
+    private fun writeSets(
+        dao: InsertDao,
+        library: Library,
+    ) {
         val sets = library.sets.map { it to false } + library.deletedSets.map { it to true }
         dao.insertSets(
             sets.mapIndexed {
@@ -139,6 +164,12 @@ internal object LibraryRows {
                 set.songIds.mapIndexed { i, id -> SetMemberRow(set.id.value, i, id.value) }
             },
         )
+    }
+
+    private fun writeHistory(
+        dao: InsertDao,
+        library: Library,
+    ) {
         val revisions = library.histories.flatMap { (songId, list) -> list.map { songId to it } }
         dao.insertRevisions(revisions.map { (songId, r) -> RevisionRow(songId.value, r.number, r.name, r.key?.label) })
         dao.insertRevisionSections(
@@ -147,11 +178,20 @@ internal object LibraryRows {
                     i,
                     s,
                     ->
-                    RevisionSectionRow(songId.value, r.number, i, s.id.value, s.name, s.repeats, s.lyrics, s.cue)
+                    RevisionSectionRow(
+                        songId.value,
+                        r.number,
+                        i,
+                        s.id.value,
+                        s.name,
+                        s.repeats,
+                        s.lyrics,
+                        s.cue,
+                        MeasuresText.encode(s.measures),
+                    )
                 }
             },
         )
-        dao.insertPurged(library.purged.map { PurgedRow(it) })
     }
 
     private fun clear(dao: ClearDao) {
@@ -174,7 +214,9 @@ internal object LibraryRows {
             Song(
                 SongId(row.id),
                 row.name,
-                sections[row.id].orEmpty().map { Section(SectionId(it.id), it.name, it.repeats, it.lyrics, it.cue) },
+                sections[row.id].orEmpty().map {
+                    Section(SectionId(it.id), it.name, it.repeats, it.lyrics, it.cue, MeasuresText.decode(it.measures))
+                },
                 row.revision,
                 attachments[row.id].orEmpty().map {
                     Attachment(AttachmentId(it.id), it.name, it.sha256, it.bytes, it.pages, it.lastPage)
@@ -194,7 +236,14 @@ internal object LibraryRows {
                         r.number,
                         r.name,
                         revisionSections[r.songId to r.number].orEmpty().map {
-                            Section(SectionId(it.id), it.name, it.repeats, it.lyrics, it.cue)
+                            Section(
+                                SectionId(it.id),
+                                it.name,
+                                it.repeats,
+                                it.lyrics,
+                                it.cue,
+                                MeasuresText.decode(it.measures),
+                            )
                         },
                         SongKey.parse(r.songKey),
                     )

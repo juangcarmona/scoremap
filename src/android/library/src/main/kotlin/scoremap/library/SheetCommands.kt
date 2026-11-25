@@ -26,7 +26,11 @@ public object SheetCommands {
         sectionId: SectionId,
         text: String,
     ): Outcome<Library> =
-        setText(library, mode, TextEdit(songId, sectionId, text, MAX_LYRICS) { s, value -> s.copy(lyrics = value) })
+        setText(
+            library,
+            mode,
+            TextEdit(songId, sectionId, text, MAX_LYRICS, true) { s, value -> s.copy(lyrics = value) },
+        )
 
     public fun setCue(
         library: Library,
@@ -35,13 +39,14 @@ public object SheetCommands {
         sectionId: SectionId,
         text: String,
     ): Outcome<Library> =
-        setText(library, mode, TextEdit(songId, sectionId, text, MAX_CUE) { s, value -> s.copy(cue = value) })
+        setText(library, mode, TextEdit(songId, sectionId, text, MAX_CUE, false) { s, value -> s.copy(cue = value) })
 
     private class TextEdit(
         val songId: SongId,
         val sectionId: SectionId,
         val raw: String,
         val limit: Int,
+        val keepsLinks: Boolean,
         val write: (Section, String) -> Section,
     )
 
@@ -56,6 +61,8 @@ public object SheetCommands {
             if (song.sections.none { it.id == edit.sectionId }) return@guarded refused(Refusal.UNKNOWN_SECTION)
             val value = normalised(edit.raw)
             if (value.length > edit.limit) return@guarded refused(Refusal.TEXT_TOO_LONG)
+            val dangling = edit.keepsLinks && song.sections.any { it.id == edit.sectionId && linksBeyond(it, value) }
+            if (dangling) return@guarded refused(Refusal.DANGLING_REFERENCE)
             val sections = song.sections.map { if (it.id == edit.sectionId) edit.write(it, value) else it }
             if (sections ==
                 song.sections
@@ -65,6 +72,12 @@ public object SheetCommands {
                 accepted(library.revise(song.copy(sections = sections)))
             }
         }
+
+    /** Shorter lyrics must not leave a chord linked past their end; the link is removed first. */
+    private fun linksBeyond(
+        section: Section,
+        lyrics: String,
+    ): Boolean = section.measures.any { m -> m.events.any { (it.lyricIndex ?: 0) > lyrics.length } }
 
     /** Line endings become `\n`; surrounding blank space is dropped, so blank text is absent. */
     internal fun normalised(raw: String): String = raw.replace("\r\n", "\n").replace('\r', '\n').trim()

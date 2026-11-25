@@ -10,15 +10,22 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import scoremap.data.local.RoomLibraryStore
+import scoremap.library.ChordCommands
+import scoremap.library.ChordRequest
+import scoremap.library.ChordSpec
 import scoremap.library.CommitOutcome
+import scoremap.library.Fraction
 import scoremap.library.IdSource
 import scoremap.library.Library
 import scoremap.library.LibraryCommands
 import scoremap.library.LibraryService
+import scoremap.library.MeasureRef
+import scoremap.library.Meter
 import scoremap.library.Mode
 import scoremap.library.Outcome
 import scoremap.library.Refusal
 import scoremap.library.RetentionCommands
+import scoremap.library.SectionRef
 import scoremap.library.ServiceResult
 import scoremap.library.SheetCommands
 import scoremap.library.SongKey
@@ -106,6 +113,76 @@ public class RoomLibraryStoreTest {
                 .single()
                 .lyrics,
         )
+    }
+
+    @Test
+    public fun measuresChordsAndLyricLinksSurviveReopenInTheSongAndItsHistory() {
+        val first = open()
+        val service = LibraryService(first)
+        val ref = songWithLyrics(service)
+        service.execute("d") { ChordCommands.addMeasure(it, Mode.EDIT, ref, Meter(3, 4), ids) }
+        val measureId =
+            service
+                .current()
+                .library.songs
+                .single()
+                .sections
+                .single()
+                .measures
+                .single()
+                .id
+        val chord = ChordSpec("G", "dominant-seventh", listOf("b9"), "B")
+        val request = ChordRequest(Fraction.of(1, 3), Fraction.of(3, 2), chord, 7)
+        service.execute("e") { ChordCommands.addChord(it, Mode.EDIT, MeasureRef(ref, measureId), request, ids) }
+        val before = service.current()
+        first.close()
+
+        val reopened = LibraryService(open()).current()
+        assertEquals(before.library, reopened.library)
+        val event =
+            reopened.library.songs
+                .single()
+                .sections
+                .single()
+                .measures
+                .single()
+                .events
+                .single()
+        assertEquals(listOf(request.start, request.duration), listOf(event.start, event.duration))
+        assertEquals(listOf(chord, 7), listOf(event.chord, event.lyricIndex))
+        val kept =
+            RetentionCommands
+                .history(reopened.library, ref.songId)
+                .last()
+                .sections
+                .single()
+                .measures
+                .single()
+        assertEquals(listOf(event), kept.events)
+    }
+
+    private fun songWithLyrics(service: LibraryService): SectionRef {
+        service.execute("a") { LibraryCommands.createSong(it, Mode.EDIT, "Song", ids) }
+        val songId =
+            service
+                .current()
+                .library.songs
+                .single()
+                .id
+        service.execute("b") { LibraryCommands.insertSection(it, Mode.EDIT, songId, "Verse", ids) }
+        val ref =
+            SectionRef(
+                songId,
+                service
+                    .current()
+                    .library.songs
+                    .single()
+                    .sections
+                    .single()
+                    .id,
+            )
+        service.execute("c") { SheetCommands.setLyrics(it, Mode.EDIT, ref.songId, ref.sectionId, "Autumn leaves") }
+        return ref
     }
 
     @Test
