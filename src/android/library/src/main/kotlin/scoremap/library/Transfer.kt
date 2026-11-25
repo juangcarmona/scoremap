@@ -25,9 +25,17 @@ public data class GraphVoicing(
     val notes: List<PerformedNote>,
 )
 
+/** A prepared phrase as carried by a package; [section] is the position of its section in the song, if any. */
+public data class GraphPhrase(
+    val name: String,
+    val section: Int? = null,
+    val items: List<PhraseItem> = emptyList(),
+)
+
 public data class GraphPart(
     val name: String,
     val voicings: List<GraphVoicing> = emptyList(),
+    val phrases: List<GraphPhrase> = emptyList(),
 )
 
 /** A section as carried by a transfer package; identities are never imported. */
@@ -125,7 +133,12 @@ public data class TransferGraph(
                             measure.events.mapIndexed { e, event -> event.id to EventPosition(s, m, e) }
                         }
                     }.toMap()
-            return GraphPart(part.name, part.voicings.map { GraphVoicing(positions.getValue(it.eventId), it.notes) })
+            val sectionIndex = song.sections.map { it.id }
+            return GraphPart(
+                part.name,
+                part.voicings.map { GraphVoicing(positions.getValue(it.eventId), it.notes) },
+                part.phrases.map { p -> GraphPhrase(p.name, p.section?.let(sectionIndex::indexOf), p.items) },
+            )
         }
     }
 }

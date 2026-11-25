@@ -79,7 +79,7 @@ public object PartCommands {
             val part = song.parts.firstOrNull { it.id == ref.partId }
             when {
                 part == null -> refuse(Refusal.UNKNOWN_PART)
-                part.voicings.isNotEmpty() && !confirmed -> refuse(Refusal.IN_USE)
+                (part.voicings.isNotEmpty() || part.phrases.isNotEmpty()) && !confirmed -> refuse(Refusal.IN_USE)
                 else -> accept(song.copy(parts = song.parts - part))
             }
         }

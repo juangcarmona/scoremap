@@ -85,7 +85,7 @@ public class TransferCodecTest {
         val format = DecodeOutcome.Rejected(Rejection.UNSUPPORTED_FORMAT)
         val version = DecodeOutcome.Rejected(Rejection.UNSUPPORTED_VERSION)
         assertEquals(format, TransferCodec.decode(literal.replace("scoremap-transfer", "other")))
-        assertEquals(version, TransferCodec.decode(literal.replace("\"version\":1", "\"version\":6")))
+        assertEquals(version, TransferCodec.decode(literal.replace("\"version\":1", "\"version\":7")))
         assertEquals(version, TransferCodec.decode(literal.replace("\"version\":1", "\"version\":0")))
     }
 

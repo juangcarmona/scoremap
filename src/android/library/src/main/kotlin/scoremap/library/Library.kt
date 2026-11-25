@@ -191,6 +191,7 @@ public enum class Refusal {
     UNKNOWN_PART,
     IN_USE,
     INVALID_PITCH,
+    UNKNOWN_PHRASE,
     NOT_A_PERMUTATION,
     DUPLICATE_ID,
     DUPLICATE_MEMBER,

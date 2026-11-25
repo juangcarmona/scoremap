@@ -14,7 +14,7 @@ internal class DocumentReader(
     private var carriesSheet = false
     private var carriesForm = false
     private var carriesParts = false
-    private val parts = PartsReader(limits)
+    private var parts = PartsReader(limits, false)
     private val form = FormReader(limits)
 
     fun read(root: Json.Obj): DecodeOutcome =
@@ -29,13 +29,14 @@ internal class DocumentReader(
         need(format.value == TRANSFER_FORMAT, Rejection.UNSUPPORTED_FORMAT)
         val version = root.fields["version"] as? Json.Integer ?: invalid()
         need(
-            version.value in TRANSFER_VERSION.toLong()..TRANSFER_VERSION_WITH_PARTS.toLong(),
+            version.value in TRANSFER_VERSION.toLong()..TRANSFER_VERSION_WITH_PHRASES.toLong(),
             Rejection.UNSUPPORTED_VERSION,
         )
         carriesPdfs = version.value >= TRANSFER_VERSION_WITH_PDFS.toLong()
         carriesSheet = version.value >= TRANSFER_VERSION_WITH_SHEET.toLong()
         carriesForm = version.value >= TRANSFER_VERSION_WITH_FORM.toLong()
         carriesParts = version.value >= TRANSFER_VERSION_WITH_PARTS.toLong()
+        parts = PartsReader(limits, version.value >= TRANSFER_VERSION_WITH_PHRASES.toLong())
         exactly(root, setOf("format", "version", "songs"), optional = setOf("set"))
         val songs = (root.fields["songs"] as? Json.Array ?: invalid()).items
         need(songs.size <= limits.maxSongs, Rejection.OVERSIZED)

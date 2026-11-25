@@ -59,9 +59,12 @@ public class PianoEditorModel(
     }
 
     /** The keys of the window in order, each with the color of its octave when it is selected. */
-    public fun keys(): List<KeyView> =
+    public fun keys(): List<KeyView> = keys(notes)
+
+    /** The same keys marked for any [selection], such as the one note a phrase editor has selected. */
+    public fun keys(selection: List<PerformedNote>): List<KeyView> =
         Piano.keys.filter { window.contains(it.midi) }.map { key ->
-            val played = notes.filter { it.midi == key.midi }
+            val played = selection.filter { it.midi == key.midi }
             KeyView(
                 key.midi,
                 key.name,

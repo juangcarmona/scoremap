@@ -2,6 +2,7 @@ package scoremap.feature.library
 
 import scoremap.library.EventId
 import scoremap.library.Hand
+import scoremap.library.PhraseItem
 import scoremap.library.Section
 import scoremap.library.Song
 import scoremap.music.Piano
@@ -19,10 +20,20 @@ public data class VoicingItem(
     val notes: List<NoteItem>,
 )
 
+/** A prepared phrase as listed: its steps in order, with the timing only when it was supplied. */
+public data class PhraseView(
+    val id: String,
+    val name: String,
+    val section: String?,
+    val items: List<PhraseItem>,
+    val lines: List<String>,
+)
+
 public data class PartItem(
     val id: String,
     val name: String,
     val voicings: List<VoicingItem>,
+    val phrases: List<PhraseView> = emptyList(),
 )
 
 /** A chord the musician can give a voicing: where it is and its symbol. */
@@ -83,6 +94,15 @@ internal fun partItems(song: Song): List<PartItem> {
                     v.notes.map {
                         NoteItem(it.midi, Piano.label(it.midi), it.hand)
                     },
+                )
+            },
+            part.phrases.map { p ->
+                PhraseView(
+                    p.id.value,
+                    p.name,
+                    song.sections.firstOrNull { it.id == p.section }?.name,
+                    p.items,
+                    PhraseEditorModel(p.items).lines(),
                 )
             },
         )

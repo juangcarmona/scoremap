@@ -17,8 +17,14 @@ public class LibraryModels(
     public val sets: SetsScreenModel,
     public val detail: SongDetailModel,
     public val attachments: AttachmentsModel,
+    public val editors: EditorModels,
+)
+
+/** The models of the musical editors: form, performed parts and prepared phrases. */
+public class EditorModels(
     public val form: FormModel,
     public val parts: PartsModel,
+    public val phrases: PhrasesModel,
 )
 
 /**
@@ -36,6 +42,7 @@ internal class LibraryHolder(
     var openSongId by mutableStateOf<String?>(null)
     var viewing by mutableStateOf<AttachmentItem?>(null)
     internal var editing by mutableStateOf<VoicingEdit?>(null)
+    internal var composing by mutableStateOf<PhraseEdit?>(null)
     var notice by mutableStateOf<Notice?>(null)
 
     val mode: Mode get() = if (editMode) Mode.EDIT else Mode.PERFORMANCE

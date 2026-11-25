@@ -47,8 +47,11 @@ public fun LibraryScreen(
         holder.notice?.let { Text(it.text, Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
         val viewing = holder.viewing
         val editing = holder.editing
+        val composing = holder.composing
         if (editing != null) {
             VoicingEditor(holder, editing)
+        } else if (composing != null) {
+            PhraseEditor(holder, composing)
         } else if (viewing != null) {
             PdfViewerHost(holder, viewing)
         } else {

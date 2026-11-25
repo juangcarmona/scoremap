@@ -69,6 +69,16 @@ public object ImportCommands {
                 val event = sections[v.at.section].measures[v.at.measure].events[v.at.event]
                 Voicing(event.id, v.notes.distinct().sortedWith(compareBy({ it.midi }, { it.hand })))
             },
+            source.phrases.map {
+                Phrase(
+                    PhraseId(next()),
+                    it.name.trim(),
+                    it.section?.let { i ->
+                        sections[i].id
+                    },
+                    it.items,
+                )
+            },
         )
 
     private fun measure(
@@ -132,7 +142,9 @@ public object ImportCommands {
         val names =
             graph.songs.map { it.name } + graph.songs.flatMap { s -> s.sections.map { it.name } } +
                 graph.songs.flatMap { s -> s.attachments.map { it.name } } +
-                graph.songs.flatMap { s -> s.parts.map { it.name } } +
+                graph.songs.flatMap { s ->
+                    s.parts.map { it.name } + s.parts.flatMap { p -> p.phrases.map { it.name } }
+                } +
                 listOfNotNull(graph.set?.name)
         return when {
             names.any { it.isBlank() } -> {

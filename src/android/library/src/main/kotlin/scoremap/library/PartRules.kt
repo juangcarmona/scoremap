@@ -14,7 +14,24 @@ internal object PartRules {
                     else -> null
                 }
             }
-        } ?: duplicatedEvent(song)
+        } ?: duplicatedEvent(song) ?: phraseRefusal(song)
+
+    private fun phraseRefusal(song: GraphSong): Refusal? =
+        song.parts.flatMap { it.phrases }.firstNotNullOfOrNull { phrase ->
+            when {
+                phrase.section != null && song.sections.getOrNull(phrase.section) == null -> {
+                    Refusal.DANGLING_REFERENCE
+                }
+
+                phrase.items.any { it.pitch != null && it.pitch.midi !in LOWEST_PITCH..HIGHEST_PITCH } -> {
+                    Refusal.INVALID_PITCH
+                }
+
+                else -> {
+                    null
+                }
+            }
+        }
 
     private fun duplicatedEvent(song: GraphSong): Refusal? =
         if (song.parts.any { p -> p.voicings.map { it.at }.let { it.size != it.toSet().size } }) {

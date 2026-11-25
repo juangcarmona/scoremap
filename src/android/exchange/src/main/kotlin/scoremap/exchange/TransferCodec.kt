@@ -21,6 +21,9 @@ public const val TRANSFER_VERSION_WITH_FORM: Int = 4
 /** Packages that also carry performed parts and voicings use this version. */
 public const val TRANSFER_VERSION_WITH_PARTS: Int = 5
 
+/** Packages that also carry prepared phrases use this version. */
+public const val TRANSFER_VERSION_WITH_PHRASES: Int = 6
+
 private const val DEFAULT_MAX_CHARACTERS = 64 * 1024 * 1024
 private const val DEFAULT_MAX_SONGS = 500
 private const val DEFAULT_MAX_SECTIONS = 500
@@ -30,6 +33,8 @@ private const val DEFAULT_MAX_EVENTS = 64
 private const val DEFAULT_MAX_PARTS = 64
 private const val DEFAULT_MAX_VOICINGS = 4096
 private const val DEFAULT_MAX_NOTES = 128
+private const val DEFAULT_MAX_PHRASES = 256
+private const val DEFAULT_MAX_ITEMS = 4096
 private const val DEFAULT_MAX_PDF_BYTES = 8 * 1024 * 1024
 private const val DEFAULT_MAX_TOTAL_PDF_BYTES = 32 * 1024 * 1024
 private const val DEFAULT_MAX_PDFS_PER_SONG = 20
@@ -52,6 +57,8 @@ public data class TransferLimits(
     val maxPartsPerSong: Int = DEFAULT_MAX_PARTS,
     val maxVoicingsPerPart: Int = DEFAULT_MAX_VOICINGS,
     val maxNotesPerVoicing: Int = DEFAULT_MAX_NOTES,
+    val maxPhrasesPerPart: Int = DEFAULT_MAX_PHRASES,
+    val maxItemsPerPhrase: Int = DEFAULT_MAX_ITEMS,
     val attachments: AttachmentLimits = AttachmentLimits(),
 )
 
@@ -73,6 +80,7 @@ public object TransferCodec {
         val withPdfs = graph.songs.any { it.attachments.isNotEmpty() }
         val version =
             when {
+                graph.songs.any { s -> s.parts.any { it.phrases.isNotEmpty() } } -> TRANSFER_VERSION_WITH_PHRASES
                 graph.songs.any { it.parts.isNotEmpty() } -> TRANSFER_VERSION_WITH_PARTS
                 graph.songs.any { s -> s.sections.any { it.measures.isNotEmpty() } } -> TRANSFER_VERSION_WITH_FORM
                 graph.songs.any(::hasSheet) -> TRANSFER_VERSION_WITH_SHEET

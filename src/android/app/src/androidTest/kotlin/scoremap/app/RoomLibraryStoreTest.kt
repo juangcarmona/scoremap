@@ -28,6 +28,10 @@ import scoremap.library.Outcome
 import scoremap.library.PartCommands
 import scoremap.library.PartRef
 import scoremap.library.PerformedNote
+import scoremap.library.PhraseCommands
+import scoremap.library.PhraseItem
+import scoremap.library.PhraseRef
+import scoremap.library.PhraseTarget
 import scoremap.library.Refusal
 import scoremap.library.RetentionCommands
 import scoremap.library.SectionRef
@@ -205,6 +209,66 @@ public class RoomLibraryStoreTest {
                 .single()
                 .parts,
             kept,
+        )
+    }
+
+    @Test
+    public fun phrasesKeepOrderRestsHandsAndOnlySuppliedTimingAcrossReopen() {
+        val first = open()
+        val service = LibraryService(first)
+        val (ref, _) = songWithChord(service)
+        service.execute("f") { PartCommands.addPart(it, Mode.EDIT, ref.songId, "Melody", ids) }
+        val part =
+            PartRef(
+                ref.songId,
+                service
+                    .current()
+                    .library.songs
+                    .single()
+                    .parts
+                    .single()
+                    .id,
+            )
+        service.execute(
+            "g",
+        ) { PhraseCommands.addPhrase(it, Mode.EDIT, PhraseTarget(part, "Theme", ref.sectionId), ids) }
+        val phraseId =
+            service
+                .current()
+                .library.songs
+                .single()
+                .parts
+                .single()
+                .phrases
+                .single()
+                .id
+        val items =
+            listOf(
+                PhraseItem(PerformedNote(76, Hand.RIGHT)),
+                PhraseItem(PerformedNote(0, Hand.LEFT), Fraction.of(1, 2)),
+                PhraseItem(null, Fraction.of(3, 2)),
+                PhraseItem(null),
+            )
+        service.execute("h") { PhraseCommands.setItems(it, Mode.EDIT, PhraseRef(part, phraseId), items) }
+        val before = service.current()
+        first.close()
+
+        val reopened = LibraryService(open()).current()
+        assertEquals(before.library, reopened.library)
+        val phrase =
+            reopened.library.songs
+                .single()
+                .parts
+                .single()
+                .phrases
+                .single()
+        assertEquals(listOf("Theme", ref.sectionId), listOf(phrase.name, phrase.section))
+        assertEquals(items, phrase.items)
+        assertEquals(
+            reopened.library.songs
+                .single()
+                .parts,
+            RetentionCommands.history(reopened.library, ref.songId).last().parts,
         )
     }
 

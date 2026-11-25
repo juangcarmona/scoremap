@@ -65,7 +65,7 @@ internal fun VoicingEditor(
             ActionButton("Save voicing", "Save voicing") {
                 holder.act { mode ->
                     val notice =
-                        holder.models.parts.saveVoicing(
+                        holder.models.editors.parts.saveVoicing(
                             edit.songId,
                             edit.partId,
                             edit.chord.eventId,

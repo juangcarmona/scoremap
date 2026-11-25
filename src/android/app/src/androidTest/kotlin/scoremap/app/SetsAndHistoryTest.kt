@@ -158,6 +158,36 @@ public class SetsAndHistoryTest {
     }
 
     @Test
+    public fun aPhraseIsPlayedInOrderWithRestsAndOnlySuppliedTimingAndSurvivesARestart() {
+        val first = launch()
+        create("Song name", "Create song", "Autumn Leaves")
+        click("Open Autumn Leaves")
+        create("Part name", "Add part", "Melody", shows = "Part: Melody")
+        create("Phrase name for Melody", "Add phrase", "Theme", shows = "Phrase Theme: no steps yet")
+        click("Edit phrase Theme of Melody")
+        waitForText("Phrase: Theme")
+        click("E4 key")
+        waitForText("1. E4 (right hand), timing not set")
+        compose.onNodeWithText("Length in beats (empty if unknown)").performTextInput("1/2")
+        click("Enter left hand")
+        click("C3 key")
+        click("Add a rest")
+        waitForText("2. C3 (left hand), 1/2 beats")
+        waitForText("3. rest, 1/2 beats")
+        click("Save phrase")
+        waitForText("Phrase saved.")
+        val summary =
+            "Phrase Theme: 1. E4 (right hand), timing not set; 2. C3 (left hand), 1/2 beats; 3. rest, 1/2 beats"
+        waitForText(summary)
+        first.close()
+        ScoreMapStores.close(databaseName)
+        launch().use {
+            click("Open Autumn Leaves")
+            waitForText(summary)
+        }
+    }
+
+    @Test
     public fun cancellingTheKeyboardLeavesTheStoredVoicingUntouched() {
         launch().use {
             create("Song name", "Create song", "Autumn Leaves")

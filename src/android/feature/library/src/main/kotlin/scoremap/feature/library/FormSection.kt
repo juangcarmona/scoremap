@@ -15,7 +15,7 @@ internal fun formSheet(
     songId: String,
     section: SectionItem,
 ) {
-    val form = holder.models.form
+    val form = holder.models.editors.form
     Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp)) {
         section.measures.forEachIndexed { index, measure ->
             val where = "measure ${index + 1} of ${section.name}"
