@@ -38,17 +38,25 @@ public object ChordCommands {
                 ?: accept(section.copy(measures = section.measures + Measure(MeasureId(id), meter)))
         }
 
+    /**
+     * Removes a measure with its chords. Performed voicings that use those chords are never left dangling: the
+     * removal is refused unless [reconcile] confirms that they are removed in the same step.
+     */
     public fun removeMeasure(
         library: Library,
         mode: Mode,
         ref: SectionRef,
         measureId: MeasureId,
+        reconcile: Boolean = false,
     ): Outcome<Library> =
-        SectionEdit.run(library, mode, ref) { section ->
-            if (section.measures.none { it.id == measureId }) {
-                refuse(Refusal.UNKNOWN_MEASURE)
+        SectionEdit.runSong(library, mode, ref) { song, section ->
+            val measure = section.measures.firstOrNull { it.id == measureId }
+            if (measure == null) {
+                Outcome.Refused(Refusal.UNKNOWN_MEASURE)
             } else {
-                accept(section.copy(measures = section.measures.filterNot { it.id == measureId }))
+                val gone = measure.events.map { it.id }.toSet()
+                val without = section.copy(measures = section.measures - measure)
+                SectionEdit.withoutVoicings(song, without, gone, reconcile)
             }
         }
 
@@ -94,30 +102,20 @@ public object ChordCommands {
             }
         }
 
+    /** Removes a chord; see [removeMeasure] for the voicings that used it. */
     public fun removeChord(
         library: Library,
         mode: Mode,
         ref: SectionRef,
         eventId: EventId,
+        reconcile: Boolean = false,
     ): Outcome<Library> =
-        SectionEdit.run(library, mode, ref) { section ->
+        SectionEdit.runSong(library, mode, ref) { song, section ->
             if (section.measures.none { m -> m.events.any { it.id == eventId } }) {
-                refuse(Refusal.UNKNOWN_EVENT)
+                Outcome.Refused(Refusal.UNKNOWN_EVENT)
             } else {
-                accept(
-                    section.copy(
-                        measures =
-                            section.measures.map { m ->
-                                m.copy(
-                                    events =
-                                        m.events.filterNot {
-                                            it.id ==
-                                                eventId
-                                        },
-                                )
-                            },
-                    ),
-                )
+                val measures = section.measures.map { m -> m.copy(events = m.events.filterNot { it.id == eventId }) }
+                SectionEdit.withoutVoicings(song, section.copy(measures = measures), setOf(eventId), reconcile)
             }
         }
 
@@ -210,21 +208,24 @@ internal object SectionEdit {
         mode: Mode,
         ref: SectionRef,
         change: (Section) -> Outcome<Section>,
-    ): Outcome<Library> {
-        val song = library.songs.firstOrNull { it.id == ref.songId }
-        val section = song?.sections?.firstOrNull { it.id == ref.sectionId }
-        val outcome =
-            when {
-                mode != Mode.EDIT -> Outcome.Refused(Refusal.PERFORMANCE_MODE)
-                song == null -> Outcome.Refused(Refusal.UNKNOWN_SONG)
-                section == null -> Outcome.Refused(Refusal.UNKNOWN_SECTION)
-                else -> change(section)
+    ): Outcome<Library> =
+        runSong(library, mode, ref) { song, section ->
+            when (val outcome = change(section)) {
+                is Outcome.Refused -> outcome
+                is Outcome.Accepted -> Outcome.Accepted(replace(song, outcome.value))
             }
-        return when (outcome) {
-            is Outcome.Refused -> outcome
-            is Outcome.Accepted -> Outcome.Accepted(replace(library, song!!, outcome.value))
         }
-    }
+
+    fun runSong(
+        library: Library,
+        mode: Mode,
+        ref: SectionRef,
+        change: (Song, Section) -> Outcome<Song>,
+    ): Outcome<Library> =
+        SongEdit.run(library, mode, ref.songId) { song ->
+            val section = song.sections.firstOrNull { it.id == ref.sectionId }
+            if (section == null) Outcome.Refused(Refusal.UNKNOWN_SECTION) else change(song, section)
+        }
 
     /** A refusal when a freshly drawn identity was purged or is already used. */
     fun fresh(
@@ -237,12 +238,24 @@ internal object SectionEdit {
             else -> null
         }
 
-    private fun replace(
-        library: Library,
+    /** The song with [section] in place; voicings of [gone] events are dropped only when [reconcile] is set. */
+    fun withoutVoicings(
         song: Song,
         section: Section,
-    ): Library {
-        val sections = song.sections.map { if (it.id == section.id) section else it }
-        return if (sections == song.sections) library else library.revise(song.copy(sections = sections))
+        gone: Set<EventId>,
+        reconcile: Boolean,
+    ): Outcome<Song> {
+        val used = song.parts.any { part -> part.voicings.any { it.eventId in gone } }
+        return if (used && !reconcile) {
+            Outcome.Refused(Refusal.IN_USE)
+        } else {
+            val parts = song.parts.map { p -> p.copy(voicings = p.voicings.filterNot { it.eventId in gone }) }
+            Outcome.Accepted(replace(song, section).copy(parts = parts))
+        }
     }
+
+    private fun replace(
+        song: Song,
+        section: Section,
+    ): Song = song.copy(sections = song.sections.map { if (it.id == section.id) section else it })
 }

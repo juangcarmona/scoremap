@@ -11,6 +11,7 @@ import scoremap.library.Library
 import scoremap.library.LibraryStore
 import scoremap.library.MeasuresText
 import scoremap.library.MusicSet
+import scoremap.library.PartsText
 import scoremap.library.Section
 import scoremap.library.SectionId
 import scoremap.library.SetId
@@ -44,7 +45,7 @@ public class RoomLibraryStore internal constructor(
                         context,
                         LibraryDatabase::class.java,
                         name,
-                    ).addMigrations(Migration1To2, Migration2To3, Migration3To4)
+                    ).addMigrations(Migration1To2, Migration2To3, Migration3To4, Migration4To5)
                     .build(),
                 beforeCommit,
             )
@@ -115,7 +116,15 @@ internal object LibraryRows {
                 index,
                 (song, deleted),
                 ->
-                SongRow(song.id.value, index, song.name, song.revision, deleted, song.key?.label)
+                SongRow(
+                    song.id.value,
+                    index,
+                    song.name,
+                    song.revision,
+                    deleted,
+                    song.key?.label,
+                    PartsText.encode(song.parts),
+                )
             },
         )
         dao.insertSections(
@@ -171,7 +180,11 @@ internal object LibraryRows {
         library: Library,
     ) {
         val revisions = library.histories.flatMap { (songId, list) -> list.map { songId to it } }
-        dao.insertRevisions(revisions.map { (songId, r) -> RevisionRow(songId.value, r.number, r.name, r.key?.label) })
+        dao.insertRevisions(
+            revisions.map { (songId, r) ->
+                RevisionRow(songId.value, r.number, r.name, r.key?.label, PartsText.encode(r.parts))
+            },
+        )
         dao.insertRevisionSections(
             revisions.flatMap { (songId, r) ->
                 r.sections.mapIndexed {
@@ -222,6 +235,7 @@ internal object LibraryRows {
                     Attachment(AttachmentId(it.id), it.name, it.sha256, it.bytes, it.pages, it.lastPage)
                 },
                 SongKey.parse(row.songKey),
+                PartsText.decode(row.parts),
             )
         val members = dao.members().groupBy { it.setId }
         val setRows = dao.sets()
@@ -246,6 +260,7 @@ internal object LibraryRows {
                             )
                         },
                         SongKey.parse(r.songKey),
+                        PartsText.decode(r.parts),
                     )
                 }
             }

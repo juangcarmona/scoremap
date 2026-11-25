@@ -14,7 +14,9 @@ import scoremap.library.ChordCommands
 import scoremap.library.ChordRequest
 import scoremap.library.ChordSpec
 import scoremap.library.CommitOutcome
+import scoremap.library.EventId
 import scoremap.library.Fraction
+import scoremap.library.Hand
 import scoremap.library.IdSource
 import scoremap.library.Library
 import scoremap.library.LibraryCommands
@@ -23,12 +25,16 @@ import scoremap.library.MeasureRef
 import scoremap.library.Meter
 import scoremap.library.Mode
 import scoremap.library.Outcome
+import scoremap.library.PartCommands
+import scoremap.library.PartRef
+import scoremap.library.PerformedNote
 import scoremap.library.Refusal
 import scoremap.library.RetentionCommands
 import scoremap.library.SectionRef
 import scoremap.library.ServiceResult
 import scoremap.library.SheetCommands
 import scoremap.library.SongKey
+import scoremap.library.Voicing
 import scoremap.music.SpelledNote
 import java.util.UUID
 
@@ -159,6 +165,74 @@ public class RoomLibraryStoreTest {
                 .measures
                 .single()
         assertEquals(listOf(event), kept.events)
+    }
+
+    @Test
+    public fun partsAndVoicingsSurviveReopenAndRestoreKeepsThem() {
+        val first = open()
+        val service = LibraryService(first)
+        val (ref, eventId) = songWithChord(service)
+        service.execute("f") { PartCommands.addPart(it, Mode.EDIT, ref.songId, "Right hand", ids) }
+        val part =
+            PartRef(
+                ref.songId,
+                service
+                    .current()
+                    .library.songs
+                    .single()
+                    .parts
+                    .single()
+                    .id,
+            )
+        val notes = listOf(PerformedNote(0, Hand.LEFT), PerformedNote(60, Hand.RIGHT), PerformedNote(108, Hand.RIGHT))
+        service.execute("g") { PartCommands.setVoicing(it, Mode.EDIT, part, eventId, notes) }
+        val before = service.current()
+        first.close()
+
+        val reopened = LibraryService(open()).current()
+        assertEquals(before.library, reopened.library)
+        assertEquals(
+            listOf(Voicing(eventId, notes)),
+            reopened.library.songs
+                .single()
+                .parts
+                .single()
+                .voicings,
+        )
+        val kept = RetentionCommands.history(reopened.library, ref.songId).last().parts
+        assertEquals(
+            reopened.library.songs
+                .single()
+                .parts,
+            kept,
+        )
+    }
+
+    private fun songWithChord(service: LibraryService): Pair<SectionRef, EventId> {
+        val ref = songWithLyrics(service)
+        service.execute("d") { ChordCommands.addMeasure(it, Mode.EDIT, ref, Meter.COMMON, ids) }
+        val measure =
+            service
+                .current()
+                .library.songs
+                .single()
+                .sections
+                .single()
+                .measures
+                .single()
+        val request = ChordRequest(Fraction.ZERO, Fraction.of(4, 1), ChordSpec("C", "major"))
+        service.execute("e") { ChordCommands.addChord(it, Mode.EDIT, MeasureRef(ref, measure.id), request, ids) }
+        val events =
+            service
+                .current()
+                .library.songs
+                .single()
+                .sections
+                .single()
+                .measures
+                .single()
+                .events
+        return ref to events.single().id
     }
 
     private fun songWithLyrics(service: LibraryService): SectionRef {

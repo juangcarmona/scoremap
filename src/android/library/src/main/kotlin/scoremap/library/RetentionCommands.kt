@@ -84,7 +84,11 @@ public object RetentionCommands {
             val target =
                 history(library, songId).firstOrNull { it.number == number }
                     ?: return@guarded refused(Refusal.UNKNOWN_REVISION)
-            accepted(library.revise(song.copy(name = target.name, sections = target.sections, key = target.key)))
+            accepted(
+                library.revise(
+                    song.copy(name = target.name, sections = target.sections, key = target.key, parts = target.parts),
+                ),
+            )
         }
 
     private fun deletedSong(

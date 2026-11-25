@@ -13,6 +13,8 @@ internal class DocumentReader(
     private var carriesPdfs = false
     private var carriesSheet = false
     private var carriesForm = false
+    private var carriesParts = false
+    private val parts = PartsReader(limits)
     private val form = FormReader(limits)
 
     fun read(root: Json.Obj): DecodeOutcome =
@@ -27,12 +29,13 @@ internal class DocumentReader(
         need(format.value == TRANSFER_FORMAT, Rejection.UNSUPPORTED_FORMAT)
         val version = root.fields["version"] as? Json.Integer ?: invalid()
         need(
-            version.value in TRANSFER_VERSION.toLong()..TRANSFER_VERSION_WITH_FORM.toLong(),
+            version.value in TRANSFER_VERSION.toLong()..TRANSFER_VERSION_WITH_PARTS.toLong(),
             Rejection.UNSUPPORTED_VERSION,
         )
         carriesPdfs = version.value >= TRANSFER_VERSION_WITH_PDFS.toLong()
         carriesSheet = version.value >= TRANSFER_VERSION_WITH_SHEET.toLong()
         carriesForm = version.value >= TRANSFER_VERSION_WITH_FORM.toLong()
+        carriesParts = version.value >= TRANSFER_VERSION_WITH_PARTS.toLong()
         exactly(root, setOf("format", "version", "songs"), optional = setOf("set"))
         val songs = (root.fields["songs"] as? Json.Array ?: invalid()).items
         need(songs.size <= limits.maxSongs, Rejection.OVERSIZED)
@@ -43,7 +46,8 @@ internal class DocumentReader(
         val obj = value as? Json.Obj ?: invalid()
         val optional =
             (if (carriesPdfs) setOf("attachments") else emptySet()) +
-                (if (carriesSheet) setOf("songKey") else emptySet())
+                (if (carriesSheet) setOf("songKey") else emptySet()) +
+                (if (carriesParts) setOf("parts") else emptySet())
         exactly(obj, setOf("key", "name", "sections"), optional = optional)
         val sections = (obj.fields["sections"] as? Json.Array ?: invalid()).items
         need(sections.size <= limits.maxSectionsPerSong, Rejection.OVERSIZED)
@@ -53,6 +57,7 @@ internal class DocumentReader(
             sections.map(::section),
             obj.fields["attachments"]?.let(attachments::read).orEmpty(),
             obj.fields["songKey"]?.let { (it as? Json.Text ?: invalid()).value },
+            obj.fields["parts"]?.let(parts::read).orEmpty(),
         )
     }
 

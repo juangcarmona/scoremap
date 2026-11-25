@@ -72,16 +72,22 @@ public class FormModel(
         sectionId: String,
         eventId: String,
         mode: Mode,
+        reconcile: Boolean = false,
     ): Notice =
-        run(Notice.SHEET_SAVED) { ChordCommands.removeChord(it, mode, ref(songId, sectionId), EventId(eventId)) }
+        run(Notice.SHEET_SAVED) {
+            ChordCommands.removeChord(it, mode, ref(songId, sectionId), EventId(eventId), reconcile)
+        }
 
     public fun removeMeasure(
         songId: String,
         sectionId: String,
         measureId: String,
         mode: Mode,
+        reconcile: Boolean = false,
     ): Notice =
-        run(Notice.SHEET_SAVED) { ChordCommands.removeMeasure(it, mode, ref(songId, sectionId), MeasureId(measureId)) }
+        run(Notice.SHEET_SAVED) {
+            ChordCommands.removeMeasure(it, mode, ref(songId, sectionId), MeasureId(measureId), reconcile)
+        }
 
     /** Blank text removes the link; otherwise it is the character position in the lyrics. */
     public fun linkLyric(

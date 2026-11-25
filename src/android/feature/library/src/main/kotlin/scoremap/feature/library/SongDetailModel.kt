@@ -7,7 +7,6 @@ import scoremap.library.LibraryService
 import scoremap.library.Mode
 import scoremap.library.Outcome
 import scoremap.library.RetentionCommands
-import scoremap.library.Section
 import scoremap.library.SectionId
 import scoremap.library.SheetCommands
 import scoremap.library.SongId
@@ -20,6 +19,8 @@ public data class EventItem(
     val start: String,
     val duration: String,
     val lyricIndex: Int?,
+    /** True when a part plays a voicing for this chord. */
+    val voiced: Boolean = false,
 )
 
 public data class MeasureItem(
@@ -65,6 +66,9 @@ public data class SongDetailState(
     val notice: Notice?,
     /** The declared key such as "F# minor"; null while unknown. */
     val key: String? = null,
+    val parts: List<PartItem> = emptyList(),
+    /** Every chord of the song, so a part's voicing can be chosen for it. */
+    val chords: List<ChordChoice> = emptyList(),
 )
 
 /** One song's structure and retained history: rename, add sections and restore any earlier revision. */
@@ -80,41 +84,20 @@ public class SongDetailModel(
     ): SongDetailState? {
         val library = service.current().library
         val song = library.songs.firstOrNull { it.id.value == songId } ?: return null
+        val voiced = song.parts.flatMap { p -> p.voicings.map { it.eventId } }.toSet()
         return SongDetailState(
             song.id.value,
             song.name,
             song.revision,
-            song.sections.map(::sectionItem),
+            song.sections.map { sectionItem(it, voiced) },
             RetentionCommands.history(library, song.id).map { RevisionItem(it.number, it.name, it.sections.size) },
             song.attachments.map { AttachmentItem(it.id.value, it.name, it.pages, it.lastPage, it.sha256) },
             notice,
             song.key?.label,
+            partItems(song),
+            chordChoices(song),
         )
     }
-
-    private fun sectionItem(section: Section): SectionItem =
-        SectionItem(
-            section.id.value,
-            section.name,
-            section.repeats,
-            section.lyrics,
-            section.cue,
-            section.measures.map { m ->
-                MeasureItem(
-                    m.id.value,
-                    m.meter.label,
-                    m.events.map {
-                        EventItem(
-                            it.id.value,
-                            it.chord.symbol,
-                            it.start.toString(),
-                            it.duration.toString(),
-                            it.lyricIndex,
-                        )
-                    },
-                )
-            },
-        )
 
     /** Empty text clears the key; text that is not a key is refused without changing the song. */
     public fun setKey(
