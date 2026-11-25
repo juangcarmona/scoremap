@@ -19,6 +19,7 @@ private const val VERSION_TWO = 2
 private const val VERSION_THREE = 3
 private const val VERSION_FOUR = 4
 private const val VERSION_FIVE = 5
+private const val VERSION_SIX = 6
 
 /** Version 3 adds the song key, section lyrics and cues; existing rows keep an unknown key and no text. */
 internal val Migration2To3: Migration =
@@ -49,6 +50,16 @@ internal val Migration4To5: Migration =
         override fun migrate(db: SupportSQLiteDatabase) {
             for (table in listOf("songs", "revisions")) {
                 db.execSQL("ALTER TABLE `$table` ADD COLUMN `parts` TEXT NOT NULL DEFAULT ''")
+            }
+        }
+    }
+
+/** Version 6 stores each song's devices and bindings; existing songs keep none. */
+internal val Migration5To6: Migration =
+    object : Migration(VERSION_FIVE, VERSION_SIX) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            for (table in listOf("songs", "revisions")) {
+                db.execSQL("ALTER TABLE `$table` ADD COLUMN `arrangement` TEXT NOT NULL DEFAULT ''")
             }
         }
     }

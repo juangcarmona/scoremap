@@ -15,6 +15,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import scoremap.library.Hand
+import scoremap.music.KeySignature
 import scoremap.music.Piano
 
 private const val PAGE_WHITE_KEYS = 7
@@ -26,6 +27,7 @@ internal class VoicingEdit(
     val partName: String,
     val chord: ChordChoice,
     val piano: PianoEditorModel,
+    val key: KeySignature? = null,
 )
 
 /**
@@ -58,6 +60,9 @@ internal fun VoicingEditor(
         }
         Text("Showing ${Piano.label(piano.window.lowest)} to ${Piano.label(piano.window.highest)} of A0 to C8")
         if (tick >= 0) PianoKeyboard(piano.keys()) { midi -> change { piano.toggle(midi) } }
+        if (tick >= 0) {
+            StaffCanvas(listOf(staffColumn(piano.selected.map { it.midi }.distinct(), edit.key)), edit.key)
+        }
         val hidden = piano.hidden
         if (hidden.isNotEmpty()) Text("Selected, not in view: ${hidden.joinToString(", ")}")
         Text("Selected: " + selectedText(piano))
@@ -65,7 +70,7 @@ internal fun VoicingEditor(
             ActionButton("Save voicing", "Save voicing") {
                 holder.act { mode ->
                     val notice =
-                        holder.models.parts.saveVoicing(
+                        holder.models.editors.parts.saveVoicing(
                             edit.songId,
                             edit.partId,
                             edit.chord.eventId,

@@ -38,6 +38,11 @@ public fun LibraryScreen(
     val holder = remember(models) { LibraryHolder(models, scope) }
     LaunchedEffect(holder) { holder.act { null } }
 
+    val sheetSongId = holder.sheetSongId
+    if (sheetSongId != null) {
+        Column(modifier.padding(16.dp)) { SongSheetScreen(holder, sheetSongId) }
+        return
+    }
     Column(modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text("ScoreMap", style = MaterialTheme.typography.headlineMedium)
         Row(Modifier.heightIn(min = MinTarget), verticalAlignment = Alignment.CenterVertically) {
@@ -47,8 +52,11 @@ public fun LibraryScreen(
         holder.notice?.let { Text(it.text, Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
         val viewing = holder.viewing
         val editing = holder.editing
+        val composing = holder.composing
         if (editing != null) {
             VoicingEditor(holder, editing)
+        } else if (composing != null) {
+            PhraseEditor(holder, composing)
         } else if (viewing != null) {
             PdfViewerHost(holder, viewing)
         } else {

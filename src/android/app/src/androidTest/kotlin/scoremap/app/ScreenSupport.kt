@@ -10,6 +10,7 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.printToString
 
@@ -36,9 +37,25 @@ internal fun ComposeTestRule.waitForText(text: String) {
 /** Clicks the control with this spoken name, or this visible text, wherever the list has put it. */
 internal fun ComposeTestRule.clickControl(name: String) {
     waitUntil(TIMEOUT_MILLIS) { revealed(hasContentDescription(name)) || revealed(hasText(name)) }
-    if (onAllNodes(hasContentDescription(name)).fetchSemanticsNodes().isNotEmpty()) {
-        onNodeWithContentDescription(name).performClick()
-    } else {
-        onNodeWithText(name).performClick()
+    val node =
+        if (onAllNodes(hasContentDescription(name)).fetchSemanticsNodes().isNotEmpty()) {
+            onNodeWithContentDescription(name)
+        } else {
+            onNodeWithText(name)
+        }
+    // A control below the fold of a plain scrolling screen must be brought into view before it is pressed.
+    runCatching { node.performScrollTo() }
+    node.performClick()
+}
+
+/** Waits until a node with exactly this spoken description exists, such as the staff in words. */
+internal fun ComposeTestRule.waitForDescription(description: String) {
+    try {
+        waitUntil(TIMEOUT_MILLIS) { onAllNodes(hasContentDescription(description)).fetchSemanticsNodes().isNotEmpty() }
+    } catch (failure: ComposeTimeoutException) {
+        throw AssertionError(
+            "Description '$description' never appeared. The screen shows:\n" + onRoot().printToString(),
+            failure,
+        )
     }
 }

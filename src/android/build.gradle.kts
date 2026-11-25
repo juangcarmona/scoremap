@@ -106,7 +106,8 @@ tasks.register("verifyHost") {
                 "music/build/test-results/test/TEST-scoremap.music.HarmonyFixtureTest.xml" to 2,
                 "music/build/test-results/test/TEST-scoremap.music.HarmonyRulesTest.xml" to 4,
                 "music/build/test-results/test/TEST-scoremap.music.PerformedPitchTest.xml" to 3,
-                "music/build/test-results/test/TEST-scoremap.music.PianoTest.xml" to 7,
+                "music/build/test-results/test/TEST-scoremap.music.PianoTest.xml" to 8,
+                "music/build/test-results/test/TEST-scoremap.music.StaffTest.xml" to 7,
                 "library/build/test-results/test/TEST-scoremap.library.LibraryRulesTest.xml" to 10,
                 "library/build/test-results/test/TEST-scoremap.library.LibraryLifecycleTest.xml" to 8,
                 "library/build/test-results/test/TEST-scoremap.library.LibraryServiceTest.xml" to 6,
@@ -119,13 +120,20 @@ tasks.register("verifyHost") {
                 "library/build/test-results/test/TEST-scoremap.library.ChordStructureTest.xml" to 5,
                 "library/build/test-results/test/TEST-scoremap.library.ChordCommandsTest.xml" to 10,
                 "library/build/test-results/test/TEST-scoremap.library.PartCommandsTest.xml" to 9,
-                "library/build/test-results/test/TEST-scoremap.library.PartsTextTest.xml" to 2,
+                "library/build/test-results/test/TEST-scoremap.library.PhraseCommandsTest.xml" to 7,
+                "library/build/test-results/test/TEST-scoremap.library.ArrangementCommandsTest.xml" to 10,
+                "library/build/test-results/test/TEST-scoremap.library.PartsTextTest.xml" to 3,
+                "library/build/test-results/test/TEST-scoremap.library.ArrangementTextTest.xml" to 3,
+                "library/build/test-results/test/TEST-scoremap.library.ArrangementImportTest.xml" to 3,
                 "library/build/test-results/test/TEST-scoremap.library.PartsImportTest.xml" to 3,
+                "library/build/test-results/test/TEST-scoremap.library.PhrasesImportTest.xml" to 3,
                 "exchange/build/test-results/test/TEST-scoremap.exchange.TransferCodecTest.xml" to 6,
                 "exchange/build/test-results/test/TEST-scoremap.exchange.TransferPdfCodecTest.xml" to 5,
                 "exchange/build/test-results/test/TEST-scoremap.exchange.TransferSheetCodecTest.xml" to 4,
                 "exchange/build/test-results/test/TEST-scoremap.exchange.TransferFormCodecTest.xml" to 5,
                 "exchange/build/test-results/test/TEST-scoremap.exchange.TransferPartsCodecTest.xml" to 5,
+                "exchange/build/test-results/test/TEST-scoremap.exchange.TransferPhrasesCodecTest.xml" to 5,
+                "exchange/build/test-results/test/TEST-scoremap.exchange.TransferArrangementCodecTest.xml" to 5,
                 "exchange/build/test-results/test/TEST-scoremap.exchange.TransferPdfFlowTest.xml" to 9,
                 "exchange/build/test-results/test/TEST-scoremap.exchange.TransferFlowTest.xml" to 5,
                 "feature/library/build/test-results/testDebugUnitTest/TEST-scoremap.feature.library.LibraryScreenModelTest.xml" to 7,
@@ -134,6 +142,11 @@ tasks.register("verifyHost") {
                 "feature/library/build/test-results/testDebugUnitTest/TEST-scoremap.feature.library.FormModelTest.xml" to 5,
                 "feature/library/build/test-results/testDebugUnitTest/TEST-scoremap.feature.library.PianoEditorModelTest.xml" to 5,
                 "feature/library/build/test-results/testDebugUnitTest/TEST-scoremap.feature.library.PartsModelTest.xml" to 5,
+                "feature/library/build/test-results/testDebugUnitTest/TEST-scoremap.feature.library.PhraseEditorModelTest.xml" to 6,
+                "feature/library/build/test-results/testDebugUnitTest/TEST-scoremap.feature.library.PhrasesModelTest.xml" to 3,
+                "feature/library/build/test-results/testDebugUnitTest/TEST-scoremap.feature.library.ArrangementModelTest.xml" to 6,
+                "feature/library/build/test-results/testDebugUnitTest/TEST-scoremap.feature.library.StaffTextTest.xml" to 3,
+                "feature/library/build/test-results/testDebugUnitTest/TEST-scoremap.feature.library.SheetLayoutTest.xml" to 6,
                 "feature/library/build/test-results/testDebugUnitTest/TEST-scoremap.feature.library.AttachmentsModelTest.xml" to 6,
                 "build-logic/build/test-results/test/TEST-scoremap.buildlogic.ConventionContractTest.xml" to 5,
                 "build-logic/build/test-results/test/TEST-scoremap.buildlogic.ProjectGraphContractTest.xml" to 5,
@@ -159,7 +172,7 @@ tasks.register("verifyDevice") {
         val reports = fileTree(directory) { include("**/TEST-*.xml") }.files
         // The managed device writes one report for the whole run; the declared classes and their case counts
         // are checked inside it, and the usual inventory checks bind that report to this run.
-        val expectedClasses = mapOf("OfflineRecreationTest" to 1, "RoomLibraryStoreTest" to 9, "LibraryScreenTest" to 4, "SetsAndHistoryTest" to 7, "PdfStorageTest" to 6, "PdfViewerTest" to 3)
+        val expectedClasses = mapOf("OfflineRecreationTest" to 1, "RoomLibraryStoreTest" to 11, "LibraryScreenTest" to 4, "SetsAndHistoryTest" to 10, "PdfStorageTest" to 6, "PdfViewerTest" to 3)
         check(reports.size == 1) { "Expected one managed-device report, found ${reports.map { it.name }}." }
         val report = reports.single()
         val perClass = expectedClasses.mapValues { (name, _) -> Regex("classname=\"[^\"]*\\.$name\"").findAll(report.readText()).count() }

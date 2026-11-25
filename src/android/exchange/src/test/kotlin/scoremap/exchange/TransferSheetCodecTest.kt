@@ -60,7 +60,7 @@ public class TransferSheetCodecTest {
             assertEquals(invalid, TransferCodec.decode(literal.replace("\"version\":3", "\"version\":$older")))
         }
         val unsupported = DecodeOutcome.Rejected(Rejection.UNSUPPORTED_VERSION)
-        assertEquals(unsupported, TransferCodec.decode(literal.replace("\"version\":3", "\"version\":6")))
+        assertEquals(unsupported, TransferCodec.decode(literal.replace("\"version\":3", "\"version\":8")))
     }
 
     @Test

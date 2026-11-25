@@ -24,6 +24,8 @@ private fun refusalNotice(refusal: Refusal): Notice =
         Refusal.INVALID_TIME, Refusal.OVERLAP -> Notice.NO_ROOM
         Refusal.INVALID_LYRIC_LINK -> Notice.INVALID_LINK
         Refusal.IN_USE -> Notice.IN_USE
+        Refusal.OUT_OF_DEVICE_RANGE -> Notice.OUT_OF_DEVICE
+        Refusal.EXCLUDES_NOTES -> Notice.EXCLUDES_NOTES
         Refusal.DANGLING_REFERENCE -> Notice.LINKED_LYRICS
         Refusal.STALE_REVISION -> Notice.CONFLICT
         else -> Notice.FAILED

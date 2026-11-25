@@ -84,4 +84,28 @@ public class PianoTest {
         assertEquals(listOf(108, 60, 21, 64, 20), selected)
         assertEquals(emptyList<Int>(), PianoWindow(21, 52).hidden(listOf(21, 60, 108)))
     }
+
+    @Test
+    public fun labelsReadBackToTheSameExactPitchWithAnySpelling() {
+        for (key in Piano.keys) assertEquals(key.name, key.midi, Piano.parseLabel(key.name))
+        assertEquals(61, Piano.parseLabel("C#4"))
+        assertEquals(61, Piano.parseLabel(" Db4 "))
+        assertEquals(0, Piano.parseLabel("C-1"))
+        assertEquals(127, Piano.parseLabel("G9"))
+        assertEquals(59, Piano.parseLabel("Cb4"))
+        for (bad in listOf(
+            "",
+            "H4",
+            "C",
+            "4",
+            "C##4",
+            "G#9",
+            "Ab9x",
+            "C 4",
+            "c4",
+            "A10",
+        )) {
+            assertNull(bad, Piano.parseLabel(bad))
+        }
+    }
 }

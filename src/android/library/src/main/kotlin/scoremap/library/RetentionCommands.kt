@@ -86,7 +86,14 @@ public object RetentionCommands {
                     ?: return@guarded refused(Refusal.UNKNOWN_REVISION)
             accepted(
                 library.revise(
-                    song.copy(name = target.name, sections = target.sections, key = target.key, parts = target.parts),
+                    song.copy(
+                        name = target.name,
+                        sections = target.sections,
+                        key = target.key,
+                        parts = target.parts,
+                        devices = target.devices,
+                        bindings = target.bindings,
+                    ),
                 ),
             )
         }

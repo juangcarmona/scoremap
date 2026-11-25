@@ -1,5 +1,8 @@
 package scoremap.library
 
+import scoremap.music.Piano
+import scoremap.music.PitchRange
+
 /** A chord event as carried by a package: times are exact, identities are never imported. */
 public data class GraphEvent(
     val start: Fraction,
@@ -25,9 +28,32 @@ public data class GraphVoicing(
     val notes: List<PerformedNote>,
 )
 
+/** A prepared phrase as carried by a package; [section] is the position of its section in the song, if any. */
+public data class GraphPhrase(
+    val name: String,
+    val section: Int? = null,
+    val items: List<PhraseItem> = emptyList(),
+)
+
 public data class GraphPart(
     val name: String,
     val voicings: List<GraphVoicing> = emptyList(),
+    val phrases: List<GraphPhrase> = emptyList(),
+    val hand: HandRole? = null,
+)
+
+/** A device as carried by a package. */
+public data class GraphDevice(
+    val name: String,
+    val range: PitchRange = Piano.range,
+)
+
+/** A binding as carried by a package: the positions of its part and device in the song's lists. */
+public data class GraphBinding(
+    val part: Int,
+    val device: Int,
+    val range: PitchRange,
+    val sound: String = "",
 )
 
 /** A section as carried by a transfer package; identities are never imported. */
@@ -65,6 +91,8 @@ public data class GraphSong(
     /** The declared key as text such as "F# minor"; null while unknown. */
     val songKey: String? = null,
     val parts: List<GraphPart> = emptyList(),
+    val devices: List<GraphDevice> = emptyList(),
+    val bindings: List<GraphBinding> = emptyList(),
 )
 
 public data class GraphSet(
@@ -112,6 +140,16 @@ public data class TransferGraph(
                 },
                 songKey = song.key?.label,
                 parts = song.parts.map { graphPart(song, it) },
+                devices = song.devices.map { GraphDevice(it.name, it.range) },
+                bindings =
+                    song.bindings.map { b ->
+                        GraphBinding(
+                            song.parts.indexOfFirst { it.id == b.partId },
+                            song.devices.indexOfFirst { it.id == b.deviceId },
+                            b.range,
+                            b.sound,
+                        )
+                    },
             )
 
         private fun graphPart(
@@ -125,7 +163,13 @@ public data class TransferGraph(
                             measure.events.mapIndexed { e, event -> event.id to EventPosition(s, m, e) }
                         }
                     }.toMap()
-            return GraphPart(part.name, part.voicings.map { GraphVoicing(positions.getValue(it.eventId), it.notes) })
+            val sectionIndex = song.sections.map { it.id }
+            return GraphPart(
+                part.name,
+                part.voicings.map { GraphVoicing(positions.getValue(it.eventId), it.notes) },
+                part.phrases.map { p -> GraphPhrase(p.name, p.section?.let(sectionIndex::indexOf), p.items) },
+                part.hand,
+            )
         }
     }
 }

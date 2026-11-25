@@ -85,7 +85,7 @@ public class PdfViewerTest {
             reopenSong("Blue Bossa")
             waitForText("PDFs")
             assertEquals(0, compose.onAllNodesWithText("Broken (1 pages)").fetchSemanticsNodes().size)
-            compose.onNodeWithText("Editing: Blue Bossa").assertIsDisplayed()
+            waitForText("Editing: Blue Bossa")
         }
     }
 

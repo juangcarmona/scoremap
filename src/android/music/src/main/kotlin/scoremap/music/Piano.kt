@@ -2,6 +2,9 @@ package scoremap.music
 
 private const val FIRST_KEY = 21
 private const val LAST_KEY = 108
+private const val HIGHEST_MIDI = 127
+private const val OCTAVE_GROUP = 3
+private val LABEL = Regex("^([A-G])(#|b)?(-?\\d+)$")
 
 /** One character per semitone from C: 1 marks a black key. */
 private const val BLACK_PATTERN = "010100101010"
@@ -32,6 +35,34 @@ public object Piano {
 
     /** A label that keeps pitch and octave independent of color, such as "Bb3". */
     public fun label(midi: Int): String = PerformedPitch.at(midi).let { "${it.spelling}${it.octave}" }
+
+    /**
+     * Reads a label such as "C4", "Bb3" or "F#5" back to its MIDI note, accepting any exact pitch from C-1 to G9;
+     * null for anything else.
+     */
+    public fun parseLabel(text: String): Int? {
+        val match = LABEL.matchEntire(text.trim())
+        val spelling =
+            match?.let {
+                runCatching {
+                    SpelledNote.parse(
+                        it.groupValues[1] + it.groupValues[2],
+                    )
+                }.getOrNull()
+            }
+        val octave = match?.groupValues?.get(OCTAVE_GROUP)?.toIntOrNull()
+        val midi =
+            if (spelling != null &&
+                octave != null
+            ) {
+                (octave + 1) * SEMITONES_PER_OCTAVE + spelling.pitchClassFrom()
+            } else {
+                null
+            }
+        return midi?.takeIf { it in 0..HIGHEST_MIDI }
+    }
+
+    private fun SpelledNote.pitchClassFrom(): Int = SpelledNote.NATURAL.getValue(letter) + accidentals
 
     private fun key(midi: Int): PianoKey = PianoKey(midi, label(midi), octaveOf(midi), isBlack(midi))
 }

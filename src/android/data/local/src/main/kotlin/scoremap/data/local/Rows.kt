@@ -25,6 +25,7 @@ internal data class SongRow(
     val deleted: Boolean,
     val songKey: String?,
     @ColumnInfo(defaultValue = "") val parts: String,
+    @ColumnInfo(defaultValue = "") val arrangement: String,
 )
 
 @Entity(tableName = "sections", primaryKeys = ["songId", "position"])
@@ -62,6 +63,7 @@ internal data class RevisionRow(
     val name: String,
     val songKey: String?,
     @ColumnInfo(defaultValue = "") val parts: String,
+    @ColumnInfo(defaultValue = "") val arrangement: String,
 )
 
 @Entity(tableName = "revision_sections", primaryKeys = ["songId", "number", "position"])
