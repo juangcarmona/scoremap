@@ -1,11 +1,25 @@
 package scoremap.library
 
+/** A chord event as carried by a package: times are exact, identities are never imported. */
+public data class GraphEvent(
+    val start: Fraction,
+    val duration: Fraction,
+    val chord: ChordSpec,
+    val lyricIndex: Int? = null,
+)
+
+public data class GraphMeasure(
+    val meter: Meter,
+    val events: List<GraphEvent> = emptyList(),
+)
+
 /** A section as carried by a transfer package; identities are never imported. */
 public data class GraphSection(
     val name: String,
     val repeats: Int,
     val lyrics: String = "",
     val cue: String = "",
+    val measures: List<GraphMeasure> = emptyList(),
 )
 
 /** PDF bytes with content equality, so packages can be compared value by value. */
@@ -59,11 +73,25 @@ public data class TransferGraph(
             )
         }
 
+        private fun graphMeasure(measure: Measure): GraphMeasure =
+            GraphMeasure(
+                measure.meter,
+                measure.events.map { GraphEvent(it.start, it.duration, it.chord, it.lyricIndex) },
+            )
+
         private fun graphSong(song: Song): GraphSong =
             GraphSong(
                 song.id.value,
                 song.name,
-                song.sections.map { GraphSection(it.name, it.repeats, it.lyrics, it.cue) },
+                song.sections.map {
+                    GraphSection(
+                        it.name,
+                        it.repeats,
+                        it.lyrics,
+                        it.cue,
+                        it.measures.map(::graphMeasure),
+                    )
+                },
                 songKey = song.key?.label,
             )
     }

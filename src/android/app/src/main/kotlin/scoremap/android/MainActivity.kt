@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import scoremap.data.local.AndroidPdfInspector
 import scoremap.data.local.FileBlobStore
 import scoremap.feature.library.AttachmentsModel
+import scoremap.feature.library.FormModel
 import scoremap.feature.library.LibraryModels
 import scoremap.feature.library.LibraryScreen
 import scoremap.feature.library.LibraryScreenModel
@@ -43,6 +44,7 @@ public class MainActivity : ComponentActivity() {
                 SetsScreenModel(service, random, random),
                 SongDetailModel(service, random, random),
                 AttachmentsModel(attachments, service, random),
+                FormModel(service, random, random),
             )
         setContent {
             MaterialTheme {

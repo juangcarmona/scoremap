@@ -38,6 +38,8 @@ public enum class Notice(
     MISSING_DEPENDENCY("Restore the songs of this set first."),
     RENAMED("Song renamed."),
     SECTION_ADDED("Section added."),
+    MEASURE_ADDED("Measure added."),
+    CHORD_ADDED("Chord added."),
     REVISION_RESTORED("Revision restored as a new one."),
     PDF_ATTACHED("PDF attached."),
     PDF_UNREADABLE("This PDF cannot be read. Your song was not changed."),
@@ -46,6 +48,11 @@ public enum class Notice(
     SHEET_SAVED("Saved."),
     INVALID_KEY("Enter a key such as F# minor or Bb major, or leave it empty to clear it."),
     TEXT_TOO_LONG("That text is too long. Nothing was saved."),
+    INVALID_METER("Enter a meter such as 4/4 or 6/8."),
+    INVALID_CHORD("Enter a chord such as Dm7, Bb or C/E, optionally followed by its length in beats."),
+    NO_ROOM("That chord does not fit in the measure."),
+    INVALID_LINK("Enter a position inside the lyrics, or leave it empty to remove the link."),
+    LINKED_LYRICS("Some chords are linked beyond the new end of the lyrics. Remove those links first."),
 }
 
 /** Immutable screen state: only values, no storage handles and no platform types. */

@@ -23,7 +23,7 @@ public object ImportCommands {
                     Song(
                         SongId(next()),
                         song.name.trim(),
-                        song.sections.map { section(it, next()) },
+                        song.sections.map { section(it, next) },
                         attachments = attachments(song, facts[song.key].orEmpty(), next),
                         key = SongKey.parse(song.songKey),
                     )
@@ -50,16 +50,27 @@ public object ImportCommands {
             }
         }
 
+    private fun measure(
+        source: GraphMeasure,
+        next: () -> String,
+    ): Measure =
+        Measure(
+            MeasureId(next()),
+            source.meter,
+            source.events.map { ChordEvent(EventId(next()), it.start, it.duration, it.chord, it.lyricIndex) },
+        )
+
     private fun section(
         source: GraphSection,
-        id: String,
+        next: () -> String,
     ): Section =
         Section(
-            SectionId(id),
+            SectionId(next()),
             source.name.trim(),
             source.repeats,
             SheetCommands.normalised(source.lyrics),
             SheetCommands.normalised(source.cue),
+            source.measures.map { measure(it, next) },
         )
 
     private fun sheetRefusal(song: GraphSong): Refusal? =
@@ -71,7 +82,7 @@ public object ImportCommands {
                     SheetCommands.normalised(it.cue).length > SheetCommands.MAX_CUE
             } -> Refusal.TEXT_TOO_LONG
 
-            else -> null
+            else -> song.sections.firstNotNullOfOrNull { FormRules.refusal(it) }
         }
 
     private fun attachments(

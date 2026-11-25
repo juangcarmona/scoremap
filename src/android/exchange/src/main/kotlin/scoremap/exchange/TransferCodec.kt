@@ -15,10 +15,15 @@ public const val TRANSFER_VERSION_WITH_PDFS: Int = 2
 /** Packages that also carry the song key, lyrics and cues use this version; it may carry PDFs too. */
 public const val TRANSFER_VERSION_WITH_SHEET: Int = 3
 
+/** Packages that also carry measures and chord events use this version. */
+public const val TRANSFER_VERSION_WITH_FORM: Int = 4
+
 private const val DEFAULT_MAX_CHARACTERS = 64 * 1024 * 1024
 private const val DEFAULT_MAX_SONGS = 500
 private const val DEFAULT_MAX_SECTIONS = 500
 private const val DEFAULT_MAX_DEPTH = 16
+private const val DEFAULT_MAX_MEASURES = 1000
+private const val DEFAULT_MAX_EVENTS = 64
 private const val DEFAULT_MAX_PDF_BYTES = 8 * 1024 * 1024
 private const val DEFAULT_MAX_TOTAL_PDF_BYTES = 32 * 1024 * 1024
 private const val DEFAULT_MAX_PDFS_PER_SONG = 20
@@ -36,6 +41,8 @@ public data class TransferLimits(
     val maxSongs: Int = DEFAULT_MAX_SONGS,
     val maxSectionsPerSong: Int = DEFAULT_MAX_SECTIONS,
     val maxDepth: Int = DEFAULT_MAX_DEPTH,
+    val maxMeasuresPerSection: Int = DEFAULT_MAX_MEASURES,
+    val maxEventsPerMeasure: Int = DEFAULT_MAX_EVENTS,
     val attachments: AttachmentLimits = AttachmentLimits(),
 )
 
@@ -57,6 +64,7 @@ public object TransferCodec {
         val withPdfs = graph.songs.any { it.attachments.isNotEmpty() }
         val version =
             when {
+                graph.songs.any { s -> s.sections.any { it.measures.isNotEmpty() } } -> TRANSFER_VERSION_WITH_FORM
                 graph.songs.any(::hasSheet) -> TRANSFER_VERSION_WITH_SHEET
                 withPdfs -> TRANSFER_VERSION_WITH_PDFS
                 else -> TRANSFER_VERSION
@@ -77,7 +85,15 @@ public object TransferCodec {
     private fun encodeSection(section: GraphSection): String {
         val lyrics = if (section.lyrics.isEmpty()) "" else ",\"lyrics\":${JsonWriter.quote(section.lyrics)}"
         val cue = if (section.cue.isEmpty()) "" else ",\"cue\":${JsonWriter.quote(section.cue)}"
-        return "{\"name\":${JsonWriter.quote(section.name)},\"repeats\":${section.repeats}$lyrics$cue}"
+        val measures =
+            if (section.measures.isEmpty()) {
+                ""
+            } else {
+                section.measures.joinToString(",", ",\"measures\":[", "]") {
+                    FormWriter.measure(it)
+                }
+            }
+        return "{\"name\":${JsonWriter.quote(section.name)},\"repeats\":${section.repeats}$lyrics$cue$measures}"
     }
 
     private fun encodeSong(song: GraphSong): String {

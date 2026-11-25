@@ -35,6 +35,7 @@ internal data class SectionRow(
     val repeats: Int,
     @ColumnInfo(defaultValue = "") val lyrics: String,
     @ColumnInfo(defaultValue = "") val cue: String,
+    @ColumnInfo(defaultValue = "") val measures: String,
 )
 
 @Entity(tableName = "sets")
@@ -71,6 +72,7 @@ internal data class RevisionSectionRow(
     val repeats: Int,
     @ColumnInfo(defaultValue = "") val lyrics: String,
     @ColumnInfo(defaultValue = "") val cue: String,
+    @ColumnInfo(defaultValue = "") val measures: String,
 )
 
 @Entity(tableName = "purged")

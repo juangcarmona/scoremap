@@ -28,6 +28,7 @@ private fun sectionSheet(
         SheetEntry("Cue for ${section.name}", section.cue, "Save cue", multiline = false) { text ->
             holder.act { mode -> models.setCue(songId, section.id, text, mode)?.notice }
         }
+        formSheet(holder, songId, section)
     }
 }
 
