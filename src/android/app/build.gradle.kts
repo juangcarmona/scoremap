@@ -26,6 +26,11 @@ android {
         release { isMinifyEnabled = false }
     }
 
+    sourceSets
+        .getByName("androidTest")
+        .assets.directories
+        .add("../data/local/schemas")
+
     testOptions {
         managedDevices {
             localDevices.create("pixelTabletApi37") {
