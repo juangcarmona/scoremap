@@ -4,6 +4,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import org.json.JSONObject
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -26,6 +27,7 @@ import java.util.UUID
 @RunWith(AndroidJUnit4::class)
 public class RoomMigrationTest {
     private val context: Context = ApplicationProvider.getApplicationContext()
+    private val testContext: Context = InstrumentationRegistry.getInstrumentation().context
     private val databaseName = "and05-migration-${UUID.randomUUID()}.db"
     private val recoveryName = "$databaseName.recovery-v5"
     private var store: RoomLibraryStore? = null
@@ -109,7 +111,7 @@ public class RoomMigrationTest {
 
     private fun createVersionFiveDatabase(halfwayFailure: Boolean) {
         val schema =
-            context.assets
+            testContext.assets
                 .open(
                     "scoremap.data.local.LibraryDatabase/5.json",
                 ).bufferedReader()
