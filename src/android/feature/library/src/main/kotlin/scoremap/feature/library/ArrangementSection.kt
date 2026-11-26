@@ -4,9 +4,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.dp
 import scoremap.library.HandRole
 import scoremap.music.Piano
@@ -66,12 +71,7 @@ internal fun partArrangement(
             }
         }
     }
-    detail.devices.forEach { device ->
-        NameEntry("Range of ${part.name} on ${device.name}", "Bind") { text ->
-            val request = BindText(songId, part.id, device.id, text, "", fullRange(device))
-            holder.act { mode -> arrangement.bind(request, mode) }
-        }
-    }
+    detail.devices.forEach { device -> BindingEntry(holder, songId, part, device) }
 }
 
 private fun fullRange(device: DeviceItem): PitchRange = ArrangementModel.parseRange(device.range) ?: Piano.range
@@ -84,3 +84,42 @@ internal fun handLabel(hand: HandRole?): String =
         HandRole.CONTEXTUAL -> "contextual"
         null -> "unassigned"
     }
+
+@Composable
+private fun BindingEntry(
+    holder: LibraryHolder,
+    songId: String,
+    part: PartItem,
+    device: DeviceItem,
+) {
+    var pending by remember(part.id, device.id) { mutableStateOf<BindText?>(null) }
+    val arrangement = holder.models.editors.arrangement
+    NameEntry("Range of ${part.name} on ${device.name}", "Bind") { text ->
+        val request = BindText(songId, part.id, device.id, text, "", fullRange(device))
+        holder.act { mode ->
+            val notice = arrangement.bind(request, mode)
+            if (notice == Notice.EXCLUDES_NOTES) pending = request
+            notice
+        }
+    }
+    val request = pending
+    if (request != null) {
+        AlertDialog(
+            onDismissRequest = { pending = null },
+            title = { Text("Keep notes outside the range?") },
+            text = {
+                Text(
+                    "${part.name} plays notes outside ${request.rangeText}. " +
+                        "Keep those exact pitches when binding to ${device.name}?",
+                )
+            },
+            confirmButton = {
+                ActionButton("Keep notes and bind", "Keep notes and bind", style = ActionStyle.PRIMARY) {
+                    pending = null
+                    holder.act { mode -> arrangement.bind(request.copy(rangeText = request.rangeText + "!"), mode) }
+                }
+            },
+            dismissButton = { ActionButton("Cancel", "Cancel binding range") { pending = null } },
+        )
+    }
+}

@@ -12,6 +12,7 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.unit.dp
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
@@ -92,11 +93,26 @@ public class NativeDesignJourneyTest {
             val before = models.detail.load(song.id)
             compose.clickControl("Cancel voicing")
             assertEquals(before, models.detail.load(song.id))
+            cancelExcludedRange(models, song.id)
             assertEquals(
                 scoremap.feature.library.Notice.EDIT_MODE_REQUIRED,
                 models.songs.createSong("Refused", Mode.PERFORMANCE).notice,
             )
         }
+    }
+
+    private fun cancelExcludedRange(
+        models: LibraryModels,
+        songId: String,
+    ) {
+        val before = models.detail.load(songId)
+        compose.waitForText("Range of Stage keys on Stage piano")
+        compose.onNodeWithText("Range of Stage keys on Stage piano").performTextInput("C3-B3")
+        compose.clickControl("Bind")
+        compose.waitForText("Keep notes outside the range?")
+        capture("08-range-confirmation")
+        compose.clickControl("Cancel binding range")
+        assertEquals(before, models.detail.load(songId))
     }
 
     private fun seed(models: LibraryModels) {

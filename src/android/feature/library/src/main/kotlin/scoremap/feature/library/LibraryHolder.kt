@@ -47,6 +47,7 @@ internal class LibraryHolder(
     var sheetSongId by mutableStateOf<String?>(null)
     internal var editing by mutableStateOf<VoicingEdit?>(null)
     internal var composing by mutableStateOf<PhraseEdit?>(null)
+    var busy by mutableStateOf(false)
     var notice by mutableStateOf<Notice?>(null)
 
     val mode: Mode get() = if (editMode) Mode.EDIT else Mode.PERFORMANCE
@@ -62,22 +63,28 @@ internal class LibraryHolder(
         val current = mode
         scope.launch {
             order.withLock {
-                val open = openSongId
-                val loaded =
-                    withContext(Dispatchers.IO) {
-                        val result = action(current)
-                        Loaded(
-                            result,
-                            models.songs.load(current),
-                            models.sets.load(),
-                            open?.let { models.detail.load(it) },
-                        )
-                    }
-                notice = loaded.notice
-                songs = loaded.songs
-                sets = loaded.sets
-                detail = loaded.detail
-                if (loaded.detail == null) openSongId = null
+                busy = true
+                notice = null
+                try {
+                    val open = openSongId
+                    val loaded =
+                        withContext(Dispatchers.IO) {
+                            val result = action(current)
+                            Loaded(
+                                result,
+                                models.songs.load(current),
+                                models.sets.load(),
+                                open?.let { models.detail.load(it) },
+                            )
+                        }
+                    notice = loaded.notice
+                    songs = loaded.songs
+                    sets = loaded.sets
+                    detail = loaded.detail
+                    if (loaded.detail == null) openSongId = null
+                } finally {
+                    busy = false
+                }
             }
         }
     }

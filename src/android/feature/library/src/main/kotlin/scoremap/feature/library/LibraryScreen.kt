@@ -49,7 +49,7 @@ public fun LibraryScreen(
     Column(modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).imePadding()) {
         if (holder.sheetSongId == null) LibraryHeader(holder)
         holder.notice?.let { NoticeBanner(it) }
-        if (holder.songs == null) LinearProgressIndicator(Modifier.fillMaxWidth())
+        if (holder.songs == null || holder.busy) LinearProgressIndicator(Modifier.fillMaxWidth())
         LibraryContent(holder, Modifier.weight(1f))
     }
 }

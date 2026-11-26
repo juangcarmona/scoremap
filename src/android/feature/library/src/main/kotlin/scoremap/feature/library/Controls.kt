@@ -137,6 +137,7 @@ internal fun SheetEntry(
             value = text,
             onValueChange = { text = it },
             label = { Text(label) },
+            supportingText = if (text != initial) ({ Text("Unsaved changes") }) else null,
             singleLine = !multiline,
             minLines = if (multiline) 2 else 1,
             modifier = fieldModifier,

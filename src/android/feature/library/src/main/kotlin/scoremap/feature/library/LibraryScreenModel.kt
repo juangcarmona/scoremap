@@ -49,7 +49,7 @@ public enum class Notice(
     INVALID_RANGE("Enter a range such as C3-B4 (lowest to highest), or leave it empty for the whole device."),
     OUT_OF_DEVICE("That range is outside the device. Nothing was changed."),
     EXCLUDES_NOTES(
-        "Some notes this part plays are outside that range. Add ! after the range to keep them as they are.",
+        "Some played notes are outside this range. Review the range or explicitly keep those notes.",
     ),
     INVALID_DURATION("Enter a length in beats such as 1, 1/2 or 3/2, or leave it empty if the timing is unknown."),
     IN_USE("Performed notes use this. Choose the option that also removes them."),
