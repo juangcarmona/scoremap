@@ -1,0 +1,383 @@
+{
+  "repository": "juangcarmona/scoremap",
+  "repositoryId": 1458674261,
+  "sourceCommit": "c005b0ee24830ba08328e91f19e9cec97df0fc6a",
+  "androidTree": "4c5d0989e27e5c2d968dd31ba299e8f7365a65b5",
+  "capturedAtUtc": "2026-11-26T23:59:01.951865+00:00",
+  "method": "Android UiAutomation.takeScreenshot, original PNG",
+  "device": "One API 37 Android 17 x86_64 Pixel Tablet AVD; phone profiles use wm viewport overrides",
+  "profiles": {
+    "phone-dark-200": {
+      "width": 1080,
+      "height": 2340,
+      "densityDpi": 440,
+      "fontScale": 2,
+      "appearance": "dark"
+    },
+    "phone-light": {
+      "width": 1080,
+      "height": 2340,
+      "densityDpi": 440,
+      "fontScale": 1,
+      "appearance": "light"
+    },
+    "tablet-dark": {
+      "width": 2560,
+      "height": 1600,
+      "densityDpi": 276,
+      "fontScale": 1,
+      "appearance": "dark"
+    },
+    "tablet-light": {
+      "width": 2560,
+      "height": 1600,
+      "densityDpi": 276,
+      "fontScale": 1,
+      "appearance": "light"
+    },
+    "phone-dark": {
+      "width": 1080,
+      "height": 2340,
+      "densityDpi": 440,
+      "fontScale": 1,
+      "appearance": "dark"
+    },
+    "tablet-dark-200": {
+      "width": 2560,
+      "height": 1600,
+      "densityDpi": 276,
+      "fontScale": 2,
+      "appearance": "dark"
+    }
+  },
+  "apks": {
+    "scoremap-133-final.apk": "5ed878a43fdba80d18f7382d1dee7ab259e084c56fe1faf1e89b64b82742fc10",
+    "scoremap-133-final-test.apk": "a9c591937642e47633c2be250bc0fcffdcecc3dd7e3cd4a807e6b38803519587"
+  },
+  "screenshots": [
+    {
+      "path": "phone-dark/01-empty-library.png",
+      "sha256": "ab9ac93d611a70ccce255445d724683b123e7d11c580f55777110da86b48d6c0",
+      "width": 1080,
+      "height": 2340
+    },
+    {
+      "path": "phone-dark/02-populated-library.png",
+      "sha256": "229a2527a905795ba29820267d1028c5bdd4257106a3829c6d7883f3be182290",
+      "width": 1080,
+      "height": 2340
+    },
+    {
+      "path": "phone-dark/03-song-workspace.png",
+      "sha256": "7fe1749bc99873860b86d2c5995e8a22a1e6fbfd60179c0d3c4dcd9e8f6e4b2a",
+      "width": 1080,
+      "height": 2340
+    },
+    {
+      "path": "phone-dark/04-protected-song-sheet.png",
+      "sha256": "2905b5f09fcedc0bdd6495dd51b33a1ef08ada4a9fa46b743e8016a5b621a2bc",
+      "width": 1080,
+      "height": 2340
+    },
+    {
+      "path": "phone-dark/05-two-hand-editor.png",
+      "sha256": "cba71be3cb301c82f62ade188c8c4bf363cf3f27890297f810cec33df11b2778",
+      "width": 1080,
+      "height": 2340
+    },
+    {
+      "path": "phone-dark/06-validation-feedback.png",
+      "sha256": "995391ab79fda3540452733b0ebb92fb5b27789ff1fff1fe5a5df53a532080b4",
+      "width": 1080,
+      "height": 2340
+    },
+    {
+      "path": "phone-dark/07-delete-confirmation.png",
+      "sha256": "aa35018d94160b13501dee3ebd83e0ea824064a8c7d081e5c48a92a0cf29cb99",
+      "width": 1080,
+      "height": 2340
+    },
+    {
+      "path": "phone-dark/08-range-confirmation.png",
+      "sha256": "c66631fa771c86847415c3abe278f45f07adfa42daca7bdf48a121b2c0febb2c",
+      "width": 1080,
+      "height": 2340
+    },
+    {
+      "path": "phone-dark/09-consultation-piano.png",
+      "sha256": "3b3303b40e20166ad11a3cef5dc24fa3f6039b3bd3bb5cb9aad916ba595756d4",
+      "width": 1080,
+      "height": 2340
+    },
+    {
+      "path": "phone-dark-200/01-empty-library.png",
+      "sha256": "8307df6205c86814a97f296134b546090d066b65345a2a7a2a58e12f0ef1d3f1",
+      "width": 1080,
+      "height": 2340
+    },
+    {
+      "path": "phone-dark-200/02-populated-library.png",
+      "sha256": "62e9443e818ac6d5723b4cc315fda53b55fcc8fe8cd12f405457c16f19cf31e1",
+      "width": 1080,
+      "height": 2340
+    },
+    {
+      "path": "phone-dark-200/03-song-workspace.png",
+      "sha256": "8c03ee41fe9d69936a7cf145a022ab12d2cde5ab0f5a702246accedfe5c4a19c",
+      "width": 1080,
+      "height": 2340
+    },
+    {
+      "path": "phone-dark-200/04-protected-song-sheet.png",
+      "sha256": "d16b8926bdef1177bc083c3b2a417b8709164b05239b52fca0e39dde2e314518",
+      "width": 1080,
+      "height": 2340
+    },
+    {
+      "path": "phone-dark-200/05-two-hand-editor.png",
+      "sha256": "2d230ee8c827b77e855ccae2025ee9f35924d2fe232a447a15d06fa9b5df6605",
+      "width": 1080,
+      "height": 2340
+    },
+    {
+      "path": "phone-dark-200/06-validation-feedback.png",
+      "sha256": "a65170a76c3dbe4156ec0816932094ec2f1ebf3b038350f476cd65eebc529a85",
+      "width": 1080,
+      "height": 2340
+    },
+    {
+      "path": "phone-dark-200/07-delete-confirmation.png",
+      "sha256": "da60d5d14ae7e985d187ef59eb4340007926f3e57b04f5c7267792ee444d64d2",
+      "width": 1080,
+      "height": 2340
+    },
+    {
+      "path": "phone-dark-200/08-range-confirmation.png",
+      "sha256": "47f7cd1b5dc70a8eead9d25ae5e9f8c116466d5e499d938cde4216b115eca89a",
+      "width": 1080,
+      "height": 2340
+    },
+    {
+      "path": "phone-dark-200/09-consultation-piano.png",
+      "sha256": "bc5ccdad09d16e989a1a542062f462332c8e20791209e1cf69732a627c9add28",
+      "width": 1080,
+      "height": 2340
+    },
+    {
+      "path": "phone-light/01-empty-library.png",
+      "sha256": "8c6b6e78017df3e2bbdbfc454eb670fcafd425e45dbaa209a2c9a33f4dcf9115",
+      "width": 1080,
+      "height": 2340
+    },
+    {
+      "path": "phone-light/02-populated-library.png",
+      "sha256": "672fd1e00a924353c362bb01476d09f2be032efdb6ebc82007d6fd052d07ed45",
+      "width": 1080,
+      "height": 2340
+    },
+    {
+      "path": "phone-light/03-song-workspace.png",
+      "sha256": "da434a834135ddd08184ea39286d7f436d61fc3ca84f37be0324640ad74f87b2",
+      "width": 1080,
+      "height": 2340
+    },
+    {
+      "path": "phone-light/04-protected-song-sheet.png",
+      "sha256": "db50c1ee9e0663c93af281fcfd55e867a1723013a68d5e090056970c241a2749",
+      "width": 1080,
+      "height": 2340
+    },
+    {
+      "path": "phone-light/05-two-hand-editor.png",
+      "sha256": "d6c0c55cde264a4534dd16b4ad59c152aa49cf9713dae89d1167e371fda5926e",
+      "width": 1080,
+      "height": 2340
+    },
+    {
+      "path": "phone-light/06-validation-feedback.png",
+      "sha256": "2b1e32b4c75f859884871a5d4bcc43a4665a8ec763820c6155f62703fbae8105",
+      "width": 1080,
+      "height": 2340
+    },
+    {
+      "path": "phone-light/07-delete-confirmation.png",
+      "sha256": "b076059d5ee989bdd55baab8c82ef49ace47de0d069fcf63aa6cc89e6809ded1",
+      "width": 1080,
+      "height": 2340
+    },
+    {
+      "path": "phone-light/08-range-confirmation.png",
+      "sha256": "cd3526c42b7e54e6ff22e99a0b89918b2eb724f6ab115cb6f7dbee970e0a0026",
+      "width": 1080,
+      "height": 2340
+    },
+    {
+      "path": "phone-light/09-consultation-piano.png",
+      "sha256": "cc2bb019e7f50ca586fbebd616d8252740b16ab2255a59aeab40e4a058abc431",
+      "width": 1080,
+      "height": 2340
+    },
+    {
+      "path": "tablet-dark/01-empty-library.png",
+      "sha256": "ff66dcad463ec65dd7e5ebb82b0fd8879dddde9b30ca90366c62805a58927fb9",
+      "width": 2560,
+      "height": 1600
+    },
+    {
+      "path": "tablet-dark/02-populated-library.png",
+      "sha256": "a0245d33a9dcb56e0e7f16d1694bc687b2b5cd3ff3737bccb06c2a6552953f75",
+      "width": 2560,
+      "height": 1600
+    },
+    {
+      "path": "tablet-dark/03-song-workspace.png",
+      "sha256": "71ed193b4eb3341022dcf74b623fb7aec35a32d7f048b7e4c87a61c15997ae17",
+      "width": 2560,
+      "height": 1600
+    },
+    {
+      "path": "tablet-dark/04-protected-song-sheet.png",
+      "sha256": "c1488f11ad4ce5b8052089bba0675637d2e64697474fa4d4423ec2312478f826",
+      "width": 2560,
+      "height": 1600
+    },
+    {
+      "path": "tablet-dark/05-two-hand-editor.png",
+      "sha256": "06d60f5f41f847e7013c0e5d25a57773d2dc8b62c621bac47712c2a4bbeaae49",
+      "width": 2560,
+      "height": 1600
+    },
+    {
+      "path": "tablet-dark/06-validation-feedback.png",
+      "sha256": "10ce3061549d75cdfe8594cc573cc7e08112a23582c358035248b9959fe2d501",
+      "width": 2560,
+      "height": 1600
+    },
+    {
+      "path": "tablet-dark/07-delete-confirmation.png",
+      "sha256": "fb1c4a246eb9d7a4a30faba67970c632f5ede7bac357f81f3d2580cd670cf7be",
+      "width": 2560,
+      "height": 1600
+    },
+    {
+      "path": "tablet-dark/08-range-confirmation.png",
+      "sha256": "4a62e2982ab09efd1fedfb9796b04034e728024b6fd9a3e22a2bfd948bf3cd68",
+      "width": 2560,
+      "height": 1600
+    },
+    {
+      "path": "tablet-dark/09-consultation-piano.png",
+      "sha256": "c1488f11ad4ce5b8052089bba0675637d2e64697474fa4d4423ec2312478f826",
+      "width": 2560,
+      "height": 1600
+    },
+    {
+      "path": "tablet-dark-200/01-empty-library.png",
+      "sha256": "85f1609e708866a2ddf1b8abe9aeb3944665c1bcc3da71d2316c2ad7f47bc474",
+      "width": 2560,
+      "height": 1600
+    },
+    {
+      "path": "tablet-dark-200/02-populated-library.png",
+      "sha256": "82b8136783a1eeb9ca6d5ad255c83bf9f4395f0dd1e44d474bb7648391f65de0",
+      "width": 2560,
+      "height": 1600
+    },
+    {
+      "path": "tablet-dark-200/03-song-workspace.png",
+      "sha256": "2eb36a2f7d741dfc8ace4bb25507babc07dde19845194db7b3515a6e2901cb9b",
+      "width": 2560,
+      "height": 1600
+    },
+    {
+      "path": "tablet-dark-200/04-protected-song-sheet.png",
+      "sha256": "b95d774cc76f3c4febff12aeb2b618776b3b6961d64943947385257118a97282",
+      "width": 2560,
+      "height": 1600
+    },
+    {
+      "path": "tablet-dark-200/05-two-hand-editor.png",
+      "sha256": "5071b8dccc8578061862c78d935575377510f905baa7440d338dc8b512015518",
+      "width": 2560,
+      "height": 1600
+    },
+    {
+      "path": "tablet-dark-200/06-validation-feedback.png",
+      "sha256": "b46a33484c0bdced4c36fc95ce031b0966d167dcd8ecb566d76d5897bfb74d24",
+      "width": 2560,
+      "height": 1600
+    },
+    {
+      "path": "tablet-dark-200/07-delete-confirmation.png",
+      "sha256": "11f08f338bd2f1ef5062df0240a831e7a4d5fbfa263396cbbf579c03b25d96cd",
+      "width": 2560,
+      "height": 1600
+    },
+    {
+      "path": "tablet-dark-200/08-range-confirmation.png",
+      "sha256": "5251313da4dd4ac3dd2ba063d182f26bd9529dc8a2c126d51a2508745bf3e40d",
+      "width": 2560,
+      "height": 1600
+    },
+    {
+      "path": "tablet-dark-200/09-consultation-piano.png",
+      "sha256": "fb34be72a81e11a1a97879f2992dac2f76df4163242984aac2d353ef4370a680",
+      "width": 2560,
+      "height": 1600
+    },
+    {
+      "path": "tablet-light/01-empty-library.png",
+      "sha256": "548e7562754ff105a50d1b2d3b61cdba22319a4a4d1f868239c8c3b12b325176",
+      "width": 2560,
+      "height": 1600
+    },
+    {
+      "path": "tablet-light/02-populated-library.png",
+      "sha256": "12e747434bb9fb09c4221f665c58d9a58a42632ffc8d8f0cfb950a5bb89bcb89",
+      "width": 2560,
+      "height": 1600
+    },
+    {
+      "path": "tablet-light/03-song-workspace.png",
+      "sha256": "f60565e264b1d76802b5048cbe74a59de075935dabd84a0a533808318aa45611",
+      "width": 2560,
+      "height": 1600
+    },
+    {
+      "path": "tablet-light/04-protected-song-sheet.png",
+      "sha256": "0f6e1b5e371565d11f49488a343aeea467d2008e9506b6f0e20c8936361305e3",
+      "width": 2560,
+      "height": 1600
+    },
+    {
+      "path": "tablet-light/05-two-hand-editor.png",
+      "sha256": "6899d0843597a8348cc7ac19c5d63348ac6d2ad321df1ee4a6d3c9a0f949e515",
+      "width": 2560,
+      "height": 1600
+    },
+    {
+      "path": "tablet-light/06-validation-feedback.png",
+      "sha256": "ab1e5455ea6abb8456c6b18d9c99dd8e8a48cedeecce959741a0fe29ad8e3e8b",
+      "width": 2560,
+      "height": 1600
+    },
+    {
+      "path": "tablet-light/07-delete-confirmation.png",
+      "sha256": "e599cd83e86a4d2e559abee6d2d18235952c443d48889f6140dca69c10cc60aa",
+      "width": 2560,
+      "height": 1600
+    },
+    {
+      "path": "tablet-light/08-range-confirmation.png",
+      "sha256": "848ea4f3b36f0cf6827f7581add22ece4fb4747f7b019e1dfd88627473c578c2",
+      "width": 2560,
+      "height": 1600
+    },
+    {
+      "path": "tablet-light/09-consultation-piano.png",
+      "sha256": "0f6e1b5e371565d11f49488a343aeea467d2008e9506b6f0e20c8936361305e3",
+      "width": 2560,
+      "height": 1600
+    }
+  ]
+}
