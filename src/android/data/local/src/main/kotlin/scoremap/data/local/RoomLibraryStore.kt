@@ -40,16 +40,19 @@ public class RoomLibraryStore internal constructor(
             name: String,
             beforeCommit: () -> Unit = {},
         ): RoomLibraryStore =
-            RoomLibraryStore(
-                Room
-                    .databaseBuilder(
-                        context,
-                        LibraryDatabase::class.java,
-                        name,
-                    ).addMigrations(Migration1To2, Migration2To3, Migration3To4, Migration4To5, Migration5To6)
-                    .build(),
-                beforeCommit,
-            )
+            run {
+                retainMigrationRecoveryCopy(context, name)
+                RoomLibraryStore(
+                    Room
+                        .databaseBuilder(
+                            context,
+                            LibraryDatabase::class.java,
+                            name,
+                        ).addMigrations(Migration1To2, Migration2To3, Migration3To4, Migration4To5, Migration5To6)
+                        .build(),
+                    beforeCommit,
+                )
+            }
     }
 
     private val daos = Daos(database.meta(), database.reads(), database.clears(), database.inserts())
