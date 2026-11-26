@@ -3,6 +3,9 @@ package scoremap.app
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assertHasNoClickAction
 import androidx.compose.ui.test.assertHeightIsAtLeast
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertWidthIsAtLeast
@@ -74,17 +77,19 @@ public class NativeDesignJourneyTest {
                 )!!.revision}",
             )
             capture("03-song-workspace")
-            compose.clickControl("Open song sheet of Blue Bossa")
-            compose.waitForText("Key: C minor")
-            capture("04-protected-song-sheet")
+            captureConsultation()
             compose.clickControl("Close song sheet")
             compose.clickControl("Show Parts")
             compose.clickControl("Edit voicing of Theme A, measure 1: Cm7 in Stage keys")
             compose.waitForText("Voicing: Theme A, measure 1: Cm7, part Stage keys")
-            compose.onNodeWithContentDescription("C4 key, right hand").performScrollTo().assertIsDisplayed()
+            compose
+                .onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsProperties.HorizontalScrollAxisRange))[0]
+                .performScrollTo()
+            val playedKey = compose.onNodeWithContentDescription("C4 key, right hand").performScrollTo()
+            capture("05-two-hand-editor")
+            playedKey.assertIsDisplayed()
             compose.onNodeWithContentDescription("Eb4 key, right hand").assertWidthIsAtLeast(48.dp)
             compose.onNodeWithText("Save voicing").assertHeightIsAtLeast(48.dp)
-            capture("05-two-hand-editor")
             val song =
                 models.songs
                     .load(Mode.EDIT)
@@ -99,6 +104,18 @@ public class NativeDesignJourneyTest {
                 models.songs.createSong("Refused", Mode.PERFORMANCE).notice,
             )
         }
+    }
+
+    private fun captureConsultation() {
+        compose.clickControl("Open song sheet of Blue Bossa")
+        compose.waitForText("Key: C minor")
+        capture("04-protected-song-sheet")
+        compose
+            .onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsProperties.HorizontalScrollAxisRange))[0]
+            .performScrollTo()
+        val key = compose.onNodeWithContentDescription("C4 key, right hand").performScrollTo()
+        key.assertIsDisplayed().assertHasNoClickAction()
+        capture("09-consultation-piano")
     }
 
     private fun cancelExcludedRange(

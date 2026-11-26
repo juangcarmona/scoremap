@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
@@ -51,8 +52,8 @@ internal fun SongSheetScreen(
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             ActionButton("Close sheet", "Close song sheet") { holder.sheetSongId = null }
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Show performed notes")
+            Row(Modifier.widthIn(max = 320.dp), verticalAlignment = Alignment.CenterVertically) {
+                Text("Show performed notes", Modifier.weight(1f, fill = false))
                 Switch(checked = performed, onCheckedChange = { performed = it })
             }
             Text(
