@@ -57,6 +57,7 @@ public class LibraryScreenTest {
         launch().use {
             createSong("Blue Bossa")
             compose.onNodeWithContentDescription("Delete Blue Bossa").performClick()
+            compose.onNodeWithContentDescription("Confirm Delete Blue Bossa").performClick()
             waitForText("Recently deleted")
             compose.onNodeWithContentDescription("Restore Blue Bossa").performClick()
             waitForText("Song restored.")

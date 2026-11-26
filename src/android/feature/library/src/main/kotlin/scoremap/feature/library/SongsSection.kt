@@ -24,7 +24,7 @@ internal fun LazyListScope.songsSection(holder: LibraryHolder) {
                 holder.openSongId = song.id
                 holder.act { null }
             }
-            ActionButton("Delete", "Delete ${song.name}") {
+            DestructiveButton("Delete", "Delete ${song.name}") {
                 holder.act { mode ->
                     holder.models.songs
                         .deleteSong(song.id, mode)

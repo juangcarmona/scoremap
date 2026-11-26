@@ -16,7 +16,7 @@ internal fun LazyListScope.attachmentsSection(holder: LibraryHolder) {
     items(detail.attachments, key = { "pdf-${it.id}" }) { attachment ->
         NamedRow("${attachment.name} (${attachment.pages} pages)") {
             ActionButton("View", "View ${attachment.name}") { holder.viewing = attachment }
-            ActionButton("Remove PDF", "Remove PDF ${attachment.name}") {
+            DestructiveButton("Remove PDF", "Remove PDF ${attachment.name}") {
                 holder.act { mode ->
                     holder.models.attachments
                         .remove(detail.id, attachment.id, mode)

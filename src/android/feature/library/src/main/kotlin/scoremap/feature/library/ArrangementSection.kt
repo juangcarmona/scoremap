@@ -1,7 +1,7 @@
 package scoremap.feature.library
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
@@ -23,11 +23,11 @@ internal fun LazyListScope.devicesSection(holder: LibraryHolder) {
     }
     items(detail.devices, key = { "device-${it.id}" }) { device ->
         NamedRow("Device: ${device.name}, range ${device.range}") {
-            ActionButton("Remove device", "Remove device ${device.name}") {
+            DestructiveButton("Remove device", "Remove device ${device.name}") {
                 holder.act { mode -> arrangement.removeDevice(detail.id, device.id, false, mode) }
             }
             if (device.bindingCount > 0) {
-                ActionButton("Remove device and bindings", "Remove device ${device.name} and its bindings") {
+                DestructiveButton("Remove device and bindings", "Remove device ${device.name} and its bindings") {
                     holder.act { mode -> arrangement.removeDevice(detail.id, device.id, true, mode) }
                 }
             }
@@ -48,7 +48,7 @@ internal fun partArrangement(
     val arrangement = holder.models.editors.arrangement
     val detail = holder.detail ?: return
     Text("Hand of ${part.name}: ${handLabel(part.hand)}")
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         (HandRole.entries.map { it to handLabel(it) } + (null to "unassigned")).forEach { (role, label) ->
             ActionButton(label.replaceFirstChar { it.uppercase() }, "Set hand of ${part.name} to $label") {
                 holder.act { mode -> arrangement.setHand(songId, part.id, role, mode) }
@@ -58,7 +58,10 @@ internal fun partArrangement(
     part.bindings.forEach { binding ->
         val sound = if (binding.sound.isEmpty()) "" else ", sound ${binding.sound}"
         NamedRow("Binding: ${part.name} on ${binding.device}, ${binding.range}$sound") {
-            ActionButton("Remove binding", "Remove binding of ${part.name} on ${binding.device} ${binding.range}") {
+            DestructiveButton(
+                "Remove binding",
+                "Remove binding of ${part.name} on ${binding.device} ${binding.range}",
+            ) {
                 holder.act { mode -> arrangement.removeBinding(songId, binding.id, mode) }
             }
         }

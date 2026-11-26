@@ -118,6 +118,11 @@ public class SheetLayoutTest {
             listOf("C — Right hand: C3 (left hand), E4 (right hand)"),
             view(performed = true).sections.single().performed,
         )
+        assertEquals(emptyList<PerformedPosition>(), view().sections.single().positions)
+        assertEquals(
+            listOf(PerformedPosition("C", "Right hand", notes)),
+            view(performed = true).sections.single().positions,
+        )
         assertNull(sheet.load("missing", false))
     }
 }

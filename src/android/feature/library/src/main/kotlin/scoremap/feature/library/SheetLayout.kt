@@ -3,6 +3,7 @@ package scoremap.feature.library
 import scoremap.library.ChordEvent
 import scoremap.library.Library
 import scoremap.library.LibraryService
+import scoremap.library.PerformedNote
 import scoremap.library.Section
 import scoremap.library.Song
 import scoremap.music.Piano
@@ -21,6 +22,14 @@ public data class SheetSection(
     val loop: String?,
     val lines: List<SheetLine>,
     val performed: List<String>,
+    val positions: List<PerformedPosition> = emptyList(),
+)
+
+/** Exact authored pitches for a chord and owning part; never inferred from chord theory. */
+public data class PerformedPosition(
+    val chord: String,
+    val part: String,
+    val notes: List<PerformedNote>,
 )
 
 /** The consult view of a song: title, declared key (or its absence) and ordered sections. Nothing is invented. */
@@ -63,6 +72,7 @@ internal object SheetLayout {
             loop,
             lines(section.lyrics, events),
             if (showPerformed) performed(song, events) else emptyList(),
+            if (showPerformed) positions(song, events) else emptyList(),
         )
     }
 
@@ -95,6 +105,18 @@ internal object SheetLayout {
         }
         return line.toString()
     }
+
+    private fun positions(
+        song: Song,
+        events: List<ChordEvent>,
+    ): List<PerformedPosition> =
+        events.flatMap { event ->
+            song.parts.mapNotNull { part ->
+                part.voicings.firstOrNull { it.eventId == event.id }?.let { voicing ->
+                    PerformedPosition(event.chord.symbol, part.name, voicing.notes)
+                }
+            }
+        }
 
     private fun performed(
         song: Song,

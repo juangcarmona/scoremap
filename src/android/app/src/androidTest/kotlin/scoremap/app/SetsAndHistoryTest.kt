@@ -42,6 +42,7 @@ public class SetsAndHistoryTest {
         val first = launch()
         create("Song name", "Create song", "Autumn Leaves")
         create("Song name", "Create song", "Blue Bossa")
+        click("Show sets")
         create("Set name", "Create set", "Friday")
         click("Add Autumn Leaves to Friday")
         click("Add Blue Bossa to Friday")
@@ -49,12 +50,14 @@ public class SetsAndHistoryTest {
         click("Move up Blue Bossa in Friday")
         waitForText("1. Blue Bossa")
         click("Delete set Friday")
+        click("Confirm Delete set Friday")
         waitForText("Recently deleted sets")
         click("Restore set Friday")
         waitForText("1. Blue Bossa")
         first.close()
         ScoreMapStores.close(databaseName)
         launch().use {
+            click("Show sets")
             waitForText("1. Blue Bossa")
             compose.onNodeWithText("2. Autumn Leaves").assertIsDisplayed()
         }
@@ -66,12 +69,12 @@ public class SetsAndHistoryTest {
             create("Song name", "Create song", "Old title")
             click("Open Old title")
             create("New name", "Rename", "New title")
-            waitForText("Editing: New title")
+            waitForText("New title")
             create("Section name", "Add section", "Verse", shows = "Section: Verse x1")
             waitForText("Revision 3: New title, 1 sections")
             waitForText("Revision 1: Old title, 0 sections")
             click("Restore revision 1")
-            waitForText("Editing: Old title")
+            waitForText("Old title")
             waitForText("Revision 4: Old title, 0 sections")
             waitForText("Revision 2: New title, 0 sections")
         }
@@ -205,6 +208,7 @@ public class SetsAndHistoryTest {
             waitForText("Hand of Melody: left")
             waitForText("Binding: Melody on Stage piano, C3-C6")
             click("Remove binding of Melody on Stage piano C3-C6")
+            click("Confirm Remove binding of Melody on Stage piano C3-C6")
             waitForText("Saved.")
         }
     }
@@ -235,7 +239,7 @@ public class SetsAndHistoryTest {
             waitForText("Dm7    G7")
             waitForText("Autumn leaves")
             click("Close song sheet")
-            waitForText("Editing: Autumn Leaves")
+            waitForText("Autumn Leaves")
         }
     }
 
@@ -259,6 +263,7 @@ public class SetsAndHistoryTest {
     @Test
     public fun performanceModeRefusesToCreateASet() {
         launch().use {
+            click("Show sets")
             waitForText("Set name")
             compose.onNode(isToggleable()).performClick()
             compose.onNodeWithText("Set name").performTextInput("Refused")

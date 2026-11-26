@@ -37,6 +37,7 @@ internal class LibraryHolder(
     val models: LibraryModels,
     private val scope: CoroutineScope,
 ) {
+    var workspaceTab by mutableStateOf("Music")
     var editMode by mutableStateOf(true)
     var songs by mutableStateOf<LibraryScreenState?>(null)
     var sets by mutableStateOf<SetsScreenState?>(null)

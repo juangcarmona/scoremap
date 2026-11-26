@@ -5,7 +5,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import scoremap.data.local.AndroidPdfInspector
@@ -19,6 +18,7 @@ import scoremap.feature.library.LibraryScreen
 import scoremap.feature.library.LibraryScreenModel
 import scoremap.feature.library.PartsModel
 import scoremap.feature.library.PhrasesModel
+import scoremap.feature.library.ScoreMapTheme
 import scoremap.feature.library.SetsScreenModel
 import scoremap.feature.library.SheetModel
 import scoremap.feature.library.SongDetailModel
@@ -58,7 +58,7 @@ public class MainActivity : ComponentActivity() {
                 ),
             )
         setContent {
-            MaterialTheme {
+            ScoreMapTheme {
                 Surface { LibraryScreen(models, Modifier.safeDrawingPadding()) }
             }
         }

@@ -1,8 +1,13 @@
 package scoremap.feature.library
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -10,6 +15,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextMeasurer
@@ -63,19 +69,26 @@ internal fun StaffCanvas(
     modifier: Modifier = Modifier,
 ) {
     val measurer = rememberTextMeasurer()
-    Canvas(
-        modifier
-            .height((STEP_DP * (HIGHEST_STEP - LOWEST_STEP)).dp)
-            .fillMaxWidth()
-            .semantics { contentDescription = staffDescription(columns, key) },
-    ) {
-        drawStaves()
-        drawKey(measurer, key)
-        columns.forEachIndexed { index, notes -> drawColumn(measurer, notes, index, index == selected) }
+    val scale = LocalDensity.current.fontScale.coerceAtLeast(1f)
+    BoxWithConstraints(modifier) {
+        val staffWidth = maxWidth.coerceAtLeast(((KEY_AREA_DP + COLUMN_DP * columns.size) * scale).dp)
+        Box(Modifier.horizontalScroll(rememberScrollState())) {
+            Canvas(
+                Modifier
+                    .height((STEP_DP * (HIGHEST_STEP - LOWEST_STEP) * scale).dp)
+                    .width(staffWidth)
+                    .background(Color.White)
+                    .semantics { contentDescription = staffDescription(columns, key) },
+            ) {
+                drawStaves()
+                drawKey(measurer, key)
+                columns.forEachIndexed { index, notes -> drawColumn(measurer, notes, index, index == selected) }
+            }
+        }
     }
 }
 
-private fun DrawScope.stepY(step: Int): Float = (HIGHEST_STEP - step) * STEP_DP.dp.toPx()
+private fun DrawScope.stepY(step: Int): Float = (HIGHEST_STEP - step) * STEP_DP.dp.toPx() * fontScale.coerceAtLeast(1f)
 
 private fun DrawScope.drawStaves() {
     for (bottom in listOf(TREBLE_BOTTOM_STEP, BASS_BOTTOM_STEP)) {
@@ -95,7 +108,12 @@ private fun DrawScope.drawKey(
     for (clef in Clef.entries) {
         val bottom = if (clef == Clef.TREBLE) TREBLE_BOTTOM_STEP else BASS_BOTTOM_STEP
         key.positions(clef).forEachIndexed { i, position ->
-            drawLabel(measurer, symbol, (KEY_START_DP + KEY_GAP_DP * i).dp.toPx(), stepY(bottom + position))
+            drawLabel(
+                measurer,
+                symbol,
+                (KEY_START_DP + KEY_GAP_DP * i).dp.toPx() * fontScale.coerceAtLeast(1f),
+                stepY(bottom + position),
+            )
         }
     }
 }
@@ -106,8 +124,8 @@ private fun DrawScope.drawColumn(
     index: Int,
     selected: Boolean,
 ) {
-    val x = (KEY_AREA_DP + COLUMN_DP * index + COLUMN_DP / HALF).dp.toPx()
-    val unit = STEP_DP.dp.toPx()
+    val x = (KEY_AREA_DP + COLUMN_DP * index + COLUMN_DP / HALF).dp.toPx() * fontScale.coerceAtLeast(1f)
+    val unit = STEP_DP.dp.toPx() * fontScale.coerceAtLeast(1f)
     for (note in notes) {
         val bottom = if (note.clef == Clef.TREBLE) TREBLE_BOTTOM_STEP else BASS_BOTTOM_STEP
         val y = stepY((bottom + note.position).coerceIn(LOWEST_STEP, HIGHEST_STEP))

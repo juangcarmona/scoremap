@@ -41,7 +41,7 @@ private fun SetCard(
 ) {
     val sets = holder.models.sets
     NamedRow(set.name) {
-        ActionButton("Delete set", "Delete set ${set.name}") {
+        DestructiveButton("Delete set", "Delete set ${set.name}") {
             holder.act { mode ->
                 sets.deleteSet(set.id, mode).notice
             }
@@ -55,7 +55,7 @@ private fun SetCard(
             ActionButton("Down", "Move down ${member.name} in ${set.name}") {
                 holder.act { mode -> sets.moveMember(set.id, member.id, 1, mode).notice }
             }
-            ActionButton("Remove", "Remove ${member.name} from ${set.name}") {
+            DestructiveButton("Remove", "Remove ${member.name} from ${set.name}") {
                 holder.act { mode -> sets.removeMember(set.id, member.id, mode).notice }
             }
         }
