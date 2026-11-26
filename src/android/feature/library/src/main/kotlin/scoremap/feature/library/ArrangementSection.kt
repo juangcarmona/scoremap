@@ -105,6 +105,7 @@ private fun BindingEntry(
     val request = pending
     if (request != null) {
         AlertDialog(
+            containerColor = MaterialTheme.colorScheme.surface,
             onDismissRequest = { pending = null },
             title = { Text("Keep notes outside the range?") },
             text = {

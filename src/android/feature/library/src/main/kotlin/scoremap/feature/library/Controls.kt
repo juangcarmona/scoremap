@@ -61,12 +61,10 @@ internal fun ActionButton(
         colors =
             ButtonDefaults.textButtonColors(
                 contentColor =
-                    if (style ==
-                        ActionStyle.DESTRUCTIVE
-                    ) {
-                        MaterialTheme.colorScheme.error
-                    } else {
-                        MaterialTheme.colorScheme.primary
+                    when {
+                        style == ActionStyle.DESTRUCTIVE -> MaterialTheme.colorScheme.error
+                        chosen == true -> MaterialTheme.colorScheme.onPrimaryContainer
+                        else -> MaterialTheme.colorScheme.primary
                     },
                 containerColor = if (chosen == true) MaterialTheme.colorScheme.primaryContainer else Color.Transparent,
             ),
@@ -162,6 +160,7 @@ internal fun DestructiveButton(
     ActionButton(label, description, style = ActionStyle.DESTRUCTIVE) { confirming = true }
     if (confirming) {
         AlertDialog(
+            containerColor = MaterialTheme.colorScheme.surface,
             onDismissRequest = { confirming = false },
             title = { Text("$description?") },
             text = {
