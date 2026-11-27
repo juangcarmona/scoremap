@@ -1,0 +1,21 @@
+config:
+  validation: true
+
+style:
+  ForbiddenComment:
+    active: true
+    comments:
+      - 'TODO:'
+      - 'FIXME:'
+      - 'STOPSHIP:'
+
+coroutines:
+  GlobalCoroutineUsage:
+    active: true
+  SleepInsteadOfDelay:
+    active: true
+
+naming:
+  FunctionNaming:
+    ignoreAnnotated:
+      - 'Composable'

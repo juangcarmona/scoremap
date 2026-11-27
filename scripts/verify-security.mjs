@@ -1,12 +1,20 @@
+import {resolve} from 'node:path';
+import {fileURLToPath} from 'node:url';
 import {execFileSync,spawnSync} from 'node:child_process';
 import {readFile,mkdir,writeFile} from 'node:fs/promises';
-const paths=execFileSync('git',['ls-files','--cached','--others','--exclude-standard','-z'],{encoding:'utf8'}).split('\0').filter(Boolean);
 const credentials=[/\bgh[pousr]_[A-Za-z0-9]{30,}\b/u,/\bgithub_pat_[A-Za-z0-9_]{40,}\b/u,/\bnpm_[A-Za-z0-9]{30,}\b/u,/-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/u,/\bAKIA[A-Z0-9]{16}\b/u,/\beyJ[A-Za-z0-9_-]{12,}\.[A-Za-z0-9_-]{12,}\.[A-Za-z0-9_-]{12,}\b/u];
+export async function verifyCredentialInputs(paths){
 for(const path of [...new Set(paths)]){
- if(/(?:^|\/)(?:bin|obj|node_modules)\//u.test(path)||!path.match(/\.(?:cs|json|md|ya?ml|[cm]?js|tsx?|css|py|props|xml|txt|config)$/u))continue;
+ const native=path.startsWith('src/android/');
+ if(native&&/\.(?:jks|keystore|p12|pfx)$/iu.test(path))throw new Error('Native signing material must remain outside Git: '+path);
+ if(!native&&(/(?:^|\/)(?:bin|obj|node_modules)\//u.test(path)||!path.match(/\.(?:cs|json|md|ya?ml|[cm]?js|tsx?|css|py|props|xml|txt|config)$/u)))continue;
  const text=await readFile(path,'utf8');
  if(credentials.some(pattern=>pattern.test(text)))throw new Error('Credential-like material detected in '+path+'; keep actual secrets outside Git.');
 }
+}
+async function main(){
+ const paths=execFileSync('git',['ls-files','--cached','--others','--exclude-standard','-z'],{encoding:'utf8'}).split('\0').filter(Boolean);
+ await verifyCredentialInputs(paths);
 await mkdir('test-results/security',{recursive:true});
 for(const [name,args] of [['runtime-audit',['audit','--omit=dev','--audit-level=low']],['tooling-audit',['audit','--audit-level=high']],['browser-sbom',['sbom','--sbom-format','cyclonedx']]]){
  const sbom=name==='browser-sbom';
@@ -26,3 +34,5 @@ for(const [name,args] of [['runtime-audit',['audit','--omit=dev','--audit-level=
  if(result.error||result.status!==0)throw new Error(name+' failed; see the private test-results/security report.');
 }
 console.log('Credential patterns, runtime vulnerability gate, high/critical tooling gate and complete browser/build SBOM passed. Lower-severity tooling advisories remain visible in the tooling report.');
+}
+if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url))await main();

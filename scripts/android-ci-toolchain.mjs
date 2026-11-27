@@ -85,11 +85,16 @@ async function install(kind) {
   const version = command(path.join(java, 'bin/java'), ['--version'], { capture: true });
   assert.ok(version.includes(pins.javaVersion), `Unexpected JDK: ${version}`);
   console.log(version);
-  const archive = path.join(state, 'command-line-tools.zip');
-  await download(pins.commandLineTools.url, archive, pins.commandLineTools.sha256);
-  const unpack = path.join(state, 'unpack');
-  await fs.mkdir(unpack, { recursive: true });
-  python(`import pathlib,sys,zipfile
+  const tools = path.join(sdk, 'cmdline-tools', pins.commandLineTools.version);
+  // A restored SDK cache skips the archive download; package pins are still re-verified below.
+  const restored = await fs.stat(path.join(tools, 'bin/sdkmanager')).then(() => true, () => false);
+  if (restored) console.log('Reusing the cached Android command-line tools; package pins are re-verified.');
+  else {
+    const archive = path.join(state, 'command-line-tools.zip');
+    await download(pins.commandLineTools.url, archive, pins.commandLineTools.sha256);
+    const unpack = path.join(state, 'unpack');
+    await fs.mkdir(unpack, { recursive: true });
+    python(`import pathlib,sys,zipfile
 root=pathlib.Path(sys.argv[2]).resolve()
 with zipfile.ZipFile(sys.argv[1]) as archive:
  for member in archive.infolist():
@@ -99,8 +104,9 @@ with zipfile.ZipFile(sys.argv[1]) as archive:
   mode=(member.external_attr>>16)&0o777
   if mode: target.chmod(mode)
 `, archive, unpack);
-  await fs.mkdir(path.join(sdk, 'cmdline-tools'), { recursive: true });
-  await fs.rename(path.join(unpack, 'cmdline-tools'), path.join(sdk, 'cmdline-tools', pins.commandLineTools.version));
+    await fs.mkdir(path.join(sdk, 'cmdline-tools'), { recursive: true });
+    await fs.rename(path.join(unpack, 'cmdline-tools'), path.join(sdk, 'cmdline-tools', pins.commandLineTools.version));
+  }
   const selected = pins.packages.filter(p => p.scope === 'host' || kind === 'device');
   const metadata = {};
   for (const name of new Set(selected.map(p => p.repository))) {

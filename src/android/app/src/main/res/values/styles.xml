@@ -1,0 +1,7 @@
+<resources>
+    <!-- Native launch surface projects the Lighthouse canvas before Compose starts. -->
+    <style name="ScoreMap" parent="android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">#f8faff</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+</resources>
