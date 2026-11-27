@@ -1,0 +1,97 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<testsuites tests="38" failures="0" errors="0" skipped="0" time="421.672" timestamp="2026-11-27T00:42:38" hostname="localhost">
+  <testsuite name="scoremap.app.LibraryScreenTest" tests="4" failures="0" errors="0" skipped="0" time="42.89" timestamp="2026-11-27T00:42:38" hostname="localhost">
+    <properties>
+      <property name="device" value="pixelTabletApi37" />
+      <property name="flavor" value="" />
+      <property name="project" value=":app" />
+    </properties>
+    <testcase name="theActionTargetsAreAtLeastFortyEightDipHigh" classname="scoremap.app.LibraryScreenTest" time="8.906" />
+    <testcase name="aCreatedSongSurvivesRecreationAndARestartOfTheActivity" classname="scoremap.app.LibraryScreenTest" time="12.936" />
+    <testcase name="deletingIsRecoverableAndRestoreBringsTheSongBack" classname="scoremap.app.LibraryScreenTest" time="12.419" />
+    <testcase name="performanceModeRefusesToChangeTheLibrary" classname="scoremap.app.LibraryScreenTest" time="8.629" />
+  </testsuite>
+  <testsuite name="scoremap.app.NativeDesignJourneyTest" tests="1" failures="0" errors="0" skipped="0" time="30.872" timestamp="2026-11-27T00:42:38" hostname="localhost">
+    <properties>
+      <property name="device" value="pixelTabletApi37" />
+      <property name="flavor" value="" />
+      <property name="project" value=":app" />
+    </properties>
+    <testcase name="captureNativeJourneysAndPreserveMusicOnCancel" classname="scoremap.app.NativeDesignJourneyTest" time="30.872" />
+  </testsuite>
+  <testsuite name="scoremap.app.OfflineRecreationTest" tests="1" failures="0" errors="0" skipped="0" time="4.642" timestamp="2026-11-27T00:42:38" hostname="localhost">
+    <properties>
+      <property name="device" value="pixelTabletApi37" />
+      <property name="flavor" value="" />
+      <property name="project" value=":app" />
+    </properties>
+    <testcase name="roomFixtureSurvivesCloseReopenAndComposeActivityRecreation" classname="scoremap.app.OfflineRecreationTest" time="4.642" />
+  </testsuite>
+  <testsuite name="scoremap.app.PdfStorageTest" tests="6" failures="0" errors="0" skipped="0" time="2.114" timestamp="2026-11-27T00:42:38" hostname="localhost">
+    <properties>
+      <property name="device" value="pixelTabletApi37" />
+      <property name="flavor" value="" />
+      <property name="project" value=":app" />
+    </properties>
+    <testcase name="aCorruptPdfIsRejectedAndTheSongAndFilesAreUntouched" classname="scoremap.app.PdfStorageTest" time="1.696" />
+    <testcase name="aFailureInsideTheCommitRemovesTheStoredBytesAndLeavesTheLibraryUnchanged" classname="scoremap.app.PdfStorageTest" time="0.159" />
+    <testcase name="anAttachedPdfSurvivesReopeningWithItsBytesAndLastPage" classname="scoremap.app.PdfStorageTest" time="0.052" />
+    <testcase name="anOversizedPdfIsRefusedBySizeWithoutBeingStored" classname="scoremap.app.PdfStorageTest" time="0.052" />
+    <testcase name="aVersionOneDatabaseMigratesKeepingEverythingAndThenAcceptsAttachments" classname="scoremap.app.PdfStorageTest" time="0.102" />
+    <testcase name="detachingThenCleaningUpRemovesTheBytesNoSongReferences" classname="scoremap.app.PdfStorageTest" time="0.053" />
+  </testsuite>
+  <testsuite name="scoremap.app.PdfViewerTest" tests="3" failures="0" errors="0" skipped="0" time="49.067" timestamp="2026-11-27T00:42:38" hostname="localhost">
+    <properties>
+      <property name="device" value="pixelTabletApi37" />
+      <property name="flavor" value="" />
+      <property name="project" value=":app" />
+    </properties>
+    <testcase name="performanceModeStillTurnsPagesButRefusesToRemoveThePdf" classname="scoremap.app.PdfViewerTest" time="17.489" />
+    <testcase name="anUnreadablePdfIsRefusedWithAMessageAndTheSongKeepsItsData" classname="scoremap.app.PdfViewerTest" time="11.348" />
+    <testcase name="anAttachedPdfCanBeViewedPageByPageAndTheLastPageIsRememberedAcrossARestart" classname="scoremap.app.PdfViewerTest" time="20.23" />
+  </testsuite>
+  <testsuite name="scoremap.app.RoomLibraryStoreTest" tests="11" failures="0" errors="0" skipped="0" time="2.777" timestamp="2026-11-27T00:42:38" hostname="localhost">
+    <properties>
+      <property name="device" value="pixelTabletApi37" />
+      <property name="flavor" value="" />
+      <property name="project" value=":app" />
+    </properties>
+    <testcase name="lifecycleStateSurvivesCloseAndReopen" classname="scoremap.app.RoomLibraryStoreTest" time="1.443" />
+    <testcase name="aClosedDatabaseReportsStorageFailureWithoutAcknowledging" classname="scoremap.app.RoomLibraryStoreTest" time="0.102" />
+    <testcase name="anIdempotentRetryAfterReopenNeverAppliesTwice" classname="scoremap.app.RoomLibraryStoreTest" time="0.053" />
+    <testcase name="partsAndVoicingsSurviveReopenAndRestoreKeepsThem" classname="scoremap.app.RoomLibraryStoreTest" time="0.128" />
+    <testcase name="performanceModeRefusalsNeverReachTheDatabase" classname="scoremap.app.RoomLibraryStoreTest" time="0.001" />
+    <testcase name="devicesBindingsAndHandsSurviveReopenAndRestore" classname="scoremap.app.RoomLibraryStoreTest" time="0.206" />
+    <testcase name="phrasesKeepOrderRestsHandsAndOnlySuppliedTimingAcrossReopen" classname="scoremap.app.RoomLibraryStoreTest" time="0.382" />
+    <testcase name="measuresChordsAndLyricLinksSurviveReopenInTheSongAndItsHistory" classname="scoremap.app.RoomLibraryStoreTest" time="0.303" />
+    <testcase name="keyLyricsAndCuesSurviveReopenInTheSongAndItsHistory" classname="scoremap.app.RoomLibraryStoreTest" time="0.106" />
+    <testcase name="aStaleRevisionIsRejectedAndTheNewerDataAndUnrelatedMusicArePreserved" classname="scoremap.app.RoomLibraryStoreTest" time="0.026" />
+    <testcase name="aFailureInsideTheTransactionRollsBackEveryRowAndTheReceipt" classname="scoremap.app.RoomLibraryStoreTest" time="0.027" />
+  </testsuite>
+  <testsuite name="scoremap.app.RoomMigrationTest" tests="2" failures="0" errors="0" skipped="0" time="0.63" timestamp="2026-11-27T00:42:38" hostname="localhost">
+    <properties>
+      <property name="device" value="pixelTabletApi37" />
+      <property name="flavor" value="" />
+      <property name="project" value=":app" />
+    </properties>
+    <testcase name="failureAfterFirstMigrationStatementKeepsSourceAndRecoveryCopyAtVersionFive" classname="scoremap.app.RoomMigrationTest" time="0.579" />
+    <testcase name="supportedUpgradeKeepsIndependentVersionFiveCopyAndCompleteContent" classname="scoremap.app.RoomMigrationTest" time="0.051" />
+  </testsuite>
+  <testsuite name="scoremap.app.SetsAndHistoryTest" tests="10" failures="0" errors="0" skipped="0" time="285.387" timestamp="2026-11-27T00:42:38" hostname="localhost">
+    <properties>
+      <property name="device" value="pixelTabletApi37" />
+      <property name="flavor" value="" />
+      <property name="project" value=":app" />
+    </properties>
+    <testcase name="cancellingTheKeyboardLeavesTheStoredVoicingUntouched" classname="scoremap.app.SetsAndHistoryTest" time="27.452" />
+    <testcase name="performanceModeRefusesToCreateASet" classname="scoremap.app.SetsAndHistoryTest" time="7.444" />
+    <testcase name="everyRetainedRevisionCanBeInspectedAndRestoredAsANewOne" classname="scoremap.app.SetsAndHistoryTest" time="19.094" />
+    <testcase name="theKeyLyricsAndCueAreSavedPerSectionAndSurviveARestart" classname="scoremap.app.SetsAndHistoryTest" time="31.697" />
+    <testcase name="measuresChordsAndLyricLinksAreEditedAndSurviveARestart" classname="scoremap.app.SetsAndHistoryTest" time="38.656" />
+    <testcase name="aPhraseIsPlayedInOrderWithRestsAndOnlySuppliedTimingAndSurvivesARestart" classname="scoremap.app.SetsAndHistoryTest" time="32.946" />
+    <testcase name="theSongSheetShowsKeyChordsAndAlignedLyricsInAFocusedView" classname="scoremap.app.SetsAndHistoryTest" time="36.276" />
+    <testcase name="anOrderedSetSurvivesReorderingDeletionRestoreAndARestart" classname="scoremap.app.SetsAndHistoryTest" time="24.472" />
+    <testcase name="aVoicingIsPlayedOnTheKeyboardWithHandsAndSurvivesARestart" classname="scoremap.app.SetsAndHistoryTest" time="37.267" />
+    <testcase name="devicesHandsAndBindingsAreEditedAndSurviveARestart" classname="scoremap.app.SetsAndHistoryTest" time="30.083" />
+  </testsuite>
+</testsuites>

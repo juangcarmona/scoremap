@@ -375,3 +375,7 @@ Full repository verification passed; native instrumentation passed all 38 tests 
 ## Current-head APK equivalence
 
 The build on `3fc37e7c8310f72c5c67f65c7e8801fa54399700` produces application and test APKs byte-identical to the installed capture APKs. Only the strict test inventory and delivery receipt changed after capture. [Rebuild binding](current-head-rebuild.json). Native host verification, citations and all 26 strict OpenSpec checks passed again.
+
+## Passing GitHub CI
+
+[Run 45916878619](https://github.com/juangcarmona/scoremap/actions/runs/45916878619) passed all four jobs on current PR head `3fc37e7`: Android host, Android device, Verify delivery evidence and Verify ScoreMap. The managed-device JUnit report contains 38 cases, zero failures/errors/skips. [Run snapshot](ci-head-3fc37e7/run.json), [device receipt](ci-head-3fc37e7/device-execution.json), [native JUnit](ci-head-3fc37e7/native-junit.xml). Independent review and owner visual acceptance remain pending.

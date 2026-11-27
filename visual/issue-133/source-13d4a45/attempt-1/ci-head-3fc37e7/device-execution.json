@@ -1,0 +1,13 @@
+{
+  "sourceRevision": "4e7576e86236eb28baa0d846614cba70b38c86bd",
+  "kind": "device",
+  "startedAt": "2026-11-27T00:29:40.558Z",
+  "status": "passed",
+  "execution": {
+    "tests": 38,
+    "reports": [
+      "app/build/outputs/androidTest-results/managedDevice/debug/pixelTabletApi37/TEST-pixelTabletApi37-_app-.xml"
+    ]
+  },
+  "endedAt": "2026-11-27T00:42:39.771Z"
+}
