@@ -1,0 +1,26 @@
+{
+  "repository": "juangcarmona/scoremap",
+  "repositoryId": 1458674261,
+  "implementationCommit": "c005b0ee24830ba08328e91f19e9cec97df0fc6a",
+  "documentationHead": "c700b6f",
+  "androidTree": "4c5d0989e27e5c2d968dd31ba299e8f7365a65b5",
+  "results": {
+    "repository-verify.log": "passed, exit 0; Node 26, SDK /home/juan/Android/Sdk, shared Gradle cache; no concurrent builds",
+    "native-suite.log": "38 passed, installed final APK; Android instrumentation on tablet viewport",
+    "browser-e2e.log": "48 passed; unchanged browser source, earlier in this issue cycle"
+  },
+  "logSha256": {
+    "browser-e2e.log": "9952c80bcdc4ab520d73115a04b32b6aa0158a1c3a412e4c1b92a130b21c3ee1",
+    "native-suite.log": "2ea51a26a8d4070e595a8facdab72a86a63d95103ddbf2b6ba66d70ef7ef3083",
+    "repository-verify.log": "363f81d46ab695c0645988e32363109f0b5741a7ccacd09f1d8db1cd7581caa4",
+    "phone-dark-200.log": "30eb189fa2530aaca172b76e8d90ea27508a93bbcbe27a6e96f18c69ede3f957",
+    "phone-dark.log": "e15b5e380091712e453aaf310f36613466ffd97c241647f844a22e38a70b3851",
+    "phone-light.log": "fc9efc5fe8c36f807fdd4593d99d03f57435693319032617f14e870688b1222d",
+    "tablet-dark-200.log": "ad2e00a1cb566aba876a254c1a3021a539855947c5347539068937f2b3d1f263",
+    "tablet-dark.log": "558958e7e5558a39babf7a27aaf437300bd02c8a5383f981e35cacd1172f54ad",
+    "tablet-light.log": "94076cdc68bfd52169fde7201d0adaff9ae3868fb6421460ba4c02c66b80d0ec"
+  },
+  "independentReview": "pending",
+  "physicalQualification": "not executed",
+  "ownerVisualAcceptance": "pending"
+}

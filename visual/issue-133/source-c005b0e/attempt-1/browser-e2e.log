@@ -1,0 +1,63 @@
+
+> scoremap@0.1.0 test:e2e
+> playwright install chromium && playwright test
+
+[WebServer] (node:3035587) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 48 tests using 1 worker
+
+(node:3035672) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [tablet-chromium] › tests/e2e/acceptance.spec.ts:4:1 › Tablet, Android-compatible phone and 200% text retain readable touch consultation (3.0s)
+  ✓   2 [tablet-chromium] › tests/e2e/acceptance.spec.ts:50:1 › Edit surfaces, dialogs and empty states have accessible names and contrast (4.3s)
+  ✓   3 [tablet-chromium] › tests/e2e/acceptance.spec.ts:67:1 › An empty library offers a direct import path on a narrow screen (675ms)
+  ✓   4 [tablet-chromium] › tests/e2e/backup.spec.ts:4:1 › SB-BACKUP-EXPORT SB-BACKUP-IMPORT SB-BACKUP-CANCEL SB-PERSIST-RECOVER: actual file download, cancellation, confirmed replacement and reload (2.2s)
+  ✓   5 [tablet-chromium] › tests/e2e/backup.spec.ts:86:1 › SB-BACKUP-REJECT: invalid import preserves acknowledged local data (1.3s)
+  ✓   6 [tablet-chromium] › tests/e2e/backup.spec.ts:100:1 › an unsupported PDF backup preserves the saved library after reload (1.5s)
+  ✓   7 [tablet-chromium] › tests/e2e/backup.spec.ts:130:1 › an oversized backup is refused before reading or changing an existing library (1.5s)
+  ✓   8 [tablet-chromium] › tests/e2e/builder.spec.ts:6:1 › actual exact-pitch builder cancels, commits and undoes one octave while viewport changes never transpose music (5.5s)
+  ✓   9 [tablet-chromium] › tests/e2e/builder.spec.ts:142:1 › Cmaj7 preserves the other played notes when E4 moves to E5 (1.4s)
+  ✓  10 [tablet-chromium] › tests/e2e/builder.spec.ts:208:1 › touching the overlap selects the black key and the exposed area selects its white neighbour (3.3s)
+  ✓  11 [tablet-chromium] › tests/e2e/builder.spec.ts:291:1 › reusable presets copy acknowledged versions; later preset pitch changes and deletion leave the actual song copies unchanged (2.0s)
+  ✓  12 [tablet-chromium] › tests/e2e/builder.spec.ts:397:1 › a saved voicing used in two harmonic events remains independent when one copy changes (2.5s)
+  ✓  13 [tablet-chromium] › tests/e2e/builder.spec.ts:512:1 › touch keys distinguish octaves and manual identification stays unknown or ambiguous until an explicit harmonic choice (3.6s)
+  ✓  14 [tablet-chromium] › tests/e2e/builder.spec.ts:663:1 › switching to performance while a preset file is read does not import it (523ms)
+  ✓  15 [tablet-chromium] › tests/e2e/builder.spec.ts:739:1 › entering performance waits for an already admitted preset save (1.2s)
+  ✓  16 [tablet-chromium] › tests/e2e/builder.spec.ts:843:1 › a failed in-flight preset save keeps edit mode and explains the failure (1.5s)
+  ✓  17 [tablet-chromium] › tests/e2e/builder.spec.ts:929:1 › switching to performance while a configuration file is read does not import it (645ms)
+  ✓  18 [tablet-chromium] › tests/e2e/builder.spec.ts:1004:1 › interrupted reusable-voicing import resumes after browser restart using its retained mapping without duplicating acknowledged resources (828ms)
+  ✓  19 [tablet-chromium] › tests/e2e/consultation-readability.spec.ts:8:1 › switching songs and events never leaves stale notes on three keyboards (1.7s)
+  ✓  20 [tablet-chromium] › tests/e2e/consultation-readability.spec.ts:118:1 › SB-PERFORMANCE SB-KEYBOARD: consultation controls and complete played keyboards remain visible without changing music (5.6s)
+  ✓  21 [tablet-chromium] › tests/e2e/consultation-readability.spec.ts:240:1 › SB-KEYBOARD: flat notes on black keys retain their complete dual labels at enlarged text (3.3s)
+  ✓  22 [tablet-chromium] › tests/e2e/consultation-readability.spec.ts:349:1 › landscape tablet keeps song navigation and two keyboards visible together (2.1s)
+  ✓  23 [tablet-chromium] › tests/e2e/consultation-readability.spec.ts:443:1 › 1024px landscape tablet keeps two keyboards and library navigation available (3.1s)
+  ✓  24 [tablet-chromium] › tests/e2e/library.spec.ts:3:1 › SB-REPERTOIRE-CREATE SB-REPERTOIRE-RENAME SB-REPERTOIRE-DELETE SB-MEMBERSHIP-REMOVE: repertoire deletion preserves independent songs (1.2s)
+  ✓  25 [tablet-chromium] › tests/e2e/migration.spec.ts:8:1 › SB-BACKUP-IMPORT-EMPTY: a confirmed empty v1 import replaces music only after consent and retains its original (1.1s)
+  ✓  26 [tablet-chromium] › tests/e2e/migration.spec.ts:66:1 › interrupted browser migration preserves the current library and retries the original exactly once (1.4s)
+  ✓  27 [tablet-chromium] › tests/e2e/migration.spec.ts:172:1 › real browser v1 import retains its original, activates deterministic identified form and edits/reopens the same event (2.6s)
+  ✓  28 [tablet-chromium] › tests/e2e/notation-transfer.spec.ts:5:1 › note-name transfer validates first, confirms replacement, and preserves the saved choice (1.5s)
+  ✓  29 [tablet-chromium] › tests/e2e/notation-transfer.spec.ts:65:1 › note-name transfer remains accessible on a narrow screen (1.2s)
+  ✓  30 [tablet-chromium] › tests/e2e/notation.spec.ts:7:1 › current song notation switches labels, preserves spelling/music and persists during read-only consultation (2.9s)
+  ✓  31 [tablet-chromium] › tests/e2e/notation.spec.ts:90:1 › slash-chord notation switches across the song, editor and performance without revising music (2.9s)
+  ✓  32 [tablet-chromium] › tests/e2e/notes.spec.ts:4:1 › SB-ANNOTATIONS: incremental note typing survives delayed IndexedDB acknowledgements (8.9s)
+  ✓  33 [tablet-chromium] › tests/e2e/notes.spec.ts:63:1 › SB-ANNOTATIONS: identity-keyed drafts survive song switching during queued saves (2.9s)
+  ✓  34 [tablet-chromium] › tests/e2e/offline.spec.ts:3:1 › SB-OFFLINE: production application reloads, edits, saves and recovers without a network (2.1s)
+  ✓  35 [tablet-chromium] › tests/e2e/offline.spec.ts:52:1 › Installability contract exposes complete local manifest, icons and an active service worker (593ms)
+  ✓  36 [tablet-chromium] › tests/e2e/performance.spec.ts:4:1 › landscape performance prioritizes the song and keeps the library accessible (1.6s)
+  ✓  37 [tablet-chromium] › tests/e2e/performance.spec.ts:28:1 › SB-SECTION-REORDER SB-ANNOTATIONS SB-PERFORMANCE SB-PERFORMANCE-REJECT SB-KEYBOARD: prepare, reorder, consult and retain exact content (2.9s)
+  ✓  38 [tablet-chromium] › tests/e2e/performance.spec.ts:143:1 › SB-CHORD-MODIFY: changing a chord updates real keyboard notes immediately (1.8s)
+  ✓  39 [tablet-chromium] › tests/e2e/persistence.spec.ts:36:1 › SB-PERSIST-CONFLICT SB-PERSIST-RECOVER: a stale browser tab cannot overwrite an acknowledged revision and can export its draft (2.6s)
+  ✓  40 [tablet-chromium] › tests/e2e/persistence.spec.ts:94:1 › SB-PERSIST-FAILURE SB-PERSIST-RECOVER: a failed browser write preserves durable data and an exportable draft until explicit retry (2.3s)
+  ✓  41 [tablet-chromium] › tests/e2e/references.spec.ts:3:1 › SB-REFERENCE SB-ANNOTATIONS: opening a reference keeps pending local work and escapes personal text (2.1s)
+  ✓  42 [tablet-chromium] › tests/e2e/shell.spec.ts:2:1 › Application shell starts in the actual production browser build (393ms)
+  ✓  43 [tablet-chromium] › tests/e2e/update.spec.ts:8:1 › SB-OFFLINE SB-PERSIST-RECOVER: two production revisions wait for deliberate activation and preserve data offline (9.4s)
+  ✓  44 [tablet-chromium] › tests/e2e/workspace.spec.ts:9:1 › all six real arrangement configurations, a fourth assigned part and complete durable backup round trip (32.0s)
+  ✓  45 [tablet-chromium] › tests/e2e/workspace.spec.ts:416:1 › removing a binding or physical keyboard retains every note and makes unassigned performance explicitly consultable (2.1s)
+  ✓  46 [tablet-chromium] › tests/e2e/workspace.spec.ts:494:1 › shared measure edits refuse clipping, disclose all arrangements and reconcile removal without stale selected highlights (1.7s)
+  ✓  47 [tablet-chromium] › tests/e2e/workspace.spec.ts:561:1 › explicit arrangement and independent-song copies preserve complete music with fresh owned identities, including opaque prototype-like source IDs (1.9s)
+(node:3044906) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  48 [android-phone] › tests/e2e/android.spec.ts:3:1 › SB-OFFLINE SB-PERFORMANCE: Android phone touch editing and offline consultation retain music (1.9s)
+
+  48 passed (2.5m)
