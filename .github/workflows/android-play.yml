@@ -2,6 +2,7 @@ name: Android Google Play
 on:
   push:
     branches: [main, feat/135-google-play-release]
+    tags: ['play-alpha-*']
     paths: ['src/android/**', 'scripts/google-play-preflight.mjs', '.github/workflows/android-play.yml']
   workflow_dispatch:
     inputs:
@@ -11,9 +12,14 @@ on:
         default: com.jgcarmona.scoremap
         type: string
       publish:
-        description: Upload a draft release to internal testing (requires first Console upload)
+        description: Upload a draft testing release
         type: boolean
         default: false
+      track:
+        description: Google Play testing track
+        type: choice
+        options: [alpha, internal]
+        default: alpha
 permissions:
   contents: read
 concurrency:
@@ -86,14 +92,14 @@ jobs:
         env:
           GOOGLE_PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
         run: node scripts/google-play-preflight.mjs
-      - name: Upload draft to internal testing
-        if: inputs.publish && github.ref == 'refs/heads/main'
+      - name: Upload draft to Google Play testing
+        if: (inputs.publish && github.ref == 'refs/heads/main') || startsWith(github.ref, 'refs/tags/play-alpha-')
         uses: r0adkll/upload-google-play@e738b9dd8f2476ea806d921b64aacd24f34515a5 # v1
         with:
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
           packageName: ${{ env.SCOREMAP_APPLICATION_ID }}
           releaseFiles: src/android/app/build/outputs/bundle/release/app-release.aab
-          track: internal
+          track: ${{ inputs.track || 'alpha' }}
           status: draft
       - name: Remove upload key
         if: always()

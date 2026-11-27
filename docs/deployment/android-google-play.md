@@ -29,7 +29,14 @@ App Signing manages the distribution key; this workflow uses the separate upload
    required app information and declarations. Google requires the initial package
    registration through Console before this upload action can manage releases.
 4. After integration into `main`, run the workflow on `main` with **publish enabled**
-   to create a **draft internal testing release**. Inspect it in Console before rollout.
+   and select `alpha` (closed testing) or `internal`. Inspect the resulting **draft**
+   in Console before rollout.
+
+An owner-requested first Alpha candidate can also be uploaded as a draft by pushing
+an explicit `play-alpha-*` tag. That tag binds the candidate to a source revision;
+it does not establish successful CI, integration, release acceptance or tester
+availability. The workflow always uses draft status, including this bootstrap route.
+Google may still require the first Console upload and outstanding app declarations.
 
 The workflow serializes deliveries and derives the version code from its run number.
 Rerunning an uploaded run reuses its version code: start a fresh run for a new upload.
