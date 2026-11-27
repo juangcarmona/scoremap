@@ -30,6 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -71,7 +72,11 @@ private fun LibraryHeader(holder: LibraryHolder) {
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(if (holder.editMode) "Edit mode" else "Performance mode")
-                Switch(checked = holder.editMode, onCheckedChange = { holder.editMode = it })
+                Switch(
+                    checked = holder.editMode,
+                    onCheckedChange = { holder.editMode = it },
+                    modifier = Modifier.semantics { contentDescription = "Editing enabled" },
+                )
             }
         }
     }

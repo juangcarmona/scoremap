@@ -22,6 +22,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -54,7 +56,11 @@ internal fun SongSheetScreen(
             ActionButton("Close sheet", "Close song sheet") { holder.sheetSongId = null }
             Row(Modifier.widthIn(max = 320.dp), verticalAlignment = Alignment.CenterVertically) {
                 Text("Show performed notes", Modifier.weight(1f, fill = false))
-                Switch(checked = performed, onCheckedChange = { performed = it })
+                Switch(
+                    checked = performed,
+                    onCheckedChange = { performed = it },
+                    modifier = Modifier.semantics { contentDescription = "Show performed notes" },
+                )
             }
             Text(
                 "Protected song sheet",

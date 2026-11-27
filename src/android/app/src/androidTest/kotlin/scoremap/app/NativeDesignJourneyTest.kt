@@ -54,6 +54,7 @@ public class NativeDesignJourneyTest {
             lateinit var models: LibraryModels
             scenario.onActivity { models = it.models }
             compose.waitForText("Song name")
+            compose.onNodeWithContentDescription("Editing enabled").assertIsDisplayed()
             compose.onNodeWithText("Create song").assertHeightIsAtLeast(48.dp).assertWidthIsAtLeast(48.dp)
             capture("01-empty-library")
             compose.clickControl("Create song")
@@ -109,6 +110,7 @@ public class NativeDesignJourneyTest {
     private fun captureConsultation() {
         compose.clickControl("Open song sheet of Blue Bossa")
         compose.waitForText("Key: C minor")
+        compose.onNodeWithContentDescription("Show performed notes").assertIsDisplayed()
         capture("04-protected-song-sheet")
         compose
             .onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsProperties.HorizontalScrollAxisRange))[0]
