@@ -16,8 +16,9 @@
 
 ## Execution receipt
 
-- Implementation and installed APK source: `c005b0ee24830ba08328e91f19e9cec97df0fc6a`.
+- Implementation and installed APK source: `13d4a45441a9af5505528e2d2e62a10cee874331`.
 - Full repository `npm run verify`: passed with the pinned Node/Android host environment. Browser E2E: 48 passed.
+- Native instrumentation: 38/38 passed locally and in the managed-device CI run; the gate inventory now explicitly includes the new design test.
 - Six native visual journeys passed, producing 54 original PNGs with per-profile logs and APK/source/PNG digests.
-- [Implementation PR #134](https://github.com/juangcarmona/scoremap/pull/134) embeds before/after screenshots; [immutable gallery and provenance](https://github.com/juangcarmona/scoremap/blob/3d94c9b/visual/issue-133/source-c005b0e/attempt-1/README.md).
+- [Implementation PR #134](https://github.com/juangcarmona/scoremap/pull/134) embeds before/after screenshots; [immutable gallery and provenance](https://github.com/juangcarmona/scoremap/blob/f4c1f78/visual/issue-133/source-13d4a45/attempt-1/README.md).
 - Required GitHub CI, independent review, current-candidate owner visual acceptance and physical-device qualification remain distinct gates; none is inferred from this checklist.
