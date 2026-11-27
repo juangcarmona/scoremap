@@ -2,7 +2,8 @@
     <application
         android:allowBackup="false"
         android:label="ScoreMap"
-        android:theme="@android:style/Theme.Material.Light.NoActionBar">
+        android:icon="@drawable/scoremap_icon"
+        android:theme="@style/ScoreMap">
         <activity
             android:name=".MainActivity"
             android:exported="true">

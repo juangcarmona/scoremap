@@ -172,7 +172,7 @@ tasks.register("verifyDevice") {
         val reports = fileTree(directory) { include("**/TEST-*.xml") }.files
         // The managed device writes one report for the whole run; the declared classes and their case counts
         // are checked inside it, and the usual inventory checks bind that report to this run.
-        val expectedClasses = mapOf("OfflineRecreationTest" to 1, "RoomLibraryStoreTest" to 11, "RoomMigrationTest" to 2, "LibraryScreenTest" to 4, "SetsAndHistoryTest" to 10, "PdfStorageTest" to 6, "PdfViewerTest" to 3)
+        val expectedClasses = mapOf("OfflineRecreationTest" to 1, "RoomLibraryStoreTest" to 11, "RoomMigrationTest" to 2, "LibraryScreenTest" to 4, "SetsAndHistoryTest" to 10, "PdfStorageTest" to 6, "PdfViewerTest" to 3, "NativeDesignJourneyTest" to 1)
         check(reports.size == 1) { "Expected one managed-device report, found ${reports.map { it.name }}." }
         val report = reports.single()
         val perClass = expectedClasses.mapValues { (name, _) -> Regex("classname=\"[^\"]*\\.$name\"").findAll(report.readText()).count() }

@@ -2,9 +2,15 @@ package scoremap.feature.library
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -16,6 +22,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -31,7 +39,8 @@ internal fun SongSheetScreen(
     holder: LibraryHolder,
     songId: String,
 ) {
-    var performed by remember(songId) { mutableStateOf(false) }
+    var performed by remember(songId) { mutableStateOf(true) }
+    var loaded by remember(songId, performed) { mutableStateOf(false) }
     var view by remember(songId, performed) { mutableStateOf<SheetView?>(null) }
     LaunchedEffect(songId, performed) {
         view =
@@ -39,15 +48,29 @@ internal fun SongSheetScreen(
                 holder.models.editors.sheet
                     .load(songId, performed)
             }
+        loaded = true
     }
     val sheet = view
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             ActionButton("Close sheet", "Close song sheet") { holder.sheetSongId = null }
-            Text("Show performed notes")
-            Switch(checked = performed, onCheckedChange = { performed = it })
+            Row(Modifier.widthIn(max = 320.dp), verticalAlignment = Alignment.CenterVertically) {
+                Text("Show performed notes", Modifier.weight(1f, fill = false))
+                Switch(
+                    checked = performed,
+                    onCheckedChange = { performed = it },
+                    modifier = Modifier.semantics { contentDescription = "Show performed notes" },
+                )
+            }
+            Text(
+                "Protected song sheet",
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(vertical = 16.dp),
+            )
         }
-        if (sheet == null) {
+        if (!loaded) {
+            LinearProgressIndicator(Modifier.fillMaxWidth())
+        } else if (sheet == null) {
             Text("This song is not available.")
         } else {
             sheetBody(sheet)
@@ -71,8 +94,30 @@ private fun sheetBody(sheet: SheetView) {
                     }
                     Text(line.lyrics, fontFamily = FontFamily.Monospace)
                 }
-                section.performed.forEach { Text("Performed: $it") }
+                section.positions.forEach { position -> PerformedPositionRow(position) }
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
             }
         }
+    }
+}
+
+@Composable
+private fun PerformedPositionRow(position: PerformedPosition) {
+    Column(Modifier.fillMaxWidth().padding(vertical = 8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text("${position.chord} · ${position.part}", style = MaterialTheme.typography.titleLarge)
+        val piano =
+            remember(position) {
+                PianoEditorModel(position.notes, whiteKeys = 21).apply {
+                    if (position.notes.isNotEmpty()) {
+                        jumpTo((position.notes.minOf { it.midi } + position.notes.maxOf { it.midi }) / 2)
+                    }
+                }
+            }
+        PianoKeyboard(piano.keys(), onKey = null, compact = true)
+        Text(
+            position.notes.joinToString(" · ") { "${scoremap.music.Piano.label(it.midi)} (${handName(it.hand)})" },
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        if (piano.hidden.isNotEmpty()) Text("Outside this view: ${piano.hidden.joinToString(", ")}")
     }
 }

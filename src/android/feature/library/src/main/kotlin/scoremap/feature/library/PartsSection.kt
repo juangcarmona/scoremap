@@ -1,7 +1,7 @@
 package scoremap.feature.library
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
@@ -23,7 +23,7 @@ internal fun LazyListScope.partsSection(holder: LibraryHolder) {
         val removeLabel =
             if (part.voicings.isEmpty() && part.phrases.isEmpty()) "Remove part" else "Remove part and its content"
         NamedRow("Part: ${part.name}") {
-            ActionButton(removeLabel, "$removeLabel ${part.name}") {
+            DestructiveButton(removeLabel, "$removeLabel ${part.name}") {
                 holder.act { mode -> parts.removePart(detail.id, part.id, true, mode) }
             }
         }
@@ -39,7 +39,11 @@ internal fun LazyListScope.partsSection(holder: LibraryHolder) {
                             part.id,
                             part.name,
                             chord,
-                            PianoEditorModel(initial),
+                            PianoEditorModel(initial, whiteKeys = 21).apply {
+                                if (initial.isNotEmpty()) {
+                                    jumpTo((initial.minOf { it.midi } + initial.maxOf { it.midi }) / 2)
+                                }
+                            },
                             keySignatureOf(detail.key),
                         )
                 }
@@ -62,7 +66,7 @@ private fun phraseRows(
     }
     part.phrases.forEach { phrase ->
         Text("Phrase ${phrase.name}: " + phrase.lines.joinToString("; ").ifEmpty { "no steps yet" })
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             ActionButton("Edit phrase", "Edit phrase ${phrase.name} of ${part.name}") {
                 holder.composing =
                     PhraseEdit(
@@ -73,7 +77,7 @@ private fun phraseRows(
                         keySignatureOf(holder.detail?.key),
                     )
             }
-            ActionButton("Remove phrase", "Remove phrase ${phrase.name} of ${part.name}") {
+            DestructiveButton("Remove phrase", "Remove phrase ${phrase.name} of ${part.name}") {
                 holder.act { mode -> phrases.removePhrase(songId, part.id, phrase.id, mode) }
             }
         }

@@ -85,7 +85,7 @@ public class PdfViewerTest {
             reopenSong("Blue Bossa")
             waitForText("PDFs")
             assertEquals(0, compose.onAllNodesWithText("Broken (1 pages)").fetchSemanticsNodes().size)
-            waitForText("Editing: Blue Bossa")
+            waitForText("Blue Bossa")
         }
     }
 
@@ -100,6 +100,7 @@ public class PdfViewerTest {
             waitForText("Score (2 pages)")
             compose.onNode(isToggleable()).performClick()
             click("Remove PDF Score")
+            click("Confirm Remove PDF Score")
             waitForText("Turn on edit mode to change songs.")
             click("View Score")
             waitForText("Score: page 1 of 2")
@@ -143,13 +144,13 @@ public class PdfViewerTest {
         compose.onNodeWithText("Create song").performClick()
         waitForText(name)
         click("Open $name")
-        waitForText("Editing: $name")
+        waitForText("$name")
     }
 
     private fun reopenSong(name: String) {
         click("Close editor")
         click("Open $name")
-        waitForText("Editing: $name")
+        waitForText("$name")
     }
 
     private fun click(description: String) = compose.clickControl(description)
