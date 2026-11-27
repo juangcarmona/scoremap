@@ -154,6 +154,8 @@ val verifyBuildLogicSources =
     }
 
 tasks.test {
+    // TestKit reuses these verified tool dependencies and must not redownload them from an empty cache.
+    dependsOn("spotlessCheck", "detekt")
     useJUnit()
     maxHeapSize = "256m"
     maxParallelForks = 1
@@ -162,6 +164,7 @@ tasks.test {
     outputs.upToDateWhen { false }
     outputs.cacheIf { false }
     systemProperty("scoremap.gradleHome", requireNotNull(gradle.gradleHomeDir).absolutePath)
+    systemProperty("scoremap.gradleUserHome", gradle.gradleUserHomeDir.absolutePath)
     systemProperty("scoremap.androidRoot", rootDir.parentFile.absolutePath)
     systemProperty(
         "scoremap.fixtureRoot",

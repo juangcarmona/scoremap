@@ -25,17 +25,19 @@ App Signing manages the distribution key; this workflow uses the separate upload
    `com.jgcarmona.scoremap`; normal development builds retain `scoremap.android`.
 2. Run the workflow with **publish disabled**. Download `scoremap-play-N` from the
    run's artifacts. It contains `app-release.aab`, its SHA-256 and source/run provenance.
-3. Upload that AAB in Play Console, configure Play App Signing and complete the
-   required app information and declarations. Google requires the initial package
-   registration through Console before this upload action can manage releases.
+3. Complete the app information, signing setup and declarations required by Play
+   Console. Try the API upload for an already registered package; if Google requires
+   an initial Console upload, use the retained AAB. ScoreMap's first Alpha was
+   successfully uploaded through the API without a manual binary upload.
 4. After integration into `main`, run the workflow on `main` with **publish enabled**
-   and select `alpha` (closed testing) or `internal`. Inspect the resulting **draft**
-   in Console before rollout.
+   and select `alpha` (closed testing) or `internal`. Leave `release_status` as
+   `draft` to prepare a candidate, or select `completed` for an owner-authorized
+   testing rollout after qualification and required Console setup.
 
 An owner-requested first Alpha candidate can also be uploaded as a draft by pushing
 an explicit `play-alpha-*` tag. That tag binds the candidate to a source revision;
 it does not establish successful CI, integration, release acceptance or tester
-availability. The workflow always uses draft status, including this bootstrap route.
+availability. The tag bootstrap route always uses draft status.
 Google may still require the first Console upload and outstanding app declarations.
 
 The workflow serializes deliveries and derives the version code from its run number.
