@@ -14,16 +14,31 @@ android {
     buildToolsVersion = "36.0.0"
 
     defaultConfig {
-        applicationId = "scoremap.android"
+        applicationId = providers.environmentVariable("SCOREMAP_APPLICATION_ID").getOrElse("scoremap.android")
         minSdk = 26
         targetSdk = 37
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = providers.environmentVariable("SCOREMAP_VERSION_CODE").getOrElse("1").toInt()
+        versionName = providers.environmentVariable("SCOREMAP_VERSION_NAME").getOrElse("0.1.0")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    val uploadKeystore = providers.environmentVariable("ANDROID_KEYSTORE_PATH").orNull
+    signingConfigs {
+        if (uploadKeystore != null) {
+            create("upload") {
+                storeFile = file(uploadKeystore)
+                storePassword = providers.environmentVariable("ANDROID_KEYSTORE_PASSWORD").get()
+                keyAlias = providers.environmentVariable("ANDROID_KEY_ALIAS").get()
+                keyPassword = providers.environmentVariable("ANDROID_KEY_PASSWORD").get()
+            }
+        }
+    }
+
     buildTypes {
-        release { isMinifyEnabled = false }
+        release {
+            isMinifyEnabled = false
+            if (uploadKeystore != null) signingConfig = signingConfigs.getByName("upload")
+        }
     }
 
     sourceSets
