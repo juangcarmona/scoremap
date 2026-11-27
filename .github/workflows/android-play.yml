@@ -1,7 +1,7 @@
 name: Android Google Play
 on:
   push:
-    branches: [main, feat/google-play-release]
+    branches: [main, feat/135-google-play-release]
     paths: ['src/android/**', 'scripts/google-play-preflight.mjs', '.github/workflows/android-play.yml']
   workflow_dispatch:
     inputs:
