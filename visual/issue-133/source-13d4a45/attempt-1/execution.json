@@ -1,0 +1,27 @@
+{
+  "repository": "juangcarmona/scoremap",
+  "repositoryId": 1458674261,
+  "implementationCommit": "13d4a45441a9af5505528e2d2e62a10cee874331",
+  "androidTree": "9df0d0f28c530104abfe180e3319220e9ef2b96e",
+  "results": {
+    "repository-verify.log": "passed, exit 0; complete repository verification on final source",
+    "native-suite.log": "38 passed, final installed APK on tablet viewport",
+    "browser-e2e.log": "48 passed earlier in cycle; browser source unchanged",
+    "cold-resolution.log": "passed, empty Gradle cache; online dependency resolution and verifyDevice task admission"
+  },
+  "logSha256": {
+    "cold-resolution.log": "76fae43077d9fbd8e314e797a0029b24466fbf790e306aad4f21fc56eb852cf3",
+    "browser-e2e.log": "9952c80bcdc4ab520d73115a04b32b6aa0158a1c3a412e4c1b92a130b21c3ee1",
+    "native-suite.log": "fd06cb2c08b3095f0127ab9d56e3a17e96a25ffa6f6d3013c4b94861f7505d6e",
+    "repository-verify.log": "f86764e123b06a0bea34e1aae45b6799cbe0a8b324350eee260bd7a511f9b6e9",
+    "tablet-light.log": "1b446c85506b3bae605049e44ac8cd38c2d68a1c09efa6ca0cb1e5ce5c097500",
+    "tablet-dark.log": "6f22302a7f14da981d04a61ea8f9dbbd50fff58b997dbf6f850ae8eac9e83b8a",
+    "tablet-dark-200.log": "5fd0f101ed4046631cdd1bc24b4b16a3685785b9a2f6ad8d7143a9fd4d8c9bd3",
+    "phone-light.log": "07bb28026623d927a5dfacbe864d434970763d3ed3a67f1bcd906b8415817562",
+    "phone-dark.log": "7abc8ef9171edc4519fc62a84805523a99e8c96c1fc66bac93f26fa969d8fdbe",
+    "phone-dark-200.log": "e3001644004b31e1fdd2589fee891d5246046ff73d934a34199cb539b1372a74"
+  },
+  "independentReview": "pending authorization",
+  "physicalQualification": "not executed",
+  "ownerVisualAcceptance": "pending"
+}

@@ -1,0 +1,185 @@
+{
+  "scope": "Declared native theme text/action/status pairs; does not establish whole-screen accessibility acceptance.",
+  "pairs": [
+    {
+      "role": "light-action",
+      "foreground": "#1f6fd1",
+      "background": "#ffffff",
+      "ratio": 4.94
+    },
+    {
+      "role": "dark-action",
+      "foreground": "#4da3ff",
+      "background": "#0d0f17",
+      "ratio": 7.29
+    },
+    {
+      "role": "light-body",
+      "foreground": "#0d0f17",
+      "background": "#ffffff",
+      "ratio": 19.13
+    },
+    {
+      "role": "dark-body",
+      "foreground": "#f8faff",
+      "background": "#111b2b",
+      "ratio": 16.54
+    },
+    {
+      "role": "light-muted",
+      "foreground": "#26344b",
+      "background": "#ffffff",
+      "ratio": 12.54
+    },
+    {
+      "role": "dark-muted",
+      "foreground": "#aab6c9",
+      "background": "#111b2b",
+      "ratio": 8.43
+    },
+    {
+      "role": "light-error",
+      "foreground": "#9a3434",
+      "background": "#fce8e5",
+      "ratio": 6.11
+    },
+    {
+      "role": "dark-error",
+      "foreground": "#ffb6ab",
+      "background": "#492825",
+      "ratio": 7.77
+    },
+    {
+      "role": "light-positive",
+      "foreground": "#195c40",
+      "background": "#e3f3e9",
+      "ratio": 6.9
+    },
+    {
+      "role": "dark-positive",
+      "foreground": "#96e4ad",
+      "background": "#173e2b",
+      "ratio": 7.95
+    },
+    {
+      "role": "light-caution",
+      "foreground": "#765211",
+      "background": "#fff2d7",
+      "ratio": 6.34
+    },
+    {
+      "role": "dark-caution",
+      "foreground": "#f8cf79",
+      "background": "#473612",
+      "ratio": 7.87
+    },
+    {
+      "role": "light-selection",
+      "foreground": "#0d0f17",
+      "background": "#dce1eb",
+      "ratio": 14.59
+    },
+    {
+      "role": "dark-selection",
+      "foreground": "#f8faff",
+      "background": "#26344b",
+      "ratio": 12.0
+    },
+    {
+      "role": "octave-0-white-label",
+      "foreground": "#000000",
+      "background": "#d8bce9",
+      "ratio": 12.29
+    },
+    {
+      "role": "octave-0-black-label",
+      "foreground": "#ffffff",
+      "background": "#704190",
+      "ratio": 7.37
+    },
+    {
+      "role": "octave-1-white-label",
+      "foreground": "#000000",
+      "background": "#c9c6ed",
+      "ratio": 12.78
+    },
+    {
+      "role": "octave-1-black-label",
+      "foreground": "#ffffff",
+      "background": "#51479c",
+      "ratio": 7.69
+    },
+    {
+      "role": "octave-2-white-label",
+      "foreground": "#000000",
+      "background": "#b8d7ee",
+      "ratio": 13.99
+    },
+    {
+      "role": "octave-2-black-label",
+      "foreground": "#ffffff",
+      "background": "#276698",
+      "ratio": 6.1
+    },
+    {
+      "role": "octave-3-white-label",
+      "foreground": "#000000",
+      "background": "#aee0df",
+      "ratio": 14.53
+    },
+    {
+      "role": "octave-3-black-label",
+      "foreground": "#ffffff",
+      "background": "#116d6e",
+      "ratio": 6.11
+    },
+    {
+      "role": "octave-4-white-label",
+      "foreground": "#000000",
+      "background": "#c8e6bd",
+      "ratio": 15.51
+    },
+    {
+      "role": "octave-4-black-label",
+      "foreground": "#ffffff",
+      "background": "#4d7e39",
+      "ratio": 4.82
+    },
+    {
+      "role": "octave-5-white-label",
+      "foreground": "#000000",
+      "background": "#f4e2a4",
+      "ratio": 16.26
+    },
+    {
+      "role": "octave-5-black-label",
+      "foreground": "#ffffff",
+      "background": "#8e7021",
+      "ratio": 4.68
+    },
+    {
+      "role": "octave-6-white-label",
+      "foreground": "#000000",
+      "background": "#f5ceaa",
+      "ratio": 14.29
+    },
+    {
+      "role": "octave-6-black-label",
+      "foreground": "#ffffff",
+      "background": "#a45d25",
+      "ratio": 5.03
+    },
+    {
+      "role": "octave-7-white-label",
+      "foreground": "#000000",
+      "background": "#edbdc1",
+      "ratio": 12.65
+    },
+    {
+      "role": "octave-7-black-label",
+      "foreground": "#ffffff",
+      "background": "#9a4552",
+      "ratio": 6.27
+    }
+  ]
+}
