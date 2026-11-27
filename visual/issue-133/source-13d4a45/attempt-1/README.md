@@ -371,3 +371,7 @@ No release or production deployment is claimed. Import/export capability remains
 ## Final-source execution
 
 Full repository verification passed; native instrumentation passed all 38 tests on the installed APK. Browser E2E passed 48 tests earlier in the cycle with unchanged browser source. [Execution receipt and log digests](execution.json). A cold online dependency resolution also passed after an earlier GitHub plugin-download failure. GitHub current-head results remain a separate gate.
+
+## Current-head APK equivalence
+
+The build on `3fc37e7c8310f72c5c67f65c7e8801fa54399700` produces application and test APKs byte-identical to the installed capture APKs. Only the strict test inventory and delivery receipt changed after capture. [Rebuild binding](current-head-rebuild.json). Native host verification, citations and all 26 strict OpenSpec checks passed again.

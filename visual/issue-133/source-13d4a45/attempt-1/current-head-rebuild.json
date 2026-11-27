@@ -1,0 +1,14 @@
+{
+  "sourceCommit": "3fc37e7c8310f72c5c67f65c7e8801fa54399700",
+  "capturedSourceCommit": "13d4a45441a9af5505528e2d2e62a10cee874331",
+  "applicationApkSha256": "8817011209271d6721ae0d0a6b53bd249d5384e0d394d852781f9f82a4b2ac0d",
+  "testApkSha256": "331a13fd2878260e24e63a937875254af65f3243d3430c520c3fb21ea8858b60",
+  "applicationApkByteIdentical": true,
+  "testApkByteIdentical": true,
+  "changesSinceCapture": [
+    "openspec/changes/issue-133-android-design/tasks.md",
+    "src/android/build.gradle.kts"
+  ],
+  "hostVerification": "npm run verify:android passed",
+  "rebuild": "offline assembleDebug and assembleDebugAndroidTest passed with the same local debug signing key"
+}

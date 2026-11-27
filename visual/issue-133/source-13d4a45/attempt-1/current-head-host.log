@@ -1,0 +1,482 @@
+
+> scoremap@0.1.0 verify:android
+> node src/android/scripts/verify-android.mjs
+
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/9.7.0/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :build-logic:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :build-logic:pluginDescriptors UP-TO-DATE
+> Task :build-logic:processResources UP-TO-DATE
+> Task :build-logic:compileKotlin
+> Task :build-logic:compileJava NO-SOURCE
+> Task :build-logic:classes UP-TO-DATE
+> Task :build-logic:jar UP-TO-DATE
+> Task :build-logic:detekt UP-TO-DATE
+> Task :verifyGateIntegrity
+> Task :verifyProjectGraph
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :library:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :music:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :music:compileKotlin UP-TO-DATE
+> Task :music:compileJava NO-SOURCE
+> Task :music:processResources NO-SOURCE
+> Task :music:classes UP-TO-DATE
+> Task :music:jar UP-TO-DATE
+> Task :library:compileKotlin UP-TO-DATE
+> Task :library:compileJava NO-SOURCE
+> Task :library:processResources NO-SOURCE
+> Task :library:classes UP-TO-DATE
+> Task :library:jar UP-TO-DATE
+> Task :app:generateDebugResources UP-TO-DATE
+> Task :app:packageDebugResources UP-TO-DATE
+> Task :data:local:preBuild UP-TO-DATE
+> Task :data:local:preDebugBuild UP-TO-DATE
+> Task :data:local:processDebugNavigationResources UP-TO-DATE
+> Task :feature:library:preBuild UP-TO-DATE
+> Task :feature:library:preDebugBuild UP-TO-DATE
+> Task :feature:library:processDebugNavigationResources UP-TO-DATE
+> Task :build-logic:spotlessKotlin UP-TO-DATE
+> Task :build-logic:spotlessKotlinCheck UP-TO-DATE
+> Task :app:processDebugNavigationResources UP-TO-DATE
+> Task :build-logic:spotlessKotlinGradle UP-TO-DATE
+> Task :build-logic:spotlessKotlinGradleCheck UP-TO-DATE
+> Task :build-logic:spotlessCheck UP-TO-DATE
+> Task :app:parseDebugLocalResources UP-TO-DATE
+> Task :app:generateDebugRFile UP-TO-DATE
+> Task :data:local:generateDebugResources UP-TO-DATE
+> Task :data:local:packageDebugResources UP-TO-DATE
+> Task :data:local:parseDebugLocalResources UP-TO-DATE
+> Task :data:local:generateDebugRFile UP-TO-DATE
+> Task :build-logic:compileTestKotlin UP-TO-DATE
+> Task :build-logic:compileTestJava NO-SOURCE
+> Task :build-logic:pluginUnderTestMetadata UP-TO-DATE
+> Task :build-logic:processTestResources NO-SOURCE
+> Task :build-logic:testClasses UP-TO-DATE
+> Task :data:local:kspDebugKotlin UP-TO-DATE
+> Task :data:local:compileDebugKotlin UP-TO-DATE
+> Task :data:local:javaPreCompileDebug UP-TO-DATE
+> Task :data:local:compileDebugJavaWithJavac NO-SOURCE
+> Task :data:local:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :feature:library:generateDebugResources UP-TO-DATE
+> Task :feature:library:packageDebugResources UP-TO-DATE
+> Task :feature:library:parseDebugLocalResources UP-TO-DATE
+> Task :feature:library:generateDebugRFile UP-TO-DATE
+> Task :feature:library:compileDebugKotlin UP-TO-DATE
+> Task :feature:library:javaPreCompileDebug UP-TO-DATE
+> Task :feature:library:compileDebugJavaWithJavac NO-SOURCE
+> Task :feature:library:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :app:kspDebugKotlin UP-TO-DATE
+> Task :app:compileDebugKotlin UP-TO-DATE
+> Task :app:javaPreCompileDebug UP-TO-DATE
+> Task :app:compileDebugJavaWithJavac NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :data:local:generateDebugAssets UP-TO-DATE
+> Task :data:local:mergeDebugAssets UP-TO-DATE
+> Task :feature:library:generateDebugAssets UP-TO-DATE
+> Task :feature:library:mergeDebugAssets UP-TO-DATE
+> Task :app:mergeDebugAssets UP-TO-DATE
+> Task :app:compressDebugAssets UP-TO-DATE
+> Task :app:generateDebugGlobalSynthetics UP-TO-DATE
+> Task :app:processDebugJavaRes UP-TO-DATE
+> Task :data:local:processDebugJavaRes UP-TO-DATE
+> Task :feature:library:processDebugJavaRes UP-TO-DATE
+> Task :app:mergeDebugJavaResource UP-TO-DATE
+> Task :app:checkDebugDuplicateClasses UP-TO-DATE
+> Task :app:desugarDebugFileDependencies UP-TO-DATE
+> Task :app:mergeExtDexDebug UP-TO-DATE
+> Task :feature:library:bundleLibRuntimeToDirDebug UP-TO-DATE
+> Task :data:local:bundleLibRuntimeToDirDebug UP-TO-DATE
+> Task :app:mergeLibDexDebug UP-TO-DATE
+> Task :data:local:writeDebugAarMetadata UP-TO-DATE
+> Task :feature:library:writeDebugAarMetadata UP-TO-DATE
+> Task :app:checkDebugAarMetadata UP-TO-DATE
+> Task :app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :app:compileDebugNavigationResources UP-TO-DATE
+> Task :app:mergeDebugResources UP-TO-DATE
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :data:local:extractDeepLinksDebug UP-TO-DATE
+> Task :data:local:processDebugManifest UP-TO-DATE
+> Task :feature:library:extractDeepLinksDebug UP-TO-DATE
+> Task :feature:library:processDebugManifest UP-TO-DATE
+> Task :app:processDebugMainManifest UP-TO-DATE
+> Task :app:processDebugManifest UP-TO-DATE
+> Task :app:processDebugManifestForPackage UP-TO-DATE
+> Task :data:local:mapDebugSourceSetPaths UP-TO-DATE
+> Task :data:local:compileDebugLibraryResources UP-TO-DATE
+> Task :feature:library:mapDebugSourceSetPaths UP-TO-DATE
+> Task :feature:library:compileDebugLibraryResources UP-TO-DATE
+> Task :app:processDebugResources UP-TO-DATE
+> Task :app:dexBuilderDebug UP-TO-DATE
+> Task :app:mergeProjectDexDebug UP-TO-DATE
+> Task :app:mergeDebugJniLibFolders UP-TO-DATE
+> Task :data:local:mergeDebugJniLibFolders UP-TO-DATE
+> Task :data:local:mergeDebugNativeLibs NO-SOURCE
+> Task :data:local:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :feature:library:mergeDebugJniLibFolders UP-TO-DATE
+> Task :feature:library:mergeDebugNativeLibs NO-SOURCE
+> Task :feature:library:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :app:mergeDebugNativeLibs UP-TO-DATE
+> Task :app:stripDebugDebugSymbols UP-TO-DATE
+> Task :app:validateSigningDebug UP-TO-DATE
+> Task :app:writeDebugAppMetadata UP-TO-DATE
+> Task :app:writeDebugSigningConfigVersions UP-TO-DATE
+> Task :app:packageDebug UP-TO-DATE
+> Task :app:createDebugApkListingFileRedirect UP-TO-DATE
+> Task :app:assembleDebug UP-TO-DATE
+> Task :app:bundleDebugClassesToCompileJar UP-TO-DATE
+> Task :app:preDebugAndroidTestBuild SKIPPED
+> Task :app:generateDebugAndroidTestResources UP-TO-DATE
+> Task :app:packageDebugAndroidTestResources UP-TO-DATE
+> Task :app:processDebugAndroidTestNavigationResources UP-TO-DATE
+> Task :app:parseDebugAndroidTestLocalResources UP-TO-DATE
+> Task :app:generateDebugAndroidTestRFile UP-TO-DATE
+> Task :app:kspDebugAndroidTestKotlin UP-TO-DATE
+> Task :app:compileDebugAndroidTestKotlin UP-TO-DATE
+> Task :app:javaPreCompileDebugAndroidTest UP-TO-DATE
+> Task :app:compileDebugAndroidTestJavaWithJavac NO-SOURCE
+> Task :app:generateDebugAndroidTestAssets UP-TO-DATE
+> Task :app:mergeDebugAndroidTestAssets UP-TO-DATE
+> Task :app:compressDebugAndroidTestAssets UP-TO-DATE
+> Task :app:generateDebugAndroidTestGlobalSynthetics UP-TO-DATE
+> Task :app:processDebugAndroidTestJavaRes UP-TO-DATE
+> Task :app:mergeDebugAndroidTestJavaResource UP-TO-DATE
+> Task :app:checkDebugAndroidTestDuplicateClasses UP-TO-DATE
+> Task :app:desugarDebugAndroidTestFileDependencies UP-TO-DATE
+> Task :app:mergeExtDexDebugAndroidTest UP-TO-DATE
+> Task :app:mergeLibDexDebugAndroidTest UP-TO-DATE
+> Task :app:checkDebugAndroidTestAarMetadata UP-TO-DATE
+> Task :app:mapDebugAndroidTestSourceSetPaths UP-TO-DATE
+> Task :app:compileDebugAndroidTestNavigationResources UP-TO-DATE
+> Task :app:mergeDebugAndroidTestResources UP-TO-DATE
+> Task :app:mergeDebugAndroidTestManifest UP-TO-DATE
+> Task :app:processDebugAndroidTestManifest UP-TO-DATE
+> Task :app:processDebugAndroidTestResources UP-TO-DATE
+> Task :app:dexBuilderDebugAndroidTest UP-TO-DATE
+> Task :app:mergeProjectDexDebugAndroidTest UP-TO-DATE
+> Task :app:mergeDebugAndroidTestJniLibFolders UP-TO-DATE
+> Task :app:mergeDebugAndroidTestNativeLibs NO-SOURCE
+> Task :app:stripDebugAndroidTestDebugSymbols NO-SOURCE
+> Task :app:validateSigningDebugAndroidTest UP-TO-DATE
+> Task :app:writeDebugAndroidTestSigningConfigVersions UP-TO-DATE
+> Task :app:packageDebugAndroidTest UP-TO-DATE
+> Task :app:createDebugAndroidTestApkListingFileRedirect UP-TO-DATE
+> Task :app:assembleDebugAndroidTest UP-TO-DATE
+> Task :app:preReleaseBuild UP-TO-DATE
+> Task :app:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :data:local:preReleaseBuild UP-TO-DATE
+> Task :data:local:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :data:local:mergeReleaseNativeLibs NO-SOURCE
+> Task :data:local:copyReleaseJniLibsProjectOnly UP-TO-DATE
+> Task :feature:library:preReleaseBuild UP-TO-DATE
+> Task :feature:library:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :feature:library:mergeReleaseNativeLibs NO-SOURCE
+> Task :feature:library:copyReleaseJniLibsProjectOnly UP-TO-DATE
+> Task :app:mergeReleaseNativeLibs UP-TO-DATE
+> Task :app:stripReleaseDebugSymbols UP-TO-DATE
+> Task :app:extractReleaseNativeSymbolTables UP-TO-DATE
+> Task :app:mergeReleaseNativeDebugMetadata NO-SOURCE
+> Task :feature:library:generateReleaseResources UP-TO-DATE
+> Task :feature:library:packageReleaseResources UP-TO-DATE
+> Task :feature:library:processReleaseNavigationResources UP-TO-DATE
+> Task :feature:library:parseReleaseLocalResources UP-TO-DATE
+> Task :feature:library:generateReleaseRFile UP-TO-DATE
+> Task :feature:library:compileReleaseKotlin UP-TO-DATE
+> Task :feature:library:javaPreCompileRelease UP-TO-DATE
+> Task :feature:library:compileReleaseJavaWithJavac NO-SOURCE
+> Task :feature:library:bundleLibRuntimeToDirRelease UP-TO-DATE
+> Task :data:local:generateReleaseResources UP-TO-DATE
+> Task :data:local:packageReleaseResources UP-TO-DATE
+> Task :data:local:processReleaseNavigationResources UP-TO-DATE
+> Task :data:local:parseReleaseLocalResources UP-TO-DATE
+> Task :data:local:generateReleaseRFile UP-TO-DATE
+> Task :data:local:kspReleaseKotlin UP-TO-DATE
+> Task :data:local:compileReleaseKotlin UP-TO-DATE
+> Task :data:local:javaPreCompileRelease UP-TO-DATE
+> Task :data:local:compileReleaseJavaWithJavac NO-SOURCE
+> Task :data:local:bundleLibRuntimeToDirRelease UP-TO-DATE
+> Task :app:checkReleaseDuplicateClasses UP-TO-DATE
+> Task :app:generateReleaseResources UP-TO-DATE
+> Task :app:packageReleaseResources UP-TO-DATE
+> Task :app:processReleaseNavigationResources UP-TO-DATE
+> Task :app:parseReleaseLocalResources UP-TO-DATE
+> Task :app:generateReleaseRFile UP-TO-DATE
+> Task :data:local:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :feature:library:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :app:kspReleaseKotlin UP-TO-DATE
+> Task :app:compileReleaseKotlin UP-TO-DATE
+> Task :app:javaPreCompileRelease UP-TO-DATE
+> Task :app:compileReleaseJavaWithJavac NO-SOURCE
+> Task :data:local:writeReleaseAarMetadata UP-TO-DATE
+> Task :feature:library:writeReleaseAarMetadata UP-TO-DATE
+> Task :app:checkReleaseAarMetadata UP-TO-DATE
+> Task :app:mapReleaseSourceSetPaths UP-TO-DATE
+> Task :app:compileReleaseNavigationResources UP-TO-DATE
+> Task :app:mergeReleaseResources UP-TO-DATE
+> Task :app:createReleaseCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksRelease UP-TO-DATE
+> Task :data:local:extractDeepLinksRelease UP-TO-DATE
+> Task :data:local:processReleaseManifest UP-TO-DATE
+> Task :feature:library:extractDeepLinksRelease UP-TO-DATE
+> Task :feature:library:processReleaseManifest UP-TO-DATE
+> Task :app:processReleaseMainManifest UP-TO-DATE
+> Task :app:processReleaseManifest UP-TO-DATE
+> Task :app:processReleaseManifestForPackage UP-TO-DATE
+> Task :data:local:mapReleaseSourceSetPaths UP-TO-DATE
+> Task :data:local:compileReleaseLibraryResources UP-TO-DATE
+> Task :feature:library:mapReleaseSourceSetPaths UP-TO-DATE
+> Task :feature:library:compileReleaseLibraryResources UP-TO-DATE
+> Task :app:processReleaseResources UP-TO-DATE
+> Task :app:dexBuilderRelease UP-TO-DATE
+> Task :app:desugarReleaseFileDependencies UP-TO-DATE
+> Task :app:mergeReleaseStartupProfile UP-TO-DATE
+> Task :app:mergeExtDexRelease UP-TO-DATE
+> Task :app:mergeDexRelease UP-TO-DATE
+> Task :data:local:prepareReleaseArtProfile UP-TO-DATE
+> Task :feature:library:prepareReleaseArtProfile UP-TO-DATE
+> Task :app:mergeReleaseArtProfile UP-TO-DATE
+> Task :feature:library:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :data:local:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :app:mergeReleaseGlobalSynthetics UP-TO-DATE
+> Task :app:compileReleaseArtProfile UP-TO-DATE
+> Task :app:generateReleaseAssets UP-TO-DATE
+> Task :data:local:generateReleaseAssets UP-TO-DATE
+> Task :data:local:mergeReleaseAssets UP-TO-DATE
+> Task :feature:library:generateReleaseAssets UP-TO-DATE
+> Task :feature:library:mergeReleaseAssets UP-TO-DATE
+> Task :app:mergeReleaseAssets UP-TO-DATE
+> Task :app:compressReleaseAssets UP-TO-DATE
+> Task :app:extractReleaseVersionControlInfo UP-TO-DATE
+> Task :app:extractProguardFiles UP-TO-DATE
+> Task :data:local:processReleaseJavaRes UP-TO-DATE
+> Task :data:local:createFullJarRelease UP-TO-DATE
+> Task :data:local:extractProguardFiles UP-TO-DATE
+> Task :data:local:generateReleaseLintModel UP-TO-DATE
+> Task :data:local:prepareLintJarForPublish UP-TO-DATE
+> Task :feature:library:processReleaseJavaRes UP-TO-DATE
+> Task :feature:library:createFullJarRelease UP-TO-DATE
+> Task :feature:library:extractProguardFiles UP-TO-DATE
+> Task :feature:library:generateReleaseLintModel UP-TO-DATE
+> Task :feature:library:prepareLintJarForPublish UP-TO-DATE
+> Task :app:generateReleaseLintVitalReportModel UP-TO-DATE
+> Task :feature:library:checkReleaseAarMetadata UP-TO-DATE
+> Task :feature:library:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :feature:library:extractReleaseAnnotations UP-TO-DATE
+> Task :feature:library:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :feature:library:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :feature:library:mergeReleaseJavaResource UP-TO-DATE
+> Task :feature:library:syncReleaseLibJars UP-TO-DATE
+> Task :feature:library:bundleReleaseLocalLintAar UP-TO-DATE
+> Task :data:local:checkReleaseAarMetadata UP-TO-DATE
+> Task :data:local:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :data:local:extractReleaseAnnotations UP-TO-DATE
+> Task :data:local:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :data:local:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :data:local:mergeReleaseJavaResource UP-TO-DATE
+> Task :data:local:syncReleaseLibJars UP-TO-DATE
+> Task :data:local:bundleReleaseLocalLintAar UP-TO-DATE
+> Task :data:local:lintVitalAnalyzeRelease UP-TO-DATE
+> Task :data:local:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :feature:library:lintVitalAnalyzeRelease UP-TO-DATE
+> Task :feature:library:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :app:lintVitalAnalyzeRelease UP-TO-DATE
+> Task :data:local:generateReleaseLintVitalModel UP-TO-DATE
+> Task :feature:library:generateReleaseLintVitalModel UP-TO-DATE
+> Task :app:lintVitalReportRelease SKIPPED
+> Task :app:lintVitalRelease SKIPPED
+> Task :app:processReleaseJavaRes UP-TO-DATE
+> Task :app:mergeReleaseJavaResource UP-TO-DATE
+> Task :app:optimizeReleaseResources UP-TO-DATE
+> Task :app:collectReleaseDependencies UP-TO-DATE
+> Task :app:sdkReleaseDependencyData UP-TO-DATE
+> Task :app:writeReleaseAppMetadata UP-TO-DATE
+> Task :app:writeReleaseSigningConfigVersions UP-TO-DATE
+> Task :app:packageRelease UP-TO-DATE
+> Task :app:createReleaseApkListingFileRedirect UP-TO-DATE
+> Task :app:assembleRelease UP-TO-DATE
+> Task :data:local:checkDebugAarMetadata UP-TO-DATE
+> Task :data:local:extractDebugAnnotations UP-TO-DATE
+> Task :data:local:extractDeepLinksForAarDebug UP-TO-DATE
+> Task :data:local:mergeDebugGeneratedProguardFiles UP-TO-DATE
+> Task :data:local:mergeDebugConsumerProguardFiles UP-TO-DATE
+> Task :data:local:prepareDebugArtProfile UP-TO-DATE
+> Task :data:local:mergeDebugJavaResource UP-TO-DATE
+> Task :data:local:syncDebugLibJars UP-TO-DATE
+> Task :data:local:bundleDebugLocalLintAar UP-TO-DATE
+> Task :feature:library:checkDebugAarMetadata UP-TO-DATE
+> Task :feature:library:extractDebugAnnotations UP-TO-DATE
+> Task :feature:library:extractDeepLinksForAarDebug UP-TO-DATE
+> Task :feature:library:mergeDebugGeneratedProguardFiles UP-TO-DATE
+> Task :feature:library:mergeDebugConsumerProguardFiles UP-TO-DATE
+> Task :feature:library:prepareDebugArtProfile UP-TO-DATE
+> Task :feature:library:mergeDebugJavaResource UP-TO-DATE
+> Task :feature:library:syncDebugLibJars UP-TO-DATE
+> Task :feature:library:bundleDebugLocalLintAar UP-TO-DATE
+> Task :data:local:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :data:local:createFullJarDebug UP-TO-DATE
+> Task :data:local:writeDebugLintModelMetadata UP-TO-DATE
+> Task :feature:library:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :feature:library:createFullJarDebug UP-TO-DATE
+> Task :feature:library:writeDebugLintModelMetadata UP-TO-DATE
+> Task :app:generateDebugAndroidTestLintModel UP-TO-DATE
+> Task :data:local:generateDebugLintModel UP-TO-DATE
+> Task :feature:library:generateDebugLintModel UP-TO-DATE
+> Task :app:generateDebugLintReportModel UP-TO-DATE
+> Task :app:preDebugUnitTestBuild UP-TO-DATE
+> Task :app:generateDebugUnitTestLintModel UP-TO-DATE
+> Task :data:local:lintAnalyzeDebug UP-TO-DATE
+> Task :feature:library:lintAnalyzeDebug UP-TO-DATE
+> Task :app:lintAnalyzeDebug UP-TO-DATE
+> Task :app:lintAnalyzeDebugAndroidTest UP-TO-DATE
+> Task :app:lintAnalyzeDebugUnitTest UP-TO-DATE
+> Task :data:local:preDebugUnitTestBuild UP-TO-DATE
+> Task :data:local:generateDebugUnitTestLintModel UP-TO-DATE
+> Task :data:local:lintAnalyzeDebugUnitTest UP-TO-DATE
+> Task :feature:library:preDebugUnitTestBuild UP-TO-DATE
+> Task :feature:library:generateDebugUnitTestLintModel UP-TO-DATE
+> Task :feature:library:lintAnalyzeDebugUnitTest UP-TO-DATE
+> Task :app:lintReportDebug UP-TO-DATE
+> Task :app:lintDebug
+> Task :app:generateReleaseLintReportModel UP-TO-DATE
+> Task :data:local:lintAnalyzeRelease UP-TO-DATE
+> Task :feature:library:lintAnalyzeRelease UP-TO-DATE
+> Task :app:lintAnalyzeRelease UP-TO-DATE
+> Task :app:lintReportRelease UP-TO-DATE
+> Task :app:lintRelease
+> Task :app:bundleDebugClassesToRuntimeJar UP-TO-DATE
+> Task :app:kspDebugUnitTestKotlin NO-SOURCE
+> Task :app:compileDebugUnitTestKotlin NO-SOURCE
+> Task :app:javaPreCompileDebugUnitTest UP-TO-DATE
+> Task :app:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :app:processDebugUnitTestJavaRes NO-SOURCE
+> Task :app:testDebugUnitTest NO-SOURCE
+> Task :app:detekt UP-TO-DATE
+> Task :app:spotlessKotlin UP-TO-DATE
+> Task :app:spotlessKotlinCheck UP-TO-DATE
+> Task :app:spotlessKotlinGradle UP-TO-DATE
+> Task :app:spotlessKotlinGradleCheck UP-TO-DATE
+> Task :app:spotlessCheck UP-TO-DATE
+> Task :app:verifySourceCoverage
+> Task :app:verifyAndroidConventions
+> Task :app:verifyReleaseArtifact
+> Task :exchange:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :exchange:compileKotlin UP-TO-DATE
+> Task :exchange:compileJava NO-SOURCE
+> Task :exchange:processResources NO-SOURCE
+> Task :exchange:classes UP-TO-DATE
+> Task :exchange:jar UP-TO-DATE
+> Task :exchange:compileTestKotlin UP-TO-DATE
+> Task :exchange:compileTestJava NO-SOURCE
+> Task :exchange:processTestResources NO-SOURCE
+> Task :exchange:testClasses UP-TO-DATE
+> Task :exchange:test
+> Task :exchange:detekt UP-TO-DATE
+> Task :exchange:spotlessKotlin UP-TO-DATE
+> Task :exchange:spotlessKotlinCheck UP-TO-DATE
+> Task :exchange:spotlessKotlinGradle UP-TO-DATE
+> Task :exchange:spotlessKotlinGradleCheck UP-TO-DATE
+> Task :exchange:spotlessCheck UP-TO-DATE
+> Task :exchange:verifySourceCoverage
+> Task :exchange:verifyKotlinConventions
+> Task :exchange:verifyPureClasspath
+> Task :library:compileTestKotlin UP-TO-DATE
+> Task :library:compileTestJava NO-SOURCE
+> Task :library:processTestResources NO-SOURCE
+> Task :library:testClasses UP-TO-DATE
+> Task :library:test
+> Task :library:detekt UP-TO-DATE
+> Task :library:spotlessKotlin UP-TO-DATE
+> Task :library:spotlessKotlinCheck UP-TO-DATE
+> Task :library:spotlessKotlinGradle UP-TO-DATE
+> Task :library:spotlessKotlinGradleCheck UP-TO-DATE
+> Task :library:spotlessCheck UP-TO-DATE
+> Task :library:verifySourceCoverage
+> Task :library:verifyKotlinConventions
+> Task :library:verifyPureClasspath
+> Task :music:compileTestKotlin UP-TO-DATE
+> Task :music:compileTestJava NO-SOURCE
+> Task :music:processTestResources UP-TO-DATE
+> Task :music:testClasses UP-TO-DATE
+> Task :music:test
+> Task :music:detekt UP-TO-DATE
+> Task :music:spotlessKotlin UP-TO-DATE
+> Task :music:spotlessKotlinCheck UP-TO-DATE
+> Task :music:spotlessKotlinGradle UP-TO-DATE
+> Task :music:spotlessKotlinGradleCheck UP-TO-DATE
+> Task :music:spotlessCheck UP-TO-DATE
+> Task :music:verifySourceCoverage
+> Task :music:verifyKotlinConventions
+> Task :music:verifyPureClasspath
+> Task :quality:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :quality:compileKotlin NO-SOURCE
+> Task :quality:compileJava NO-SOURCE
+> Task :quality:processResources NO-SOURCE
+> Task :quality:classes UP-TO-DATE
+> Task :quality:jar UP-TO-DATE
+> Task :quality:compileTestKotlin UP-TO-DATE
+> Task :quality:compileTestJava NO-SOURCE
+> Task :quality:processTestResources NO-SOURCE
+> Task :quality:testClasses UP-TO-DATE
+> Task :quality:test
+> Task :quality:detekt UP-TO-DATE
+> Task :quality:spotlessKotlin UP-TO-DATE
+> Task :quality:spotlessKotlinCheck UP-TO-DATE
+> Task :quality:spotlessKotlinGradle UP-TO-DATE
+> Task :quality:spotlessKotlinGradleCheck UP-TO-DATE
+> Task :quality:spotlessCheck UP-TO-DATE
+> Task :quality:verifySourceCoverage
+> Task :quality:verifyKotlinConventions
+> Task :data:local:detekt UP-TO-DATE
+> Task :data:local:generateDebugLintReportModel UP-TO-DATE
+> Task :data:local:lintReportDebug UP-TO-DATE
+> Task :data:local:lintDebug
+> Task :data:local:generateReleaseLintReportModel UP-TO-DATE
+> Task :data:local:lintReportRelease UP-TO-DATE
+> Task :data:local:lintRelease
+> Task :data:local:spotlessKotlin UP-TO-DATE
+> Task :data:local:spotlessKotlinCheck UP-TO-DATE
+> Task :data:local:spotlessKotlinGradle UP-TO-DATE
+> Task :data:local:spotlessKotlinGradleCheck UP-TO-DATE
+> Task :data:local:spotlessCheck UP-TO-DATE
+> Task :data:local:generateDebugUnitTestStubRFile UP-TO-DATE
+> Task :data:local:kspDebugUnitTestKotlin NO-SOURCE
+> Task :data:local:compileDebugUnitTestKotlin NO-SOURCE
+> Task :data:local:verifySourceCoverage
+> Task :data:local:verifyAndroidConventions
+> Task :feature:library:generateDebugUnitTestStubRFile UP-TO-DATE
+> Task :feature:library:compileDebugUnitTestKotlin UP-TO-DATE
+> Task :feature:library:javaPreCompileDebugUnitTest UP-TO-DATE
+> Task :feature:library:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :feature:library:processDebugUnitTestJavaRes UP-TO-DATE
+> Task :feature:library:testDebugUnitTest
+> Task :feature:library:detekt UP-TO-DATE
+> Task :feature:library:generateDebugLintReportModel UP-TO-DATE
+> Task :feature:library:lintReportDebug UP-TO-DATE
+> Task :feature:library:lintDebug
+> Task :feature:library:generateReleaseLintReportModel UP-TO-DATE
+> Task :feature:library:lintReportRelease UP-TO-DATE
+> Task :feature:library:lintRelease
+> Task :feature:library:spotlessKotlin UP-TO-DATE
+> Task :feature:library:spotlessKotlinCheck UP-TO-DATE
+> Task :feature:library:spotlessKotlinGradle UP-TO-DATE
+> Task :feature:library:spotlessKotlinGradleCheck UP-TO-DATE
+> Task :feature:library:spotlessCheck UP-TO-DATE
+> Task :feature:library:verifySourceCoverage
+> Task :feature:library:verifyAndroidConventions
+> Task :build-logic:test
+> Task :build-logic:verifyBuildLogicSources
+> Task :build-logic:verifyConventions
+> Task :verifyHost
+
+[Incubating] Problems report is available at: file:///home/juan/.codex/worktrees/android-and05-recovery/scoremap/src/android/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.7.0/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 44s
+368 actionable tasks: 29 executed, 339 up-to-date
