@@ -66,7 +66,7 @@ jobs:
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         working-directory: src/android
-        run: ./gradlew :app:bundleRelease --no-configuration-cache
+        run: ./gradlew :app:verifyReleaseArtifact :app:bundleRelease --no-configuration-cache
       - name: Verify bundle signature and record provenance
         run: |
           set -euo pipefail

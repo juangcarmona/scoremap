@@ -11,7 +11,7 @@ public object ManifestPolicy {
      * permission that guards unexported dynamic receivers; it grants nothing to other apps. Add a permission here
      * only with its reviewed decision.
      */
-    public val allowedPermissions: Set<String> = setOf("scoremap.android.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION")
+    private const val DYNAMIC_RECEIVER_PERMISSION = ".DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
 
     public fun manifestViolations(
         variant: String,
@@ -48,7 +48,7 @@ public object ManifestPolicy {
     ): List<String> =
         elements(root, "uses-permission")
             .map { attribute(it, "name") }
-            .filter { it !in allowedPermissions }
+            .filter { it != root.getAttribute("package") + DYNAMIC_RECEIVER_PERMISSION }
             .map { "$variant manifest requests unreviewed permission $it." }
 
     private fun applicationViolations(
