@@ -154,7 +154,7 @@ public class ConventionContractTest {
             .create()
             .withProjectDir(root)
             .withGradleInstallation(File(requireNotNull(System.getProperty("scoremap.gradleHome"))))
-            .withTestKitDir(File(requireNotNull(System.getProperty("scoremap.fixtureRoot")), "test-kit"))
+            .withTestKitDir(File(requireNotNull(System.getProperty("scoremap.gradleUserHome"))))
             .withPluginClasspath()
-            .withArguments(*tasks, "--max-workers=1", "--console=plain", "--stacktrace")
+            .withArguments(*tasks, "--offline", "--max-workers=1", "--console=plain", "--stacktrace")
 }

@@ -92,7 +92,7 @@ public class ProjectGraphContractTest {
             .create()
             .withProjectDir(root)
             .withGradleInstallation(File(requireNotNull(System.getProperty("scoremap.gradleHome"))))
-            .withTestKitDir(File(requireNotNull(System.getProperty("scoremap.fixtureRoot")), "test-kit"))
+            .withTestKitDir(File(requireNotNull(System.getProperty("scoremap.gradleUserHome"))))
             .withPluginClasspath()
-            .withArguments("verifyProjectGraph", "--max-workers=1", "--console=plain", "--stacktrace")
+            .withArguments("verifyProjectGraph", "--offline", "--max-workers=1", "--console=plain", "--stacktrace")
 }

@@ -115,7 +115,7 @@ public class GateIntegrityContractTest {
             .create()
             .withProjectDir(root)
             .withGradleInstallation(File(requireNotNull(System.getProperty("scoremap.gradleHome"))))
-            .withTestKitDir(File(requireNotNull(System.getProperty("scoremap.fixtureRoot")), "test-kit"))
+            .withTestKitDir(File(requireNotNull(System.getProperty("scoremap.gradleUserHome"))))
             .withPluginClasspath()
-            .withArguments("verifyHost", "--max-workers=1", "--console=plain", "--stacktrace")
+            .withArguments("verifyHost", "--offline", "--max-workers=1", "--console=plain", "--stacktrace")
 }
